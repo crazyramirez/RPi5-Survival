@@ -1,0 +1,41 @@
+[Unit]
+Description=Survival OS - device-api (estado del equipo, solo lectura, loopback)
+Documentation=file:///opt/survival-os/current/README.md
+After=local-fs.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=survival
+Group=survival
+# vcgencmd necesita /dev/vcio (grupo video).
+SupplementaryGroups=video
+EnvironmentFile=-/etc/survival-os/survival-os.env
+ExecStart=/opt/survival-os/runtime/node/bin/node /opt/survival-os/current/services/device-api/dist/server.js
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+# AF_NETLINK: getifaddrs() para listar interfaces de red.
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+# Garantía offline a nivel de kernel: solo loopback.
+IPAddressDeny=any
+IPAddressAllow=localhost
+DevicePolicy=closed
+DeviceAllow=/dev/vcio rw
+MemoryMax=128M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target

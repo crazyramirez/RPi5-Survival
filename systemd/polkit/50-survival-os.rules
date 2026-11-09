@@ -1,0 +1,24 @@
+// Survival OS — permisos del usuario de servicio `survival` (la interfaz web).
+// Instalado en /etc/polkit-1/rules.d/.
+polkit.addRule(function (action, subject) {
+  if (subject.user !== "survival") return polkit.Result.NOT_HANDLED;
+
+  // Apagar / reiniciar desde Sistema.
+  var power = [
+    "org.freedesktop.login1.power-off",
+    "org.freedesktop.login1.power-off-multiple-sessions",
+    "org.freedesktop.login1.reboot",
+    "org.freedesktop.login1.reboot-multiple-sessions"
+  ];
+  if (power.indexOf(action.id) >= 0) return polkit.Result.YES;
+
+  // Tareas de mantenimiento: solo arrancar/parar unidades survival-admin@<tarea>.service.
+  if (action.id === "org.freedesktop.systemd1.manage-units") {
+    var unit = action.lookup("unit") || "";
+    var verb = action.lookup("verb") || "";
+    if (/^survival-admin@[a-z-]+\.service$/.test(unit) && (verb === "start" || verb === "stop")) {
+      return polkit.Result.YES;
+    }
+  }
+  return polkit.Result.NOT_HANDLED;
+});

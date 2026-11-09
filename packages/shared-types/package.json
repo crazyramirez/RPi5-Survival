@@ -1,0 +1,11 @@
+{
+  "name": "@survival-os/shared-types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tipos compartidos entre servicios locales y la interfaz.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts"
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Survival OS — arrancando</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0f1412; color: #ece6d6; font-family: system-ui, sans-serif; user-select: none; }
+  main { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; box-sizing: border-box; text-align: center; }
+  h1 { margin: 0; font-size: 30px; letter-spacing: .02em; }
+  p { margin: 0; color: #a9b0a2; font-size: 17px; max-width: 760px; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: #8cbf96; opacity: .35; }
+  .dot.on { opacity: 1; }
+  #help { display: none; margin-top: 10px; padding: 14px 18px; border: 1px solid #e5b85c; border-radius: 10px; text-align: left; }
+  #help p { color: #ece6d6; font-size: 16px; margin: 6px 0; }
+  code { font-family: ui-monospace, monospace; color: #e5b85c; }
+  button { margin-top: 8px; min-height: 56px; padding: 0 28px; font-size: 18px; font-weight: 700; border-radius: 10px; border: 1px solid #8cbf96; background: #1e2823; color: #ece6d6; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Survival OS</h1>
+  <p id="msg">Arrancando servicios locales…</p>
+  <div class="dot" id="dot"></div>
+  <div id="help">
+    <p><strong>La interfaz no responde.</strong> El equipo sigue encendido.</p>
+    <p>· Espera un minuto: el sistema reinicia el servicio automáticamente.</p>
+    <p>· Por SSH: <code>systemctl status survival-web survival-device-api</code></p>
+    <p>· Teclado local: <code>Ctrl+Alt+F2</code> → iniciar sesión → mismo comando.</p>
+    <p>· Registros: <code>journalctl -u survival-web -b</code></p>
+  </div>
+  <button type="button" id="retry">Reintentar ahora</button>
+</main>
+<script>
+  // Página local (file://): espera a que la app responda y redirige. Sin dependencias externas.
+  var APP = 'http://127.0.0.1:3000/';
+  var started = Date.now();
+  var dot = document.getElementById('dot');
+  function check() {
+    dot.classList.toggle('on');
+    // no-cors: respuesta opaca, pero solo se resuelve si el servidor contesta.
+    fetch(APP + 'api/health', { mode: 'no-cors', cache: 'no-store' })
+      .then(function () { location.replace(APP); })
+      .catch(function () {
+        if (Date.now() - started > 45000) {
+          document.getElementById('msg').textContent = 'Esperando a la interfaz…';
+          document.getElementById('help').style.display = 'block';
+        }
+        setTimeout(check, 2000);
+      });
+  }
+  document.getElementById('retry').addEventListener('click', function () { location.replace(APP); });
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  check();
+</script>
+</body>
+</html>

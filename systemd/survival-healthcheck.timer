@@ -1,0 +1,10 @@
+[Unit]
+Description=Survival OS - comprobación de salud cada minuto
+
+[Timer]
+OnBootSec=120
+OnUnitActiveSec=60
+AccuracySec=10
+
+[Install]
+WantedBy=timers.target

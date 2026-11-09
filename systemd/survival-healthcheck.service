@@ -1,0 +1,8 @@
+[Unit]
+Description=Survival OS - vigilante de salud de la aplicación
+After=survival-web.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/survival-os/current/scripts/healthcheck.sh
+Nice=10

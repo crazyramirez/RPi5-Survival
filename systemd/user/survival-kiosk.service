@@ -1,0 +1,10 @@
+[Unit]
+Description=Survival OS - kiosco Chromium
+ConditionUser=@KIOSK_USER@
+
+[Service]
+Type=simple
+Environment=WAYLAND_DISPLAY=wayland-0 XDG_SESSION_TYPE=wayland
+ExecStart=/opt/survival-os/current/scripts/kiosk.sh
+Restart=on-failure
+RestartSec=10

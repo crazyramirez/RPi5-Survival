@@ -1,0 +1,26 @@
+node_modules/
+.output/
+.nuxt/
+.nitro/
+.cache/
+dist/
+release/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+
+# Secretos y configuración local: NUNCA en Git
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+vault/
+data/private/
+
+# Recursos de mapa descargados por scripts/fetch-map-assets.mjs
+apps/frontend/public/map-assets/
+
+# Datos locales de desarrollo (mapas descargados, etc.)
+.data/

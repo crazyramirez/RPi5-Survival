@@ -1,0 +1,11 @@
+{
+  "name": "@survival-os/content-schema",
+  "version": "0.8.0",
+  "private": true,
+  "type": "module",
+  "description": "Esquema de metadatos de contenidos offline (procedencia, licencia, checksum).",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts"
+}

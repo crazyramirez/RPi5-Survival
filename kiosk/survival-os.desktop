@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Survival OS
+Comment=Abrir Survival OS a pantalla completa
+Exec=sh -c 'rm -f "$HOME/.config/survival-os/kiosk.disabled"; systemctl --user restart survival-kiosk.service'
+Icon=/opt/survival-os/current/kiosk/survival-os.svg
+Terminal=false
+Categories=Utility;

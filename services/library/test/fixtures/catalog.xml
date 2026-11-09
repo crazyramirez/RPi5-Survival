@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>urn:uuid:1</id>
+    <title>Wikipedia M&#233;dica</title>
+    <summary>Art&#237;culos de medicina</summary>
+    <language>spa</language>
+    <name>wikipedia_es_medicine</name>
+    <flavour>nopic</flavour>
+    <articleCount>6789</articleCount>
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-zim" href="/x.zim" />
+    <link rel="http://opds-spec.org/image/thumbnail" href="/kiwix/catalog/v2/illustration/1/?size=48" type="image/png;width=48;height=48;scale=1" />
+    <link type="text/html" href="/kiwix/content/wikipedia_es_medicine_nopic_2026-10" />
+  </entry>
+</feed>

@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Guía de emergencia · Survival OS</title>
+<style>
+@page { size: A4 portrait; margin: 12mm 12mm 14mm; }
+html, body { margin: 0; background: #fff; }
+/*
+ * Guía de emergencia imprimible (A4/A5). La comparten la página /emergencias/imprimir y
+ * scripts/build-emergency-guide.mjs (PDF offline), para que ambas salidas sean idénticas.
+ * Pensada para papel: negro sobre blanco, un color de acento sobrio y rojo solo para el 112.
+ */
+
+.guide {
+  --ink: #111614;
+  --muted: #4a524c;
+  --rule: #c9cfc8;
+  --brand: #2f6b45;
+  --red: #b3261e;
+  --paper: #ffffff;
+  color: var(--ink);
+  font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  font-size: 11pt;
+  line-height: 1.45;
+}
+
+.guide .sheet {
+  position: relative;
+  box-sizing: border-box;
+  background: var(--paper);
+  padding: 14mm 14mm 16mm;
+  break-after: page;
+  page-break-after: always;
+}
+
+.guide .sheet:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+/* ---------------------------------------------------------------- Portada */
+.guide .cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 250mm;
+}
+
+.guide.a5 .cover {
+  min-height: 170mm;
+}
+
+.guide .brand {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  font-size: 10pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.guide .brand::before {
+  content: '';
+  width: 9mm;
+  height: 1.2mm;
+  background: var(--brand);
+}
+
+.guide .cover h1 {
+  margin: 6mm 0 2mm;
+  font-size: 30pt;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.guide .cover .lead {
+  max-width: 120mm;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12pt;
+}
+
+.guide .call {
+  display: flex;
+  align-items: center;
+  gap: 6mm;
+  margin: 10mm 0;
+  padding: 6mm 7mm;
+  border: 0.8mm solid var(--red);
+  border-radius: 4mm;
+}
+
+.guide .call .num {
+  font-size: 48pt;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--red);
+  letter-spacing: -0.03em;
+}
+
+.guide .call p {
+  margin: 0;
+  font-size: 11pt;
+}
+
+.guide .call strong {
+  display: block;
+  font-size: 13pt;
+}
+
+.guide .meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4mm;
+  margin: 0;
+  padding-top: 5mm;
+  border-top: 0.3mm solid var(--rule);
+  font-size: 9pt;
+  color: var(--muted);
+}
+
+.guide .meta dt {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 7.5pt;
+}
+
+.guide .meta dd {
+  margin: 1mm 0 0;
+  color: var(--ink);
+  font-size: 11pt;
+}
+
+.guide .disclaimer {
+  margin: 6mm 0 0;
+  padding: 3mm 4mm;
+  border-left: 1mm solid #b07b16;
+  background: #fbf3e2;
+  font-size: 9pt;
+}
+
+/* ---------------------------------------------------------------- Índice */
+.guide h2.section {
+  margin: 0 0 5mm;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.guide .toc-cat {
+  margin: 4mm 0 1.5mm;
+  font-size: 11pt;
+  font-weight: 700;
+}
+
+.guide .toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide .toc li {
+  display: flex;
+  gap: 3mm;
+  padding: 1.4mm 0;
+  border-bottom: 0.2mm dotted var(--rule);
+  font-size: 10.5pt;
+  break-inside: avoid;
+}
+
+.guide .toc .n {
+  min-width: 8mm;
+  font-weight: 700;
+  color: var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- Protocolo */
+.guide .p-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 4mm;
+  margin-bottom: 5mm;
+  padding-bottom: 3mm;
+  border-bottom: 0.6mm solid var(--ink);
+}
+
+.guide .p-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 11mm;
+  height: 11mm;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 800;
+  font-size: 12pt;
+}
+
+.guide .p-cat {
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.guide .p-head h3 {
+  margin: 0.5mm 0 0;
+  font-size: 18pt;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.guide .p-112 {
+  margin-left: auto;
+  flex: none;
+  padding: 1mm 3mm;
+  border: 0.4mm solid var(--red);
+  border-radius: 2mm;
+  color: var(--red);
+  font-weight: 800;
+  font-size: 11pt;
+}
+
+.guide .content h2 {
+  margin: 5mm 0 2mm;
+  font-size: 12.5pt;
+  break-after: avoid;
+}
+
+.guide .content p,
+.guide .content li {
+  font-size: 11pt;
+}
+
+.guide .content blockquote {
+  margin: 0 0 4mm;
+  padding: 2mm 4mm;
+  border-left: 1mm solid #b07b16;
+  background: #fbf3e2;
+  font-size: 10pt;
+}
+
+.guide .content blockquote p {
+  margin: 0;
+}
+
+.guide .content ol {
+  margin: 0;
+  padding-left: 7mm;
+}
+
+.guide .content ol li {
+  margin: 0 0 1.6mm;
+  padding-left: 1mm;
+  break-inside: avoid;
+}
+
+.guide .content ol li::marker {
+  font-weight: 800;
+  color: var(--brand);
+}
+
+.guide .content ul {
+  margin: 0;
+  padding-left: 6mm;
+}
+
+.guide .content ul li {
+  margin: 0 0 1.2mm;
+}
+
+.guide .content strong {
+  font-weight: 800;
+}
+
+.guide .p-foot {
+  margin-top: 6mm;
+  padding-top: 2.5mm;
+  border-top: 0.3mm solid var(--rule);
+  font-size: 8pt;
+  color: var(--muted);
+}
+
+.guide .p-foot b {
+  color: var(--ink);
+}
+
+/* Tamaño de papel: la regla @page la añade la página o el script según la elección. */
+@media print {
+  .guide .sheet {
+    padding: 0;
+  }
+
+  .guide .cover {
+    min-height: auto;
+    height: 100%;
+  }
+}
+
+@media screen { .guide .sheet { max-width: 210mm; margin: 0 auto 8mm; box-shadow: 0 2px 10px rgb(0 0 0 / 15%); } }
+@media print { .guide .sheet { padding: 0; } }
+</style></head>
+<body><div class="guide a4">
+<section class="sheet cover"><div>
+  <div class="brand">Survival OS</div>
+  <h1>Guía de emergencia</h1>
+  <p class="lead">Protocolos de primeros auxilios y actuación ante emergencias para consultar sin electricidad ni conexión.</p>
+  <div class="call"><span class="num">112</span><p><strong>Ante una emergencia, llama al 112</strong>Número gratuito de emergencias en toda la Unión Europea. Di qué ha pasado, dónde estás y cuántas personas hay afectadas.</p></div>
+  <p class="disclaimer">Esta herramienta no sustituye la atención sanitaria profesional ni las indicaciones de los servicios de emergencia.</p>
+</div>
+<dl class="meta">
+  <div><dt>Generada</dt><dd>lun, 9 nov 2026</dd></div>
+  <div><dt>Protocolos</dt><dd>41</dd></div>
+  <div><dt>Categorías</dt><dd>5</dd></div>
+</dl></section>
+<section class="sheet toc"><h2 class="section">Índice</h2>
+<p class="toc-cat">Primeros auxilios</p><ol><li><span class="n">1</span><span>Ante una emergencia: Proteger, Avisar, Socorrer</span></li><li><span class="n">2</span><span>RCP en adultos (reanimación cardiopulmonar)</span></li><li><span class="n">3</span><span>Hemorragia grave</span></li><li><span class="n">4</span><span>Atragantamiento en adultos</span></li><li><span class="n">5</span><span>Quemaduras</span></li><li><span class="n">6</span><span>RCP en niños y lactantes</span></li><li><span class="n">7</span><span>Uso del desfibrilador (DEA)</span></li><li><span class="n">8</span><span>Posición lateral de seguridad</span></li><li><span class="n">9</span><span>Atragantamiento en niños y lactantes</span></li><li><span class="n">10</span><span>Ictus: reconocer y actuar</span></li><li><span class="n">11</span><span>Dolor torácico (posible infarto)</span></li><li><span class="n">12</span><span>Reacción alérgica grave (anafilaxia)</span></li><li><span class="n">13</span><span>Convulsiones (crisis epiléptica)</span></li><li><span class="n">14</span><span>Shock (fallo circulatorio)</span></li><li><span class="n">15</span><span>Golpe en la cabeza (traumatismo craneal)</span></li><li><span class="n">16</span><span>Sospecha de lesión de columna</span></li><li><span class="n">17</span><span>Fracturas y esguinces</span></li><li><span class="n">18</span><span>Heridas y prevención de la infección</span></li><li><span class="n">19</span><span>Quemaduras químicas y eléctricas</span></li><li><span class="n">20</span><span>Bajada de azúcar (hipoglucemia)</span></li><li><span class="n">21</span><span>Ahogamiento</span></li><li><span class="n">22</span><span>Deshidratación y suero oral casero</span></li></ol>
+<p class="toc-cat">Clima</p><ol><li><span class="n">23</span><span>Hipotermia</span></li><li><span class="n">24</span><span>Golpe de calor</span></li><li><span class="n">25</span><span>Congelación</span></li><li><span class="n">26</span><span>Ola de frío y refugio</span></li></ol>
+<p class="toc-cat">Agua</p><ol><li><span class="n">27</span><span>Potabilizar agua</span></li></ol>
+<p class="toc-cat">Intoxicaciones y picaduras</p><ol><li><span class="n">28</span><span>Intoxicación por monóxido de carbono</span></li><li><span class="n">29</span><span>Intoxicación por productos, medicamentos o setas</span></li><li><span class="n">30</span><span>Mordedura de víbora o serpiente</span></li><li><span class="n">31</span><span>Picaduras de abeja y avispa; garrapatas</span></li><li><span class="n">32</span><span>Mordeduras de animales (rabia y tétanos)</span></li></ol>
+<p class="toc-cat">Desastres y entorno</p><ol><li><span class="n">33</span><span>Incendio en casa o en un edificio</span></li><li><span class="n">34</span><span>Incendio forestal</span></li><li><span class="n">35</span><span>Terremoto</span></li><li><span class="n">36</span><span>Inundación</span></li><li><span class="n">37</span><span>Tormenta eléctrica y rayos</span></li><li><span class="n">38</span><span>Apagón prolongado</span></li><li><span class="n">39</span><span>Fuga u olor a gas</span></li><li><span class="n">40</span><span>Kit de emergencia para 72 horas</span></li><li><span class="n">41</span><span>Pedir ayuda y señales de socorro</span></li></ol>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">1</span><div><div class="p-cat">Primeros auxilios</div><h3>Ante una emergencia: Proteger, Avisar, Socorrer</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. No sustituye a la formación en primeros auxilios ni a las instrucciones del 112.</blockquote>
+<h3>1. Proteger</h3>
+<ul><li>Comprueba que <strong>tú</strong> no corres peligro (tráfico, fuego, electricidad, derrumbe, agua). No te conviertas en otra víctima.</li><li>Si es seguro, aleja a la víctima del peligro solo si no puede quedarse donde está.</li></ul>
+<h3>2. Avisar</h3>
+<ul><li>Llama al <strong>112</strong> (número único de emergencias en la UE).</li><li>Di <strong>qué</strong> ha pasado, <strong>dónde</strong> (coordenadas del GPS si las tienes), <strong>cuántas</strong> víctimas hay y su estado (¿responden?, ¿respiran?).</li><li>No cuelgues hasta que te lo indiquen. Pon el altavoz para tener las manos libres.</li></ul>
+<h3>3. Socorrer</h3>
+<ul><li>¿Responde? Háblale en voz alta y tócale los hombros.</li><li>¿Respira con normalidad? Mira, escucha y siente durante no más de 10 segundos.</li><li><strong>No responde y no respira con normalidad</strong> → RCP (protocolo «RCP en adultos»).</li><li><strong>No responde pero respira</strong> → posición lateral de seguridad y vigila la respiración.</li><li>Hemorragia grave → presión directa inmediata (protocolo «Hemorragia grave»).</li></ul>
+<h3>Advertencias</h3>
+<ul><li>No des de comer ni de beber a una persona con el nivel de consciencia alterado.</li><li>No muevas a una víctima de un traumatismo salvo peligro inminente.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Consejo Europeo de Resucitación (ERC), Guías 2021 — Primeros auxilios; Servicio 112 (UE) · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">2</span><div><div class="p-cat">Primeros auxilios</div><h3>RCP en adultos (reanimación cardiopulmonar)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2021. La formación práctica es imprescindible.</blockquote>
+<h3>Cuándo</h3>
+<p>La persona <strong>no responde</strong> y <strong>no respira con normalidad</strong> (las boqueadas no son respiración normal).</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong> (altavoz) y pide un <strong>DEA</strong> (desfibrilador) si hay uno cerca.</li><li>Coloca a la víctima boca arriba sobre una superficie firme.</li><li>Pon el talón de una mano en el <strong>centro del pecho</strong>, la otra encima y los brazos rectos.</li><li>Comprime <strong>5–6 cm</strong> de profundidad a <strong>100–120 compresiones por minuto</strong>. Deja que el pecho se eleve del todo entre compresiones.</li><li>Si sabes y quieres hacerlo: <strong>30 compresiones y 2 insuflaciones</strong>. Si no, solo compresiones continuas.</li><li>En cuanto llegue el DEA: enciéndelo y sigue sus instrucciones de voz.</li><li>No pares hasta que llegue ayuda profesional, la víctima respire con normalidad o quedes agotado. Si hay otra persona, turnaos cada 2 minutos.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>Interrumpe las compresiones lo menos posible.</li><li>Se pueden romper costillas; no es motivo para parar.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Soporte vital básico en adultos · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">3</span><div><div class="p-cat">Primeros auxilios</div><h3>Hemorragia grave</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Una hemorragia grave puede ser mortal en minutos: actúa rápido.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Protégete si es posible (guantes o una bolsa de plástico).</li><li>Llama al <strong>112</strong>.</li><li>Aplica <strong>presión directa firme</strong> sobre la herida con un apósito, gasa o tela limpia, de forma continua.</li><li>Si la sangre empapa el apósito, <strong>no lo retires</strong>: añade más encima y sigue presionando.</li><li>Hemorragia potencialmente mortal <strong>en un brazo o una pierna</strong> que no se controla con presión directa: aplica un <strong>torniquete</strong> 5–7 cm por encima de la herida (nunca sobre una articulación) y apriétalo hasta que deje de sangrar. <strong>Anota la hora</strong> de colocación.</li><li>Abriga a la víctima y vigila su consciencia y su respiración.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>No retires un torniquete una vez colocado: lo hará el personal sanitario.</li><li>No extraigas objetos clavados; presiona alrededor e inmovilízalos.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Primeros auxilios (control de hemorragias) · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">4</span><div><div class="p-cat">Primeros auxilios</div><h3>Atragantamiento en adultos</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2021.</blockquote>
+<h3>Si puede toser</h3>
+<ul><li>Anímale a <strong>seguir tosiendo</strong>. No hagas nada más y vigila.</li></ul>
+<h3>Si no puede toser, hablar ni respirar bien</h3>
+<ol><li>Inclínale hacia delante y dale hasta <strong>5 golpes</strong> firmes en la espalda, entre los omóplatos, con el talón de la mano.</li><li>Si no se resuelve: hasta <strong>5 compresiones abdominales</strong> (maniobra de Heimlich). Desde detrás, coloca el puño entre el ombligo y el esternón y tira hacia dentro y hacia arriba.</li><li>Alterna 5 golpes y 5 compresiones hasta que se resuelva o pierda el conocimiento.</li><li>Si pierde el conocimiento: llama al <strong>112</strong> e inicia la <strong>RCP</strong>.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>Tras unas compresiones abdominales, la persona debe ser valorada por un médico aunque se recupere.</li><li>En embarazadas y personas con obesidad: compresiones en el pecho en lugar del abdomen.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Obstrucción de la vía aérea por cuerpo extraño · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">5</span><div><div class="p-cat">Primeros auxilios</div><h3>Quemaduras</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Aleja a la persona de la fuente de calor.</li><li><strong>Enfría con agua</strong> limpia a temperatura ambiente o fresca durante <strong>al menos 20 minutos</strong>, lo antes posible.</li><li>Retira anillos, relojes y la ropa no adherida antes de que la zona se hinche.</li><li>Cubre la quemadura con <strong>film transparente</strong> (sin apretar) o con un apósito limpio no adherente.</li><li>Llama al <strong>112</strong> si es extensa o profunda, si afecta a la cara, las manos, los genitales o las vías respiratorias, o si es eléctrica o química.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> uses hielo, pasta de dientes, aceites ni remedios caseros.</li><li>No revientes las ampollas.</li><li>Vigila la hipotermia al enfriar quemaduras extensas, sobre todo en niños.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Primeros auxilios (quemaduras térmicas) · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">6</span><div><div class="p-cat">Primeros auxilios</div><h3>RCP en niños y lactantes</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. La formación práctica es imprescindible. Lactante: menor de 1 año. Si parece un adolescente o un adulto, usa el protocolo «RCP en adultos».</blockquote>
+<h3>Cuándo</h3>
+<p>El niño <strong>no responde</strong> y <strong>no respira con normalidad</strong>. Ante la duda, actúa como si no respirara.</p>
+<h3>Pasos</h3>
+<ol><li>Comprueba que la zona es segura. Háblale en voz alta y tócale; no uses estímulos dolorosos.</li><li>Llama al <strong>112</strong> con el <strong>altavoz</strong> (o que llame otra persona) y sigue las instrucciones del operador. Si estás solo y sin teléfono, haz <strong>1 minuto de RCP</strong> antes de ir a pedir ayuda.</li><li>Abre la vía aérea: una mano en la frente y dos dedos bajo el mentón. En lactantes, cabeza en <strong>posición neutra</strong> (poco inclinada); en niños mayores, algo más inclinada.</li><li>Da <strong>5 insuflaciones de rescate</strong> iniciales, de 1 segundo cada una, lo justo para que el pecho se eleve. En lactantes, cubre con tu boca <strong>su boca y su nariz</strong>.</li><li>Comprime en la <strong>mitad inferior del esternón</strong>, al menos <strong>un tercio de la profundidad del pecho</strong> (unos 4 cm en lactantes y 5 cm en niños; nunca más de 6 cm), a <strong>100–120 compresiones por minuto</strong>. Deja que el pecho se eleve del todo.</li><li>Técnica: en lactantes, <strong>rodea el tórax con las dos manos y comprime con los dos pulgares</strong>; en niños, con <strong>una o dos manos</strong> según su tamaño.</li><li>Continúa con <strong>30 compresiones y 2 insuflaciones</strong> (15:2 solo si tienes formación específica en RCP pediátrica). Si no puedes o no quieres insuflar, haz solo compresiones.</li><li>Que otra persona traiga y conecte un <strong>DEA</strong> en cuanto sea posible (protocolo «Uso del desfibrilador (DEA)»). No pares hasta que llegue ayuda profesional o el niño muestre signos claros de vida.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>Si el pecho no se eleva al insuflar: recoloca la cabeza y retira solo lo que veas en la boca. <strong>No</strong> hagas barridos a ciegas con el dedo.</li><li>Si no responde pero respira con normalidad y no hay traumatismo: posición lateral de seguridad y comprueba la respiración al menos cada minuto.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Soporte vital pediátrico; ERC Guidelines 2021 — Soporte vital pediátrico · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">7</span><div><div class="p-cat">Primeros auxilios</div><h3>Uso del desfibrilador (DEA)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. El DEA es seguro: solo descarga si detecta un ritmo que lo necesita. La formación práctica es muy recomendable.</blockquote>
+<h3>Cuándo</h3>
+<p>La persona <strong>no responde y no respira con normalidad</strong>. Úsalo junto con la RCP.</p>
+<h3>Pasos</h3>
+<ol><li>Que alguien llame al <strong>112</strong> y otra persona traiga el <strong>DEA</strong> más cercano (el 112 puede decirte dónde hay uno). <strong>No interrumpas la RCP</strong> mientras llega.</li><li><strong>Enciéndelo</strong> (abre la tapa o pulsa el botón) y sigue sus <strong>instrucciones de voz</strong>.</li><li>Descubre el pecho; si está mojado, <strong>sécalo</strong>. Aparta el sujetador si estorba.</li><li>Pega los parches: uno <strong>bajo la clavícula derecha</strong>, junto al esternón, y otro en el <strong>lado izquierdo, bajo la axila</strong>. No los pongas sobre el tejido mamario.</li><li>Niños de menos de <strong>25 kg</strong> (unos 8 años): activa el <strong>modo pediátrico</strong> si existe y pon un parche en el centro del pecho, algo a la izquierda, y el otro en la espalda, <strong>entre los omóplatos</strong>. Si no hay modo pediátrico, úsalo en modo adulto.</li><li>Mientras analiza el ritmo: <strong>que nadie toque</strong> a la víctima.</li><li>Si indica descarga: comprueba que nadie la toca y <strong>pulsa el botón</strong> (algunos modelos descargan solos).</li><li>Tras la descarga, o si no la indica, <strong>reanuda la RCP de inmediato</strong> y sigue las instrucciones. No retires los parches ni apagues el DEA.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>Cada minuto de retraso en la desfibrilación reduce la probabilidad de supervivencia en torno a un 10 %: no esperes a estar seguro para usarlo.</li><li>Tras un ahogamiento: saca a la víctima del agua y seca el pecho antes de pegar los parches.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Soporte vital básico en adultos y Soporte vital pediátrico; ERC — Guías 2025 de reanimación para la ciudadanía · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">8</span><div><div class="p-cat">Primeros auxilios</div><h3>Posición lateral de seguridad</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC. Mantiene abierta la vía aérea de quien no responde pero respira. La formación práctica es muy recomendable.</blockquote>
+<h3>Cuándo</h3>
+<p>La persona <strong>no responde</strong> pero <strong>respira con normalidad</strong>, y <strong>no</strong> hay sospecha de traumatismo (caída, accidente).</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong>.</li><li>Arrodíllate a su lado, con la víctima boca arriba y las piernas estiradas. Quítale las gafas y los objetos voluminosos de los bolsillos.</li><li>Coloca el <strong>brazo más cercano</strong> a ti en ángulo recto con el cuerpo (estirado o doblado).</li><li>Pasa el <strong>otro brazo</strong> por encima del pecho y apoya el dorso de su mano contra su <strong>mejilla</strong> más cercana a ti. Sujétala ahí.</li><li>Con tu otra mano, <strong>dobla la rodilla más lejana</strong>, con el pie apoyado en el suelo.</li><li><strong>Tira de esa rodilla hacia ti</strong> para girarla de lado, sin soltar la mano de la mejilla.</li><li>Ajusta la pierna de arriba para que la cadera y la rodilla queden en ángulo recto.</li><li><strong>Inclina la cabeza hacia atrás</strong> para mantener abierta la vía aérea, con la mano bajo la mejilla.</li><li><strong>Comprueba la respiración</strong> de forma continua. Si deja de respirar con normalidad, ponla boca arriba e inicia la <strong>RCP</strong>.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> la uses si respira de forma anormal (boqueadas) ni si hay traumatismo: en ese caso no la muevas salvo peligro.</li><li>Si debe seguir así más de 30 minutos, gírala hacia el otro lado para aliviar la presión sobre el brazo de abajo.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (posición lateral de seguridad); ERC Guidelines 2021 — Soporte vital básico en adultos; Resuscitation Council UK — Recovery position · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">9</span><div><div class="p-cat">Primeros auxilios</div><h3>Atragantamiento en niños y lactantes</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. La formación práctica es imprescindible. Lactante: menor de 1 año.</blockquote>
+<h3>Si puede toser, llorar o hablar</h3>
+<ul><li>Anímale a <strong>seguir tosiendo</strong>. Vigílale y no le golpees.</li></ul>
+<h3>Si no puede toser, llorar ni respirar bien</h3>
+<ol><li>Que alguien llame al <strong>112</strong> (o llama tú con el altavoz).</li><li><strong>Lactante</strong>: ponlo <strong>boca abajo sobre tu antebrazo</strong>, apoyado en tu muslo, sujetándole la cabeza con la mano y con la cabeza <strong>más baja que el pecho</strong>. Da hasta <strong>5 golpes</strong> firmes en la espalda, entre los omóplatos.</li><li>Si no se resuelve: ponlo <strong>boca arriba</strong> sobre tus muslos, rodea su tórax con las manos y da hasta <strong>5 compresiones torácicas</strong> con los <strong>dos pulgares</strong> sobre el esternón, más bruscas que en la RCP.</li><li><strong>Niño (mayor de 1 año)</strong>: inclínalo hacia delante y da hasta <strong>5 golpes</strong> en la espalda, entre los omóplatos.</li><li>Si no se resuelve: colócate detrás, rodéale con los brazos, inclínalo hacia delante, pon el <strong>puño entre el ombligo y el final del esternón</strong> y tira bruscamente <strong>hacia dentro y hacia arriba</strong>, hasta <strong>5 veces</strong>.</li><li>Alterna 5 golpes y 5 compresiones mientras siga consciente. <strong>Para</strong> en cuanto tosa, llore o respire.</li><li>Si <strong>deja de responder</strong>: llama al 112 si nadie lo ha hecho e inicia la <strong>RCP</strong> (protocolo «RCP en niños y lactantes»).</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> hagas barridos a ciegas con el dedo en la boca; retira solo un objeto que veas con claridad y puedas coger con facilidad.</li><li><strong>Nunca</strong> hagas compresiones abdominales a un lactante.</li><li>Tras compresiones abdominales o torácicas, debe valorarle un médico aunque se recupere.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Soporte vital pediátrico (obstrucción de la vía aérea por cuerpo extraño) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">10</span><div><div class="p-cat">Primeros auxilios</div><h3>Ictus: reconocer y actuar</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. En el ictus cada minuto cuenta: el tratamiento depende de llegar pronto al hospital.</blockquote>
+<h3>Signos (aparecen de forma súbita)</h3>
+<ul><li><strong>Cara</strong>: un lado de la boca se cae al sonreír.</li><li><strong>Brazo</strong>: no puede levantar los dos brazos, o uno cae.</li><li><strong>Habla</strong>: habla rara, arrastra las palabras o no entiende lo que se le dice.</li><li>También: pérdida brusca de visión, dolor de cabeza muy intenso y repentino, mareo o falta de equilibrio sin causa.</li></ul>
+<h3>Pasos</h3>
+<ol><li>Si aparece <strong>cualquiera</strong> de estos signos, llama al <strong>112</strong> de inmediato y di que sospechas un <strong>ictus</strong>.</li><li><strong>Anota la hora</strong> en que empezaron los síntomas o la última vez que se le vio bien.</li><li>Mantén a la persona tranquila, sentada o tumbada en una postura cómoda, y aflójale la ropa.</li><li>Si no responde pero respira: <strong>posición lateral de seguridad</strong>. Si no respira con normalidad: <strong>RCP</strong>.</li><li>Reúne su medicación habitual o la lista de medicamentos para entregarla a los sanitarios.</li><li>No la dejes sola y vigila su consciencia y su respiración hasta que llegue la ayuda.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> le des comida, bebida ni medicamentos (tampoco aspirina): puede atragantarse y algunos ictus son hemorragias.</li><li><strong>No</strong> esperes a ver si se le pasa: aunque los síntomas desaparezcan, llama igualmente.</li><li>Si es posible, no la lleves por tu cuenta: el 112 activa el «Código Ictus» y la traslada al hospital adecuado.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (accidente cerebrovascular); Sociedad Española de Neurología — Código Ictus; Ministerio de Sanidad — Estrategia en Ictus del Sistema Nacional de Salud · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">11</span><div><div class="p-cat">Primeros auxilios</div><h3>Dolor torácico (posible infarto)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. No intentes diagnosticar: ante la duda, trátalo como una emergencia. La formación en primeros auxilios es recomendable.</blockquote>
+<h3>Signos de alarma</h3>
+<p>Dolor u <strong>opresión en el pecho</strong> que puede extenderse al cuello, la mandíbula, la espalda o el brazo izquierdo, a menudo con sudor frío, falta de aire, náuseas o mareo. A veces los síntomas son menos claros.</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong> de inmediato.</li><li>Que <strong>deje de hacer esfuerzos</strong>: siéntala o túmbala en la postura en la que esté más cómoda. Tranquilízala.</li><li>Si es un adulto consciente con un dolor que parece de <strong>origen cardíaco</strong>, <strong>no es alérgico a la aspirina</strong> y el 112 no indica lo contrario, anímale y ayúdale a que <strong>mastique</strong> él mismo una aspirina (150–300 mg) lo antes posible mientras espera la ambulancia.</li><li>Si tiene <strong>angina diagnosticada</strong>, ayúdale a tomar su propia <strong>nitroglicerina</strong> (spray o comprimido) como se la prescribieron.</li><li>Afloja la ropa ajustada y <strong>no la dejes sola</strong>.</li><li>Localiza un <strong>DEA</strong> cercano por si fuera necesario.</li><li>Si deja de responder y no respira con normalidad: <strong>RCP</strong> y DEA.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> dejes que conduzca ni la lleves por tu cuenta si puedes esperar a la ambulancia.</li><li>Informa al 112 de su medicación habitual (por ejemplo, anticoagulantes) antes de darle aspirina.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (dolor torácico) y Soporte vital básico en adultos; ERC — Guías 2025, Resumen ejecutivo (traducción oficial al castellano) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">12</span><div><div class="p-cat">Primeros auxilios</div><h3>Reacción alérgica grave (anafilaxia)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. La anafilaxia puede ser mortal en minutos: la adrenalina es el tratamiento de primera elección. Aprende a usar el autoinyector antes de necesitarlo.</blockquote>
+<h3>Signos</h3>
+<p>Tras un alimento, una picadura o un medicamento: dificultad para respirar, <strong>pitidos</strong> o ronquera, <strong>hinchazón de labios, lengua o garganta</strong>, ronchas o enrojecimiento, mareo o desmayo, piel fría y pegajosa, vómitos o dolor abdominal.</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong> y di «<strong>anafilaxia</strong>».</li><li>Si tiene un <strong>autoinyector de adrenalina prescrito</strong>, úsalo <strong>de inmediato</strong> en la <strong>cara externa del muslo</strong> siguiendo las instrucciones del dispositivo (puede ponerse sobre la ropa). Si lo que tiene prescrito es adrenalina <strong>nasal</strong>, úsala.</li><li>Postura: si le cuesta respirar, <strong>sentada</strong>; si está mareada o pálida, <strong>tumbada</strong> con las piernas elevadas. <strong>No la pongas de pie</strong> ni la hagas caminar.</li><li>Si los síntomas <strong>no mejoran a los 5 minutos</strong>, administra una <strong>segunda dosis</strong> si hay otro autoinyector.</li><li>Retira el desencadenante si es posible (aguijón, dejar de comer).</li><li>Anota la hora de cada dosis y no la dejes sola: los síntomas pueden <strong>reaparecer</strong> horas después.</li><li>Si deja de responder y no respira con normalidad: <strong>RCP</strong>.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> esperes a ver si mejora para usar la adrenalina: ante la duda, úsala.</li><li>Los antihistamínicos y los inhaladores <strong>no sustituyen</strong> a la adrenalina.</li><li>Aunque mejore, debe ir al hospital.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (anafilaxia); Resuscitation Council UK — Emergency treatment of anaphylaxis (2021) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">13</span><div><div class="p-cat">Primeros auxilios</div><h3>Convulsiones (crisis epiléptica)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. La mayoría de las crisis ceden solas en pocos minutos.</blockquote>
+<h3>Pasos</h3>
+<ol><li><strong>Mantén la calma</strong> y <strong>mira la hora</strong>: cronometra la crisis.</li><li><strong>Aparta</strong> los objetos peligrosos y protege su cabeza con algo blando (una chaqueta doblada).</li><li>Aflójale la ropa del cuello y quítale las gafas.</li><li><strong>No la sujetes</strong> ni intentes frenar los movimientos.</li><li>Cuando cesen los movimientos, colócala en <strong>posición lateral de seguridad</strong> y comprueba que <strong>respira con normalidad</strong>.</li><li>Quédate con ella hasta que esté totalmente despierta; es normal que esté confusa un rato.</li><li>Llama al <strong>112</strong> si la crisis dura <strong>5 minutos o más</strong>, si se repite sin recuperarse entre crisis, si es la <strong>primera vez</strong>, si se ha herido, si ha ocurrido en el <strong>agua</strong>, si está embarazada o tiene diabetes, o si no recupera la consciencia o le cuesta respirar.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> metas nada en su boca (ni dedos, ni objetos, ni líquidos): no se va a «tragar la lengua».</li><li>No le des de comer ni de beber hasta que esté totalmente recuperada.</li><li>Si después <strong>no respira con normalidad</strong>: RCP. Una parada cardíaca puede empezar con movimientos parecidos a una convulsión.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Soporte vital básico y Soporte vital pediátrico; Liga Internacional contra la Epilepsia (ILAE) y Epilepsy Foundation — Primeros auxilios en crisis epilépticas · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">14</span><div><div class="p-cat">Primeros auxilios</div><h3>Shock (fallo circulatorio)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. El shock es un fallo de la circulación (por hemorragia, alergia grave, infección o problema cardíaco) y requiere atención urgente.</blockquote>
+<h3>Signos</h3>
+<p>Piel <strong>pálida, fría y sudorosa</strong>, pulso muy rápido o muy lento, respiración rápida, mareo, sed, confusión o somnolencia.</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong>.</li><li>Trata la causa si la conoces: <strong>hemorragia</strong> → presión directa; <strong>anafilaxia</strong> → autoinyector de adrenalina.</li><li><strong>Túmbala boca arriba</strong>.</li><li>Si no hay lesión en piernas, cadera, cabeza o columna, puedes <strong>elevarle las piernas</strong> de forma pasiva mientras esperas.</li><li><strong>Abrígala</strong> por encima y aíslala del suelo para evitar que pierda calor.</li><li>Tranquilízala, no la dejes sola y <strong>vigila</strong> su consciencia y su respiración.</li><li>Si deja de responder pero respira: <strong>posición lateral de seguridad</strong> (si no hay traumatismo). Si no respira con normalidad: <strong>RCP</strong>.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> le des de comer ni de beber.</li><li>No la levantes ni la hagas caminar.</li><li>Si al tumbarla le cuesta más respirar, déjala semisentada.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (evaluación ABCDE de la persona enferma, lesionada o en shock); ERC Guidelines 2021 — Primeros auxilios (posición ante el shock) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">15</span><div><div class="p-cat">Primeros auxilios</div><h3>Golpe en la cabeza (traumatismo craneal)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Tras un golpe en la cabeza, los signos de gravedad pueden aparecer horas después.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Si <strong>no responde</strong>: llama al <strong>112</strong>. Si respira, <strong>no la muevas</strong> salvo peligro (puede haber lesión de columna). Si no respira con normalidad: <strong>RCP</strong>.</li><li>Si está consciente, que <strong>deje de inmediato</strong> toda actividad física o deportiva.</li><li>Si sangra el cuero cabelludo, <strong>presiona</strong> con un apósito limpio. Si notas un hundimiento del hueso, presiona alrededor, no encima.</li><li>Aplica <strong>frío</strong> envuelto en un paño sobre el chichón.</li><li>Llama al <strong>112</strong> si hay: pérdida de consciencia (aunque sea breve), <strong>vómitos repetidos</strong>, dolor de cabeza que <strong>empeora</strong>, somnolencia o confusión, <strong>convulsiones</strong>, pupilas de distinto tamaño, debilidad u hormigueo en brazos o piernas, salida de líquido o sangre por la nariz o los oídos, o si toma <strong>anticoagulantes</strong>.</li><li>Aunque parezca leve, que la valore un sanitario y que <strong>alguien se quede con ella</strong> al menos las primeras 24 horas.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>No le des alcohol ni sedantes.</li><li>Que no vuelva al deporte hasta que lo autorice un profesional sanitario.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (conmoción cerebral); NICE — Head injury: assessment and early management (NG232, 2023); NHS — Head injury and concussion · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">16</span><div><div class="p-cat">Primeros auxilios</div><h3>Sospecha de lesión de columna</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. Ante la duda, trata a la víctima como si tuviera una lesión de columna. La formación práctica es muy recomendable.</blockquote>
+<h3>Cuándo sospecharla</h3>
+<p>Caída o salto desde altura, <strong>zambullida</strong> en aguas poco profundas, accidente de tráfico o deportivo, aplastamiento por maquinaria o un objeto pesado. Dolor de cuello o espalda, hormigueo o debilidad en brazos o piernas.</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong>.</li><li><strong>No la muevas</strong> salvo peligro inminente (fuego, tráfico, agua).</li><li>Si está despierta: pídele que <strong>no mueva el cuello</strong> y lo mantenga en una posición cómoda y estable. <strong>Nunca</strong> la fuerces a adoptar una postura.</li><li>Si no responde y está boca arriba: arrodíllate detrás de su cabeza y <strong>sujétala con ambas manos</strong>, alineada con el cuerpo.</li><li>Si necesitas abrir la vía aérea, adelanta la mandíbula (<strong>tracción mandibular</strong>) moviendo el cuello lo mínimo.</li><li>Si está boca abajo y respira, mantén estable su cuello. Si hay que girarla para abrir la vía aérea o hacer RCP, hazlo <strong>en bloque</strong> entre varias personas, con cabeza, cuello y tronco alineados.</li><li>Si no respira con normalidad: <strong>RCP</strong>. La reanimación tiene prioridad sobre la protección de la columna.</li><li>Abrígala y vigílala hasta que llegue la ayuda.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> pongas collarines improvisados.</li><li>No la sientes ni le levantes la cabeza para darle de beber.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (restricción de la movilidad de la columna cervical); ERC Guidelines 2021 — Primeros auxilios · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">17</span><div><div class="p-cat">Primeros auxilios</div><h3>Fracturas y esguinces</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Sin radiografía no se puede distinguir con seguridad un esguince de una fractura: ante la duda, trátalo como una fractura.</blockquote>
+<h3>Signos de posible fractura</h3>
+<p>Dolor intenso, deformidad, hinchazón, imposibilidad de mover o apoyar, crujido al lesionarse.</p>
+<h3>Pasos</h3>
+<ol><li>Si hay una hemorragia grave, contrólala primero (protocolo «Hemorragia grave»).</li><li><strong>No muevas</strong> la zona lesionada. <strong>No intentes recolocar</strong> el hueso ni enderezar una fractura deformada.</li><li><strong>Inmoviliza</strong> en la posición en que esté, incluyendo la articulación de encima y la de debajo: con cartón, revistas enrolladas, tablillas o la otra pierna, almohadillando con ropa. Para el brazo, un <strong>cabestrillo</strong> con un pañuelo.</li><li>Retira anillos, relojes y pulseras antes de que se hinche.</li><li>Comprueba que los dedos siguen <strong>calientes y con buen color</strong>; si no, afloja la sujeción.</li><li><strong>Fractura abierta</strong> (hueso visible o herida sobre la fractura): cubre la herida con un apósito limpio sin presionar sobre el hueso.</li><li>Llama al <strong>112</strong> si hay deformidad, fractura abierta, sospecha de lesión en cadera, muslo, pelvis o columna, o si la extremidad está fría, pálida o sin sensibilidad.</li></ol>
+<h3>Esguinces leves</h3>
+<ul><li><strong>Reposo</strong> y <strong>elevación</strong> de la zona.</li><li><strong>Frío</strong> envuelto en un paño (nunca hielo directo sobre la piel) hasta 20 minutos, cada 2–3 horas, los primeros días.</li><li>Si no puede apoyar o no mejora en pocos días, que lo valore un sanitario.</li></ul>
+<h3>Advertencias</h3>
+<ul><li>No apliques calor ni masajes en los primeros días.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Primeros auxilios (fracturas y lesiones articulares cerradas); NHS — Sprains and strains; NHS — Broken bones (first aid) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">18</span><div><div class="p-cat">Primeros auxilios</div><h3>Heridas y prevención de la infección</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Para sangrados abundantes usa el protocolo «Hemorragia grave».</blockquote>
+<h3>Pasos</h3>
+<ol><li>Lávate las manos y ponte guantes si los tienes.</li><li>Si sangra, <strong>presiona</strong> con un apósito o una tela limpia hasta que pare. Si el sangrado es abundante o no para, llama al <strong>112</strong> (protocolo «Hemorragia grave»).</li><li><strong>Lava la herida con abundante agua potable</strong> a chorro, con jabón alrededor, hasta quitar la suciedad visible.</li><li>Retira con cuidado los restos superficiales; <strong>no extraigas</strong> objetos clavados.</li><li>Cubre con un apósito limpio. Cámbialo si se moja o se ensucia.</li><li>Busca atención sanitaria si es <strong>profunda</strong>, ancha o con bordes separados, si está en la cara, las manos, las articulaciones o los genitales, si es una <strong>mordedura</strong>, si está muy sucia (tierra, óxido) o si no estás seguro de tu <strong>vacunación antitetánica</strong>.</li><li><strong>Amputación</strong>: controla la hemorragia, envuelve la parte amputada en una gasa o paño limpio humedecido, métela en una bolsa cerrada y esa bolsa dentro de otra con <strong>agua y hielo</strong>. Llama al <strong>112</strong>, anota la hora y que viaje con la víctima.</li><li>Vigila en los días siguientes los signos de <strong>infección</strong>: enrojecimiento que se extiende, calor, hinchazón, pus, rayas rojas o fiebre. Si aparecen, consulta con urgencia.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> pongas la parte amputada en contacto directo con el hielo ni la congeles.</li><li>No pongas remedios caseros (tierra, hierbas, café, pasta de dientes) en la herida: el agua limpia basta para lavarla.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Primeros auxilios (limpieza de heridas); ERC Guidelines 2025 — Primeros auxilios (conservación de partes amputadas); Ministerio de Sanidad — Recomendaciones de vacunación frente al tétanos · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">19</span><div><div class="p-cat">Primeros auxilios</div><h3>Quemaduras químicas y eléctricas</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Protégete primero: no toques el producto ni a una víctima que siga en contacto con la corriente.</blockquote>
+<h3>Quemadura química</h3>
+<ol><li>Ponte guantes si puedes. Si el producto es un <strong>polvo</strong>, cepíllalo antes de mojar.</li><li>Quita la ropa, las joyas y el calzado contaminados.</li><li><strong>Lava con abundante agua</strong> a chorro suave durante <strong>al menos 15 minutos</strong>, más si sigue doliendo.</li><li><strong>Ojos</strong>: lávalos de inmediato con agua limpia abundante y continua <strong>al menos 15 minutos</strong>, con los párpados abiertos y el ojo afectado hacia abajo para no contaminar el otro. Quita las lentillas si salen con facilidad.</li><li>Llama al <strong>112</strong> o al <strong>Servicio de Información Toxicológica (91 562 04 20)</strong> y guarda el envase del producto.</li></ol>
+<h3>Quemadura eléctrica</h3>
+<ol><li><strong>Corta la corriente</strong> (cuadro eléctrico, desenchufar) antes de tocar a la víctima. Si no puedes, sepárala con un objeto seco que no conduzca (madera, plástico).</li><li><strong>Alta tensión</strong> (líneas, catenarias, subestaciones): no te acerques; llama al <strong>112</strong>.</li><li>Si no responde y no respira con normalidad: <strong>RCP</strong> y <strong>DEA</strong>.</li><li>Enfría las quemaduras visibles con agua y cúbrelas con un apósito limpio.</li><li>Llama al <strong>112</strong> aunque parezca leve: las lesiones internas y las alteraciones del ritmo del corazón pueden no verse.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> intentes neutralizar el producto con otro (vinagre, bicarbonato).</li><li>Las quemaduras eléctricas suelen tener un punto de entrada y otro de salida: busca ambos.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Primeros auxilios (quemaduras y lesiones oculares por sustancias químicas); CDC/NIOSH — Pocket Guide to Chemical Hazards (primeros auxilios); Instituto Nacional de Toxicología y Ciencias Forenses — Servicio de Información Toxicológica · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">20</span><div><div class="p-cat">Primeros auxilios</div><h3>Bajada de azúcar (hipoglucemia)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025.</blockquote>
+<h3>Cuándo sospecharla</h3>
+<p>Persona con <strong>diabetes</strong> (o desnutrida) que de repente está sudorosa, temblorosa, pálida, confusa, irritable, se comporta de forma extraña o está somnolienta.</p>
+<h3>Pasos</h3>
+<ol><li>Si está <strong>despierta y puede tragar</strong>: dale <strong>15–20 g de glucosa</strong> (tabletas o gel de glucosa).</li><li>Si no hay glucosa: un puñado de <strong>caramelos con azúcar</strong> o <strong>50–100 ml</strong> de zumo de fruta o refresco con azúcar (no «light» ni «zero»).</li><li>Si hay glucómetro: mide el azúcar. Por debajo de <strong>70 mg/dl (4 mmol/l)</strong>, trátala y vuelve a medir después.</li><li>Si <strong>a los 15 minutos</strong> no mejora, repite el azúcar.</li><li>Cuando se recupere, que tome un <strong>tentempié</strong> ligero (pan, galletas, fruta).</li><li>Si tiene <strong>glucagón prescrito</strong> (inyectable o nasal), puede administrárselo ella misma o una persona formada, según sus instrucciones.</li><li>En <strong>niños</strong> que no colaboran para tragar: valora poner <strong>media cucharadita de azúcar</strong> (unos 2,5 g) <strong>debajo de la lengua</strong>.</li><li>Llama al <strong>112</strong> si está o se queda <strong>inconsciente</strong>, si convulsiona o si no mejora.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>Nunca</strong> des nada por la boca a una persona inconsciente: puede atragantarse. Si respira, posición lateral de seguridad y llama al 112.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (hipoglucemia) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">21</span><div><div class="p-cat">Primeros auxilios</div><h3>Ahogamiento</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. Muchas personas mueren al intentar un rescate sin formación: no te conviertas en otra víctima.</blockquote>
+<h3>Rescate</h3>
+<ol><li>Grita pidiendo ayuda y que alguien llame al <strong>112</strong>.</li><li><strong>No entres al agua</strong> si no tienes formación en salvamento. Ayuda desde tierra: lánzale un <strong>objeto que flote</strong> (salvavidas, garrafa vacía, nevera) o acércale una pértiga, una rama o una cuerda.</li><li>Si eres socorrista y entras: lleva un elemento de flotación y mantén su cabeza fuera del agua.</li></ol>
+<h3>Fuera del agua</h3>
+<ol><li>Si <strong>no responde y no respira</strong> con normalidad: da <strong>5 insuflaciones</strong> de rescate y empieza la <strong>RCP</strong> (30 compresiones y 2 insuflaciones).</li><li><strong>Seca el pecho</strong> y conecta el <strong>DEA</strong> en cuanto esté disponible.</li><li>Si respira: posición lateral de seguridad, quítale la ropa mojada y abrígala.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> intentes sacar el agua de los pulmones (ni compresiones abdominales ni ponerla boca abajo): retrasa la reanimación.</li><li>Si vomita durante la RCP, gírala de lado, limpia la boca y continúa.</li><li>Aunque se recupere, debe valorarla un médico: pueden aparecer problemas respiratorios horas después.</li><li>Si se zambulló en aguas poco profundas, sospecha una lesión de columna.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (ahogamiento) y Situaciones especiales en resucitación · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">22</span><div><div class="p-cat">Primeros auxilios</div><h3>Deshidratación y suero oral casero</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Las sales de rehidratación oral de farmacia son preferibles: usa la receta casera solo si no hay otra opción.</blockquote>
+<h3>Signos de gravedad (llama al 112 o acude a urgencias)</h3>
+<ul><li>Somnolencia, confusión o dificultad para despertarla.</li><li>No orina en muchas horas, ojos muy hundidos, boca muy seca, no puede beber o lo vomita todo.</li><li>Sangre en las heces, fiebre alta, o un bebé con llanto sin lágrimas y pocos pañales mojados.</li></ul>
+<h3>Suero oral casero (receta OMS)</h3>
+<ol><li><strong>1 litro de agua potable</strong> (hervida y enfriada, o tratada: protocolo «Potabilizar agua»).</li><li><strong>6 cucharaditas rasas de azúcar</strong>.</li><li><strong>Media cucharadita rasa de sal</strong>.</li><li>Remueve hasta que se disuelva. <strong>No debe saber más salado que las lágrimas.</strong></li></ol>
+<h3>Cómo darlo</h3>
+<ol><li>Da <strong>sorbos pequeños y frecuentes</strong> (con cuchara en niños pequeños). Si vomita, espera 10 minutos y sigue más despacio.</li><li>Tras cada deposición líquida, como orientación de la OMS: menores de 2 años, <strong>50–100 ml</strong>; de 2 a 10 años, <strong>100–200 ml</strong>; mayores, lo que quieran beber.</li><li>Sigue con la <strong>lactancia materna</strong> y con la comida habitual en cuanto la tolere.</li><li>Prepara suero nuevo cada día y desecha el sobrante a las 24 horas.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> añadas más sal ni más azúcar: un suero mal preparado puede empeorar la deshidratación.</li><li>Los refrescos, zumos y bebidas deportivas no sustituyen al suero oral en una deshidratación por diarrea.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> OMS — The treatment of diarrhoea: a manual for physicians and other senior health workers (rehidratación oral, plan A); OMS/UNICEF — Para la vida (Facts for Life), capítulo Diarrea · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">23</span><div><div class="p-cat">Clima</div><h3>Hipotermia</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. La hipotermia grave es una emergencia médica.</blockquote>
+<h3>Signos</h3>
+<p>Temblores intensos, torpeza, confusión y somnolencia. En los casos graves los temblores <strong>cesan</strong>: es peor señal, no mejor.</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong> si hay confusión, somnolencia o pérdida de consciencia.</li><li>Lleva a la persona a un lugar resguardado del viento, la lluvia y el suelo frío.</li><li>Retira la ropa <strong>mojada</strong>, sustitúyela por ropa seca y aíslala del suelo.</li><li>Cúbrela con mantas, un saco de dormir o una manta térmica, incluida la cabeza.</li><li>Si está <strong>consciente y puede tragar</strong>: bebidas calientes y azucaradas (nunca alcohol).</li><li>Manipúlala con suavidad y mantenla en horizontal si la hipotermia es grave.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> frotes las extremidades ni apliques calor directo intenso.</li><li>Si no respira con normalidad: RCP. La hipotermia puede proteger el cerebro; no abandones pronto la reanimación.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Primeros auxilios y circunstancias especiales (hipotermia accidental) · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">24</span><div><div class="p-cat">Clima</div><h3>Golpe de calor</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. El golpe de calor es potencialmente mortal.</blockquote>
+<h3>Signos</h3>
+<p>Temperatura corporal muy alta, piel caliente, confusión, mareo, náuseas, convulsiones o pérdida de consciencia.</p>
+<h3>Pasos</h3>
+<ol><li>Llama al <strong>112</strong>.</li><li>Lleva a la persona a la sombra o a un lugar fresco.</li><li><strong>Enfríala de inmediato</strong>. Lo más eficaz es <strong>sumergir el cuerpo</strong> (del cuello hacia abajo) en agua fría. Si no es posible, empápala con agua y abanícala, y aplica compresas frías en el cuello, las axilas y las ingles.</li><li>Si está consciente y puede tragar: agua o bebida con sales en pequeños sorbos.</li><li>Si pierde la consciencia y no respira con normalidad: RCP.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>No retrases el enfriamiento esperando a la ambulancia.</li><li>No le des medicamentos para la fiebre: no son eficaces en el golpe de calor.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2021 — Primeros auxilios (golpe de calor por esfuerzo) · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">25</span><div><div class="p-cat">Clima</div><h3>Congelación</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Trata primero la hipotermia si la hay: es más peligrosa.</blockquote>
+<h3>Signos</h3>
+<p>Piel blanca, grisácea o amarillenta, fría, dura o cerosa y <strong>sin sensibilidad</strong>, sobre todo en dedos, nariz, orejas y mejillas. Al recalentarse puede doler, hincharse y formar ampollas.</p>
+<h3>Pasos</h3>
+<ol><li>Resguarda a la persona del frío y del viento y <strong>trata antes la hipotermia</strong> (protocolo «Hipotermia»).</li><li>Quítale anillos, relojes y la ropa o el calzado mojado o apretado.</li><li><strong>No recalientes si hay riesgo de que se vuelva a congelar</strong>: congelarse de nuevo causa más daño que esperar.</li><li>Si puedes evitar que se vuelva a congelar, <strong>sumerge</strong> la zona en agua a <strong>37–39 °C</strong> (templada, nunca caliente) hasta que la piel se ablande y recupere el color; suele llevar unos 30 minutos.</li><li>Si no hay agua templada, deja que se descongele con calor corporal (por ejemplo, en la axila de otra persona).</li><li>Seca con suavidad, separa los dedos con gasas y cubre con <strong>apósitos limpios y holgados</strong>. No revientes las ampollas.</li><li>Eleva la zona y busca <strong>atención médica</strong> lo antes posible. Llama al <strong>112</strong> si hay signos de hipotermia, si la zona afectada es extensa o si no puedes llegar por tus medios a un centro sanitario.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> frotes la zona (ni con nieve ni con las manos): daña aún más los tejidos.</li><li><strong>No</strong> uses calor directo (fuego, estufa, secador, bolsa muy caliente): la zona insensible se quema.</li><li>Evita caminar con pies ya descongelados salvo que sea imprescindible para ponerse a salvo.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Wilderness Medical Society — Clinical Practice Guidelines for the Prevention and Treatment of Frostbite (actualización 2024); European Resuscitation Council Guidelines 2025 — Primeros auxilios (prevención de la hipotermia) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">26</span><div><div class="p-cat">Clima</div><h3>Ola de frío y refugio</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Con frío extremo los más vulnerables son las personas mayores, los bebés, quienes no tienen hogar y los enfermos crónicos.</blockquote>
+<h3>En casa</h3>
+<ol><li>Calienta <strong>una sola habitación</strong> y reuníos en ella; cierra las demás y tapa las rendijas.</li><li>Vístete con <strong>varias capas</strong> de ropa holgada, gorro y calcetines; usa mantas.</li><li>Come caliente y bebe líquidos; evita el alcohol.</li><li><strong>Nunca</strong> uses braseros, estufas de exterior, barbacoas ni generadores dentro de casa. Si usas estufas de butano, ventila y apágalas al dormir.</li><li>Visita o llama a los <strong>vecinos mayores</strong> o que vivan solos.</li></ol>
+<h3>Fuera o sin refugio</h3>
+<ol><li>Busca <strong>resguardo del viento</strong> y de la humedad y <strong>aíslate del suelo</strong> con ramas, la mochila o cartón.</li><li><strong>Mantente seco</strong>: cámbiate la ropa mojada y evita sudar (quítate capas antes de hacer esfuerzos).</li><li>Cubre <strong>cabeza, cuello, manos y pies</strong>. En grupo, permaneced juntos para compartir calor.</li><li><strong>Atrapado en el coche por la nieve</strong>: quédate dentro; enciende el motor solo a ratos, con el <strong>tubo de escape libre de nieve</strong> y una ventanilla un poco abierta (riesgo de monóxido de carbono).</li><li>Vigila los signos de <strong>hipotermia</strong> (temblor intenso, torpeza, confusión) y de <strong>congelación</strong> (piel blanca e insensible) y aplica sus protocolos.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>El alcohol da sensación de calor pero <strong>favorece la hipotermia</strong>.</li><li>Llama al <strong>112</strong> si alguien está confuso, somnoliento o no responde.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (prevención de la hipotermia); Ministerio de Sanidad — Recomendaciones ante bajas temperaturas; CDC — Winter Weather: staying safe; DGT — Recomendaciones para circular con nieve · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">27</span><div><div class="p-cat">Agua</div><h3>Potabilizar agua</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Ningún método elimina contaminantes <strong>químicos</strong> (combustibles, metales, pesticidas): si sospechas contaminación química, busca otra fuente.</blockquote>
+<h3>Antes de desinfectar</h3>
+<ul><li>Si el agua está <strong>turbia</strong>, déjala reposar y fíltrala con un paño limpio o un filtro de café. Los métodos siguientes funcionan peor con agua turbia.</li></ul>
+<h3>Hervir (método preferente)</h3>
+<ul><li>Lleva el agua a <strong>ebullición fuerte durante 1 minuto</strong>.</li><li>Por encima de <strong>2000 m de altitud</strong>: <strong>3 minutos</strong>.</li><li>Déjala enfriar tapada y guárdala en recipientes limpios y cerrados.</li></ul>
+<h3>Lejía (cloro)</h3>
+<ul><li>Usa lejía <strong>apta para desinfección de agua de bebida</strong>, sin perfume ni aditivos (la etiqueta lo indica).</li><li>Con lejía de <strong>~5–6 %</strong> de cloro: <strong>2 gotas por litro</strong> de agua clara (4 si está turbia o fría).</li><li>Mezcla y espera <strong>30 minutos</strong>. Debe quedar un ligero olor a cloro; si no, repite la dosis y espera 15 minutos más.</li></ul>
+<h3>Desinfección solar (SODIS)</h3>
+<ul><li>Usa botellas de <strong>PET transparente</strong> de hasta 2 litros, limpias y sin arañazos, con agua clara.</li><li>Exponlas al sol directo <strong>6 horas</strong>. Si el cielo está nublado más de la mitad del tiempo, <strong>2 días seguidos</strong>.</li><li>No sirve con lluvia continua ni con agua turbia.</li></ul>
+<h3>Advertencias</h3>
+<ul><li>Guarda el agua tratada en recipientes limpios y con tapa, y sírvela sin meter las manos ni los vasos.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> OMS — Guías para la calidad del agua de consumo humano; CDC — Making Water Safe in an Emergency; EAWAG/OMS — Desinfección solar del agua (SODIS) · <b>Revisado:</b> 2026-11-08</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">28</span><div><div class="p-cat">Intoxicaciones y picaduras</div><h3>Intoxicación por monóxido de carbono</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. El monóxido de carbono no se ve ni huele: sospéchalo si varias personas del mismo lugar se encuentran mal a la vez.</blockquote>
+<h3>Signos y fuentes</h3>
+<p>Dolor de cabeza, mareo, náuseas, cansancio o confusión, que mejoran al salir y vuelven al entrar. Fuentes habituales: <strong>braseros</strong>, estufas de gas o butano, calderas y calentadores mal ventilados, <strong>generadores</strong>, barbacoas o motores en espacios cerrados.</p>
+<h3>Pasos</h3>
+<ol><li><strong>Sal al aire libre</strong> de inmediato y saca a los demás si puedes hacerlo sin riesgo. Abre puertas y ventanas al salir.</li><li>Si está a tu paso, apaga el aparato sospechoso; no te entretengas.</li><li>Llama al <strong>112</strong> desde fuera.</li><li><strong>No vuelvas a entrar</strong> hasta que los servicios de emergencia lo autoricen.</li><li>Si alguien no responde: si respira, <strong>posición lateral de seguridad</strong>; si no respira con normalidad, <strong>RCP</strong>.</li><li>Todos los expuestos deben ser valorados por un sanitario, en especial <strong>embarazadas, niños, mayores</strong> y quien haya perdido la consciencia, aunque ya se encuentren mejor.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>No entres a rescatar a nadie en un lugar lleno de humo o gas sin protección: avisa a los bomberos.</li><li><strong>Nunca</strong> uses generadores, barbacoas, braseros ni estufas de exterior dentro de casa, del garaje o de una tienda de campaña.</li><li>Instala un <strong>detector de monóxido de carbono</strong> y revisa calderas, calentadores y chimeneas.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Ministerio de Sanidad — Intoxicación por monóxido de carbono (prevención); CDC — Carbon Monoxide Poisoning: prevention and first steps; European Resuscitation Council Guidelines 2025 — Situaciones especiales (intoxicaciones) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">29</span><div><div class="p-cat">Intoxicaciones y picaduras</div><h3>Intoxicación por productos, medicamentos o setas</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Servicio de Información Toxicológica (24 horas): <strong>91 562 04 20</strong>. Si hay síntomas graves, llama antes al <strong>112</strong>.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Aleja a la persona del producto y retira lo que le quede en la boca.</li><li>Si <strong>no responde, le cuesta respirar o convulsiona</strong>: llama al <strong>112</strong>. Si no respira con normalidad, <strong>RCP</strong> (haz solo compresiones si el tóxico puede contaminarte).</li><li>Si se encuentra bien, llama al <strong>Servicio de Información Toxicológica (91 562 04 20)</strong> y sigue sus indicaciones.</li><li>Ten a mano el <strong>envase o la etiqueta</strong> (o restos de setas, plantas o pastillas), la <strong>cantidad</strong> aproximada, la <strong>hora</strong> y la edad y el peso de la persona.</li><li><strong>Piel</strong>: quita la ropa contaminada y lava con abundante agua. <strong>Ojos</strong>: lávalos con agua al menos 15 minutos.</li><li><strong>Gases o humos</strong>: sal al aire libre (protocolo «Intoxicación por monóxido de carbono»).</li><li><strong>Setas</strong>: consulta siempre, aunque aún no haya síntomas: en las setas más peligrosas pueden tardar horas en aparecer.</li><li><strong>Opioides</strong> (respiración muy lenta, pupilas muy pequeñas, no despierta): llama al <strong>112</strong>, inicia la RCP si no respira con normalidad y usa <strong>naloxona</strong> si está disponible.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No provoques el vómito</strong> ni des leche, agua, aceite u otros remedios salvo que te lo indique un sanitario.</li><li>Con cáusticos (lejía, desatascadores, amoniaco): enjuaga la boca y no la hagas vomitar.</li><li>Guarda productos de limpieza y medicamentos fuera del alcance de los niños y en su envase original.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Instituto Nacional de Toxicología y Ciencias Forenses — Servicio de Información Toxicológica (91 562 04 20, 24 horas); European Resuscitation Council Guidelines 2025 — Situaciones especiales (intoxicaciones) y Primeros auxilios (sobredosis por opioides) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">30</span><div><div class="p-cat">Intoxicaciones y picaduras</div><h3>Mordedura de víbora o serpiente</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo de las guías ERC 2025. La víbora es la única serpiente autóctona muy venenosa en Europa. Cualquier mordedura de serpiente requiere valoración hospitalaria.</blockquote>
+<h3>Signos</h3>
+<p>Dos marcas de colmillos, dolor intenso, hinchazón y amoratamiento que avanzan; a veces náuseas, mareo o malestar general.</p>
+<h3>Pasos</h3>
+<ol><li>Aléjate de la serpiente; <strong>no intentes atraparla</strong> ni matarla. Si puedes, hazle una foto desde lejos.</li><li>Llama al <strong>112</strong>.</li><li>Mantén a la persona <strong>tranquila y en reposo</strong>, tumbada o sentada.</li><li><strong>Inmoviliza</strong> la extremidad mordida, como si fuera una fractura, y mantenla quieta.</li><li>Retira <strong>anillos, relojes y ropa ajustada</strong> antes de que se hinche.</li><li>Que la persona <strong>no camine</strong> si se puede evitar. Espera a la ambulancia o sigue las indicaciones del 112.</li><li>Anota la hora de la mordedura y cómo evolucionan los síntomas.</li></ol>
+<h3>Advertencias (no hagas)</h3>
+<ul><li><strong>No</strong> pongas torniquete ni vendaje compresivo.</li><li><strong>No</strong> apliques hielo ni calor.</li><li><strong>No</strong> cortes la herida ni intentes <strong>succionar</strong> el veneno.</li><li>No des alcohol ni medicamentos por tu cuenta.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (mordedura de serpiente) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">31</span><div><div class="p-cat">Intoxicaciones y picaduras</div><h3>Picaduras de abeja y avispa; garrapatas</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Tras cualquier picadura, vigila los signos de reacción alérgica grave (anafilaxia).</blockquote>
+<h3>Abeja o avispa</h3>
+<ol><li>Si queda el <strong>aguijón</strong> (abeja), retíralo <strong>cuanto antes</strong> raspando de lado con una uña o el borde de una tarjeta. Evita pellizcarlo.</li><li>Lava la zona con agua y jabón.</li><li>Aplica <strong>frío</strong> envuelto en un paño y eleva la zona.</li><li>Llama al <strong>112</strong> si aparece dificultad para respirar, hinchazón de labios, lengua o garganta, mareo o ronchas por todo el cuerpo: es una <strong>anafilaxia</strong> (usa su autoinyector si lo tiene). También si hay <strong>muchas picaduras</strong> o la picadura es <strong>en la boca o la garganta</strong>.</li></ol>
+<h3>Garrapata</h3>
+<ol><li>Retírala <strong>cuanto antes</strong> con unas <strong>pinzas de punta fina</strong>.</li><li>Sujétala <strong>lo más cerca posible de la piel</strong> y tira hacia arriba con fuerza <strong>constante</strong>, sin girar ni dar tirones.</li><li>Si queda parte de la boca y no sale con facilidad, déjala y permite que la piel cicatrice.</li><li>Lava la zona y tus manos con agua y jabón y desinfecta la piel.</li><li>Anota la fecha. Consulta a un sanitario si en las <strong>semanas siguientes</strong> aparece <strong>fiebre</strong>, malestar o una mancha roja que se extiende.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> pongas a la garrapata aceite, alcohol, vaselina, esmalte ni calor, ni la aplastes con los dedos.</li><li>Revisa todo el cuerpo (también a niños y mascotas) tras pasear por el campo.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> European Resuscitation Council Guidelines 2025 — Primeros auxilios (anafilaxia); NHS — Insect bites and stings; CDC — Tick Removal; Ministerio de Sanidad — Enfermedades transmitidas por garrapatas · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">32</span><div><div class="p-cat">Intoxicaciones y picaduras</div><h3>Mordeduras de animales (rabia y tétanos)</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Toda mordedura de mamífero debe valorarla un sanitario por el riesgo de infección, tétanos y, en algunos casos, rabia.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Ponte a salvo del animal; no intentes capturarlo si es peligroso.</li><li>Si sangra mucho, <strong>presiona</strong> con un apósito limpio, llama al <strong>112</strong> y sigue el protocolo «Hemorragia grave».</li><li><strong>Lava la herida de inmediato</strong> con <strong>agua y jabón</strong> a chorro durante <strong>al menos 15 minutos</strong>, aunque sea un arañazo.</li><li>Si tienes, aplica un <strong>antiséptico</strong> (por ejemplo, povidona yodada) y cubre con un apósito limpio.</li><li>Acude a un <strong>centro sanitario</strong> el mismo día: valorarán antibiótico, <strong>vacuna antitetánica</strong> y, si procede, <strong>profilaxis antirrábica</strong>.</li><li>Anota qué animal fue, si tiene dueño y si está vacunado: las autoridades sanitarias pueden necesitar <strong>observar al animal</strong>.</li><li>Consulta <strong>con urgencia</strong> ante cualquier mordedura, arañazo o contacto con un <strong>murciélago</strong> (en España pueden transmitir el virus de la rabia), con un animal salvaje o de conducta extraña, o con un animal en el extranjero, Ceuta o Melilla.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No cierres</strong> la herida por tu cuenta ni la tapes con remedios caseros.</li><li>No toques con las manos desnudas un murciélago ni un animal sospechoso, vivo o muerto; avisa al 112.</li><li>Vigila los signos de infección (enrojecimiento que se extiende, pus, fiebre) en los días siguientes.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> OMS — Rabia, nota descriptiva (primeros auxilios de la herida); Ministerio de Sanidad — Protocolo de actuación ante mordeduras y profilaxis antirrábica (murciélagos); Ministerio de Sanidad — Recomendaciones de vacunación frente al tétanos · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">33</span><div><div class="p-cat">Desastres y entorno</div><h3>Incendio en casa o en un edificio</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. El humo mata antes que las llamas: sal cuanto antes y no vuelvas a entrar.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Avisa a gritos a todos y <strong>sal de inmediato</strong>. No te entretengas en coger objetos.</li><li>Llama al <strong>112</strong> en cuanto estés fuera.</li><li>Si hay humo, <strong>avanza agachado o a gatas</strong>, cerca del suelo, y tápate la boca y la nariz con un paño, mejor húmedo.</li><li>Antes de abrir una puerta, <strong>tócala con el dorso de la mano</strong>: si está caliente, no la abras y busca otra salida.</li><li><strong>Cierra las puertas</strong> detrás de ti para frenar el fuego y el humo.</li><li><strong>No uses el ascensor</strong>; baja por la escalera. Si la escalera está llena de humo, no la uses.</li><li>Si no puedes salir: enciérrate en una habitación con ventana, <strong>sella las rendijas</strong> de la puerta con toallas o ropa mojada y <strong>hazte ver</strong> desde la ventana. Di al 112 dónde estás.</li><li>Si se te prende la ropa: <strong>detente, tírate al suelo y rueda</strong>, cubriéndote la cara. Después enfría las quemaduras con agua.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>Usa un extintor solo si el fuego es <strong>pequeño</strong> y tienes la salida a tu espalda.</li><li><strong>No</strong> eches agua a un fuego de aceite ni a uno eléctrico: tapa la sartén con una tapa y corta la corriente.</li><li>Fuera, reuníos en un punto acordado y <strong>no vuelvas a entrar</strong> a por nada ni por nadie: avisa a los bomberos.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Dirección General de Protección Civil y Emergencias (DGPCE) — Recomendaciones ante incendios en el hogar; NFPA — Escape planning; European Resuscitation Council Guidelines 2021 — Primeros auxilios (quemaduras) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">34</span><div><div class="p-cat">Desastres y entorno</div><h3>Incendio forestal</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Sigue siempre las órdenes de evacuación o de confinamiento de las autoridades: salir a tiempo es la opción más segura.</blockquote>
+<h3>Si ves fuego o humo</h3>
+<ol><li>Llama al <strong>112</strong>: di dónde estás (coordenadas del GPS) y qué ves.</li><li><strong>Aléjate</strong> en dirección contraria al avance del fuego y al viento, hacia zonas <strong>sin vegetación</strong>, carreteras, ríos o zonas ya quemadas.</li><li><strong>No huyas ladera arriba</strong> ni por barrancos: el fuego sube muy rápido por las pendientes.</li><li>En coche: enciende las luces, conduce despacio y <strong>no atravieses el fuego ni el humo denso</strong>.</li><li>Si el fuego te alcanza en el coche: para en una zona despejada, cierra ventanillas y ventilación y <strong>quédate dentro</strong>, agachado bajo las ventanillas y cubierto con una manta, hasta que pase el frente.</li><li>Si te ves rodeado a pie: busca una <strong>zona ya quemada</strong> o sin combustible. Moja tu ropa y cúbrete la boca y la nariz con un paño húmedo.</li><li>Como último recurso: túmbate en una zanja, un hoyo o tras una roca, con la cara cubierta.</li></ol>
+<h3>Si estás en casa y no te han evacuado</h3>
+<ol><li>Cierra puertas y ventanas y aparta cortinas y objetos inflamables de ellas.</li><li>Llena bañeras y cubos de agua; moja los alrededores si es posible.</li><li>Ten lista la mochila de emergencia y el coche orientado hacia la salida. Atiende la radio y los avisos <strong>ES-Alert</strong> del móvil.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>No hagas fuego ni barbacoas en el monte y no tires colillas ni vidrios.</li><li>No vuelvas a la zona hasta que lo autoricen: el fuego puede reavivarse.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Dirección General de Protección Civil y Emergencias (DGPCE) — Recomendaciones ante incendios forestales; 112 Castilla-La Mancha y Junta de Andalucía (Plan INFOCA) — Consejos de autoprotección; Country Fire Authority (Victoria, Australia) — Survival in a vehicle · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">35</span><div><div class="p-cat">Desastres y entorno</div><h3>Terremoto</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. La mayoría de las lesiones se deben a objetos que caen y a intentar salir corriendo durante la sacudida.</blockquote>
+<h3>Durante la sacudida</h3>
+<ol><li><strong>Agáchate, cúbrete y agárrate</strong>: ponte de rodillas, protégete bajo una mesa resistente (o junto a una pared interior, cubriéndote la cabeza y el cuello con los brazos) y sujétate hasta que pare.</li><li><strong>Aléjate de ventanas</strong>, espejos, estanterías, lámparas y fachadas.</li><li>Si estás <strong>dentro, quédate dentro</strong>: no corras hacia la salida ni uses el ascensor o la escalera mientras tiembla.</li><li>Si estás <strong>fuera</strong>: aléjate de edificios, postes, árboles y cables eléctricos.</li><li><strong>Conduciendo</strong>: detente en un lugar despejado, lejos de puentes, túneles y taludes, y quédate en el coche.</li><li>En la <strong>costa</strong>, si la sacudida es fuerte o larga o el mar se retira de forma anómala: ve <strong>de inmediato a un lugar elevado</strong> o tierra adentro, sin esperar avisos (riesgo de <strong>tsunami</strong>).</li></ol>
+<h3>Después</h3>
+<ol><li>Espera <strong>réplicas</strong>. Revisa si hay heridos y presta primeros auxilios. Llama al <strong>112</strong> si hay heridos graves o personas atrapadas.</li><li>Si hueles a gas, <strong>no enciendas</strong> nada: cierra la llave de paso y sal (protocolo «Fuga de gas»).</li><li>Sal con calzado y con cuidado si el edificio tiene daños; no uses el ascensor.</li><li>Usa el teléfono solo para emergencias e infórmate por la radio y los canales oficiales.</li></ol>
+<h3>Advertencias</h3>
+<ul><li>No te refugies bajo el marco de una puerta: en las viviendas modernas no protege más que otras zonas.</li><li>No vuelvas a un edificio dañado hasta que lo revisen los técnicos.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Dirección General de Protección Civil y Emergencias (DGPCE) — Recomendaciones ante terremotos; Instituto Geográfico Nacional (IGN) — Qué hacer en caso de terremoto; CDC — Directrices de seguridad durante un terremoto · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">36</span><div><div class="p-cat">Desastres y entorno</div><h3>Inundación</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Muchas muertes por inundación se producen al intentar cruzar con el coche o al bajar a garajes y sótanos: busca <strong>altura</strong>, no tu coche.</blockquote>
+<h3>Ante un aviso</h3>
+<ol><li>Atiende los avisos de <strong>AEMET</strong> y Protección Civil y las alertas <strong>ES-Alert</strong> del móvil.</li><li>Sube a las <strong>plantas altas</strong> la documentación, los objetos de valor y la mochila de emergencia.</li><li>Prepárate para evacuar y sigue las órdenes de las autoridades.</li></ol>
+<h3>Durante la inundación</h3>
+<ol><li>Sube a un <strong>piso alto</strong> o a la azotea. <strong>No bajes a garajes, sótanos</strong> ni plantas bajas, tampoco a sacar el coche.</li><li><strong>Corta la electricidad y el gas</strong> si puedes hacerlo sin pisar agua.</li><li><strong>No cruces</strong> calles, vados ni puentes inundados, ni a pie ni en coche: unos 15 cm de agua en movimiento pueden derribarte y unos 30 cm pueden arrastrar la mayoría de los coches.</li><li>Si el coche queda atrapado y el agua sube, <strong>sal de él</strong> y busca un lugar alto.</li><li>Aléjate de cauces, barrancos y ramblas, aunque estén secos.</li><li>Llama al <strong>112</strong> si estás en peligro y di exactamente dónde estás.</li></ol>
+<h3>Después</h3>
+<ul><li>No bebas agua del grifo hasta que lo autoricen; si dudas, potabilízala (protocolo «Potabilizar agua»).</li><li>Evita el contacto con el agua de la inundación (puede estar contaminada o electrificada) y no uses aparatos eléctricos que se hayan mojado.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Dirección General de Protección Civil y Emergencias (DGPCE) — Recomendaciones ante inundaciones; AEMET — Avisos meteorológicos (Meteoalerta); NOAA National Weather Service — Turn Around Don&#39;t Drown · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">37</span><div><div class="p-cat">Desastres y entorno</div><h3>Tormenta eléctrica y rayos</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Ningún lugar al aire libre es seguro durante una tormenta eléctrica.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Si <strong>oyes truenos</strong>, ya estás al alcance de los rayos: <strong>busca refugio de inmediato</strong>, sin esperar a que llueva.</li><li>Refúgiate en un <strong>edificio</strong> o en un <strong>coche</strong> de techo metálico con las ventanillas cerradas.</li><li>Aléjate de <strong>árboles aislados</strong>, cimas, crestas, torres, postes y vallas metálicas.</li><li>Sal del <strong>agua</strong> (playa, piscina, río) y aléjate de la orilla.</li><li>Suelta los objetos metálicos largos (bastones, paraguas, herramientas) y baja de la bicicleta o la moto.</li><li>En grupo al aire libre, <strong>separaos</strong> unos metros entre vosotros.</li><li>Si no hay refugio: agáchate en una zona baja con los <strong>pies juntos</strong> y la cabeza baja, sin tumbarte en el suelo. Es un último recurso: no protege del todo.</li><li>Espera <strong>al menos 30 minutos</strong> desde el último trueno antes de salir.</li></ol>
+<h3>Si alguien recibe un rayo</h3>
+<ul><li>Puedes <strong>tocarla</strong>: no queda electricidad en el cuerpo. Llama al <strong>112</strong>.</li><li>Si no respira con normalidad: <strong>RCP</strong> y <strong>DEA</strong>. Si hay varias víctimas, atiende primero a las que <strong>no respiran</strong>.</li></ul>
+<h3>Advertencias</h3>
+<ul><li>Dentro de casa, evita la ducha, los grifos y los aparatos con cable conectados durante la tormenta.</li><li>No te refugies en cuevas pequeñas ni bajo salientes de roca.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> AEMET — Recomendaciones ante tormentas; NOAA National Weather Service — Lightning Safety; CDC — Lightning safety tips; European Resuscitation Council Guidelines — Situaciones especiales (lesiones por rayo) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">38</span><div><div class="p-cat">Desastres y entorno</div><h3>Apagón prolongado</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. En un apagón prolongado los mayores riesgos son el fuego (velas), el monóxido de carbono (generadores, braseros) y los alimentos en mal estado.</blockquote>
+<h3>Pasos</h3>
+<ol><li>Usa <strong>linternas</strong> con pilas en lugar de velas. Si usas velas, no las dejes nunca sin vigilancia.</li><li><strong>Desenchufa</strong> los aparatos sensibles (ordenador, televisor) para protegerlos cuando vuelva la luz; deja una lámpara encendida para saber cuándo vuelve.</li><li>Infórmate con una <strong>radio</strong> a pilas o de manivela. Llama al <strong>112</strong> solo para emergencias reales.</li><li>Ahorra <strong>batería del móvil</strong>: modo ahorro, brillo bajo y datos desactivados salvo para lo imprescindible.</li><li>Mantén <strong>cerrados el frigorífico y el congelador</strong>: el frigorífico conserva el frío unas <strong>4 horas</strong>; un congelador lleno, unas <strong>48 horas</strong> (24 si está a medias).</li><li>Ten reservas de <strong>agua</strong>: el bombeo puede fallar, sobre todo en pisos altos.</li><li>Comprueba cómo están los <strong>vecinos mayores</strong> o dependientes y quienes usan equipos médicos eléctricos.</li><li>Evita los ascensores y conduce con precaución: los semáforos pueden no funcionar.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>Nunca</strong> uses generadores, barbacoas, hornillos de camping ni braseros en interiores: riesgo de <strong>monóxido de carbono</strong>.</li><li>Desecha los alimentos perecederos que hayan estado a más de 4 °C durante más de 2 horas.</li><li>Si dependes de un equipo médico eléctrico, ten un plan alternativo y comunícalo a tu centro de salud.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Dirección General de Protección Civil y Emergencias (DGPCE) — Recomendaciones ante un apagón eléctrico; Comisión Europea — Estrategia de la Unión de Preparación (2025); FoodSafety.gov (EE. UU.) — Alimentos y cortes de electricidad; CDC — Carbon Monoxide Poisoning · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">39</span><div><div class="p-cat">Desastres y entorno</div><h3>Fuga u olor a gas</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. El gas doméstico lleva un olor añadido (a huevos podridos o «a gas») para poder detectar las fugas.</blockquote>
+<h3>Pasos</h3>
+<ol><li><strong>No enciendas ni apagues</strong> luces ni aparatos eléctricos, no toques timbres ni enchufes y <strong>no hagas llamas</strong> (cerillas, mecheros, tabaco).</li><li><strong>Abre puertas y ventanas</strong> para ventilar.</li><li><strong>Cierra la llave de paso</strong> del gas o la válvula de la bombona de butano.</li><li><strong>Sal de la vivienda</strong> con todas las personas y animales.</li><li><strong>Llama desde fuera</strong> al <strong>112</strong> o al teléfono de urgencias de tu distribuidora de gas. No uses el teléfono dentro.</li><li>Avisa a los vecinos llamando a su puerta con los nudillos, no al timbre.</li><li>No vuelvas a entrar hasta que los bomberos o un técnico lo autoricen.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>No</strong> uses el ascensor ni el portero automático.</li><li>Si hay alguien mareado o inconsciente, sácalo al aire libre solo si puedes hacerlo sin riesgo, y llama al 112.</li><li>Si ya hay fuego, no intentes cerrar una bombona en llamas: sal y llama al 112.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Dirección General de Protección Civil y Emergencias (DGPCE) — Recomendaciones de autoprotección en el hogar (gas); Distribuidoras de gas natural y butano en España — Instrucciones de seguridad ante olor a gas · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">40</span><div><div class="p-cat">Desastres y entorno</div><h3>Kit de emergencia para 72 horas</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. La Unión Europea recomienda poder valerse por uno mismo al menos <strong>72 horas</strong> tras una emergencia. Revisa el kit de vez en cuando (caducidades, pilas, medicación).</blockquote>
+<h3>Agua y comida</h3>
+<ul><li><strong>Agua</strong>: unos <strong>3 litros por persona y día</strong> para beber y cocinar (mínimo 1,5 litros solo para beber). Para 3 días, unos 9 litros por persona.</li><li><strong>Comida no perecedera</strong> que no necesite cocinarse: conservas (con abrelatas manual), frutos secos, barritas, galletas.</li><li>Comida para bebés y mascotas si los hay.</li></ul>
+<h3>Luz, energía y comunicación</h3>
+<ul><li><strong>Radio</strong> a pilas o de manivela, <strong>linterna</strong> (mejor frontal) y pilas de repuesto.</li><li><strong>Batería externa</strong> cargada y cable del móvil.</li><li>Un <strong>silbato</strong> para pedir ayuda.</li></ul>
+<h3>Salud e higiene</h3>
+<ul><li><strong>Botiquín</strong> de primeros auxilios y <strong>medicación habitual</strong> para varios días, con copia de las recetas.</li><li>Gel desinfectante, toallitas, bolsas de basura, papel higiénico y mascarillas.</li><li>Pastillas potabilizadoras o lejía apta para agua de bebida.</li></ul>
+<h3>Documentos y otros</h3>
+<ul><li><strong>Copias de documentos</strong> (DNI, tarjeta sanitaria, seguros) en una bolsa estanca.</li><li><strong>Dinero en efectivo</strong> en billetes pequeños: los datáfonos y cajeros pueden no funcionar.</li><li>Llaves de repuesto, mechero o cerillas, navaja multiusos, cinta americana, manta térmica, ropa de abrigo y calzado cómodo.</li><li>Lista en papel con <strong>teléfonos de contacto</strong> y un <strong>punto de encuentro</strong> acordado con la familia.</li></ul>
+<h3>Advertencias</h3>
+<ul><li>Guarda el kit en un lugar fácil de coger al salir y asegúrate de que todos en casa saben dónde está.</li><li>El kit no sustituye a pedir ayuda: ante cualquier emergencia con heridos o peligro, llama al <strong>112</strong>.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Comisión Europea — Estrategia de la Unión de Preparación (2025, autosuficiencia mínima de 72 horas); Protecció Civil de Catalunya — Kit de emergencia; Dirección General de Protección Civil y Emergencias (DGPCE) — Recomendaciones de autoprotección · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+<section class="sheet proto">
+<header class="p-head"><span class="p-num">41</span><div><div class="p-cat">Desastres y entorno</div><h3>Pedir ayuda y señales de socorro</h3></div><span class="p-112">112</span></header>
+<div class="content"><blockquote>Resumen orientativo. Si puedes llamar, el <strong>112</strong> es siempre la primera opción.</blockquote>
+<h3>Llamar al 112</h3>
+<ol><li>Llama al <strong>112</strong>: funciona en toda la UE y puede usar otra red móvil si la tuya no tiene cobertura.</li><li>Di <strong>dónde estás</strong> (coordenadas del GPS), qué ha pasado y cuántas personas sois. Muchos móviles envían además su ubicación automáticamente al llamar.</li><li>Si la cobertura es mala, prueba desde un punto más alto y ahorra batería entre llamadas.</li></ol>
+<h3>Señales sin teléfono</h3>
+<ol><li><strong>Señal de socorro en montaña</strong>: <strong>6 señales por minuto</strong> (silbato, linterna o gritos, una cada 10 segundos), un minuto de pausa y repetir. La respuesta de los rescatadores son 3 señales por minuto.</li><li><strong>SOS</strong> con luz o sonido: <strong>3 cortas, 3 largas, 3 cortas</strong>.</li><li><strong>Hacia un helicóptero o avión</strong>: de pie, con los <strong>dos brazos en alto en forma de Y</strong> significa «necesito ayuda»; un brazo arriba y otro abajo, «no necesito ayuda».</li><li><strong>Señales en el suelo</strong>, grandes y contrastadas (piedras, ramas, ropa): <strong>V</strong> = necesito ayuda; <strong>X</strong> = necesito asistencia médica.</li><li>De día, refleja el sol con un <strong>espejo</strong> o una superficie brillante hacia el aparato. De noche, usa la linterna.</li></ol>
+<h3>Advertencias</h3>
+<ul><li><strong>Quédate en un lugar visible</strong> y, si te has perdido, no sigas caminando sin rumbo: es más fácil que te encuentren.</li><li>Lleva ropa de colores vivos o extiende algo llamativo en el suelo.</li><li>No hagas fuego para hacer señales si hay riesgo de incendio forestal.</li></ul></div>
+<footer class="p-foot"><b>Fuente:</b> Servicio 112 (UE) y localización avanzada de emergencias (AML); Comisión Internacional de Socorro Alpino (IKAR-CISA) — Señal internacional de socorro en montaña; OACI — Anexo 12, Búsqueda y salvamento (señales tierra-aire y corporales) · <b>Revisado:</b> 2026-11-09</footer>
+</section>
+</div></body></html>

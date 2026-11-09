@@ -1,0 +1,440 @@
+/*
+ * Survival OS — estilos base.
+ * Panel objetivo: 1024×600 horizontal, uso táctil, legible en exterior.
+ * Sin animaciones continuas; transiciones mínimas.
+ */
+
+:root {
+  --bg: #0f1412;
+  --surface: #161d1a;
+  --surface-2: #1e2823;
+  --surface-3: #26332d;
+  --border: #2f3d36;
+  --text: #ece6d6;
+  --text-muted: #a9b0a2;
+  --text-faint: #7d867a;
+  --accent: #8cbf96;
+  --accent-ink: #0f1412;
+  --ok: #86c792;
+  --warn: #e5b85c;
+  --danger: #ec8466;
+  --info: #93b8cc;
+  --focus: #f2d27a;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+  /* Superficie de tarjeta: degradado estático (no se anima; coste nulo tras el primer pintado). */
+  --surface-grad: linear-gradient(180deg, var(--surface-2), var(--surface) 70%);
+  --hairline: color-mix(in srgb, var(--border) 70%, transparent);
+  --gap: 10px;
+  --touch: 48px;
+
+  --bar-h: 2.75rem;
+  --action-h: 4.25rem;
+
+  --font-ui: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --dim: 0;
+
+  color-scheme: dark;
+  font-size: 16px;
+}
+
+:root[data-contrast='high'] {
+  --bg: #000;
+  --surface: #000;
+  --surface-2: #0d0d0d;
+  --surface-3: #1a1a1a;
+  --border: #f5f5f5;
+  --text: #fff;
+  --text-muted: #f0f0f0;
+  --text-faint: #d8d8d8;
+  --accent: #9dff9d;
+  --ok: #9dff9d;
+  --warn: #ffd84d;
+  --danger: #ff7a66;
+  --info: #9fdcff;
+}
+
+:root[data-text='large'] {
+  font-size: 19px;
+}
+
+/* Con texto grande la barra no cabe en 1024 px: se sacrifica la fecha (visible en Bloqueo).
+   Debe ser CSS global: en un <style scoped>, :global(...) descarta el resto del selector. */
+:root[data-text='large'] .statusbar-date {
+  display: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  /* Halo sutil del acento arriba: fondo fijo (el body no se desplaza, solo .page). */
+  background:
+    radial-gradient(120% 70% at 50% -10%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.35;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  /* Kiosco táctil: sin selección accidental ni menú de pulsación larga. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Textos de lectura: sin selección ni menú de pulsación larga en ningún contenedor. */
+.page *:not(input):not(textarea) {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.selectable {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.faint {
+  color: var(--text-faint);
+}
+
+/* Tonos semánticos */
+.tone-ok { --tone: var(--ok); }
+.tone-warn { --tone: var(--warn); }
+.tone-danger { --tone: var(--danger); }
+.tone-info { --tone: var(--info); }
+.tone-muted { --tone: var(--text-faint); }
+
+/* Botón táctil base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--touch);
+  min-width: var(--touch);
+  padding: 0 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.08s ease-out, background-color 0.12s;
+}
+
+.btn svg {
+  flex: none;
+}
+
+/* Respuesta táctil inmediata: transform no provoca relayout. */
+.btn:active:not(:disabled) {
+  background: var(--surface-3);
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 88%, #fff), var(--accent));
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: var(--accent);
+}
+
+.btn-danger {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--danger) 26%, var(--surface-3)), color-mix(in srgb, var(--danger) 18%, var(--surface-2)));
+  border-color: color-mix(in srgb, var(--danger) 75%, var(--border));
+  color: var(--text);
+}
+
+.btn-danger:active:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 30%, var(--surface-2));
+}
+
+/* ------------------------------------------------------------ Piezas comunes premium */
+
+/* Título de sección: versalitas con filete que se desvanece. */
+.ui-sec {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.05rem 0 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.ui-sec::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+.ui-sec:first-child {
+  margin-top: 0.2rem;
+}
+
+/* Etiqueta compacta con tono. */
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  color: var(--tone, var(--text-muted));
+  border: 1px solid color-mix(in srgb, var(--tone, var(--border)) 45%, transparent);
+  background: color-mix(in srgb, var(--tone, var(--surface-3)) 10%, transparent);
+}
+
+/* Cifra destacada: valor grande + unidad + leyenda. */
+.ui-figure {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.ui-figure .num {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--text);
+}
+
+.ui-figure .unit {
+  color: var(--text-muted);
+}
+
+.ui-figure .cap {
+  flex-basis: 100%;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+}
+
+/* Campo de formulario táctil. */
+.ui-field {
+  min-height: var(--touch);
+  padding: 0 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.ui-field:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+/* Fila de lista táctil con separador fino. */
+.ui-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: var(--touch);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.ui-row:last-child {
+  border-bottom: none;
+}
+
+/* Entrada de diálogos: una sola vez, corta. */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Contenido desplazable de cada pantalla */
+.page {
+  height: 100%;
+  overflow-y: auto;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75rem 0.875rem 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+:root.osk-open .page {
+  padding-bottom: 16rem;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18.5rem, 1fr));
+  gap: var(--gap);
+  align-items: start;
+}
+
+.notice {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--tone, var(--info)) 55%, transparent);
+  background: color-mix(in srgb, var(--tone, var(--info)) 10%, var(--surface));
+  color: var(--text);
+}
+
+.notice svg {
+  flex: none;
+  color: var(--tone, var(--info));
+  margin-top: 0.1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------ Impresión (guía de emergencia) */
+@media print {
+  html,
+  body,
+  #__nuxt {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+    color: #000;
+  }
+
+  /* El armazón de la app (barras, atenuación, teclado) no se imprime. */
+  .shell {
+    display: block !important;
+    height: auto !important;
+  }
+
+  .shell > header,
+  .shell > nav,
+  .dim,
+  .no-print {
+    display: none !important;
+  }
+
+  .content,
+  .page {
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .preview {
+    display: block !important;
+    padding: 0 !important;
+  }
+
+  .preview .guide {
+    width: auto !important;
+    gap: 0 !important;
+  }
+
+  .preview .sheet {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Solo para lectores de pantalla (accesible, invisible). */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Ficha «Añadir punto» del mapa con el teclado en pantalla abierto: más compacta para que el campo y los
+   botones queden por encima del teclado. Global: en <style scoped> «:global(X) .y» no funciona. */
+:root.osk-open .add-point-sheet {
+  gap: 0.45rem;
+  padding-top: 0.55rem;
+  padding-bottom: 0.65rem;
+}
+
+:root.osk-open .add-point-sheet .sheet-title p,
+:root.osk-open .add-point-sheet .orb {
+  display: none;
+}

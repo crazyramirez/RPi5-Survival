@@ -1,0 +1,42 @@
+# Bóveda cifrada. Corre como root (cryptsetup/mount lo exigen) pero:
+#  - sin red en absoluto (PrivateNetwork): solo un socket Unix en /run/survival-os/vault.sock (0660 root:survival)
+#  - el volumen descifrado se monta en el espacio de montaje PRIVADO del servicio: ningún otro
+#    proceso (ni la web, ni el escritorio) ve los ficheros; solo se sirven por el socket.
+[Unit]
+Description=Survival OS - bóveda cifrada (LUKS2, sin red)
+After=local-fs.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=-/etc/survival-os/survival-os.env
+ExecStart=/opt/survival-os/runtime/node/bin/node /opt/survival-os/current/services/vault/dist/server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+PrivateNetwork=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+IPAddressDeny=any
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/survival-os/vault /run/survival-os
+RuntimeDirectory=survival-vault
+RuntimeDirectoryMode=0700
+PrivateTmp=yes
+NoNewPrivileges=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+MemoryMax=512M
+# Los medios USB se leen (solo lectura) para importar documentos.
+ReadOnlyPaths=/media
+
+[Install]
+WantedBy=multi-user.target

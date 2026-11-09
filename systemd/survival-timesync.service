@@ -1,0 +1,27 @@
+[Unit]
+Description=Survival OS - hora de respaldo sin red (GNSS / LoRa del canal privado)
+Documentation=file:/opt/survival-os/current/docs/adr/0011-hora-de-respaldo.md
+After=survival-mesh.service gpsd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /opt/survival-os/current/scripts/time-sync.py
+Nice=10
+# Root solo para fijar el reloj (CAP_SYS_TIME); todo lo demás, cerrado.
+CapabilityBoundingSet=CAP_SYS_TIME
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/run/survival-os -/etc/fake-hwclock.data
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryMax=64M
+TimeoutStartSec=30

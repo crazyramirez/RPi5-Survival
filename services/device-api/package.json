@@ -1,0 +1,18 @@
+{
+  "name": "@survival-os/device-api",
+  "version": "0.8.0",
+  "private": true,
+  "type": "module",
+  "description": "Servicio local de estado del dispositivo (solo lectura, solo loopback).",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@survival-os/shared-types": "0.1.0"
+  }
+}

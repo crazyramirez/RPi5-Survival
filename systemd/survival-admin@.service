@@ -1,0 +1,17 @@
+# Tareas de mantenimiento lanzadas desde la interfaz (scripts/admin-job.py valida los parámetros).
+# El usuario survival solo puede ARRANCAR/PARAR estas unidades (regla polkit). Única unidad con red
+# disponible: la descarga de contenidos la pide el usuario explícitamente.
+[Unit]
+Description=Survival OS - tarea de mantenimiento %i
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /opt/survival-os/current/scripts/admin-job.py %i
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=infinity
+# Sin endurecimiento de sistema de ficheros a propósito: la actualización reinstala /opt, /etc y el
+# kiosco del usuario, y las tareas usan `sudo -u survival` (incompatible con NoNewPrivileges).
+# La superficie de ataque la limita admin-job.py: lista cerrada de tareas y validación estricta.
+PrivateTmp=yes

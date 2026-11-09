@@ -1,0 +1,36 @@
+[Unit]
+Description=Survival OS - biblioteca (protocolos, documentos FTS, pasarela Kiwix)
+After=survival-kiwix.service
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=survival
+Group=survival
+EnvironmentFile=-/etc/survival-os/survival-os.env
+ExecStart=/opt/survival-os/runtime/node/bin/node /opt/survival-os/current/services/library/dist/server.js
+Restart=on-failure
+RestartSec=5
+Nice=5
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+ReadWritePaths=/var/lib/survival-os/library
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target

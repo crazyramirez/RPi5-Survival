@@ -1,0 +1,39 @@
+# Modelo de lenguaje local (llama.cpp) para el asistente de consulta. Solo loopback, sin red.
+# Se instala/activa desde Mantenimiento (tarea llm-install). El modelo activo está en /var/lib/survival-os/llm/active.
+[Unit]
+Description=Survival OS - modelo de lenguaje local (llama-server)
+ConditionPathExists=/var/lib/survival-os/llm/active
+After=local-fs.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=survival
+Group=survival
+ExecStart=/bin/sh -c 'exec /opt/survival-os/runtime/llama/llama-server --host 127.0.0.1 --port 8786 -m "/var/lib/survival-os/llm/models/$(cat /var/lib/survival-os/llm/active)" -c 4096 -t 4 --no-webui --parallel 1'
+Environment=LD_LIBRARY_PATH=/opt/survival-os/runtime/llama
+Restart=on-failure
+RestartSec=10
+# Inferencia en segundo plano respecto a la interfaz.
+Nice=5
+CPUWeight=50
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictNamespaces=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+IPAddressDeny=any
+IPAddressAllow=localhost
+MemoryMax=5G
+
+[Install]
+WantedBy=multi-user.target

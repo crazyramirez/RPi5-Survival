@@ -1,0 +1,9 @@
+Id=survival-web.service
+LoadState=loaded
+ActiveState=active
+SubState=running
+
+Id=gpsd.service
+LoadState=not-found
+ActiveState=inactive
+SubState=dead

@@ -413,7 +413,19 @@ async function displayOff(): Promise<void> {
             <span v-for="i in throttleIssues" :key="i.text" class="chip" :class="`tone-${i.tone}`">{{ i.text }}</span>
           </div>
         </template>
+        <KvRow
+          :label="t('sys.mains')"
+          :value="s?.mains?.state === 'ok' ? t(s.mains.value.present ? 'sys.mains.on' : 'sys.mains.off') : t('state.unavailable')"
+          :tone="s?.mains?.state === 'ok' && !s.mains.value.present ? 'warn' : undefined"
+        />
+        <ProbeNote v-if="s?.mains && s.mains.state !== 'ok'" :probe="s.mains" />
         <KvRow :label="t('sys.battery')" :value="s?.battery.state === 'ok' ? `${s.battery.value.percent} %` : t('state.unavailable')" />
+        <KvRow
+          v-if="s?.battery.state === 'ok' && s.battery.value.voltageV != null"
+          :label="t('sys.battery.voltage')"
+          :value="`${formatNumber(s.battery.value.voltageV, 2)} V`"
+          mono
+        />
         <ProbeNote v-if="s?.battery.state !== 'ok'" :probe="s?.battery" />
       </section>
 

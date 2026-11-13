@@ -1,0 +1,28 @@
+[Unit]
+Description=Survival OS - estado de la UPS X120x (red eléctrica por GPIO6, batería por I²C 0x36)
+Documentation=file:/opt/survival-os/current/docs/hardware-inventory.md
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /opt/survival-os/current/scripts/ups-status.py
+Nice=10
+# Root SIN capacidades: abre /dev/i2c-1 y /dev/gpiochip* como propietario; solo lee el medidor y el GPIO6.
+CapabilityBoundingSet=
+AmbientCapabilities=
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/run/survival-os
+ProtectHome=yes
+PrivateTmp=yes
+PrivateNetwork=yes
+DevicePolicy=closed
+DeviceAllow=char-i2c rw
+DeviceAllow=char-gpiochip rw
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryMax=64M
+TimeoutStartSec=20

@@ -7,7 +7,7 @@ describe('collectStatus (plataforma actual)', () => {
     const status = await collectStatus(['/'])
     const probes = [
       status.uptime, status.cpu, status.fan, status.memory, status.storage, status.power,
-      status.battery, status.rtc, status.time, status.network, status.display, status.input,
+      status.battery, status.mains, status.rtc, status.time, status.network, status.display, status.input,
       status.serial, status.software, status.services, status.sdHealth,
     ]
     for (const p of probes) {

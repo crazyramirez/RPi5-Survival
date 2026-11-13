@@ -1,0 +1,10 @@
+[Unit]
+Description=Survival OS - leer la UPS cada 30 s
+
+[Timer]
+OnBootSec=20
+OnUnitActiveSec=30
+AccuracySec=2
+
+[Install]
+WantedBy=timers.target

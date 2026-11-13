@@ -2,7 +2,7 @@
  * Parsers puros (sin E/S) para salidas de Linux/Raspberry Pi.
  * Probados con fixtures reales capturados del dispositivo (test/fixtures).
  */
-import type { InputDeviceInfo, SdHealthInfo, ThrottleFlags } from '@survival-os/shared-types'
+import type { BatteryInfo, InputDeviceInfo, MainsInfo, Probe, SdHealthInfo, ThrottleFlags } from '@survival-os/shared-types'
 
 /** `vcgencmd get_throttled` → flags. Devuelve null si el formato no es reconocible. */
 export function parseThrottled(text: string): ThrottleFlags | null {
@@ -182,6 +182,51 @@ export function parseSdHealth(text: string): SdHealthInfo | null {
 }
 
 /** Validez de una comprobación de hora sin red: el reloj de la Pi deriva segundos al día, no más. */
+/** survival-ups escribe cada 30 s; más antiguo que esto ya no describe el estado actual. */
+export const UPS_MAX_AGE_MS = 120_000
+
+/**
+ * Estado de la UPS X120x escrito por survival-ups (/run/survival-os/ups.json, se borra al reiniciar).
+ * Solo se acepta lo que el lector midió; sin archivo, caducado o con valores imposibles → 'unavailable' con motivo.
+ * `battery` es null cuando no hay archivo: así manda el motivo genérico «sin medidor».
+ */
+export function upsFrom(
+  json: string | null,
+  nowMs: number,
+): { battery: Probe<BatteryInfo> | null; mains: Probe<MainsInfo> } {
+  if (json === null) return { battery: null, mains: { state: 'unavailable', reason: 'Sin UPS: survival-ups no ha dejado lectura' } }
+  let st: Record<string, unknown> = {}
+  try {
+    const j: unknown = JSON.parse(json)
+    if (j && typeof j === 'object' && !Array.isArray(j)) st = j as Record<string, unknown>
+  } catch {
+    st = {}
+  }
+  const at = typeof st.checkedAt === 'string' && !Number.isNaN(Date.parse(st.checkedAt)) ? st.checkedAt : null
+  if (at === null) {
+    const r = { state: 'unavailable' as const, reason: 'Lectura de la UPS ilegible' }
+    return { battery: r, mains: r }
+  }
+  const age = nowMs - Date.parse(at)
+  if (age > UPS_MAX_AGE_MS || age < -UPS_MAX_AGE_MS) {
+    const r = { state: 'unavailable' as const, reason: 'Lectura de la UPS caducada (¿survival-ups parado?)' }
+    return { battery: r, mains: r }
+  }
+  const reason = (v: unknown, fallback: string) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 160) : fallback)
+  const mains =
+    typeof st.mains === 'boolean'
+      ? { state: 'ok' as const, value: { present: st.mains }, at }
+      : { state: 'unavailable' as const, reason: reason(st.mainsError, 'Sin lectura de la red eléctrica') }
+  const b = st.battery as Record<string, unknown> | null | undefined
+  const percent = b && typeof b.percent === 'number' && Number.isFinite(b.percent) ? b.percent : null
+  const volts = b && typeof b.voltageV === 'number' && Number.isFinite(b.voltageV) ? b.voltageV : null
+  const battery =
+    percent !== null && percent >= 0 && percent <= 100
+      ? { state: 'ok' as const, value: { percent: Math.round(percent), voltageV: volts !== null ? Math.round(volts * 100) / 100 : null }, at }
+      : { state: 'unavailable' as const, reason: reason(st.batteryError, 'Sin lectura del medidor de batería') }
+  return { battery, mains }
+}
+
 export const TIME_VERIFIED_MAX_MS = 12 * 3600 * 1000
 
 /**

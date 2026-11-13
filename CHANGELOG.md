@@ -1,5 +1,24 @@
 # Changelog
 
+## Sin publicar
+
+### Añadido
+- UPS Geekworm X120x (X1202): `survival-ups.timer` lee cada 30 s, sin escribir nunca en el chip.
+  - **Red eléctrica:** por el GPIO6, leído con pull-down y con pull-up para descartar un pin al aire.
+  - **Batería:** por el medidor MAX17040 (I²C 0x36): carga y tensión de la celda.
+  - device-api expone `battery` (ahora también `voltageV`) y el nuevo `mains`.
+  - La barra de estado muestra «Con red eléctrica», «Batería N % · sin red», etc.
+  - Sistema muestra «Red eléctrica (UPS)» y la tensión de la batería.
+  - Alertas: aviso al quedarse sin red y peligro si además la batería está al 20 % o menos.
+  - Requiere `dtparam=i2c_arm=on` para la batería; la red funciona sin I²C.
+  - `i2c-dev` se añade a `modules-load.d`.
+
+### Corregido
+- Nodo LoRa enchufado después de arrancar: `survival-mesh` daba `PermissionError` en bucle y la pasarela ESP32 daba `stty_failed`.
+  - Causa: `DeviceAllow=char-ttyACM` y `char-ttyUSB` se resuelven al arrancar la unidad. Si el driver aún no está cargado, el permiso queda vacío.
+  - Arreglo: nuevo `systemd/modules-load.d/survival-os-serial.conf`, que carga `cdc_acm` y `usbserial` al arrancar.
+  - Lo instala `install-system.sh` y lo quita `uninstall-system.sh`.
+
 ## 0.8.0 — 2026-11-09 · Interfaz premium, cofre, guía en papel y calidad
 
 ### Interfaz premium en todas las pantallas

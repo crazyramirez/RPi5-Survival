@@ -6,6 +6,7 @@ import {
   collectDisplay,
   collectFan,
   collectInput,
+  collectMains,
   collectMemory,
   collectNetwork,
   collectPlatform,
@@ -24,7 +25,7 @@ import {
 export async function collectStatus(mounts: string[]): Promise<DeviceStatus> {
   const pmic = await readPmic().catch(() => null)
   const rtc = await safeProbe(() => collectRtc(pmic))
-  const [platform, uptime, cpu, fan, memory, storage, power, battery, time, network, display, input, serial, software, services, sdHealth] =
+  const [platform, uptime, cpu, fan, memory, storage, power, battery, mains, time, network, display, input, serial, software, services, sdHealth] =
     await Promise.all([
       collectPlatform(),
       safeProbe(collectUptime),
@@ -34,6 +35,7 @@ export async function collectStatus(mounts: string[]): Promise<DeviceStatus> {
       safeProbe(() => collectStorage(mounts)),
       safeProbe(() => collectPower(pmic)),
       safeProbe(collectBattery),
+      safeProbe(collectMains),
       safeProbe(() => collectTime(rtc)),
       safeProbe(collectNetwork),
       safeProbe(collectDisplay),
@@ -53,6 +55,7 @@ export async function collectStatus(mounts: string[]): Promise<DeviceStatus> {
     storage,
     power,
     battery,
+    mains,
     rtc,
     time,
     network,

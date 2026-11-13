@@ -32,7 +32,8 @@ fi
 UNITS=$(ls /etc/systemd/system/survival-*.service /etc/systemd/system/survival-*.timer 2>/dev/null | xargs -r -n1 basename)
 [ -n "$UNITS" ] && systemctl disable --now $UNITS 2>/dev/null || true
 for u in $UNITS; do rm -f "/etc/systemd/system/$u"; done
-rm -f /etc/polkit-1/rules.d/50-survival-os.rules /etc/tmpfiles.d/survival-os.conf /etc/udev/rules.d/*survival-os*.rules
+rm -f /etc/polkit-1/rules.d/50-survival-os.rules /etc/tmpfiles.d/survival-os.conf /etc/udev/rules.d/*survival-os*.rules \
+  /etc/modules-load.d/survival-os-serial.conf
 rm -rf /run/survival-os
 systemctl daemon-reload
 

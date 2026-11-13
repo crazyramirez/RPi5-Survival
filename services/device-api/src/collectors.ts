@@ -5,10 +5,12 @@
 import os from 'node:os'
 import { statfs } from 'node:fs/promises'
 import type {
+  BatteryInfo,
   CpuInfo,
   DisplayOutput,
   FanInfo,
   InputDeviceInfo,
+  MainsInfo,
   MemoryInfo,
   MountUsage,
   NetworkInfo,
@@ -38,6 +40,7 @@ import {
   parseSystemctlShow,
   parseThrottled,
   timeSourceFrom,
+  upsFrom,
 } from './parsers.ts'
 
 /** Umbral por debajo del cual se considera que no hay pila RTC instalada. */
@@ -130,11 +133,14 @@ export async function collectPower(pmic: Record<string, number> | null): Promise
   })
 }
 
+const UPS_STATUS_PATH = '/run/survival-os/ups.json'
+
 /**
- * Batería principal: solo se informa si el kernel expone un medidor real
- * (/sys/class/power_supply/<x>/type == Battery con 'capacity'). Nunca se estima.
+ * Batería principal: solo se informa con un medidor real. Primero el kernel
+ * (/sys/class/power_supply/<x>/type == Battery con 'capacity'); si no, la UPS X120x
+ * leída por survival-ups. Nunca se estima.
  */
-export async function collectBattery(): Promise<Probe<{ percent: number }>> {
+export async function collectBattery(): Promise<Probe<BatteryInfo>> {
   if (!isLinux()) return notLinux()
   const base = '/sys/class/power_supply'
   for (const dev of await listDir(base)) {
@@ -142,9 +148,17 @@ export async function collectBattery(): Promise<Probe<{ percent: number }>> {
     if (type !== 'Battery') continue
     const cap = await readText(`${base}/${dev}/capacity`)
     const n = cap ? Number.parseInt(cap.trim(), 10) : Number.NaN
-    if (Number.isFinite(n) && n >= 0 && n <= 100) return ok({ percent: n })
+    const uv = Number.parseInt((await readText(`${base}/${dev}/voltage_now`))?.trim() ?? '', 10)
+    if (Number.isFinite(n) && n >= 0 && n <= 100) return ok({ percent: n, voltageV: Number.isFinite(uv) ? round2(uv / 1e6) : null })
   }
-  return unavailable('Sin medidor de batería instalado')
+  const ups = upsFrom(await readText(UPS_STATUS_PATH), Date.now()).battery
+  return ups ?? unavailable('Sin medidor de batería instalado')
+}
+
+/** Red eléctrica en la entrada de la UPS X120x (survival-ups). Sin UPS → 'unavailable', nunca se supone. */
+export async function collectMains(): Promise<Probe<MainsInfo>> {
+  if (!isLinux()) return notLinux()
+  return upsFrom(await readText(UPS_STATUS_PATH), Date.now()).mains
 }
 
 export async function collectRtc(pmic: Record<string, number> | null): Promise<Probe<RtcInfo>> {

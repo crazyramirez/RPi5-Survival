@@ -23,6 +23,8 @@ export const TEMP_CRITICAL_C = 80
 export const STALE_AFTER_S = 45
 export const DISK_WARN_RATIO = 0.1
 export const DISK_CRITICAL_RATIO = 0.05
+/** Sin red y con esta carga o menos, la alerta de batería pasa a peligro. */
+export const BATTERY_LOW_PCT = 20
 
 const ORDER: Record<Tone, number> = { danger: 0, warn: 1, info: 2, ok: 3, muted: 4 }
 
@@ -86,6 +88,14 @@ export function deriveAlerts(status: DeviceStatus | null, ctx: AlertContext): Al
   }
   if (status.rtc.state === 'ok' && status.rtc.value.present && status.rtc.value.hasBattery === false) {
     alerts.push({ id: 'rtc', tone: 'info', key: 'alert.rtcNoBattery' })
+  }
+
+  // UPS: solo con lectura real de la red (GPIO6) y, si la hay, del medidor de batería.
+  if (status.mains?.state === 'ok' && !status.mains.value.present) {
+    const pct = status.battery.state === 'ok' ? status.battery.value.percent : null
+    if (pct !== null && pct <= BATTERY_LOW_PCT) alerts.push({ id: 'battery', tone: 'danger', key: 'alert.batteryLow', params: { p: pct } })
+    else if (pct !== null) alerts.push({ id: 'battery', tone: 'warn', key: 'alert.onBatteryPct', params: { p: pct } })
+    else alerts.push({ id: 'battery', tone: 'warn', key: 'alert.onBattery' })
   }
 
   if (status.input.state === 'ok' && !status.input.value.some((d) => d.kind === 'touchscreen')) {

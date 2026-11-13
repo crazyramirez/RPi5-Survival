@@ -119,10 +119,15 @@ if [ -d "$DEST/systemd/udev" ] && ls "$DEST"/systemd/udev/*.rules >/dev/null 2>&
   install -m 0644 "$DEST"/systemd/udev/*.rules /etc/udev/rules.d/
   udevadm control --reload-rules && udevadm trigger --subsystem-match=tty || true
 fi
+# Drivers serie al arrancar: DeviceAllow=char-ttyACM/ttyUSB solo se resuelve si ya están cargados.
+if [ -f "$DEST/systemd/modules-load.d/survival-os-serial.conf" ]; then
+  install -m 0644 "$DEST/systemd/modules-load.d/survival-os-serial.conf" /etc/modules-load.d/survival-os-serial.conf
+  modprobe -a cdc_acm usbserial i2c-dev 2>/dev/null || true
+fi
 systemctl daemon-reload
 
 # Servicios base siempre; opcionales solo si su unidad declara que puede arrancar (ver hooks de fase).
-UNITS="survival-device-api.service survival-web.service survival-healthcheck.timer survival-timesync.timer"
+UNITS="survival-device-api.service survival-web.service survival-healthcheck.timer survival-timesync.timer survival-ups.timer"
 [ -x "$DEST/scripts/install-hooks.sh" ] && DEST="$DEST" KIOSK_USER="$KIOSK_USER" "$DEST/scripts/install-hooks.sh"
 for extra in survival-library survival-kiwix survival-navigation survival-vault survival-esp32-gateway; do
   [ -f "/etc/systemd/system/$extra.service" ] && UNITS="$UNITS $extra.service"

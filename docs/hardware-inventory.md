@@ -60,6 +60,29 @@ Pantalla DSI 5": no conectada (reservada para Fase 7, sin modo dual).
 
 La etiqueta física de la fuente (27 W, 5,1 V / 5 A) **no ha sido inspeccionada visualmente**; la negociación 5 A lo hace probable pero no lo prueba.
 
+**Actualización 2026-11-12: la alimentación pasa a una UPS Geekworm X1202.** Es una UPS de 4 celdas, con salida máxima de 5,1 V / 5 A, conectada a la red. Desde ese momento la tabla anterior queda desactualizada:
+
+- **Cómo alimenta:** la UPS alimenta la Pi por GPIO, no por USB-C con PD. Por eso la Pi lee `max_current = 3000 mA` y, sin más ajuste, limita todos los USB juntos a 600 mA.
+- **Qué fallaba:** al enchufar el nodo LoRa Heltec V4, el pico de arranque producía sobrecorriente en todos los puertos (32 eventos `over-current change` a las 22:27). Se reiniciaban todos los USB, incluido el de la pantalla táctil, que parpadeaba. Después el nodo se reconectaba cada 12–18 s.
+- **Arreglo:** con autorización del usuario se añadió `usb_max_current_enable=1` a `/boot/firmware/config.txt` (límite USB 1,6 A). Copia previa en `config.txt.bak-20261112`. Para deshacerlo, borrar la línea y el comentario, también posible desde un PC leyendo la microSD.
+- **Resultado verificado:** nodo conectado en el primer intento, 0 sobrecorrientes, 0 desconexiones en más de 1 min y `get_throttled = 0x0`.
+- **Puerto USB de la propia UPS:** solo da alimentación, sin datos. Un nodo enchufado ahí se enciende, pero la Pi no lo ve.
+- **Lectura de la UPS:** desde 2026-11-12 la hace `survival-ups.timer`, cada 30 s y solo en lectura (`scripts/ups-status.py`). El resultado va a `/run/survival-os/ups.json`, que lee device-api (`battery`, `mains`).
+  - **Red eléctrica (GPIO6, pin 31): verificada.** La UPS conduce el pin activamente, y lo mantiene aunque se cambie la resistencia interna de la Pi:
+    - alto = hay red: con pull-down se lee alto;
+    - bajo = sin red: con pull-up se lee bajo.
+
+    El lector lee con las dos resistencias: si el valor sigue a la resistencia, el pin está al aire y no informa nada.
+
+    Prueba de desenchufar el cargador: el pin pasó de bajo a alto a las 23:48:16, en el mismo segundo de volver a enchufar, y la tensión de 5 V subió de 5,03 a 5,06 V.
+
+    **Hallazgo:** el pin ya estaba en bajo desde al menos las 23:44, es decir, la Pi funcionaba con batería aunque el cargador pareciera enchufado. Al volver a enchufarlo se arregló.
+  - **Batería, medidor MAX17040 en I²C-1, dirección 0x36: SIN RESPUESTA.**
+    - Se activó `dtparam=i2c_arm=on` en `config.txt`; copia previa en `config.txt.bak-20261112-i2c`.
+    - Los pines 2 y 3 quedan como SDA1/SCL1, pero `i2cdetect -y 1` no ve ningún dispositivo, ni en modo lectura ni en quick-write.
+    - Sospecha: los pines con resorte de I²C no hacen contacto, porque el GPIO6 sí lo hace.
+    - Hasta que responda, la UI muestra la batería como no disponible, con ese motivo.
+
 ## 5. Reloj
 
 | Elemento | Valor medido |

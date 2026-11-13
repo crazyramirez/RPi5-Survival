@@ -12,6 +12,7 @@ import {
   parseSystemctlShow,
   parseThrottled,
   timeSourceFrom,
+  upsFrom,
 } from '../src/parsers.ts'
 
 const fixture = (name: string): string => readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8')
@@ -166,5 +167,41 @@ describe('timeSourceFrom (hora de respaldo, ADR 0011)', () => {
   it('fuente desconocida o nodo mal formado: se ignoran', () => {
     expect(timeSourceFrom(false, false, st({ verifiedBy: 'iphone', verifiedAt: '2026-11-09T13:59:00Z' }), now).source).toBe('unverified')
     expect(timeSourceFrom(false, false, st({ verifiedBy: 'lora', verifiedAt: '2026-11-09T13:59:00Z', node: '<b>x' }), now).node).toBeNull()
+  })
+})
+
+describe('upsFrom (UPS X120x, survival-ups)', () => {
+  const now = Date.parse('2026-11-12T23:00:00Z')
+  const st = (o: Record<string, unknown>): string => JSON.stringify({ checkedAt: '2026-11-12T22:59:40Z', ...o })
+  it('sin archivo: red no disponible y la batería cae al motivo genérico', () => {
+    const r = upsFrom(null, now)
+    expect(r.battery).toBeNull()
+    expect(r.mains.state).toBe('unavailable')
+  })
+  it('red presente y medidor sin respuesta (caso real de la Pi, 2026-11-12)', () => {
+    const r = upsFrom(st({ mains: true, mainsError: null, battery: null, batteryError: 'Medidor de la UPS (I²C 0x36) sin respuesta' }), now)
+    expect(r.mains).toMatchObject({ state: 'ok', value: { present: true } })
+    expect(r.battery).toEqual({ state: 'unavailable', reason: 'Medidor de la UPS (I²C 0x36) sin respuesta' })
+  })
+  it('funcionando con batería y medidor leído', () => {
+    const r = upsFrom(st({ mains: false, battery: { percent: 87.5, voltageV: 4.125 } }), now)
+    expect(r.mains).toMatchObject({ state: 'ok', value: { present: false } })
+    expect(r.battery).toMatchObject({ state: 'ok', value: { percent: 88, voltageV: 4.13 }, at: '2026-11-12T22:59:40Z' })
+  })
+  it('GPIO6 al aire: la red no se supone', () => {
+    const r = upsFrom(st({ mains: null, mainsError: 'GPIO6 al aire: no hay UPS X120x o no hace contacto' }), now)
+    expect(r.mains).toEqual({ state: 'unavailable', reason: 'GPIO6 al aire: no hay UPS X120x o no hace contacto' })
+  })
+  it('lectura caducada (> 2 min) o ilegible: nada se da por bueno', () => {
+    const old = upsFrom(JSON.stringify({ checkedAt: '2026-11-12T22:50:00Z', mains: true, battery: { percent: 50, voltageV: 3.9 } }), now)
+    expect(old.mains.state).toBe('unavailable')
+    expect(old.battery?.state).toBe('unavailable')
+    expect(upsFrom('{no json', now).mains.state).toBe('unavailable')
+    expect(upsFrom(JSON.stringify({ mains: true }), now).mains.state).toBe('unavailable')
+  })
+  it('porcentaje imposible o tipos erróneos: no disponible', () => {
+    expect(upsFrom(st({ battery: { percent: 140, voltageV: 4 } }), now).battery?.state).toBe('unavailable')
+    expect(upsFrom(st({ battery: { percent: '80' } }), now).battery?.state).toBe('unavailable')
+    expect(upsFrom(st({ mains: 'yes' }), now).mains.state).toBe('unavailable')
   })
 })

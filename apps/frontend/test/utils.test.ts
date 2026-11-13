@@ -32,6 +32,7 @@ function baseStatus(): DeviceStatus {
       at,
     },
     battery: { state: 'unavailable', reason: 'Sin medidor de batería instalado' },
+    mains: { state: 'unavailable', reason: 'Sin UPS: survival-ups no ha dejado lectura' },
     rtc: { state: 'ok', value: { present: true, batteryVoltageV: 0, hasBattery: false }, at },
     time: { state: 'ok', value: { source: 'ntp', ntpSynchronized: true, timezone: 'Europe/Madrid', verifiedAt: null, node: null, lastStep: null }, at },
     network: { state: 'ok', value: { mode: 'local', interfaces: [{ name: 'wlan0', kind: 'wifi', up: true, ipv4: ['10.0.0.2'], connection: 'Test' }], wifiRadio: 'enabled' }, at },
@@ -86,6 +87,25 @@ describe('deriveAlerts', () => {
     const s = baseStatus()
     if (s.input.state === 'ok') s.input.value = []
     expect(deriveAlerts(s, { apiDown: false, ageSeconds: 1 }).some((a) => a.id === 'touch')).toBe(true)
+  })
+
+  it('UPS: con red no hay alerta; sin red avisa, y con batería baja es peligro', () => {
+    const at = new Date().toISOString()
+    const s = baseStatus()
+    s.mains = { state: 'ok', value: { present: true }, at }
+    expect(deriveAlerts(s, { apiDown: false, ageSeconds: 1 }).some((a) => a.id === 'battery')).toBe(false)
+    s.mains = { state: 'ok', value: { present: false }, at }
+    expect(deriveAlerts(s, { apiDown: false, ageSeconds: 1 }).find((a) => a.id === 'battery')).toMatchObject({ tone: 'warn', key: 'alert.onBattery' })
+    s.battery = { state: 'ok', value: { percent: 64, voltageV: 3.9 }, at }
+    expect(deriveAlerts(s, { apiDown: false, ageSeconds: 1 }).find((a) => a.id === 'battery')).toMatchObject({ tone: 'warn', key: 'alert.onBatteryPct', params: { p: 64 } })
+    s.battery = { state: 'ok', value: { percent: 18, voltageV: 3.6 }, at }
+    expect(deriveAlerts(s, { apiDown: false, ageSeconds: 1 }).find((a) => a.id === 'battery')?.tone).toBe('danger')
+  })
+
+  it('UPS sin lectura de la red: ninguna alerta de batería inventada', () => {
+    const s = baseStatus()
+    s.battery = { state: 'ok', value: { percent: 10, voltageV: 3.5 }, at: new Date().toISOString() }
+    expect(deriveAlerts(s, { apiDown: false, ageSeconds: 1 }).some((a) => a.id === 'battery')).toBe(false)
   })
 
   it('API caída sin datos: una única alerta, nada inventado', () => {

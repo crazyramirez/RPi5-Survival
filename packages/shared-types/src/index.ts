@@ -81,6 +81,18 @@ export interface PowerInfo {
   throttle: ThrottleFlags | null
 }
 
+export interface BatteryInfo {
+  /** Carga 0–100 % medida por el medidor (fuel gauge). */
+  percent: number
+  /** Tensión de la celda (V), si el medidor la da. */
+  voltageV: number | null
+}
+
+export interface MainsInfo {
+  /** true = hay red eléctrica en la entrada de la UPS; false = funcionando con batería. */
+  present: boolean
+}
+
 export interface RtcInfo {
   present: boolean
   /** Tensión de la pila RTC (BATT_V). < 1 V se interpreta como "sin pila". */
@@ -178,7 +190,9 @@ export interface DeviceStatus {
   storage: Probe<MountUsage[]>
   power: Probe<PowerInfo>
   /** Batería principal. Solo 'ok' con un medidor real (UPS/fuel gauge). */
-  battery: Probe<{ percent: number }>
+  battery: Probe<BatteryInfo>
+  /** Red eléctrica en la entrada de la UPS (survival-ups, GPIO6 de la X120x). */
+  mains: Probe<MainsInfo>
   rtc: Probe<RtcInfo>
   time: Probe<TimeInfo>
   network: Probe<NetworkInfo>

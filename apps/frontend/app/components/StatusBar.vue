@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BatteryWarning, Battery, Clock, HardDrive, Satellite, Thermometer, Wifi, WifiOff, TriangleAlert } from '@lucide/vue'
+import { BatteryWarning, Battery, Clock, HardDrive, PlugZap, Satellite, Thermometer, Wifi, WifiOff, TriangleAlert } from '@lucide/vue'
 import type { MessageKey } from '~/locales/es'
 import { formatAge, formatBytes, formatClock, formatDate, formatNumber } from '~/utils/format'
 import { TEMP_CRITICAL_C, TEMP_WARN_C } from '~/utils/alerts'
@@ -55,10 +55,18 @@ const disk = computed(() => {
 /** Vista pública (móvil en el punto de acceso): solo reloj; el estado del equipo no se expone. */
 const publicView = isPublicView()
 
-const battery = computed(() => {
+/** Batería y red de la UPS: solo lo medido (medidor I²C y GPIO6); sin lectura → «no disponible». */
+const power = computed(() => {
   const b = status.value?.battery
-  if (!b || b.state !== 'ok') return null
-  return t('bar.battery', { value: `${b.value.percent} %` })
+  const m = status.value?.mains
+  const pct = b?.state === 'ok' ? `${b.value.percent} %` : null
+  const mains = m?.state === 'ok' ? m.value.present : null
+  if (mains === false) {
+    return { text: pct ? t('bar.battery.noMains', { value: pct }) : t('bar.mains.off'), tone: 'warn', icon: Battery }
+  }
+  if (pct) return { text: t(mains ? 'bar.battery.mains' : 'bar.battery', { value: pct }), tone: 'ok', icon: mains ? PlugZap : Battery }
+  if (mains) return { text: t('bar.mains.on'), tone: 'ok', icon: PlugZap }
+  return { text: t('bar.battery.unavailable'), tone: 'muted', icon: BatteryWarning }
 })
 </script>
 
@@ -103,9 +111,9 @@ const battery = computed(() => {
         <span>{{ disk ?? '—' }}</span>
       </div>
 
-      <div class="item" :class="battery ? 'tone-ok' : 'tone-muted'">
-        <component :is="battery ? Battery : BatteryWarning" :size="18" aria-hidden="true" />
-        <span>{{ battery ?? t('bar.battery.unavailable') }}</span>
+      <div class="item" :class="`tone-${power.tone}`">
+        <component :is="power.icon" :size="18" aria-hidden="true" />
+        <span>{{ power.text }}</span>
       </div>
     </template>
   </header>

@@ -11,9 +11,9 @@
  *   node app/portable/launcher.mjs [--no-browser] [--install]
  */
 import { spawn, spawnSync } from 'node:child_process'
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
-import { availableParallelism, homedir, networkInterfaces } from 'node:os'
+import { availableParallelism, homedir, networkInterfaces, tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DATA_DIRS, PREFERRED_PORTS, browserArgs, browserCandidates, lanAddress, openCommand, optionalServices, platformKey, serviceEnv, shouldRotate } from './lib.mjs'
@@ -209,11 +209,52 @@ function stop(code = 0) {
   Promise.all([...children.values()].map((c) => (c.exitCode === null ? new Promise((r) => c.once('exit', r)) : null))).then(() => process.exit(code))
 }
 
-/** Mensajes del servidor web (IPC): «Cerrar Survival OS» y «Compartir en la red local». */
+/**
+ * Mensajes del servidor web (IPC): «Cerrar Survival OS», «Compartir en la red local», «Reiniciar la
+ * aplicación» (como restart-app en la Pi) y «Aplicar actualización» (preparada por portable-admin.mjs).
+ */
 function onMessage(msg) {
   if (!msg || typeof msg !== 'object') return
   if (msg.type === 'quit') stop(0)
   if (msg.type === 'share') setShare(msg.on === true)
+  if (msg.type === 'restart') {
+    // Cada servicio se relanza solo (supervisor de launch()); la web, la última para que la respuesta llegue.
+    say('Reiniciando servicios…')
+    setTimeout(() => {
+      for (const [name, c] of children) if (name !== 'web' && c.exitCode === null) c.kill()
+      setTimeout(() => children.get('web')?.kill(), 1500)
+    }, 500)
+  }
+  if (msg.type === 'update') applyUpdate()
+}
+
+/**
+ * Aplica la actualización preparada: copia Node y apply-update.mjs a una carpeta temporal (en Windows no se
+ * puede sustituir node.exe mientras corre), lanza el ayudante desacoplado y se cierra. El ayudante cambia las
+ * carpetas cuando este proceso ha terminado y vuelve a abrir Survival OS sin abrir otra ventana.
+ */
+function applyUpdate() {
+  if (!existsSync(join(ROOT, '.update', 'ready.json'))) return
+  try {
+    const tmp = join(tmpdir(), `survival-os-update-${Date.now()}`)
+    mkdirSync(tmp, { recursive: true })
+    const node = join(tmp, process.platform === 'win32' ? 'node.exe' : 'node')
+    copyFileSync(process.execPath, node)
+    copyFileSync(join(APP, 'portable', 'apply-update.mjs'), join(tmp, 'apply-update.mjs'))
+    const child = spawn(node, [join(tmp, 'apply-update.mjs'), ROOT, String(process.pid)], {
+      cwd: tmp,
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true,
+      env: { ...process.env, SURVIVAL_PORTABLE_DATA: DATA },
+    })
+    child.unref()
+    say('Aplicando la actualización: Survival OS se reabrirá en unos segundos…')
+    if (appWindow && appWindow.exitCode === null) appWindow.kill()
+    stop(0)
+  } catch (err) {
+    say(`No se pudo aplicar la actualización: ${err instanceof Error ? err.message : String(err)}`)
+  }
 }
 
 // «Compartir en la red local» (equivalente portable del punto de acceso de la Pi, ADR 0009/0016):
@@ -266,6 +307,9 @@ function findBrowser() {
  * al cerrarla, el proceso termina y con él Survival OS. Si el navegador se desvincula enseguida
  * (p. ej. Chromium en snap), o solo hay navegador por defecto, la app sigue hasta pulsar «Cerrar».
  */
+/** Ventana de la app abierta por este lanzador (se cierra al aplicar una actualización: la nueva abre otra). */
+let appWindow = null
+
 function openBrowser(url, { attach }) {
   const browser = findBrowser()
   if (!browser) {
@@ -276,6 +320,7 @@ function openBrowser(url, { attach }) {
   }
   const started = Date.now()
   const b = spawn(browser, browserArgs(url, join(DATA, 'browser')), { stdio: 'ignore', detached: !attach })
+  appWindow = b
   if (!attach) {
     b.unref()
     return

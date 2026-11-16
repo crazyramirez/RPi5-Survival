@@ -161,7 +161,8 @@ export function serviceEnv({ root, data, ports, platform, arch }) {
       NUXT_LIBRARY_URL: url(ports.library),
       NUXT_KIWIX_URL: url(ports.kiwix),
       NUXT_NAVIGATION_URL: url(ports.navigation),
-      NUXT_ESP32_URL: 'http://127.0.0.1:1',
+      // Pasarela ESP32 dentro de serial-hub (/esp32/*): misma API que services/esp32-gateway.
+      NUXT_ESP32_URL: `${url(ports.mesh)}/esp32`,
       NUXT_MESH_URL: url(ports.mesh),
       NUXT_GAMES_URL: `${url(ports.games)}/`,
       NUXT_GAMES_DIR: join(data, 'games'),

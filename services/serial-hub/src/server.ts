@@ -1,6 +1,7 @@
 import { readFileSync, renameSync, writeFileSync, mkdirSync } from 'node:fs'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import { join } from 'node:path'
+import { Esp32Hub, parseEsp32Ports, portKey } from './esp32.ts'
 import { Gps } from './gps.ts'
 import { Mesh, Store, log, VERSION } from './mesh.ts'
 import { looksLikeNmea } from './nmea.ts'
@@ -8,12 +9,14 @@ import { FrameParser, frame, wantConfig } from './meshtastic.ts'
 import { KNOWN_VIDS, listPorts, openPort, type PortInfo } from './serial.ts'
 
 /**
- * serial-hub (ADR 0016): nodo Meshtastic + receptor GNSS por USB en Windows, macOS y Linux.
+ * serial-hub (ADR 0016): nodo Meshtastic + receptor GNSS + placas ESP32 por USB en Windows, macOS y Linux.
  *   HTTP (MESH_PORT): misma API que survival-mesh (/status /nodes /channels /messages /send /time /track
- *   /refresh) + /ports, /config y /gps.
+ *   /refresh) + /ports, /config y /gps; y bajo /esp32/* la misma API que services/esp32-gateway
+ *   (/esp32/health, /esp32/status, POST /esp32/devices/<id>/ping).
  *   TCP (GPSD_PORT): protocolo gpsd para el servicio de navegación.
- * Detección automática: los puertos USB-serie conocidos se sondean (primero solo escuchando NMEA; luego el
- * intercambio Meshtastic, que no transmite nada por radio). La elección manual siempre manda.
+ * Detección automática: los puertos USB-serie conocidos se sondean (primero solo escuchando NMEA; luego un
+ * ping del protocolo ESP32 v1; luego el intercambio Meshtastic, que no transmite nada por radio). La
+ * elección manual siempre manda y un puerto solo tiene una función.
  */
 const env = process.env
 const HOST = env.SERIAL_HUB_HOST || '127.0.0.1'
@@ -23,18 +26,23 @@ const DATA = env.SERIAL_HUB_DATA || join(process.cwd(), 'serial-hub')
 const CONFIG = join(DATA, 'config.json')
 mkdirSync(DATA, { recursive: true })
 
+const PORT_RE = process.platform === 'win32' ? /^COM\d{1,3}$/i : /^\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100})$/
+
 interface Config {
   meshPort: string | null
   gpsPort: string | null
   gpsBaud: number | null
+  /** Puertos asignados a mano a placas ESP32 (se abren sin sondeo). */
+  esp32: string[]
   auto: boolean
 }
 function loadConfig(): Config {
   try {
     const c = JSON.parse(readFileSync(CONFIG, 'utf8')) as Partial<Config>
-    return { meshPort: c.meshPort ?? null, gpsPort: c.gpsPort ?? null, gpsBaud: c.gpsBaud ?? null, auto: c.auto !== false }
+    const esp32 = Array.isArray(c.esp32) ? c.esp32.filter((p): p is string => typeof p === 'string' && PORT_RE.test(p)) : []
+    return { meshPort: c.meshPort ?? null, gpsPort: c.gpsPort ?? null, gpsBaud: c.gpsBaud ?? null, esp32, auto: c.auto !== false }
   } catch {
-    return { meshPort: null, gpsPort: null, gpsBaud: null, auto: true }
+    return { meshPort: null, gpsPort: null, gpsBaud: null, esp32: [], auto: true }
   }
 }
 const config = loadConfig()
@@ -47,10 +55,10 @@ const store = new Store(join(DATA, 'mesh.db'))
 const mesh = new Mesh(store, DATA)
 const gps = new Gps()
 gps.listen(GPSD_PORT, HOST)
+const esp32 = new Esp32Hub()
 
 // ------------------------------------------------------------------ detección y conexión
 
-const PORT_RE = process.platform === 'win32' ? /^COM\d{1,3}$/i : /^\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100})$/
 let ports: PortInfo[] = []
 const failed = new Map<string, number>() // puerto → momento del último sondeo fallido
 
@@ -97,6 +105,10 @@ async function sync(): Promise<void> {
   try {
     ports = await listPorts()
     const present = new Set(ports.map((p) => p.path))
+    // Un puerto desenchufado y vuelto a enchufar se evalúa enseguida.
+    for (const p of failed.keys()) if (!present.has(p)) failed.delete(p)
+    // ESP32 primero: suelta los puertos que ahora son de la malla o del GPS antes de que estos los abran.
+    await esp32.reconcile(ports, { mesh: config.meshPort, gps: config.gpsPort, manual: config.esp32 })
     // Conexiones configuradas.
     if (config.meshPort && !mesh.connected && present.has(config.meshPort)) {
       await mesh.connect(config.meshPort).catch((err: Error) => {
@@ -107,11 +119,12 @@ async function sync(): Promise<void> {
     if (config.gpsPort && !gps.connected && present.has(config.gpsPort)) {
       await gps.connect(config.gpsPort, config.gpsBaud ?? 9600).catch((err: Error) => log('warn', 'gps_connect_failed', { error: err.message }))
     }
-    // Detección automática de lo que falte, solo en puertos USB-serie conocidos y libres.
-    if (config.auto && (!config.meshPort || !config.gpsPort)) {
-      const busy = new Set([config.meshPort, config.gpsPort])
+    // Detección automática de lo que falte, solo en puertos USB-serie conocidos y libres. Las placas ESP32
+    // pueden ser varias: se busca siempre, pero cada puerto sin respuesta se deja tranquilo un rato (Esp32Hub).
+    if (config.auto) {
+      const reserved = new Set([config.meshPort, config.gpsPort].filter((p): p is string => !!p).map((p) => portKey(p)))
       for (const p of ports) {
-        if (busy.has(p.path) || (p.vid && !KNOWN_VIDS.has(p.vid))) continue
+        if (reserved.has(portKey(p.path)) || esp32.busy().has(portKey(p.path)) || (p.vid && !KNOWN_VIDS.has(p.vid))) continue
         if (Date.now() - (failed.get(p.path) ?? 0) < 120_000) continue
         if (!config.gpsPort) {
           const baud = await probeNmea(p.path)
@@ -124,6 +137,7 @@ async function sync(): Promise<void> {
             continue
           }
         }
+        if (esp32.shouldProbe(p.path) && (await esp32.probe(p)) === 'esp32') continue
         if (!config.meshPort && (await probeMeshtastic(p.path))) {
           config.meshPort = p.path
           saveConfig()
@@ -170,9 +184,22 @@ async function readJson(req: IncomingMessage): Promise<Record<string, unknown>> 
   }
 }
 
+/** /esp32/*: mismas rutas y respuestas que services/esp32-gateway (NUXT_ESP32_URL apunta aquí en la portable). */
+async function handleEsp32(m: string, path: string, res: ServerResponse): Promise<void> {
+  if (m === 'GET' && path === '/health') return send(res, 200, { status: 'ok', service: 'esp32-gateway', version: VERSION })
+  if (m === 'GET' && path === '/status') return send(res, 200, esp32.status())
+  const ping = /^\/devices\/([\w.-]{1,64})\/ping$/.exec(path)
+  if (m === 'POST' && ping?.[1]) {
+    if (!(await esp32.ping(ping[1]))) return send(res, 404, { error: 'Dispositivo no conectado' })
+    return send(res, 200, { ok: true })
+  }
+  return send(res, 404, { error: 'not_found' })
+}
+
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
   const u = new URL(req.url ?? '/', 'http://hub')
   const m = req.method ?? 'GET'
+  if (u.pathname.startsWith('/esp32/')) return handleEsp32(m, u.pathname.slice('/esp32'.length), res)
   if (m === 'GET') {
     if (u.pathname === '/health') return send(res, 200, { status: 'ok', service: 'serial-hub', version: VERSION })
     if (u.pathname === '/status') return send(res, 200, mesh.status())
@@ -187,7 +214,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     if (u.pathname === '/gps') return send(res, 200, gps.status())
     if (u.pathname === '/ports') {
       ports = await listPorts()
-      return send(res, 200, { ports, configured: { mesh: config.meshPort, gps: config.gpsPort, gpsBaud: config.gpsBaud, auto: config.auto } })
+      return send(res, 200, { ports, configured: { mesh: config.meshPort, gps: config.gpsPort, gpsBaud: config.gpsBaud, esp32: config.esp32, auto: config.auto } })
     }
     return send(res, 404, { error: 'not_found' })
   }
@@ -197,12 +224,21 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   if (u.pathname === '/send') return send(res, 200, await mesh.send(body))
   if (u.pathname === '/track') return send(res, 200, mesh.setTrack(body))
   if (u.pathname === '/config') {
-    // {mesh?: puerto|null, gps?: puerto|null, gpsBaud?: n, auto?: bool}
+    // {mesh?: puerto|null, gps?: puerto|null, gpsBaud?: n, esp32?: [puerto…]|null, auto?: bool}
     const port = (v: unknown): string | null => {
       if (v === null) return null
       if (typeof v !== 'string' || !PORT_RE.test(v)) throw Object.assign(new Error('Puerto no válido'), { status: 400 })
       return v
     }
+    // Se valida antes de cambiar nada. Un puerto solo tiene una función: si la malla o el GPS pasan a un
+    // puerto de la lista ESP32, ese puerto sale de la lista; una lista ESP32 con sus puertos se rechaza.
+    const nextMesh = 'mesh' in body ? port(body.mesh) : config.meshPort
+    const nextGps = 'gps' in body ? port(body.gps) : config.gpsPort
+    const nextEsp32 =
+      'esp32' in body
+        ? parseEsp32Ports(body.esp32, (s) => PORT_RE.test(s), [nextMesh, nextGps], (p) => portKey(p))
+        : config.esp32.filter((p) => ![nextMesh, nextGps].some((t) => t && portKey(t) === portKey(p)))
+    config.esp32 = nextEsp32
     if ('mesh' in body) {
       config.meshPort = port(body.mesh)
       mesh.close()
@@ -219,6 +255,8 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     if ('auto' in body) config.auto = body.auto === true
     saveConfig()
     failed.clear()
+    esp32.forget()
+    esp32.release([config.meshPort, config.gpsPort])
     void sync()
     return send(res, 200, { configured: config })
   }
@@ -236,6 +274,7 @@ createServer((req, res) => {
 const stop = (): void => {
   mesh.close()
   gps.close()
+  esp32.close()
   process.exit(0)
 }
 process.on('SIGTERM', stop)

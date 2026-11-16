@@ -59,12 +59,17 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
   update: (b) => ({ media: media(b.media), path: rel(b.path) }),
   'gps-uart': (b) => {
     if (b.action === 'disable') return { action: 'disable' }
+    // Portable: listar puertos serie (GPS por USB, ADR 0016).
+    if (b.action === 'scan') return { action: 'scan' }
     if (b.action !== 'enable') bad('Acción no válida')
     const baud = Number(b.baud ?? 9600)
     if (![4800, 9600, 19200, 38400, 57600, 115200].includes(baud)) bad('Baudios no válidos')
     const pps = b.pps === null || b.pps === undefined ? null : Number(b.pps)
     if (pps !== null && (!Number.isInteger(pps) || pps < 2 || pps > 27)) bad('GPIO PPS no válido')
-    return { action: 'enable', baud, pps }
+    // Portable: puerto USB elegido de la lista (COM3, /dev/ttyACM0, /dev/cu.usbmodem…). En la Pi no se usa.
+    const port = b.port === undefined || b.port === null ? null : String(b.port)
+    if (port !== null && (port.length > 200 || port.includes('\0') || !/^(COM\d{1,3}|\/dev\/[\w./-]+)$/.test(port))) bad('Puerto no válido')
+    return { action: 'enable', baud, pps, ...(port ? { port } : {}) }
   },
   'set-time': (b) => {
     if (typeof b.iso !== 'string' || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(b.iso)) bad('Fecha no válida')
@@ -182,7 +187,8 @@ export async function jobStatus(job: AdminJob): Promise<AdminJobStatus> {
     .slice(-40)
   let data: unknown = null
   // Tareas que devuelven datos (`ap` incluye la contraseña del AP: /api/admin es solo loopback).
-  if (job === 'usb-scan' || job === 'ap' || job === 'mesh' || job === 'time-sync') {
+  // gps-uart: solo en la portable (puertos USB para el GPS).
+  if (job === 'usb-scan' || job === 'ap' || job === 'mesh' || job === 'time-sync' || job === 'gps-uart') {
     try {
       data = JSON.parse(await fs.readFile(`${ADMIN_DIR}/${job}.result.json`, 'utf8')) as unknown
     } catch {

@@ -3,6 +3,18 @@
 ## Sin publicar
 
 ### Añadido
+- **Portable igual de completa que la Pi (ADR 0016):**
+  - **Mantenimiento** con las mismas secciones y tareas.
+  - **USB y copias:**
+    - memorias y discos USB en Windows, macOS y Linux;
+    - importar mapas y documentos;
+    - copia de seguridad verificada (bóveda cifrada incluida).
+  - **Actualizar desde USB** (zip + `.sha256`):
+    - verifica, cambia la aplicación al cerrarse sin tocar los datos y reabre sola;
+    - guarda la versión anterior.
+  - **Reiniciar la aplicación** y **GPS por USB** (puerto y velocidad).
+  - **Pasarela ESP32 de sensores** en los tres sistemas (dentro de `serial-hub`).
+  - **Red y hora** se muestran; las gestiona el sistema operativo del ordenador.
 - **Idiomas: español, inglés, francés e italiano (ADR 0017).**
   - **Interfaz completa** en los cuatro idiomas (917 textos): se elige en la bienvenida (lo primero) o en Pantalla, y se recuerda. Fechas, números, etiquetas del mapa y `lang` del HTML siguen al idioma.
   - **Teclado en pantalla por idioma:** AZERTY con ç en francés, QWERTY con ñ en español, y teclas de acento de cada idioma (´ ` ^ ¨).
@@ -142,6 +154,7 @@
   - `i2c-dev` se añade a `modules-load.d`.
 
 ### Corregido
+- **Kiosco de la Pi tras reiniciarlo:** ya no se queda sin la app en pantalla. Esperaba a que se cerrase el Chromium anterior y, si no, salía.
 - **Malla y Comunicaciones:** un fallo momentáneo del servicio (por ejemplo, al actualizar, que lo reinicia unos 2 s) mostraba «no disponible» y la configuración con «Buscar puertos USB», aunque el nodo estuviera configurado por USB.
   - Ahora se conserva el último estado bueno y se reintenta a los 2 s.
   - Solo tras 3 fallos seguidos se informa de que el servicio no responde.

@@ -69,7 +69,30 @@
     nodo y un GPS conectados.
   - **Ubicación del sistema operativo:** no se usa. Sin Internet, Windows y macOS solo saben dónde están con un GPS,
     que ya cubren el GPS USB y el GNSS del nodo LoRa.
-  - **Pasarela ESP32 (sensores JSON Lines):** sigue solo en Linux; el puerto es el mismo mecanismo que `serial-hub`.
+  - **Pasarela ESP32 (sensores JSON Lines):** en la portable va dentro de `serial-hub` (`/esp32/*`, misma API que
+    `services/esp32-gateway`, que sigue siendo la de la Pi). Detección por contenido en los tres sistemas: un puerto
+    libre que responde al ping con el protocolo v1 es una placa; si escribe el registro de Meshtastic se suelta.
+    Asignación manual con `esp32: [puerto…]` en `/config`. **Sin probar con una placa real.**
+  - **Mantenimiento igual que en la Pi (2026-11-16):** mismas secciones, pestañas y tareas.
+    - **USB y copias** (`scripts/portable-admin.mjs`, el equivalente de `admin-job.py`):
+      - medios externos: en Windows, unidades extraíbles y discos USB; en macOS, `/Volumes`; en Linux,
+        `/media`, `/run/media` y `/mnt`;
+      - importar mapas (PMTiles v3) y documentos (la biblioteca se reindexa sola);
+      - copia de seguridad con la bóveda cifrada, `SHA256SUMS` verificado y `RESTAURAR.txt`.
+    - **Actualizar** desde un zip `survival-os-X.Y.Z-portable*.zip` con su `.sha256`:
+      - se verifica y se prepara en `.update/`;
+      - el lanzador se cierra y `apply-update.mjs`, con una copia temporal de Node (Windows no deja sustituir un
+        `node.exe` en uso), cambia `app/`, `runtime/` y los lanzadores; nunca toca `data/`;
+      - reabre Survival OS y guarda la versión anterior en `.previous`;
+      - si falla, restaura la anterior.
+    - **Reiniciar la aplicación:** el lanzador relanza los servicios.
+    - **GPS:** por USB (elegir puerto y velocidad, o detección automática) en vez de por GPIO.
+    - **Red y hora:** se muestran pero no se cambian, porque las gestiona el sistema operativo del ordenador (en la
+      Pi las cambia la app).
+    - **Probado en Windows 11** con la portable compilada y su lanzador, mediante la API como la interfaz:
+      - escaneo, importar, copia verificada y reinicio de servicios;
+      - actualización completa: cambio de carpetas, reapertura en unos 2 s, datos intactos y `.previous` guardada.
+    - Sin memoria USB real (se usó `SURVIVAL_EXTRA_MEDIA`) ni macOS.
   - **Validado el 2026-11-16 en Windows 11 (portable):**
     - bóveda: crear con PIN, abrir, documento de 135 kB idéntico al leerlo y ningún texto en claro en disco;
     - recuperación: el PIN viejo no abre y el nuevo sí;

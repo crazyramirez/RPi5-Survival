@@ -38,18 +38,35 @@ function commandFor(job: AdminJob, params: Record<string, unknown>): { script: s
     case 'games':
       // Copia offline de los juegos (ADR 0012) con el mismo sincronizador en Node que la Pi.
       return { script: join(scripts, 'games-sync.mjs'), args: [params.action === 'remove' ? 'remove' : 'sync'], env: { GAMES_ROOT: join(portablePaths().data, 'games') } }
+    // Memorias USB, importar, copias y actualizar: lo que en la Pi hace admin-job.py (portable-admin.mjs).
+    case 'usb-scan':
+    case 'maps-import':
+    case 'docs-import':
+    case 'backup':
+    case 'update':
+      return { script: join(scripts, 'portable-admin.mjs'), args: [job, JSON.stringify(params), '--root', root, '--admin', join(portablePaths().data, 'admin')] }
     default:
       return null
   }
 }
 
-const PORTABLE_JOBS = new Set<AdminJob>(['content', 'llm', 'routing', 'content-delete', 'maps-delete', 'mesh', 'games'])
+const PORTABLE_JOBS = new Set<AdminJob>([
+  'content', 'llm', 'routing', 'content-delete', 'maps-delete', 'mesh', 'games',
+  'usb-scan', 'maps-import', 'docs-import', 'backup', 'update', 'restart-app', 'gps-uart',
+])
 
 /**
  * Tareas internas (sin proceso): la malla la gestiona serial-hub (ADR 0016). Devuelven las líneas del
  * registro y el resultado que Mantenimiento/Malla esperan (mismo formato que admin-job.py en la Pi).
  */
 async function inlineJob(job: AdminJob, params: Record<string, unknown>): Promise<{ log: string[]; data?: unknown } | null> {
+  if (job === 'restart-app') {
+    // El lanzador relanza cada servicio (como systemctl restart en la Pi).
+    if (!process.send) throw new Error('Sin lanzador: no se puede reiniciar')
+    process.send({ type: 'restart' })
+    return { log: ['Reiniciando la aplicación…'] }
+  }
+  if (job === 'gps-uart') return gpsJob(params)
   if (job !== 'mesh') return null
   const base = process.env.NUXT_MESH_URL ?? 'http://127.0.0.1:8787'
   if (params.action === 'scan') {
@@ -105,12 +122,34 @@ export async function startPortableJob(job: AdminJob, params: Record<string, unk
     run.code = code ?? 1
     run.finishedAt = new Date().toISOString()
     log.end(`${new Date().toTimeString().slice(0, 8)} ${run.code === 0 ? 'Terminado correctamente' : `ERROR: código ${run.code}`}\n`)
+    // Actualización preparada y verificada: el lanzador la aplica y reabre Survival OS (como la Pi tras update).
+    if (job === 'update' && run.code === 0) setTimeout(() => process.send?.({ type: 'update' }), 3000)
   })
   child.on('error', (err) => {
     run.code = 1
     run.finishedAt = new Date().toISOString()
     log.end(`ERROR: ${err.message}\n`)
   })
+}
+
+/**
+ * GPS por USB (equivalente portable del GPS por GPIO de la Pi): serial-hub lo detecta solo; aquí se fija
+ * a mano un puerto y velocidad, o se vuelve a la detección automática. Mismo resultado que la tarea mesh.
+ */
+async function gpsJob(params: Record<string, unknown>): Promise<{ log: string[]; data?: unknown }> {
+  const base = process.env.NUXT_MESH_URL ?? 'http://127.0.0.1:8787'
+  if (params.action === 'scan') {
+    const r = (await (await fetch(`${base}/ports`, { signal: AbortSignal.timeout(15_000) })).json()) as {
+      ports: { path: string; label: string }[]
+      configured: { gps: string | null; gpsBaud?: number | null; mesh: string | null }
+    }
+    const data = { ports: r.ports.map((p) => ({ path: p.path, device: p.label })), configured: r.configured.gps, baud: r.configured.gpsBaud ?? null, mesh: r.configured.mesh }
+    return { log: [`${data.ports.length} puerto(s) serie encontrados`], data }
+  }
+  const body = params.action === 'disable' ? { gps: null } : { gps: String(params.port ?? ''), gpsBaud: Number(params.baud) || 9600 }
+  const res = await fetch(`${base}/config`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(15_000) })
+  if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { error?: string }).error ?? `HTTP ${res.status}`)
+  return { log: [body.gps ? `GPS configurado en ${body.gps} a ${body.gpsBaud} baudios` : 'GPS en detección automática'] }
 }
 
 export function stopPortableJob(job: AdminJob): void {

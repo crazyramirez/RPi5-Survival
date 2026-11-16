@@ -54,9 +54,9 @@ describe('portable: entorno de servicios', () => {
     expect(env.library.LIBRARY_DATA_DIR).toMatch(/data[\\/]library$/)
     expect(env.games.GAMES_FRAME_ANCESTORS).toContain(`http://127.0.0.1:${PREFERRED_PORTS.web}`)
   })
-  it('malla y GPS por serial-hub; la pasarela ESP32 aún sin equivalente', () => {
+  it('malla, GPS y pasarela ESP32 por serial-hub', () => {
     expect(env.web.NUXT_MESH_URL).toBe(`http://127.0.0.1:${PREFERRED_PORTS.mesh}`)
     expect(env.navigation.GPSD_PORT).toBe(String(PREFERRED_PORTS.gpsd))
-    expect(env.web.NUXT_ESP32_URL).toBe('http://127.0.0.1:1')
+    expect(env.web.NUXT_ESP32_URL).toBe(`http://127.0.0.1:${PREFERRED_PORTS.mesh}/esp32`)
   })
 })

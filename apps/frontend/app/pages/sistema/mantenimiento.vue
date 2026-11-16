@@ -81,6 +81,13 @@ const withZim = ref(false)
 // ---- GPS en GPIO
 const gpsJob = useAdminJob('gps-uart')
 const baud = ref(9600)
+// Portable: GPS por USB (resultado de «scan»: puertos y el configurado).
+const gpsScan = computed(() => (gpsJob.status.value?.data as { ports: { path: string; device: string }[]; configured: string | null } | null) ?? null)
+const gpsPorts = computed(() => gpsScan.value?.ports ?? [])
+const gpsPort = ref('')
+watch(gpsScan, (s) => {
+  if (s?.configured && !gpsPort.value) gpsPort.value = s.configured
+})
 const usePps = ref(false)
 const ppsGpio = ref(18)
 
@@ -166,67 +173,66 @@ const PIN_LEGEND = [
       <button type="button" class="btn back" @click="router.push('/sistema')">{{ t('mnt.back') }}</button>
     </PageHeader>
 
-    <!-- Versión portable (ADR 0014): sin tareas de la Pi; carpetas, instalar y cerrar. -->
-    <div v-if="portable" class="bento">
-      <PortableCard />
-      <ShareCard />
+    <!-- Misma estructura en la Pi y en la portable (ADR 0014): resumen, pestañas y secciones. -->
+    <!-- Resumen: cada baldosa lleva a su sección. -->
+    <div class="overview">
+      <button type="button" class="ov" :class="`tone-${radio === 'enabled' ? (online ? 'ok' : 'info') : 'muted'}`" @click="goTo('net')">
+        <span class="ov-icon"><component :is="radio === 'disabled' ? WifiOff : Wifi" :size="20" aria-hidden="true" /></span>
+        <span class="ov-text">
+          <small>{{ t('ui.mnt.ov.net') }}</small>
+          <!-- Portable: la red la gestiona el sistema del ordenador (sin estado de radio propio). -->
+          <strong>{{ portable ? (online ? t('bar.net.local') : t('bar.net.offline')) : radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown') }}</strong>
+          <span>{{ portable ? t('mnt.net.system') : online ? t('bar.net.local') : t('bar.net.offline') }}</span>
+        </span>
+      </button>
+      <button type="button" class="ov" :class="`tone-${timeSource === 'unverified' || !timeSource ? 'warn' : 'ok'}`" @click="goTo('net')">
+        <span class="ov-icon"><Clock :size="20" aria-hidden="true" /></span>
+        <span class="ov-text">
+          <small>{{ t('ui.mnt.ov.time') }}</small>
+          <strong class="mono">{{ formatClock(now) }}</strong>
+          <span>{{ timeSource ? t(`sys.time.source.${timeSource}` as never) : t('state.unavailable') }}</span>
+        </span>
+      </button>
+      <button type="button" class="ov" :class="`tone-${library?.zim?.downloads.length ? 'info' : library?.zim?.installed.length ? 'ok' : 'muted'}`" @click="goTo('content')">
+        <span class="ov-icon"><Library :size="20" aria-hidden="true" /></span>
+        <span class="ov-text">
+          <small>{{ t('ui.mnt.ov.content') }}</small>
+          <strong>{{ t('lib.books.count', { n: library?.zim?.installed.length ?? 0 }) }}</strong>
+          <span>{{ library?.zim?.downloads.length ? t('ui.mnt.downloading', { n: library?.zim?.downloads.length }) : t('summary.maps.count', { n: maps.length }) }}</span>
+        </span>
+      </button>
+      <button type="button" class="ov" :class="`tone-${assistant?.available ? 'ok' : assistant?.active ? 'info' : 'muted'}`" @click="goTo('content')">
+        <span class="ov-icon"><Bot :size="20" aria-hidden="true" /></span>
+        <span class="ov-text">
+          <small>{{ t('ui.mnt.ov.llm') }}</small>
+          <strong>{{ assistant?.available ? t('mnt.llm.on') : assistant?.active ? t('mnt.llm.loading') : t('mnt.llm.off') }}</strong>
+          <span>{{ activeModel ? t(`mnt.llm.${activeModel.id}` as never) : '—' }}</span>
+        </span>
+      </button>
     </div>
 
-    <template v-else>
-      <!-- Resumen: cada baldosa lleva a su sección. -->
-      <div class="overview">
-        <button type="button" class="ov" :class="`tone-${radio === 'enabled' ? (online ? 'ok' : 'info') : 'muted'}`" @click="goTo('net')">
-          <span class="ov-icon"><component :is="radio === 'disabled' ? WifiOff : Wifi" :size="20" aria-hidden="true" /></span>
-          <span class="ov-text">
-            <small>{{ t('ui.mnt.ov.net') }}</small>
-            <strong>{{ radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown') }}</strong>
-            <span>{{ online ? t('bar.net.local') : t('bar.net.offline') }}</span>
-          </span>
-        </button>
-        <button type="button" class="ov" :class="`tone-${timeSource === 'unverified' || !timeSource ? 'warn' : 'ok'}`" @click="goTo('net')">
-          <span class="ov-icon"><Clock :size="20" aria-hidden="true" /></span>
-          <span class="ov-text">
-            <small>{{ t('ui.mnt.ov.time') }}</small>
-            <strong class="mono">{{ formatClock(now) }}</strong>
-            <span>{{ timeSource ? t(`sys.time.source.${timeSource}` as never) : t('state.unavailable') }}</span>
-          </span>
-        </button>
-        <button type="button" class="ov" :class="`tone-${library?.zim?.downloads.length ? 'info' : library?.zim?.installed.length ? 'ok' : 'muted'}`" @click="goTo('content')">
-          <span class="ov-icon"><Library :size="20" aria-hidden="true" /></span>
-          <span class="ov-text">
-            <small>{{ t('ui.mnt.ov.content') }}</small>
-            <strong>{{ t('lib.books.count', { n: library?.zim?.installed.length ?? 0 }) }}</strong>
-            <span>{{ library?.zim?.downloads.length ? t('ui.mnt.downloading', { n: library?.zim?.downloads.length }) : t('summary.maps.count', { n: maps.length }) }}</span>
-          </span>
-        </button>
-        <button type="button" class="ov" :class="`tone-${assistant?.available ? 'ok' : assistant?.active ? 'info' : 'muted'}`" @click="goTo('content')">
-          <span class="ov-icon"><Bot :size="20" aria-hidden="true" /></span>
-          <span class="ov-text">
-            <small>{{ t('ui.mnt.ov.llm') }}</small>
-            <strong>{{ assistant?.available ? t('mnt.llm.on') : assistant?.active ? t('mnt.llm.loading') : t('mnt.llm.off') }}</strong>
-            <span>{{ activeModel ? t(`mnt.llm.${activeModel.id}` as never) : '—' }}</span>
-          </span>
-        </button>
-      </div>
-
-      <!-- Pestañas fijas de sección. -->
-      <nav class="tabs" :aria-label="t('mnt.title')">
-        <button
-          v-for="sec in SECTIONS" :key="sec" type="button" class="tab"
-          :aria-current="activeSection === sec ? 'true' : undefined" @click="goTo(sec)"
-        >
-          {{ t(`ui.mnt.sec.${sec}`) }}
-        </button>
-      </nav>
-    </template>
+    <!-- Pestañas fijas de sección. -->
+    <nav class="tabs" :aria-label="t('mnt.title')">
+      <button
+        v-for="sec in SECTIONS" :key="sec" type="button" class="tab"
+        :aria-current="activeSection === sec ? 'true' : undefined" @click="goTo(sec)"
+      >
+        {{ t(`ui.mnt.sec.${sec}`) }}
+      </button>
+    </nav>
 
     <!-- ============================================================ Red y hora -->
-    <section v-if="!portable" id="mnt-net" data-sec="net" class="mnt-sec">
+    <section id="mnt-net" data-sec="net" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.net') }}</h2>
+      <!-- Portable: carpetas, instalar en este equipo, cerrar y compartir en la red local. -->
+      <div v-if="portable" class="bento">
+        <PortableCard />
+        <ShareCard />
+      </div>
       <div class="bento">
         <AppCard
           :title="t('mnt.net')" :icon="radio === 'disabled' ? WifiOff : Wifi" :tone="radio === 'enabled' ? 'info' : 'muted'"
-          :pill="radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown')"
+          :pill="portable ? undefined : radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown')"
         >
           <div v-if="interfaces.length" class="ifaces">
             <div v-for="i in interfaces" :key="i.name" class="ui-row iface" :class="`tone-${i.up && i.ipv4.length ? 'ok' : 'muted'}`">
@@ -238,14 +244,15 @@ const PIN_LEGEND = [
               <span class="mono muted">{{ i.ipv4[0] ?? t('ui.mnt.noIp') }}</span>
             </div>
           </div>
-          <p>{{ t('mnt.net.note') }}</p>
-          <button v-if="radio !== 'disabled'" type="button" class="btn" :disabled="wifiJob.running.value" @click="pending = { title: t('mnt.net.offConfirm'), body: t('mnt.net.offBody'), label: t('mnt.net.turnOff'), run: () => wifiJob.start({ state: 'off' }) }">
+          <p v-if="portable" class="notice tone-info">{{ t('mnt.net.portable') }}</p>
+          <p v-else>{{ t('mnt.net.note') }}</p>
+          <button v-if="!portable && radio !== 'disabled'" type="button" class="btn" :disabled="wifiJob.running.value" @click="pending = { title: t('mnt.net.offConfirm'), body: t('mnt.net.offBody'), label: t('mnt.net.turnOff'), run: () => wifiJob.start({ state: 'off' }) }">
             <WifiOff :size="18" /> {{ t('mnt.net.turnOff') }}
           </button>
-          <button v-else type="button" class="btn btn-primary" :disabled="wifiJob.running.value" @click="wifiJob.start({ state: 'on' })">
+          <button v-else-if="!portable" type="button" class="btn btn-primary" :disabled="wifiJob.running.value" @click="wifiJob.start({ state: 'on' })">
             <Wifi :size="18" /> {{ t('mnt.net.turnOn') }}
           </button>
-          <JobLog :status="wifiJob.status.value" :error="wifiJob.error.value" :lines="2" />
+          <JobLog v-if="!portable" :status="wifiJob.status.value" :error="wifiJob.error.value" :lines="2" />
         </AppCard>
 
         <AppCard :title="t('mnt.time')" :icon="Clock" :tone="timeSource === 'unverified' ? 'warn' : 'ok'">
@@ -254,18 +261,19 @@ const PIN_LEGEND = [
             <span v-if="timeSource" class="ui-chip" :class="`tone-${timeSource === 'unverified' ? 'warn' : 'ok'}`">{{ t(`sys.time.source.${timeSource}` as never) }}</span>
             <span class="cap">{{ formatDate(now) }}</span>
           </div>
-          <p>{{ t('mnt.time.note') }}</p>
-          <div class="row2">
+          <p v-if="portable" class="notice tone-info">{{ t('mnt.time.portable') }}</p>
+          <p v-else>{{ t('mnt.time.note') }}</p>
+          <div v-if="!portable" class="row2">
             <input v-model="dateInput" type="date" class="ui-field grow" />
             <input v-model="timeInput" type="time" class="ui-field" />
           </div>
           <button
-            type="button" class="btn" :disabled="!dateInput || !timeInput || timeJob.running.value"
+            v-if="!portable" type="button" class="btn" :disabled="!dateInput || !timeInput || timeJob.running.value"
             @click="pending = { title: t('mnt.time.confirm'), body: `${dateInput} ${timeInput}`, label: t('mnt.time.set'), run: () => timeJob.start({ iso: `${dateInput} ${timeInput}` }) }"
           >
             <Clock :size="18" /> {{ t('mnt.time.set') }}
           </button>
-          <JobLog :status="timeJob.status.value" :error="timeJob.error.value" :lines="2" />
+          <JobLog v-if="!portable" :status="timeJob.status.value" :error="timeJob.error.value" :lines="2" />
         </AppCard>
       </div>
     </section>
@@ -380,7 +388,7 @@ const PIN_LEGEND = [
     </section>
 
     <!-- ============================================================ USB y copias -->
-    <section v-if="!portable" id="mnt-usb" data-sec="usb" class="mnt-sec">
+    <section id="mnt-usb" data-sec="usb" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.usb') }}</h2>
       <div class="bento">
         <AppCard :title="t('mnt.usb')" :icon="Usb" :tone="scan?.media.length ? 'info' : 'muted'">
@@ -447,9 +455,36 @@ const PIN_LEGEND = [
     </section>
 
     <!-- ============================================================ Hardware -->
-    <section v-if="!portable" id="mnt-hw" data-sec="hw" class="mnt-sec">
+    <section id="mnt-hw" data-sec="hw" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.hw') }}</h2>
-      <AppCard :title="t('mnt.gps')" :icon="Satellite" tone="muted">
+      <!-- Portable: GPS por USB (serial-hub lo detecta solo; aquí se fija puerto y velocidad). -->
+      <AppCard v-if="portable" :title="t('mnt.gpsUsb')" :icon="Satellite" :tone="gpsScan?.configured ? 'ok' : 'info'">
+        <p>{{ t('mnt.gpsUsb.note') }}</p>
+        <button type="button" class="btn" :disabled="gpsJob.running.value" @click="gpsJob.start({ action: 'scan' })">
+          <Usb :size="18" aria-hidden="true" /> {{ t('mnt.gpsUsb.scan') }}
+        </button>
+        <template v-if="gpsScan">
+          <p v-if="!gpsPorts.length" class="muted">{{ t('mnt.gpsUsb.none') }}</p>
+          <div v-else class="row2">
+            <select v-model="gpsPort" class="ui-field grow" :aria-label="t('mnt.gpsUsb.port')">
+              <option value="" disabled>{{ t('mnt.gpsUsb.port') }}</option>
+              <option v-for="p in gpsPorts" :key="p.path" :value="p.path">{{ p.path }}{{ p.device ? ` · ${p.device}` : '' }}</option>
+            </select>
+            <select v-model.number="baud" class="ui-field" :aria-label="t('ui.mnt.baud', { n: baud })">
+              <option v-for="b in [4800, 9600, 19200, 38400, 57600, 115200]" :key="b" :value="b">{{ t('ui.mnt.baud', { n: b }) }}</option>
+            </select>
+          </div>
+          <p v-if="gpsScan.configured" class="faint small">{{ t('mnt.gpsUsb.current', { port: gpsScan.configured }) }}</p>
+        </template>
+        <div class="row2">
+          <button type="button" class="btn btn-primary grow" :disabled="!gpsPort || gpsJob.running.value" @click="gpsJob.start({ action: 'enable', port: gpsPort, baud })">
+            <Satellite :size="18" aria-hidden="true" /> {{ t('mnt.gpsUsb.enable') }}
+          </button>
+          <button type="button" class="btn" :disabled="gpsJob.running.value" @click="gpsJob.start({ action: 'disable' })">{{ t('mnt.gpsUsb.auto') }}</button>
+        </div>
+        <JobLog :status="gpsJob.status.value" :error="gpsJob.error.value" :lines="2" />
+      </AppCard>
+      <AppCard v-else :title="t('mnt.gps')" :icon="Satellite" tone="muted">
         <div class="notice tone-danger"><TriangleAlert :size="18" aria-hidden="true" /><span>{{ t('mnt.gps.voltage') }}</span></div>
         <div class="gps">
           <!-- Esquema de los pines 1–12 del conector GPIO (impares a la izquierda). -->

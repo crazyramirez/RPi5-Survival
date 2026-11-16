@@ -7,7 +7,6 @@ import { LLM_MODELS } from '~/utils/llm'
 const t = useT()
 const portable = usePortable()
 const android = useAndroid()
-const router = useRouter()
 const { status, refresh: refreshDevice } = useDeviceStatus()
 const now = useNow()
 
@@ -104,10 +103,11 @@ async function confirm(): Promise<void> {
 const key = (f: UsbFile): string => `${f.media}::${f.path}`
 
 // ---- Presentación: secciones con pestañas fijas (solo navegación visual, sin efectos en el equipo).
-const SECTIONS = ['net', 'content', 'usb', 'hw'] as const
+// Contenidos primero: es a lo que más se viene (descargas y «Descargarlo todo»).
+const SECTIONS = ['content', 'net', 'usb', 'hw'] as const
 type SectionId = (typeof SECTIONS)[number]
 const pageEl = ref<HTMLElement | null>(null)
-const activeSection = ref<SectionId>('net')
+const activeSection = ref<SectionId>('content')
 function goTo(id: SectionId): void {
   activeSection.value = id
   document.getElementById(`mnt-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -170,9 +170,7 @@ const PIN_LEGEND = [
 
 <template>
   <div ref="pageEl" class="page">
-    <PageHeader :title="t('mnt.title')" :icon="Wrench">
-      <button type="button" class="btn back" @click="router.push('/sistema')">{{ t('mnt.back') }}</button>
-    </PageHeader>
+    <PageHeader :title="t('mnt.title')" :icon="Wrench" :back="{ to: '/sistema', label: t('module.system') }" />
 
     <!-- Misma estructura en la Pi y en la portable (ADR 0014): resumen, pestañas y secciones. -->
     <!-- Resumen: cada baldosa lleva a su sección. -->
@@ -221,68 +219,6 @@ const PIN_LEGEND = [
         {{ t(`ui.mnt.sec.${sec}`) }}
       </button>
     </nav>
-
-    <!-- ============================================================ Red y hora -->
-    <section id="mnt-net" data-sec="net" class="mnt-sec">
-      <h2 class="ui-sec">{{ t('ui.mnt.sec.net') }}</h2>
-      <!-- Portable: carpetas, instalar en este equipo, cerrar y compartir en la red local. -->
-      <div v-if="portable" class="bento">
-        <!-- App Android (ADR 0020): dispositivo, carpeta de datos y permisos en lugar de carpetas e instalación. -->
-        <AndroidCard v-if="android" />
-        <PortableCard v-else />
-        <UsbCard v-if="!android" />
-        <ShareCard />
-      </div>
-      <div class="bento">
-        <!-- Actualizaciones desde GitHub (ADR 0021): Pi, portable y Android. -->
-        <UpdateCard id="mnt-update" />
-        <AppCard
-          :title="t('mnt.net')" :icon="radio === 'disabled' ? WifiOff : Wifi" :tone="radio === 'enabled' ? 'info' : 'muted'"
-          :pill="portable ? undefined : radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown')"
-        >
-          <div v-if="interfaces.length" class="ifaces">
-            <div v-for="i in interfaces" :key="i.name" class="ui-row iface" :class="`tone-${i.up && i.ipv4.length ? 'ok' : 'muted'}`">
-              <span class="dot" aria-hidden="true" />
-              <span class="grow">
-                <strong class="mono">{{ i.name }}</strong>
-                <template v-if="i.connection"> · {{ i.connection }}</template>
-              </span>
-              <span class="mono muted">{{ i.ipv4[0] ?? t('ui.mnt.noIp') }}</span>
-            </div>
-          </div>
-          <p v-if="portable" class="notice tone-info">{{ t('mnt.net.portable') }}</p>
-          <p v-else>{{ t('mnt.net.note') }}</p>
-          <button v-if="!portable && radio !== 'disabled'" type="button" class="btn" :disabled="wifiJob.running.value" @click="pending = { title: t('mnt.net.offConfirm'), body: t('mnt.net.offBody'), label: t('mnt.net.turnOff'), run: () => wifiJob.start({ state: 'off' }) }">
-            <WifiOff :size="18" /> {{ t('mnt.net.turnOff') }}
-          </button>
-          <button v-else-if="!portable" type="button" class="btn btn-primary" :disabled="wifiJob.running.value" @click="wifiJob.start({ state: 'on' })">
-            <Wifi :size="18" /> {{ t('mnt.net.turnOn') }}
-          </button>
-          <JobLog v-if="!portable" :status="wifiJob.status.value" :error="wifiJob.error.value" :lines="2" />
-        </AppCard>
-
-        <AppCard :title="t('mnt.time')" :icon="Clock" :tone="timeSource === 'unverified' ? 'warn' : 'ok'">
-          <div class="ui-figure">
-            <span class="num mono">{{ formatClock(now) }}</span>
-            <span v-if="timeSource" class="ui-chip" :class="`tone-${timeSource === 'unverified' ? 'warn' : 'ok'}`">{{ t(`sys.time.source.${timeSource}` as never) }}</span>
-            <span class="cap">{{ formatDate(now) }}</span>
-          </div>
-          <p v-if="portable" class="notice tone-info">{{ t('mnt.time.portable') }}</p>
-          <p v-else>{{ t('mnt.time.note') }}</p>
-          <div v-if="!portable" class="row2">
-            <input v-model="dateInput" type="date" class="ui-field grow" />
-            <input v-model="timeInput" type="time" class="ui-field" />
-          </div>
-          <button
-            v-if="!portable" type="button" class="btn" :disabled="!dateInput || !timeInput || timeJob.running.value"
-            @click="pending = { title: t('mnt.time.confirm'), body: `${dateInput} ${timeInput}`, label: t('mnt.time.set'), run: () => timeJob.start({ iso: `${dateInput} ${timeInput}` }) }"
-          >
-            <Clock :size="18" /> {{ t('mnt.time.set') }}
-          </button>
-          <JobLog v-if="!portable" :status="timeJob.status.value" :error="timeJob.error.value" :lines="2" />
-        </AppCard>
-      </div>
-    </section>
 
     <!-- ============================================================ Contenidos -->
     <section id="mnt-content" data-sec="content" class="mnt-sec">
@@ -395,6 +331,68 @@ const PIN_LEGEND = [
           <CountryMapSearch :online="online" />
           <JobLog :status="mapImportJob.status.value" :error="mapImportJob.error.value" :lines="3" />
           <JobLog :status="mapDeleteJob.status.value" :error="mapDeleteJob.error.value" :lines="2" />
+        </AppCard>
+      </div>
+    </section>
+
+    <!-- ============================================================ Red y hora -->
+    <section id="mnt-net" data-sec="net" class="mnt-sec">
+      <h2 class="ui-sec">{{ t('ui.mnt.sec.net') }}</h2>
+      <!-- Portable: carpetas, instalar en este equipo, cerrar y compartir en la red local. -->
+      <div v-if="portable" class="bento">
+        <!-- App Android (ADR 0020): dispositivo, carpeta de datos y permisos en lugar de carpetas e instalación. -->
+        <AndroidCard v-if="android" />
+        <PortableCard v-else />
+        <UsbCard v-if="!android" />
+        <ShareCard />
+      </div>
+      <div class="bento">
+        <!-- Actualizaciones desde GitHub (ADR 0021): Pi, portable y Android. -->
+        <UpdateCard id="mnt-update" />
+        <AppCard
+          :title="t('mnt.net')" :icon="radio === 'disabled' ? WifiOff : Wifi" :tone="radio === 'enabled' ? 'info' : 'muted'"
+          :pill="portable ? undefined : radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown')"
+        >
+          <div v-if="interfaces.length" class="ifaces">
+            <div v-for="i in interfaces" :key="i.name" class="ui-row iface" :class="`tone-${i.up && i.ipv4.length ? 'ok' : 'muted'}`">
+              <span class="dot" aria-hidden="true" />
+              <span class="grow">
+                <strong class="mono">{{ i.name }}</strong>
+                <template v-if="i.connection"> · {{ i.connection }}</template>
+              </span>
+              <span class="mono muted">{{ i.ipv4[0] ?? t('ui.mnt.noIp') }}</span>
+            </div>
+          </div>
+          <p v-if="portable" class="notice tone-info">{{ t('mnt.net.portable') }}</p>
+          <p v-else>{{ t('mnt.net.note') }}</p>
+          <button v-if="!portable && radio !== 'disabled'" type="button" class="btn" :disabled="wifiJob.running.value" @click="pending = { title: t('mnt.net.offConfirm'), body: t('mnt.net.offBody'), label: t('mnt.net.turnOff'), run: () => wifiJob.start({ state: 'off' }) }">
+            <WifiOff :size="18" /> {{ t('mnt.net.turnOff') }}
+          </button>
+          <button v-else-if="!portable" type="button" class="btn btn-primary" :disabled="wifiJob.running.value" @click="wifiJob.start({ state: 'on' })">
+            <Wifi :size="18" /> {{ t('mnt.net.turnOn') }}
+          </button>
+          <JobLog v-if="!portable" :status="wifiJob.status.value" :error="wifiJob.error.value" :lines="2" />
+        </AppCard>
+
+        <AppCard :title="t('mnt.time')" :icon="Clock" :tone="timeSource === 'unverified' ? 'warn' : 'ok'">
+          <div class="ui-figure">
+            <span class="num mono">{{ formatClock(now) }}</span>
+            <span v-if="timeSource" class="ui-chip" :class="`tone-${timeSource === 'unverified' ? 'warn' : 'ok'}`">{{ t(`sys.time.source.${timeSource}` as never) }}</span>
+            <span class="cap">{{ formatDate(now) }}</span>
+          </div>
+          <p v-if="portable" class="notice tone-info">{{ t('mnt.time.portable') }}</p>
+          <p v-else>{{ t('mnt.time.note') }}</p>
+          <div v-if="!portable" class="row2">
+            <input v-model="dateInput" type="date" class="ui-field grow" />
+            <input v-model="timeInput" type="time" class="ui-field" />
+          </div>
+          <button
+            v-if="!portable" type="button" class="btn" :disabled="!dateInput || !timeInput || timeJob.running.value"
+            @click="pending = { title: t('mnt.time.confirm'), body: `${dateInput} ${timeInput}`, label: t('mnt.time.set'), run: () => timeJob.start({ iso: `${dateInput} ${timeInput}` }) }"
+          >
+            <Clock :size="18" /> {{ t('mnt.time.set') }}
+          </button>
+          <JobLog v-if="!portable" :status="timeJob.status.value" :error="timeJob.error.value" :lines="2" />
         </AppCard>
       </div>
     </section>
@@ -540,11 +538,6 @@ const PIN_LEGEND = [
 </template>
 
 <style scoped>
-.back {
-  margin-left: auto;
-  min-height: 2.75rem; /* ≥ 44 px táctil */
-}
-
 /* ------------------------------------------------------------ Resumen */
 .overview {
   display: grid;

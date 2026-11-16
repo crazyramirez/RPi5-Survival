@@ -65,12 +65,27 @@ export function bcp47(): string {
   return LOCALES.find((l) => l.code === locale.value)?.bcp47 ?? 'es-ES'
 }
 
-/** Sustituye `{nombre}` por parámetros. Claves desconocidas se dejan visibles para detectarlas. */
+/**
+ * Sustituye `{nombre}` por parámetros. Claves desconocidas se dejan visibles para detectarlas.
+ * Plural: `{n:libro|libros}` elige la forma según el número y las reglas del idioma (Intl.PluralRules: en
+ * francés 0 y 1 son singular). Así nunca se ve «libro(s)».
+ */
 export function interpolate(template: string, params?: MessageParams): string {
   if (!params) return template
-  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
-    params[name] !== undefined ? String(params[name]) : match,
-  )
+  return template
+    .replace(/\{(\w+):([^|{}]*)\|([^{}]*)\}/g, (match, name: string, one: string, other: string) => {
+      const n = Number(params[name])
+      if (params[name] === undefined || !Number.isFinite(n)) return match
+      return pluralRules().select(n) === 'one' ? one : other
+    })
+    .replace(/\{(\w+)\}/g, (match, name: string) => (params[name] !== undefined ? String(params[name]) : match))
+}
+
+let rules: { lang: string; pr: Intl.PluralRules } | null = null
+function pluralRules(): Intl.PluralRules {
+  const lang = bcp47()
+  if (!rules || rules.lang !== lang) rules = { lang, pr: new Intl.PluralRules(lang) }
+  return rules.pr
 }
 
 /** Texto de la interfaz en el idioma activo; si una traducción faltara, el español. */

@@ -16,6 +16,17 @@ async function load(): Promise<void> {
   loading.value = false
 }
 onMounted(load)
+
+// Sin descargar: la tarjeta de descarga aquí mismo (antes mandaba a Mantenimiento). Al terminar, se abren solos.
+const { status: device } = useDeviceStatus()
+const online = computed(() => device.value?.network.state === 'ok' && device.value.network.value.mode === 'local')
+let timer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  timer = setInterval(() => {
+    if (!status.value?.available) void load()
+  }, 10_000)
+})
+onBeforeUnmount(() => timer && clearInterval(timer))
 </script>
 
 <template>
@@ -29,6 +40,9 @@ onMounted(load)
       sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-modals"
       referrerpolicy="no-referrer"
     />
+    <div v-else-if="status && !status.installed" class="empty">
+      <GamesCard :online="online" />
+    </div>
     <div v-else-if="!loading" class="empty">
       <AppCard :title="t('games.title')" :icon="Gamepad2" tone="muted">
         <p>{{ status && !status.installed ? t('games.notInstalled') : t('games.unavailable') }}</p>

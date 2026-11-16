@@ -46,3 +46,29 @@ describe('translate / translateServer', () => {
     locale.value = 'es'
   })
 })
+
+describe('plurales {n:uno|varios}', () => {
+  it('elige la forma según el número y el idioma', () => {
+    const prev = locale.value
+    try {
+      locale.value = 'es'
+      expect(translate('lib.books.count', { n: 1 })).toBe('1 libro')
+      expect(translate('lib.books.count', { n: 0 })).toBe('0 libros')
+      expect(translate('summary.comms', { n: 3 })).toBe('3 interfaces activas')
+      locale.value = 'fr'
+      expect(translate('lib.books.count', { n: 0 })).toBe('0 livre')
+      expect(translate('lib.books.count', { n: 2 })).toBe('2 livres')
+      locale.value = 'en'
+      expect(translate('lib.docs.count', { n: 1 })).toBe('1 document')
+    } finally {
+      locale.value = prev
+    }
+  })
+  it('sin «(s)» ni «/i» de robot en los textos con número', () => {
+    for (const [name, cat] of [['es', es], ['en', en], ['fr', fr], ['it', itCat]] as const) {
+      for (const [k, v] of Object.entries(cat)) {
+        if (/\{n\}/.test(v)) expect(/\w\((s|es)\)|\w\/[aeio]\b/.test(v), `${name} ${k}: ${v}`).toBe(false)
+      }
+    }
+  })
+})

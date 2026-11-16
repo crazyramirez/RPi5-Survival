@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.11.4 — 2026-11-16 · Más fácil de usar
+
+### Cambiado
+- **Inicio guía cuando el equipo está vacío:** aviso naranja «El equipo aún no tiene contenidos» con acceso
+  directo a «Descargarlo todo».
+- **Mantenimiento empieza por Contenidos** (antes «Red y hora»), que es a lo que más se viene.
+- **«Volver» siempre en el mismo sitio:** a la izquierda del título, también en Mantenimiento y Notas.
+- **Juegos sin descargar:** se descargan desde la propia pantalla de Juegos, sin pasar por Mantenimiento.
+- **Plurales correctos** en los cuatro idiomas: «1 libro», «3 interfaces activas»… en vez de «libro(s)».
+
 ## 0.11.3 — 2026-11-16 · Aviso de versión, bienvenida y accesos en Sistema
 
 ### Añadido

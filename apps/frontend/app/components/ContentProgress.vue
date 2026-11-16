@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Download } from '@lucide/vue'
+import { CloudDownload, Download } from '@lucide/vue'
 import type { ContentOverview } from '@survival-os/shared-types'
 
 /**
  * Tira de progreso en el inicio mientras se preparan los contenidos (ADR 0015). Datos reales del
  * motor: cuántos elementos de la selección están instalados y qué se descarga ahora.
+ * Equipo todavía vacío (nada instalado ni descargándose): aviso con acceso directo a «Descargarlo todo».
  */
 const t = useT()
 const ov = ref<ContentOverview | null>(null)
@@ -30,6 +31,7 @@ const view = computed(() => {
   const pct = a?.total && a.done != null ? `${Math.min(100, Math.floor((a.done / a.total) * 100))} %` : ''
   return { done, total: tracked.length, name, pct }
 })
+const empty = computed(() => !!ov.value && !job.running.value && !active.value && !ov.value.items.some((i) => i.state === 'installed'))
 </script>
 
 <template>
@@ -40,6 +42,14 @@ const view = computed(() => {
       <small v-if="view.name">{{ t('content.progressNow', { name: view.name, pct: view.pct }) }}</small>
     </span>
     <span class="link">{{ t('content.progressLink') }}</span>
+  </NuxtLink>
+  <NuxtLink v-else-if="empty" to="/sistema/mantenimiento#mnt-content" class="progress empty">
+    <CloudDownload :size="22" aria-hidden="true" />
+    <span class="grow">
+      <strong>{{ t('content.empty.title') }}</strong>
+      <small>{{ t('content.empty.body') }}</small>
+    </span>
+    <span class="cta">{{ t('all.title') }}</span>
   </NuxtLink>
 </template>
 
@@ -78,5 +88,43 @@ const view = computed(() => {
 .link {
   font-weight: 700;
   color: var(--info);
+}
+
+/* Equipo vacío: el mismo naranja que «Mantenimiento» para que se vea a la primera. */
+.empty {
+  border-color: color-mix(in srgb, var(--maint) 55%, var(--border));
+  background: color-mix(in srgb, var(--maint) 10%, var(--surface));
+}
+
+.empty svg {
+  color: var(--maint);
+}
+
+.cta {
+  flex: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--maint);
+  color: var(--maint-ink);
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .empty {
+    flex-wrap: wrap;
+  }
+
+  .empty .grow {
+    flex-basis: calc(100% - 2.5rem);
+  }
+
+  .empty .grow small {
+    white-space: normal;
+  }
+
+  .empty .cta {
+    flex: 1 1 100%;
+    text-align: center;
+  }
 }
 </style>

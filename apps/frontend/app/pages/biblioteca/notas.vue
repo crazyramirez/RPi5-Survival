@@ -3,7 +3,7 @@
  * Notas, diario y listas de comprobación. Se guardan solas, entran en la búsqueda de la biblioteca y el
  * asistente puede citarlas. No se cifran: lo sensible va a la bóveda (se dice en pantalla).
  */
-import { BookOpen, CheckSquare, Clock, Eye, NotebookPen, Pencil, Pin, PinOff, Plus, Search, ShieldAlert, Square, Trash2 } from '@lucide/vue'
+import { CheckSquare, Clock, Eye, NotebookPen, Pencil, Pin, PinOff, Plus, Search, ShieldAlert, Square, Trash2 } from '@lucide/vue'
 import type { Note, NoteSummary } from '@survival-os/shared-types'
 
 const t = useT()
@@ -184,9 +184,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="page notes">
-    <PageHeader :title="t('notes.title')" :icon="NotebookPen">
-      <NuxtLink to="/biblioteca" class="btn to-lib"><BookOpen :size="18" aria-hidden="true" />{{ t('module.library') }}</NuxtLink>
-    </PageHeader>
+    <PageHeader :title="t('notes.title')" :icon="NotebookPen" :back="{ to: '/biblioteca', label: t('module.library') }" />
 
     <p v-if="loadError" class="notice tone-danger">{{ loadError }}</p>
 
@@ -281,11 +279,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* Acción de cabecera a la derecha, como en el resto de pantallas. */
-.to-lib {
-  margin-left: auto;
-}
-
 .layout {
   display: grid;
   grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr);

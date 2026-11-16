@@ -13,7 +13,7 @@
  */
 import { spawnSync } from 'node:child_process'
 import { createHash, randomBytes } from 'node:crypto'
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { missingBuild, stageApp, writeZip } from '../../scripts/stage-app.mjs'
@@ -77,7 +77,7 @@ for (const a of Object.keys(ABIS)) {
   if (!abis.includes(a) && existsSync(dir)) {
     rmSync(parked, { recursive: true, force: true })
     mkdirSync(dirname(parked), { recursive: true })
-    spawnSync(win ? 'cmd' : 'mv', win ? ['/c', 'move', dir, parked] : [dir, parked])
+    renameSync(dir, parked)
   }
 }
 
@@ -126,12 +126,16 @@ if (!debug) {
   genv.ORG_GRADLE_PROJECT_survivalKeystorePassword = readFileSync(ksPass, 'utf8').trim()
 }
 say(`gradle ${task} (${abis.join(', ')})`)
-const g = spawnSync(gradlew, [task, '--console=plain'], { cwd: ANDROID, stdio: 'inherit', env: genv, shell: win })
+// En Windows, gradlew.bat necesita cmd; se llama por su nombre relativo (cwd = android/) para que una ruta con espacios
+// («D:\DEV\Mi proyecto\…») no se parta en el intérprete.
+const g = win
+  ? spawnSync(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'gradlew.bat', task, '--console=plain'], { cwd: ANDROID, stdio: 'inherit', env: genv })
+  : spawnSync(gradlew, [task, '--console=plain'], { cwd: ANDROID, stdio: 'inherit', env: genv })
 // Devolver las ABI apartadas.
 for (const a of Object.keys(ABIS)) {
   const parked = join(ROOT, '.data', 'android-cache', 'parked', a)
   const dir = join(ANDROID, 'app', 'src', 'main', 'jniLibs', a)
-  if (existsSync(parked) && !existsSync(dir)) spawnSync(win ? 'cmd' : 'mv', win ? ['/c', 'move', parked, dir] : [parked, dir])
+  if (existsSync(parked) && !existsSync(dir)) renameSync(parked, dir)
 }
 if (g.status !== 0) fail('Gradle falló')
 

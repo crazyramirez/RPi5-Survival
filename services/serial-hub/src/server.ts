@@ -6,7 +6,7 @@ import { Gps } from './gps.ts'
 import { Mesh, Store, log, VERSION } from './mesh.ts'
 import { looksLikeNmea } from './nmea.ts'
 import { FrameParser, frame, wantConfig } from './meshtastic.ts'
-import { KNOWN_VIDS, listPorts, openPort, type PortInfo } from './serial.ts'
+import { ANDROID_GNSS, ANDROID_PORT_RE, KNOWN_VIDS, listPorts, openPort, type PortInfo } from './serial.ts'
 
 /**
  * serial-hub (ADR 0016): nodo Meshtastic + receptor GNSS + placas ESP32 por USB en Windows, macOS y Linux.
@@ -26,7 +26,12 @@ const DATA = env.SERIAL_HUB_DATA || join(process.cwd(), 'serial-hub')
 const CONFIG = join(DATA, 'config.json')
 mkdirSync(DATA, { recursive: true })
 
-const PORT_RE = process.platform === 'win32' ? /^COM\d{1,3}$/i : /^\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100})$/
+const PORT_RE =
+  process.platform === 'win32'
+    ? /^COM\d{1,3}$/i
+    : process.platform === 'android'
+      ? ANDROID_PORT_RE
+      : /^\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100})$/
 
 interface Config {
   meshPort: string | null
@@ -54,7 +59,9 @@ function saveConfig(): void {
 const store = new Store(join(DATA, 'mesh.db'))
 const mesh = new Mesh(store, DATA)
 const gps = new Gps()
-gps.listen(GPSD_PORT, HOST)
+// Android (ADR 0020): socket Unix en la carpeta privada de la app; cualquier otra app podría leer el TCP de loopback.
+if (env.GPSD_SOCKET) gps.listenSocket(env.GPSD_SOCKET)
+else gps.listen(GPSD_PORT, HOST)
 const esp32 = new Esp32Hub()
 
 // ------------------------------------------------------------------ detección y conexión
@@ -122,8 +129,17 @@ async function sync(): Promise<void> {
     // Detección automática de lo que falte, solo en puertos USB-serie conocidos y libres. Las placas ESP32
     // pueden ser varias: se busca siempre, pero cada puerto sin respuesta se deja tranquilo un rato (Esp32Hub).
     if (config.auto) {
+      // Android: el GNSS interno de la tablet es un receptor conocido; se usa sin sondeo si no hay otro GPS.
+      if (!config.gpsPort && present.has(ANDROID_GNSS)) {
+        config.gpsPort = ANDROID_GNSS
+        config.gpsBaud = 9600
+        saveConfig()
+        log('info', 'gps_detected', { port: ANDROID_GNSS })
+        await gps.connect(ANDROID_GNSS, 9600).catch((err: Error) => log('warn', 'gps_connect_failed', { error: err.message }))
+      }
       const reserved = new Set([config.meshPort, config.gpsPort].filter((p): p is string => !!p).map((p) => portKey(p)))
       for (const p of ports) {
+        if (p.path === ANDROID_GNSS) continue
         if (reserved.has(portKey(p.path)) || esp32.busy().has(portKey(p.path)) || (p.vid && !KNOWN_VIDS.has(p.vid))) continue
         if (Date.now() - (failed.get(p.path) ?? 0) < 120_000) continue
         if (!config.gpsPort) {

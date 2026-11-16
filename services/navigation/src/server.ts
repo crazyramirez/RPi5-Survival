@@ -84,7 +84,7 @@ if (!SIMULATE) {
   setInterval(() => void pollMesh(), 20_000).unref()
 }
 
-const gpsd = new GpsdClient(env.GPSD_HOST || '127.0.0.1', Number.parseInt(env.GPSD_PORT ?? '', 10) || 2947, onFix)
+const gpsd = new GpsdClient(env.GPSD_HOST || '127.0.0.1', Number.parseInt(env.GPSD_PORT ?? '', 10) || 2947, onFix, env.GPSD_SOCKET || null)
 
 function status(): NavStatus {
   const fix = currentFix()

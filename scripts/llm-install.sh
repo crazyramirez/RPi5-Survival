@@ -15,6 +15,7 @@ CATALOG='
 qwen3-4b      Qwen3-4B-Instruct-2507-Q4_0.gguf   unsloth/Qwen3-4B-Instruct-2507-GGUF   e0ba675d86ab277c61701c6793659b2ae801d95e3be791464c321e6fbf613be2 2375773280
 gemma3-4b     gemma-3-4b-it-Q4_K_M.gguf          ggml-org/gemma-3-4b-it-GGUF           882e8d2db44dc554fb0ea5077cb7e4bc49e7342a1f0da57901c0802ea21a0863 2489757856
 llama3.2-3b   Llama-3.2-3B-Instruct-Q4_0.gguf    bartowski/Llama-3.2-3B-Instruct-GGUF  4d491003bf6b470e4d04233824c5c939b76d6c81974ba17a3ff207343e1d8e85 1921909280
+qwen2.5-1.5b  qwen2.5-1.5b-instruct-q4_0.gguf    Qwen/Qwen2.5-1.5B-Instruct-GGUF       dcd819ff094852c38faba6873d8ff0c9d51eadb2844539e52042ae5d647bbfdb 1066227232
 '
 lookup() { echo "$CATALOG" | awk -v id="$1" '$1==id'; }
 

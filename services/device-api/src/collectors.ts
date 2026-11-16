@@ -3,6 +3,7 @@
  * 'ok' solo con una medida real; 'unavailable' con motivo si no hay hardware/herramienta.
  */
 import os from 'node:os'
+import { join } from 'node:path'
 import { statfs } from 'node:fs/promises'
 import type {
   BatteryInfo,
@@ -25,6 +26,7 @@ import type {
   SoftwareInfo,
   TimeInfo,
 } from '@survival-os/shared-types'
+import { androidDevice, isAndroid, parseLoadavg } from './android.ts'
 import { isLinux, notLinux, ok, unavailable, failed } from './probe.ts'
 import { exists, listDir, readBytes, readText, run } from './sys.ts'
 import {
@@ -50,6 +52,16 @@ import {
 const RTC_BATTERY_MIN_V = 1.0
 
 export async function collectPlatform(): Promise<PlatformInfo> {
+  if (isAndroid()) {
+    const a = await androidDevice()
+    return {
+      os: process.platform,
+      arch: process.arch,
+      hostname: os.hostname(),
+      kernel: os.release(),
+      model: a ? `${[a.manufacturer, a.model].filter(Boolean).join(' ')} · Android ${a.release}` : null,
+    }
+  }
   const model = await readText('/proc/device-tree/model')
   return {
     os: process.platform,
@@ -65,6 +77,14 @@ export function collectUptime(): Probe<{ seconds: number }> {
 }
 
 export async function collectCpu(): Promise<Probe<CpuInfo>> {
+  if (isAndroid()) {
+    // os.loadavg() devuelve ceros si Android bloquea /proc/loadavg: se lee directamente o no se informa.
+    const load = parseLoadavg(await readText('/proc/loadavg'))
+    if (!load) return unavailable('Android no permite a las apps leer la carga del procesador')
+    const raw = await readText('/sys/class/thermal/thermal_zone0/temp')
+    const milli = raw ? Number.parseInt(raw.trim(), 10) : Number.NaN
+    return ok({ temperatureC: Number.isFinite(milli) && milli > 0 ? Math.round(milli / 100) / 10 : null, load1: round2(load[0]), load5: round2(load[1]), load15: round2(load[2]), cores: os.availableParallelism() })
+  }
   if (!isLinux()) return notLinux()
   const raw = await readText('/sys/class/thermal/thermal_zone0/temp')
   const milli = raw ? Number.parseInt(raw.trim(), 10) : Number.NaN
@@ -92,6 +112,10 @@ export async function collectFan(): Promise<Probe<FanInfo>> {
 }
 
 export async function collectMemory(): Promise<Probe<MemoryInfo>> {
+  if (isAndroid()) {
+    const parsed = parseMeminfo((await readText('/proc/meminfo')) ?? '')
+    return ok(parsed ?? { totalBytes: os.totalmem(), availableBytes: os.freemem() })
+  }
   if (!isLinux()) return ok({ totalBytes: os.totalmem(), availableBytes: os.freemem() })
   const text = await readText('/proc/meminfo')
   const parsed = text ? parseMeminfo(text) : null
@@ -189,6 +213,12 @@ async function linuxMainsAdapter(): Promise<Probe<MainsInfo> | null> {
 
 export async function collectBattery(): Promise<Probe<BatteryInfo>> {
   if (process.platform === 'win32' || process.platform === 'darwin') return (await hostPower()).battery
+  if (isAndroid()) {
+    const a = await androidDevice()
+    if (!a) return unavailable('La app Android no responde')
+    if (!a.power.present) return unavailable('Dispositivo sin batería')
+    return a.power.percent !== null ? ok({ percent: a.power.percent, voltageV: a.power.voltageV }) : unavailable('Android no informa del nivel de batería')
+  }
   if (!isLinux()) return notLinux()
   const base = '/sys/class/power_supply'
   for (const dev of await listDir(base)) {
@@ -206,6 +236,10 @@ export async function collectBattery(): Promise<Probe<BatteryInfo>> {
 /** Red eléctrica en la entrada de la UPS X120x (survival-ups). Sin UPS → 'unavailable', nunca se supone. */
 export async function collectMains(): Promise<Probe<MainsInfo>> {
   if (process.platform === 'win32' || process.platform === 'darwin') return (await hostPower()).mains
+  if (isAndroid()) {
+    const a = await androidDevice()
+    return a ? ok({ present: a.power.plugged !== null }) : unavailable('La app Android no responde')
+  }
   if (!isLinux()) return notLinux()
   const ups = upsFrom(await readText(UPS_STATUS_PATH), Date.now()).mains
   if (ups.state === 'ok') return ups
@@ -230,6 +264,14 @@ export async function collectTime(rtc: Probe<RtcInfo>): Promise<Probe<TimeInfo>>
     const res = await run('w32tm', ['/query', '/status'], 5000)
     const ntp = res.ok ? parseW32tmLeap(res.stdout) : null
     return ok({ ...timeSourceFrom(ntp, false, null, Date.now()), ntpSynchronized: ntp, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null })
+  }
+  if (isAndroid()) {
+    // Android: hora de red del sistema (13+) y comprobación con el GNSS de la tablet, que la app deja en
+    // <privado>/timesync.json con el formato de survival-timesync (ADR 0011). Una app no puede ajustar el reloj.
+    const a = await androidDevice()
+    const ntp = a?.networkTimeOk ?? null
+    const sync = await readText(join(process.env.SURVIVAL_ANDROID_PRIVATE ?? '', 'timesync.json'))
+    return ok({ ...timeSourceFrom(ntp, false, sync, Date.now()), ntpSynchronized: ntp, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null })
   }
   if (process.platform === 'darwin') {
     // macOS no expone el estado de sincronización sin administrador: no se afirma (fuente «sin verificar»).
@@ -325,6 +367,10 @@ export async function collectSerial(): Promise<Probe<SerialInfo>> {
   if (process.platform === 'darwin') {
     const ports = (await listDir('/dev')).filter((n) => /^cu\.(usbmodem|usbserial|SLAB_USBtoUART|wchusbserial)/.test(n)).sort().map((n) => `/dev/${n}`)
     return ok({ usbPorts: ports })
+  }
+  if (isAndroid()) {
+    const a = await androidDevice()
+    return a ? ok({ usbPorts: [...a.serialPorts].sort() }) : unavailable('La app Android no responde')
   }
   if (!isLinux()) return notLinux()
   const ports = (await listDir('/dev'))

@@ -1,5 +1,12 @@
 /** Textos de los servicios (en español) → italiano. Ver translateServer en utils/i18n.ts. */
 export const serverIt: Record<string, string> = {
+  'Descarga interrumpida: vuelve a lanzarla': "Download interrotto: avvialo di nuovo",
+  'Receptor conectado, esperando datos': "Ricevitore collegato, in attesa di dati",
+  'No disponible en Android': "Non disponibile su Android",
+  'La app Android no responde': "L'app Android non risponde",
+  'Dispositivo sin batería': "Dispositivo senza batteria",
+  'Android no informa del nivel de batería': "Android non indica il livello della batteria",
+  'Android no permite a las apps leer la carga del procesador': "Android non consente alle app di leggere il carico del processore",
   'Sin ventilador PWM detectado': 'Nessuna ventola PWM rilevata',
   'Ventilador sin tacómetro legible': 'Ventola senza tachimetro leggibile',
   'Ningún punto de montaje configurado es accesible': 'Nessun punto di montaggio configurato è accessibile',

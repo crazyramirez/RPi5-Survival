@@ -21,10 +21,11 @@ Un centro de conocimiento, mapas y comunicación **sin Internet**:
 - radio LoRa y bóveda cifrada;
 - en español, inglés, francés e italiano.
 
-Funciona de dos formas:
+Funciona de tres formas:
 
 - **Raspberry Pi 5** (o Linux con systemd): un terminal dedicado; en la Pi, a pantalla completa (quiosco).
 - **Portable:** una carpeta que se abre en Windows, macOS o Linux, sin instalar nada.
+- **Android:** un APK para tablets y móviles (Android 10 o posterior).
 
 Más contexto para humanos: [README.md](README.md).
 
@@ -36,7 +37,7 @@ Pregunta solo lo que no sepas. Con estas respuestas eliges el camino:
 
 | Pregunta | Para qué |
 |---|---|
-| ¿Dónde lo quieres? **(a)** en este ordenador · **(b)** en una Raspberry Pi o en otro Linux de tu red | Elegir la sección 4 o la 5 |
+| ¿Dónde lo quieres? **(a)** en este ordenador · **(b)** en una Raspberry Pi o en otro Linux de tu red · **(c)** en una tablet o un móvil Android | Elegir la sección 4, la 5 o la 6 |
 | (b) ¿La Pi ya tiene **Raspberry Pi OS de 64 bits con escritorio** instalado y conectado a la red? | Si no, sigue la sección 5.1 |
 | (b) ¿Cuál es su **IP** (o nombre, p. ej. `raspberrypi.local`) y su **usuario**? | Acceso SSH |
 | ¿En qué **idioma** la quieres? (es, en, fr, it) | Ajustes por defecto |
@@ -96,6 +97,15 @@ npm run express -- download --url http://127.0.0.1:47800 --yes             # lan
 ```
 
 `47800` es el puerto habitual de la portable. Si estaba ocupado, el puerto real está en `<carpeta>/data/run.json`.
+
+**Actualizaciones:** la portable se actualiza sola desde GitHub (modo «Automática»): descarga la versión nueva, la
+verifica y la aplica **al cerrar** Survival OS. Si no arranca, vuelve sola a la anterior. Para comprobarlo o
+instalar ya:
+
+```sh
+npm run express -- update --url http://127.0.0.1:47800 --check         # estado y «Buscar ahora»
+npm run express -- update --url http://127.0.0.1:47800 --yes           # instalar ya (tras confirmar con la persona)
+```
 
 Avisos que puedes dar:
 
@@ -189,13 +199,86 @@ npm run express -- download --host <IP> --user <usuario> --yes    # lanza «Desc
 
 - **Idioma y país por defecto:** se guardan en `/etc/survival-os/defaults.json` y la pantalla los aplica si nadie eligió
   otros. Códigos de país: tres letras (`esp`, `fra`, `ita`, `usa`, `mex`…), en `content/countries.json`.
+- **Actualizaciones (ADR 0021):** en la Pi vienen en «Solo avisar»: la pantalla avisa y se instala con un toque. Desde
+  aquí:
+
+  ```sh
+  npm run express -- update --host <IP> --user <usuario> --check               # estado y «Buscar ahora»
+  npm run express -- update --host <IP> --user <usuario> --yes                 # instalar (confirmar antes)
+  npm run express -- update --host <IP> --user <usuario> --mode auto           # automática: de 02:00 a 06:00, bóveda cerrada
+  ```
+
+  - Elegir `--mode auto` es un cambio de sistema: solo si la persona lo pide.
+  - Una Pi con una versión anterior a la 0.10.0 todavía no sabe actualizarse sola: actualízala una vez con
+    `express pi … --yes`.
 - **«Descargarlo todo»:** descarga lo de su idioma y país (biblioteca, manuales, mapas y rutas del país, todos los
   modelos del asistente y los juegos), ajustado al espacio libre. Puede tardar horas; el equipo se puede usar
   mientras, y si se corta, continúa donde se quedó.
 
 ---
 
-## 6. API local (para tareas que `express` no cubre)
+## 6. Camino C — Tablet o móvil Android (APK)
+
+Lo que se necesita:
+
+- **El dispositivo:** Android 10 o posterior, de 64 bits (casi todos desde 2019).
+- **Espacio:** el que se quiera descargar (40–60 GB para todo); una microSD sirve.
+- **Memoria:** con 3–4 GB de RAM, el asistente usa el modelo ligero; se elige solo.
+
+### 6.1 Conseguir el APK
+
+- **Publicado:** `survival-os-X.Y.Z-android-arm64.apk` (y su `.sha256`) en las Releases del repositorio.
+- **Desde el código** (necesita JDK 17+, Android SDK, NDK y Go; instalarlos ocupa unos 7 GB):
+
+  ```sh
+  npm run build && npm run release:android      # → release/survival-os-X.Y.Z-android-arm64.apk
+  ```
+
+  La primera vez descarga y prepara los binarios nativos (`android/scripts/natives.mjs`) y crea la clave de firma
+  en `.data/android-keystore.jks`. **Avisa a la persona de que la guarde:** sin ella no se puede actualizar la app ya
+  instalada.
+
+### 6.2 Instalarlo
+
+- **Por cable (recomendado si hay `adb`):**
+  1. La persona activa la *Depuración USB*: Ajustes → Información del teléfono → pulsar 7 veces «Número de
+     compilación» → Opciones de desarrollador → Depuración USB.
+  2. Conecta el cable y acepta el aviso en la tablet.
+  3. Instala con:
+
+     ```sh
+     adb install -r release/survival-os-X.Y.Z-android-arm64.apk
+     ```
+
+- **Sin ordenador:** copiar el APK a la tablet (USB, microSD, descarga) y abrirlo. Android pedirá permitir
+  «instalar apps desconocidas» para el gestor de archivos o el navegador.
+
+### 6.3 Primer arranque (lo hace la persona en la pantalla)
+
+1. **Dónde guardar los datos.** Recomienda «Memoria interna (carpeta SurvivalOS)» o la microSD: se conserva si se
+   desinstala la app. Pide «Acceso a todos los archivos»: activarlo y volver atrás.
+2. **Permisos:**
+   - notificaciones;
+   - ubicación (para el GNSS de la tablet);
+   - batería sin restricciones (para que siga con la pantalla apagada).
+3. **La bienvenida,** como en las demás versiones: idioma, país y «Descargarlo todo». El idioma y el país de la tablet
+   ya vienen propuestos.
+
+**Avisos que puedes dar:**
+
+- **Realme, Xiaomi, Huawei, Oppo…:** activar además «Inicio automático» y «Actividad en segundo plano» en los ajustes
+  de la app; si no, el sistema puede cerrarla con la pantalla apagada.
+- **Radio LoRa o GPS USB:** con un cable OTG. Al conectarlo, Android pregunta si abrir Survival OS: marcar «siempre».
+- **Tablet sin GPS** (muchas versiones solo Wi-Fi): la posición necesita un GPS USB o un nodo LoRa con GPS.
+- **Actualizar:** instalar el APK nuevo encima (los datos se conservan), o desde Mantenimiento con el APK y su
+  `.sha256` en una memoria USB.
+
+La API local de la sección 7 **no** se puede usar desde fuera en Android: exige un token por arranque que solo
+conoce la app (en Android, cualquier app puede conectarse a 127.0.0.1). Configura desde la pantalla.
+
+---
+
+## 7. API local (para tareas que `express` no cubre)
 
 Solo responde en el propio equipo (`127.0.0.1`). En una Pi, úsala por SSH con `curl`. Las escrituras exigen la
 cabecera `x-survival-action: 1`.
@@ -209,6 +292,9 @@ cabecera `x-survival-action: 1`.
 | `GET /api/content/countries` | Países con su tamaño estimado de mapa y rutas |
 | `GET /api/admin/<tarea>` | Estado y registro de una tarea (`content`, `usb-scan`, `backup`, `update`…) |
 | `GET /api/settings/defaults` | Idioma y país por defecto del equipo |
+| `GET /api/update` | Actualizaciones: versión instalada y última, estado y modo |
+| `POST /api/admin/update-online` `{"action":"check"\|"install"}` | Buscar ahora / descargar e instalar la versión nueva |
+| `POST /api/update/settings` `{"mode":"auto"\|"notify"\|"off"}` | Modo de actualización |
 
 - **Contenidos sueltos:** usan su id del catálogo (`content/catalog.json`), por ejemplo `wikipedia`, `wikipedia-fr`,
   `asistente`, `juegos`.
@@ -217,7 +303,7 @@ cabecera `x-survival-action: 1`.
 
 ---
 
-## 7. Problemas frecuentes
+## 8. Problemas frecuentes
 
 | Síntoma | Causa probable y solución |
 |---|---|
@@ -227,15 +313,18 @@ cabecera `x-survival-action: 1`.
 | Pantalla de la Pi sin la app tras instalar | Reiniciar la Pi (`--reboot`); el quiosco arranca con la sesión gráfica |
 | La descarga no empieza | Sin Internet en el equipo, o ya hay otra en curso: `status` lo dice |
 | Mensajes «no disponible» en el panel de sistema | Normal en lo que no se puede medir (Probe honesto); no es un error |
+| Android: la app se cierra con la pantalla apagada | Batería sin restricciones e «Inicio automático» en los ajustes de la app (sección 6.3) |
+| Android: «GNSS: sin receptor» | Falta el permiso de ubicación (Mantenimiento → Android) o la tablet no tiene GPS |
 
 **Registros:**
 
 - **Pi:** `journalctl -u survival-web -u survival-library --since -10min` (por SSH).
 - **Portable:** carpeta `data/logs/`.
+- **Android:** carpeta `logs/` dentro de la carpeta de datos (p. ej. `SurvivalOS/logs/`); con `adb`, `adb logcat -s SurvivalOS`.
 
 ---
 
-## 8. Cómo presentar el resultado a la persona
+## 9. Cómo presentar el resultado a la persona
 
 Al terminar, di en pocas líneas y en su idioma:
 

@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "ClaudeInChromeDomain(github.com)"
+      "ClaudeInChromeDomain(github.com)",
+      "ClaudeInChromeDomain(127.0.0.1:3310)",
+      "mcp__claude-in-chrome__tabs_create_mcp"
     ]
   }
 }

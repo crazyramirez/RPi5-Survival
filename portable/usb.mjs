@@ -83,6 +83,23 @@ export function parseProcMounts(text) {
 }
 
 /**
+ * volumes.json de la app Android → [{ uuid, path, label, fs }] (solo /storage/<uuid> montados y extraíbles).
+ * Lo escribe la app; se valida igualmente (otra versión de la app, fichero a medias).
+ */
+export function parseAndroidVolumes(text) {
+  let list = []
+  try {
+    const parsed = JSON.parse(text || '[]')
+    list = Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+  return list
+    .filter((v) => v && typeof v === 'object' && v.removable === true && v.state === 'mounted' && /^[0-9A-Fa-f-]{4,36}$/.test(String(v.uuid ?? '')) && v.path === `/storage/${v.uuid}`)
+    .map((v) => ({ uuid: String(v.uuid), path: v.path, label: typeof v.label === 'string' ? v.label.replace(/[/\\\0]/g, '_').slice(0, 80) : String(v.uuid), fs: typeof v.fs === 'string' ? v.fs : null }))
+}
+
+/**
  * Memorias USB y discos externos montados, con un identificador estable «grupo/etiqueta» (mismo formato que
  * la Pi, validado por el servidor web). Nunca se acepta una ruta del cliente: el id se resuelve contra esta lista.
  *   [{ media, path, label, fs, freeBytes, totalBytes }]
@@ -156,6 +173,12 @@ function collectMedia(platform, raw) {
       if (!/^[A-Z]:$/.test(letter) || letter === sys) continue
       const label = String(d.Label || (d.T === 'Removable' ? 'USB' : 'Disco USB')).replace(/[/\\\0]/g, '_')
       add(`${letter[0]}/${label}`, `${letter}\\`, String(d.Label || ''), d.F)
+    }
+  } else if (platform === 'android') {
+    // App Android (ADR 0020): la app nativa publica los volúmenes extraíbles (microSD y memorias USB OTG) de
+    // StorageManager en su carpeta privada; las rutas /storage/<uuid> se leen con el permiso «todos los archivos».
+    for (const v of parseAndroidVolumes(readFileSafe(join(process.env.SURVIVAL_ANDROID_PRIVATE ?? '', 'volumes.json')))) {
+      add(`android/${v.uuid}`, v.path, v.label, v.fs)
     }
   } else if (platform === 'darwin') {
     const types = parseMacMount(raw)

@@ -7,6 +7,7 @@ import type { PortableStatus } from '@survival-os/shared-types'
  * la Pi. Vista pública de SOLO LECTURA en la IP privada del equipo; nunca se activa sola.
  */
 const t = useT()
+const android = useAndroid()
 const st = ref<PortableStatus | null>(null)
 const busy = ref(false)
 const error = ref<string | null>(null)
@@ -43,7 +44,8 @@ const on = computed(() => !!st.value?.share.on)
     <button type="button" class="btn" :class="{ 'btn-primary': !on }" :disabled="busy || !st" @click="toggle">
       <component :is="on ? WifiOff : Wifi" :size="18" aria-hidden="true" />{{ on ? t('portable.shareOff') : t('portable.shareOn') }}
     </button>
-    <p v-if="on" class="faint small">{{ t('portable.shareFirewall') }}</p>
+    <p v-if="on" class="faint small">{{ android ? t('android.shareHint') : t('portable.shareFirewall') }}</p>
+    <p v-else-if="android" class="faint small">{{ t('android.shareHotspot') }}</p>
     <p v-if="st?.share.error || error" class="warn small" role="alert">{{ st?.share.error ?? error }}</p>
   </AppCard>
 </template>

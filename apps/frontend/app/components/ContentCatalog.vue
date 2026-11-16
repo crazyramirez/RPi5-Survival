@@ -49,7 +49,7 @@ async function load(): Promise<void> {
     initialised = true
     if (props.mode === 'wizard') {
       const installed = new Set(ov.value.items.filter((s) => s.state === 'installed').map((s) => s.id))
-      const missing = downloadPlan(ov.value.catalog, installed, locale.value, props.country ?? null, 'recommended')
+      const missing = downloadPlan(ov.value.catalog, installed, locale.value, props.country ?? null, 'recommended', ov.value.ramBytes)
       const fit = autoFit(missing, ov.value.freeBytes)
       selected.value = new Set(fit.keep.map((i) => i.id))
       autofitCount.value = fit.dropped.length
@@ -178,7 +178,7 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
           <option v-for="v in i.variants" :key="v.flavour" :value="v.flavour">{{ v.label }} · {{ formatBytes(v.approxBytes) }}</option>
         </select>
         <span class="size mono">{{ formatBytes(statusOf(i.id)?.bytes ?? sizeOf(i)) }}</span>
-        <span v-if="stateLabel(statusOf(i.id))" class="ui-chip state" :class="`tone-${stateLabel(statusOf(i.id))!.tone}`" :title="statusOf(i.id)?.error ?? ''">
+        <span v-if="stateLabel(statusOf(i.id))" class="ui-chip state" :class="`tone-${stateLabel(statusOf(i.id))!.tone}`" :title="translateServer(statusOf(i.id)?.error ?? '')">
           <component :is="stateLabel(statusOf(i.id))!.icon" :size="14" aria-hidden="true" />{{ stateLabel(statusOf(i.id))!.text }}
         </span>
         <button

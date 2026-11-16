@@ -17,18 +17,21 @@
  */
 import { spawn, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { cpSync, createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { statfs } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { countryLand, countryMaxZoom, countryName, countryZones, estimateMapBytes, ROUTING_TILE_BYTES, routingTiles } from './country-maps.mjs'
+import { extractZip } from './zip.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 
 // ------------------------------------------------------------------ Plataforma y rutas
 
 export function platformKey(platform = process.platform, arch = process.arch) {
-  const os = { win32: 'win', darwin: 'darwin', linux: 'linux' }[platform]
+  // Android (ADR 0020): kiwix-tools, llama.cpp y pmtiles vienen en el APK (el lanzador los enlaza con su marca de
+  // versión, así ensureComponent no los descarga); BRouter solo aporta sus perfiles.
+  const os = { win32: 'win', darwin: 'darwin', linux: 'linux', android: 'android' }[platform]
   return os && ['x64', 'arm64'].includes(arch) ? `${os}-${arch}` : null
 }
 
@@ -276,6 +279,8 @@ const tarBin = () => (process.platform === 'win32' ? join(process.env.SystemRoot
 
 function extract(archive, dir) {
   mkdirSync(dir, { recursive: true })
+  // El tar de Android (toybox) no abre zip.
+  if (process.platform === 'android' && archive.toLowerCase().endsWith('.zip')) return extractZip(archive, dir)
   const r = spawnSync(tarBin(), ['-xf', archive, '-C', dir], { encoding: 'utf8' })
   if (r.status !== 0) throw new Error(`No se pudo extraer ${archive}: ${r.stderr}`)
 }
@@ -310,7 +315,13 @@ export async function ensureComponent(catalog, paths, comp) {
   extract(file, tmp)
   rmSync(dir, { recursive: true, force: true })
   mkdirSync(dirname(dir), { recursive: true })
-  renameSync(join(tmp, asset.strip ?? ''), dir)
+  try {
+    renameSync(join(tmp, asset.strip ?? ''), dir)
+  } catch (err) {
+    // Android: la caché está con los datos (almacenamiento compartido) y los componentes en la carpeta privada.
+    if (err?.code !== 'EXDEV') throw err
+    cpSync(join(tmp, asset.strip ?? ''), dir, { recursive: true })
+  }
   rmSync(tmp, { recursive: true, force: true })
   rmSync(file, { force: true })
   if (process.platform !== 'win32') {
@@ -508,24 +519,48 @@ async function installMapZone(catalog, paths, item, zone, approxBytes, partOfMan
   rmSync(tmp, { force: true })
   await new Promise((ok, ko) => {
     const child = spawn(bin, ['extract', `${catalog.sources.protomapsBase}/${build}`, tmp, `--bbox=${bbox.join(',')}`, `--maxzoom=${maxzoom}`, '--download-threads=4'], { stdio: ['ignore', 'pipe', 'pipe'] })
-    // pmtiles redibuja su barra con \r: se registra solo cada 10 % y las líneas informativas.
+    // Progreso: el porcentaje de pmtiles (redibuja su barra con \r y, sin terminal, a veces casi no escribe) o, si va
+    // por delante, los bytes que pmtiles lleva recibidos (Linux/Android: /proc/<pid>/io, rchar; incluye la red) frente
+    // al tamaño estimado. El .part no sirve: pmtiles lo crea ya con su tamaño final. Nunca 100 % hasta que termina.
     let lastPct = -10
+    let toolPct = 0
+    const report = (pct) => {
+      pct = Math.min(99, Math.max(0, Math.floor(pct)))
+      if (pct < lastPct + 10) return
+      lastPct = pct - (pct % 10)
+      process.stdout.write(`   mapa: ${pct} %\n`)
+    }
     const pass = (d) => {
       for (const line of String(d).split(/[\r\n]+/)) {
         const m = /fetching chunks\s+(\d+)%/.exec(line)
         if (m) {
-          const pct = Number(m[1])
-          if (pct >= lastPct + 10) {
-            lastPct = pct - (pct % 10)
-            process.stdout.write(`   mapa: ${pct} %\n`)
-          }
-        } else if (line.trim()) process.stdout.write(`   ${line.trim()}\n`)
+          toolPct = Number(m[1])
+          report(toolPct)
+        } else if (line.trim() && !/^\s*\d+%\s*\|/.test(line)) process.stdout.write(`   ${line.trim()}\n`)
       }
     }
+    const poll = setInterval(() => {
+      let received = 0
+      try {
+        received = Number(/^rchar:\s*(\d+)/m.exec(readFileSync(`/proc/${child.pid}/io`, 'utf8'))?.[1] ?? 0)
+      } catch {
+        // sin /proc (Windows, macOS): solo el porcentaje de pmtiles
+      }
+      const pct = Math.max(toolPct, approxBytes ? (received / approxBytes) * 100 : 0)
+      setItem(paths, item.id, { done: Math.round((Math.min(pct, 99) / 100) * approxBytes) })
+      report(pct)
+    }, 5000)
     child.stdout.on('data', pass)
     child.stderr.on('data', pass)
-    child.on('error', ko)
-    child.on('close', (code) => (code === 0 ? ok() : ko(new Error(`pmtiles extract terminó con código ${code}`))))
+    child.on('error', (err) => {
+      clearInterval(poll)
+      ko(err)
+    })
+    child.on('close', (code) => {
+      clearInterval(poll)
+      if (code === 0) ok()
+      else ko(new Error(`pmtiles extract terminó con código ${code}`))
+    })
   })
   renameSync(tmp, dest)
   const sha = await sha256File(dest)
@@ -567,7 +602,8 @@ async function installRouting(catalog, paths, item) {
     const regionArgs = ['espana', 'canarias'].includes(item.routing.region) ? ['install', item.routing.region] : ['install-tiles', ...available]
     return runScript(paths, 'routing-install.sh', regionArgs, item)
   }
-  await ensureComponent(catalog, paths, 'jre')
+  // Android: BRouter va compilado en el APK (sin JRE); del componente solo se usan los perfiles.
+  if (process.platform !== 'android') await ensureComponent(catalog, paths, 'jre')
   await ensureComponent(catalog, paths, 'brouter')
   const seg = join(paths.routingDir, 'segments4')
   mkdirSync(seg, { recursive: true })
@@ -822,7 +858,8 @@ async function main() {
   // Órdenes de las tarjetas de Mantenimiento (mismos parámetros que las tareas de la Pi).
   if (cmd === 'model') {
     const [action, id] = rest
-    const item = catalog.items.find((i) => i.kind === 'llm')
+    // El elemento del catálogo de ESE modelo (su estado y su título), no el primero de tipo llm.
+    const item = catalog.items.find((i) => i.kind === 'llm' && i.llm?.model === id) ?? catalog.items.find((i) => i.kind === 'llm')
     const model = id ? catalog.models[id] : null
     if (action === 'install' && model) {
       say(`Sistema detectado: ${platformKey()} · perfil ${profile}`)

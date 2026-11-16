@@ -81,7 +81,7 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
   llm: (b) => {
     if (b.action === 'disable') return { action: 'disable' }
     if (b.action !== 'install' && b.action !== 'remove') bad('Acción no válida')
-    if (!['qwen3-4b', 'gemma3-4b', 'llama3.2-3b'].includes(String(b.model))) bad('Modelo no válido')
+    if (!['qwen3-4b', 'gemma3-4b', 'llama3.2-3b', 'qwen2.5-1.5b'].includes(String(b.model))) bad('Modelo no válido')
     return { action: b.action, model: b.model }
   },
   wifi: (b) => {
@@ -117,6 +117,12 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
   },
   /** Portable (ADR 0019): preparar otra memoria USB con Survival OS (y opcionalmente los datos). */
   'usb-prepare': (b) => ({ media: media(b.media), withData: b.withData === true, rename: b.rename !== false }),
+  /** Actualizaciones desde GitHub (ADR 0021): buscar ahora o descargar e instalar. El origen es fijo en el motor. */
+  'update-online': (b) => {
+    if (b.action !== 'check' && b.action !== 'install') bad('Acción no válida')
+    return { action: b.action }
+  },
+  'update-auto': () => ({}),
 }
 
 export function isAdminJob(job: string): job is AdminJob {

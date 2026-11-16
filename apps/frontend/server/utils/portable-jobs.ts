@@ -2,6 +2,7 @@ import { spawn, type ChildProcess } from 'node:child_process'
 import { createWriteStream, existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { AdminJob, AdminJobStatus } from '@survival-os/shared-types'
+import { androidBridge, isAndroid, keepAwake } from './android'
 import { portablePaths } from './portable'
 
 /**
@@ -45,6 +46,9 @@ function commandFor(job: AdminJob, params: Record<string, unknown>): { script: s
     case 'backup':
     case 'update':
     case 'usb-prepare':
+    // Actualizaciones desde GitHub (ADR 0021): mismo motor que la Pi (update-engine.mjs) dentro de portable-admin.
+    case 'update-online':
+    case 'update-auto':
       return { script: join(scripts, 'portable-admin.mjs'), args: [job, JSON.stringify(params), '--root', root, '--admin', join(portablePaths().data, 'admin')] }
     default:
       return null
@@ -54,7 +58,11 @@ function commandFor(job: AdminJob, params: Record<string, unknown>): { script: s
 const PORTABLE_JOBS = new Set<AdminJob>([
   'content', 'llm', 'routing', 'content-delete', 'maps-delete', 'mesh', 'games',
   'usb-scan', 'maps-import', 'docs-import', 'backup', 'update', 'restart-app', 'gps-uart', 'usb-prepare',
+  'update-online', 'update-auto',
 ])
+
+/** Tareas que preparan una actualización: nunca dos a la vez (las tres escriben en <raíz>/.update). */
+const UPDATE_GROUP = new Set<AdminJob>(['update', 'update-online', 'update-auto'])
 
 /**
  * Tareas internas (sin proceso): la malla la gestiona serial-hub (ADR 0016). Devuelven las líneas del
@@ -83,13 +91,19 @@ async function inlineJob(job: AdminJob, params: Record<string, unknown>): Promis
   if (!res.ok) throw new Error(((await res.json().catch(() => ({}))) as { error?: string }).error ?? `HTTP ${res.status}`)
   return { log: [mesh ? `Nodo configurado en ${mesh}; conectando…` : 'Malla desactivada'] }
 }
+/** En la app Android no hay una carpeta que copiar a otra memoria (ADR 0020). */
+const NOT_ON_ANDROID = new Set<AdminJob>(['usb-prepare'])
+
 export function portableSupports(job: AdminJob): boolean {
-  return PORTABLE_JOBS.has(job)
+  return PORTABLE_JOBS.has(job) && !(isAndroid() && NOT_ON_ANDROID.has(job))
 }
 
 export async function startPortableJob(job: AdminJob, params: Record<string, unknown>, adminDir: string): Promise<void> {
   const cur = jobs.get(job)
   if (cur?.code === null) throw createError({ statusCode: 409, statusMessage: 'La tarea ya está en curso' })
+  if (UPDATE_GROUP.has(job) && [...UPDATE_GROUP].some((j) => jobs.get(j)?.code === null)) {
+    throw createError({ statusCode: 409, statusMessage: 'Ya hay una actualización en curso' })
+  }
   mkdirSync(adminDir, { recursive: true })
   const startedAt = new Date().toISOString()
   try {
@@ -117,16 +131,24 @@ export async function startPortableJob(job: AdminJob, params: Record<string, unk
   })
   const run: Running = { child, startedAt: new Date().toISOString(), finishedAt: null, code: null }
   jobs.set(job, run)
+  keepAwake(job, true)
   child.stdout?.pipe(log, { end: false })
   child.stderr?.pipe(log, { end: false })
   child.on('close', (code) => {
+    keepAwake(job, false)
     run.code = code ?? 1
     run.finishedAt = new Date().toISOString()
     log.end(`${new Date().toTimeString().slice(0, 8)} ${run.code === 0 ? 'Terminado correctamente' : `ERROR: código ${run.code}`}\n`)
     // Actualización preparada y verificada: el lanzador la aplica y reabre Survival OS (como la Pi tras update).
-    if (job === 'update' && run.code === 0) setTimeout(() => process.send?.({ type: 'update' }), 3000)
+    // Android: la app abre el instalador del sistema con el APK verificado (ADR 0020).
+    // Desde GitHub (ADR 0021): igual tras «Instalar»; la automática se aplica al cerrar (Android: pide un toque).
+    if ((job === 'update' || (job === 'update-online' && params.action === 'install')) && run.code === 0) {
+      if (isAndroid()) void androidBridge('/app/install-apk', { path: join(adminDir, 'update.apk') }).catch(() => undefined)
+      else setTimeout(() => process.send?.({ type: 'update' }), 3000)
+    }
   })
   child.on('error', (err) => {
+    keepAwake(job, false)
     run.code = 1
     run.finishedAt = new Date().toISOString()
     log.end(`ERROR: ${err.message}\n`)

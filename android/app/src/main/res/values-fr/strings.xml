@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notif_channel">Survival OS en cours d\'exécution</string>
+    <string name="notif_running">Cartes, bibliothèque, assistant et radio disponibles hors ligne</string>
+    <string name="notif_quit">Fermer</string>
+    <string name="state_preparing">Préparation de Survival OS…</string>
+    <string name="state_starting">Démarrage des services…</string>
+    <string name="err_no_storage">Choisissez où enregistrer les données.</string>
+    <string name="err_storage">Impossible d\'écrire dans %1$s</string>
+    <string name="err_timeout">Les services ne répondent pas. Réessayez ; si cela persiste, consultez les journaux dans le dossier de données (logs).</string>
+    <string name="err_crash">Survival OS s\'est arrêté plusieurs fois. Journaux dans %1$s</string>
+    <string name="gnss_label">GNSS intégré de la tablette</string>
+    <string name="storage_title">Où enregistrer les cartes, les livres et les données ?</string>
+    <string name="storage_internal">Mémoire interne (dossier SurvivalOS)</string>
+    <string name="storage_removable">Carte microSD ou clé USB « %1$s » (dossier SurvivalOS)</string>
+    <string name="storage_private_internal">Dossier de l\'app dans la mémoire interne</string>
+    <string name="storage_private_sd">Dossier de l\'app sur la carte microSD</string>
+    <string name="storage_free">%1$s libres</string>
+    <string name="storage_keeps">conservé si vous désinstallez l\'app</string>
+    <string name="storage_deleted">Android le supprime si vous désinstallez l\'app</string>
+    <string name="perm_files_title">Accès aux fichiers</string>
+    <string name="perm_files_body">Pour enregistrer les données dans le dossier SurvivalOS (et ne pas les perdre si vous désinstallez l\'app), activez « Autoriser l\'accès à tous les fichiers » pour Survival OS sur l\'écran suivant, puis revenez.</string>
+    <string name="perm_files_denied">Sans cette autorisation, ce dossier ne peut pas être utilisé. Choisissez-en un autre (le dossier de l\'app ne demande aucune autorisation, mais Android le supprime à la désinstallation).</string>
+    <string name="perm_location_title">Position sans Internet</string>
+    <string name="perm_location_body">Survival OS utilise le récepteur GNSS de la tablette pour afficher votre position sur la carte et enregistrer des traces, sans Internet. Votre position ne quitte jamais l\'appareil.</string>
+    <string name="perm_battery_title">Continuer écran éteint</string>
+    <string name="perm_battery_body">Pour que les téléchargements, la radio et le GPS ne s\'arrêtent pas écran éteint, autorisez Survival OS à fonctionner sans restriction de batterie. Sur certaines marques (Realme, Xiaomi, Huawei…), vérifiez aussi « Démarrage automatique » et « Activité en arrière-plan » dans les paramètres de l\'app.</string>
+    <string name="install_permission">Autorisez Survival OS à installer des applications pour se mettre à jour, puis réessayez.</string>
+    <string name="download_saved">Enregistré dans Téléchargements : %1$s</string>
+    <string name="download_failed">Impossible d\'enregistrer : %1$s</string>
+    <string name="btn_continue">Continuer</string>
+    <string name="btn_later">Plus tard</string>
+    <string name="btn_retry">Réessayer</string>
+    <string name="btn_other_storage">Choisir un autre dossier</string>
+</resources>

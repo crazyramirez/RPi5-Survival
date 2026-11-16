@@ -14,6 +14,8 @@
  *   npm run express -- status (--host IP --user U | --url http://127.0.0.1:47800)
  *   npm run express -- download [--recommended] [--lang L] [--country C] [--yes] (--host … | --url …)
  *                                                              plan de «Descargarlo todo» y, con --yes, lanzarlo
+ *   npm run express -- update [--check] [--mode auto|notify|off] [--yes] (--host … | --url …)
+ *                                                              actualizaciones desde GitHub (ADR 0021); --yes instala
  *
  * Códigos de salida: 0 bien · 1 error · 2 uso incorrecto · 3 falta acceso SSH · 4 falta sudo sin contraseña.
  * Nunca guarda contraseñas. La clave SSH se crea en ~/.ssh/survival_os_ed25519 (solo con ssh-setup).
@@ -319,9 +321,69 @@ function defaults() {
   ok(`Idioma${lang ? ` ${lang}` : ''}${country ? ` · país ${country}` : ''} por defecto en ${t.dest}. Se aplican en pantalla si el usuario no eligió otros.`)
 }
 
-const COMMANDS = { doctor, 'ssh-setup': sshSetup, pi, portable, status, download, defaults }
+/** Espera a que termine una tarea de mantenimiento (tolera que la web se reinicie al actualizar). → último estado */
+async function waitJob(job, maxMs, prevStartedAt = null) {
+  const end = Date.now() + maxMs
+  let last = null
+  let seenActive = false
+  while (Date.now() < end) {
+    await new Promise((r) => setTimeout(r, 3000))
+    const r = await api('GET', `/api/admin/${job}`).catch(() => ({ ok: false }))
+    if (!r.ok) continue // la interfaz se está reiniciando (instalación en la Pi)
+    last = r.data
+    const active = last.state === 'active' || last.state === 'activating'
+    if (active) seenActive = true
+    else if (seenActive || (last.startedAt && last.startedAt !== prevStartedAt && last.finishedAt)) return last
+  }
+  return last
+}
+
+/** Actualizaciones desde GitHub (ADR 0021): estado, «Buscar ahora», modo y, con --yes, instalar. */
+async function update() {
+  if (opt('mode')) {
+    if (!['auto', 'notify', 'off'].includes(opt('mode'))) fail('--mode debe ser auto, notify u off', 2)
+    const m = await api('POST', '/api/update/settings', { mode: opt('mode') })
+    if (!m.ok) fail(`no se pudo cambiar el modo: ${JSON.stringify(m.data).slice(0, 200)}`)
+    ok(`Modo de actualización: ${opt('mode')}`)
+  }
+  if (flag('check')) {
+    say('Buscando actualizaciones…')
+    const prev = await api('GET', '/api/admin/update-online')
+    const r = await api('POST', '/api/admin/update-online', { action: 'check' })
+    if (!r.ok) fail(`no se pudo lanzar la comprobación: ${JSON.stringify(r.data).slice(0, 200)}`)
+    await waitJob('update-online', 120_000, prev.data?.startedAt ?? null)
+  }
+  const s = await api('GET', '/api/update')
+  if (!s.ok) fail('Survival OS no responde, o es anterior a 0.10.0 (sin actualizaciones desde GitHub: actualiza con «pi» o con la portable nueva)')
+  const d = s.data
+  if (!d.supported) fail('instalación de desarrollo: no hay actualizaciones automáticas')
+  say(`Instalada ${d.installed} · modo ${d.mode}${d.latest ? ` · última ${d.latest.version} (${d.latest.date})` : ''}`)
+  console.log(`  Última comprobación: ${d.okAt ?? d.checkedAt ?? 'nunca'}${d.error ? ` · ${d.error.code}: ${d.error.message}` : ''}`)
+  if (d.prepared) console.log(`  Versión ${d.prepared} preparada: se aplica al cerrar Survival OS.`)
+  if (d.deferred) console.log(`  Descargada; instalación aplazada (${d.deferred.reason}).`)
+  if (d.lastInstall) console.log(`  Última instalación: ${d.lastInstall.version} ${d.lastInstall.ok ? 'correcta' : `FALLÓ (${d.lastInstall.message})`}`)
+  if (d.status !== 'available') {
+    ok(d.status === 'up-to-date' ? 'Al día.' : `Nada que instalar (${d.status ?? 'sin comprobar: añade --check'}).`)
+    return
+  }
+  console.log(`  Nueva versión ${d.latest.version}${d.asset ? ` · ${(d.asset.size / 1e6).toFixed(0)} MB` : ''}`)
+  if (!flag('yes')) {
+    console.log('\nVuelve a lanzar con --yes para instalarla (tras confirmarlo con la persona). Los datos se conservan.')
+    return
+  }
+  say(`Instalando ${d.latest.version}…`)
+  const prev = await api('GET', '/api/admin/update-online')
+  const r = await api('POST', '/api/admin/update-online', { action: 'install' })
+  if (!r.ok) fail(`no se pudo lanzar la instalación: ${JSON.stringify(r.data).slice(0, 200)}`)
+  const end = await waitJob('update-online', 30 * 60_000, prev.data?.startedAt ?? null)
+  for (const l of (end?.log ?? []).slice(-8)) console.log(`  ${l}`)
+  if (end?.state === 'failed') fail('la instalación falló (la versión anterior sigue funcionando)')
+  ok(d.kind === 'android' ? 'Descargada: confirma la instalación en la pantalla de Android.' : 'Instalada. Comprueba con: npm run express -- status')
+}
+
+const COMMANDS = { doctor, 'ssh-setup': sshSetup, pi, portable, status, download, defaults, update }
 if (!COMMANDS[cmd]) {
-  console.log('Uso: npm run express -- <doctor | portable | ssh-setup | pi | defaults | status | download> [opciones]')
+  console.log('Uso: npm run express -- <doctor | portable | ssh-setup | pi | defaults | status | download | update> [opciones]')
   console.log('Detalles al principio de scripts/express.mjs y en AGENTS.md.')
   process.exit(cmd ? 2 : 0)
 }

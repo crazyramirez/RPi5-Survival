@@ -7,13 +7,15 @@ import { join, parse } from 'node:path'
 
 /** Plataformas empaquetadas (carpeta runtime/<clave>/). */
 export const TARGETS = ['win-x64', 'darwin-arm64', 'darwin-x64', 'linux-x64', 'linux-arm64']
+/** App Android (ADR 0020): mismo lanzador, binarios dentro del APK. */
+export const ANDROID_TARGETS = ['android-arm64', 'android-x64']
 
 /** Clave de runtime para este sistema, o null si no hay runtime para él. */
 export function platformKey(platform, arch) {
-  const os = { win32: 'win', darwin: 'darwin', linux: 'linux' }[platform]
+  const os = { win32: 'win', darwin: 'darwin', linux: 'linux', android: 'android' }[platform]
   if (!os || !['x64', 'arm64'].includes(arch)) return null
   const key = `${os}-${arch}`
-  return TARGETS.includes(key) ? key : null
+  return TARGETS.includes(key) || ANDROID_TARGETS.includes(key) ? key : null
 }
 
 /** Ruta del ejecutable de Node dentro de la carpeta portable. */
@@ -91,15 +93,20 @@ export const DATA_EXCLUDE = new Set(['logs', 'browser', 'run.json', 'ports.json'
  * apuntan a rutas inexistentes a propósito: esas funciones no existen fuera de la Pi.
  */
 /** Canal local de la bóveda: named pipe en Windows; socket Unix (ruta corta: límite ~104 bytes en macOS). */
-export function vaultSocket(platform, data, webPort) {
+export function vaultSocket(platform, data, webPort, privateDir = null) {
   if (platform === 'win32') return String.raw`\\.\pipe\survival-os-vault-` + webPort
+  // Android: los datos pueden estar en almacenamiento compartido (sin sockets Unix y visible para otras apps con
+  // permiso): el socket va en la carpeta privada de la app.
+  if (platform === 'android' && privateDir) return join(privateDir, 'vault.sock')
   const p = join(data, 'vault.sock')
   return p.length < 100 ? p : join(tmpdir(), `survival-os-vault-${webPort}.sock`)
 }
 
-export function serviceEnv({ root, data, ports, platform, arch }) {
+export function serviceEnv({ root, data, ports, platform, arch, privateDir = null }) {
   const app = join(root, 'app')
-  const vault = vaultSocket(platform, data, ports.web)
+  const vault = vaultSocket(platform, data, ports.web, privateDir)
+  // Android: el protocolo gpsd (ubicación) va por socket Unix privado, no por TCP en loopback (ADR 0020).
+  const gpsdSocket = platform === 'android' && privateDir ? { GPSD_SOCKET: join(privateDir, 'gpsd.sock') } : {}
   const url = (p) => `http://127.0.0.1:${p}`
   const web = url(ports.web)
   const common = { NODE_ENV: 'production', LOG_LEVEL: 'info', SURVIVAL_PORTABLE: '1' }
@@ -134,6 +141,7 @@ export function serviceEnv({ root, data, ports, platform, arch }) {
       SERIAL_HUB_HOST: '127.0.0.1',
       MESH_PORT: String(ports.mesh),
       GPSD_PORT: String(ports.gpsd),
+      ...gpsdSocket,
       SERIAL_HUB_DATA: join(data, 'serial-hub'),
       UV_THREADPOOL_SIZE: '8',
     },
@@ -141,6 +149,7 @@ export function serviceEnv({ root, data, ports, platform, arch }) {
       ...common,
       GPSD_HOST: '127.0.0.1',
       GPSD_PORT: String(ports.gpsd),
+      ...gpsdSocket,
       MESH_URL: url(ports.mesh),
       NAV_HOST: '127.0.0.1',
       NAV_PORT: String(ports.navigation),
@@ -211,6 +220,18 @@ export function optionalServices({ root, data, key, ports, platform, threads }, 
   const java = join(rt, 'jre', 'bin', exe('java'))
   const jar = join(rt, 'brouter', 'brouter-1.7.10-all.jar')
   const seg = join(data, 'routing', 'segments4')
+  // Android: BRouter va compilado dentro del APK y la app lo ejecuta en un proceso aparte (no hay JRE); del
+  // componente descargado solo se usan los perfiles.
+  if (platform === 'android') {
+    if (fs.exists(join(rt, 'brouter', 'profiles2')) && fs.exists(seg) && fs.hasRd5(seg)) {
+      out.brouter = {
+        bridge: 'routing',
+        params: { segments: seg, profiles: join(rt, 'brouter', 'profiles2'), customProfiles: join(data, 'routing', 'customprofiles'), port: ports.brouter, maxRunningTime: 60 },
+        sig: 'routing',
+      }
+    }
+    return out
+  }
   if (fs.exists(java) && fs.exists(jar) && fs.exists(seg) && fs.hasRd5(seg)) {
     out.brouter = {
       cmd: java,
@@ -237,6 +258,31 @@ export function lanAddress(ifaces) {
   }
   cands.sort((a, b) => Number(a.virtual) - Number(b.virtual))
   return cands[0]?.address ?? null
+}
+
+/**
+ * Componentes que en Android vienen dentro del APK (ADR 0020): Android solo deja ejecutar lo instalado desde el APK
+ * (lib<nombre>.so en la carpeta de bibliotecas nativas). Se publican en runtime/<clave>/<componente>/ como enlaces
+ * con el nombre de siempre y la marca .version del catálogo, así el motor de descargas no intenta descargarlos.
+ * `versions`: versiones con las que se compiló el APK (app/android-natives.json).
+ */
+export const ANDROID_BUNDLED = {
+  'kiwix-tools': { 'kiwix-serve': 'libkiwix-serve.so', 'kiwix-manage': 'libkiwix-manage.so' },
+  llama: { 'llama-server': 'libllama-server.so' },
+  pmtiles: { pmtiles: 'libpmtiles.so' },
+  xpdf: { pdftotext: 'libpdftotext.so' },
+}
+
+export function androidComponentLinks({ root, key, libDir, versions }, exists) {
+  const out = []
+  for (const [comp, bins] of Object.entries(ANDROID_BUNDLED)) {
+    const version = versions?.[comp]
+    if (!version) continue
+    const links = Object.entries(bins).map(([name, lib]) => ({ name, target: join(libDir, lib) }))
+    if (!links.every((l) => exists(l.target))) continue
+    out.push({ comp, dir: join(root, 'runtime', key, comp), version, links })
+  }
+  return out
 }
 
 /** Carpetas de datos que se crean al arrancar (y que la interfaz permite abrir). */

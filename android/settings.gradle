@@ -1,0 +1,22 @@
+// App Android de Survival OS (ADR 0020). Construir con: node android/scripts/build.mjs
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        // usb-serial-for-android (MIT) solo se publica en JitPack.
+        maven {
+            url = uri('https://jitpack.io')
+            content { includeGroup('com.github.mik3y') }
+        }
+    }
+}
+rootProject.name = 'SurvivalOS'
+include ':app'

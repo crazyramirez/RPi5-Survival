@@ -11,12 +11,12 @@
  */
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { chmodSync, closeSync, cpSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync, writeSync } from 'node:fs'
+import { chmodSync, cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { crc32, deflateRawSync } from 'node:zlib'
-import { makeIcns, makeIco, makeIconPng } from '../portable/icon.mjs'
+import { makeIcns, makeIco } from '../portable/icon.mjs'
 import { TARGETS } from '../portable/lib.mjs'
+import { missingBuild, stageApp, writeZip } from './stage-app.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
@@ -33,9 +33,7 @@ const fail = (m) => {
   process.exit(1)
 }
 for (const t of targets) if (!TARGETS.includes(t)) fail(`Destino desconocido: ${t} (válidos: ${TARGETS.join(', ')})`)
-for (const f of ['apps/frontend/.output/server/index.mjs', 'services/device-api/dist/server.js', 'services/library/dist/server.js', 'services/navigation/dist/server.js']) {
-  if (!existsSync(join(root, f))) fail(`Falta ${f}. Ejecuta "npm run build" primero.`)
-}
+for (const f of missingBuild(root)) fail(`Falta ${f}. Ejecuta "npm run build" primero.`)
 
 // ------------------------------------------------------------------ Node por plataforma
 
@@ -77,122 +75,19 @@ async function fetchNode(key) {
   rmSync(tmp, { recursive: true, force: true })
 }
 
-// ------------------------------------------------------------------ Zip con permisos Unix
-
-function dosTime(d) {
-  return {
-    time: (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
-    date: ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate(),
-  }
-}
-
-/** Escribe `dir` en un zip (prefijo `prefix/`). `isExec(rel)` decide el modo 0755. Sin Zip64: < 4 GiB. */
-function writeZip(dir, zipFile, prefix, isExec) {
-  const fd = openSync(zipFile, 'w')
-  const central = []
-  let offset = 0
-  const { time, date } = dosTime(new Date())
-  const put = (buf) => {
-    writeSync(fd, buf)
-    offset += buf.length
-  }
-  const add = (name, data, mode) => {
-    const nameBuf = Buffer.from(name, 'utf8')
-    const isDir = name.endsWith('/')
-    const crc = isDir ? 0 : crc32(data) >>> 0
-    const comp = isDir ? Buffer.alloc(0) : deflateRawSync(data, { level: 6 })
-    const store = !isDir && comp.length >= data.length
-    const body = isDir ? comp : store ? data : comp
-    const method = isDir || store ? 0 : 8
-    if (offset + 30 + nameBuf.length + body.length > 0xffffffff) fail('El zip supera 4 GiB (sin Zip64)')
-    const local = Buffer.alloc(30)
-    local.writeUInt32LE(0x04034b50, 0)
-    local.writeUInt16LE(20, 4)
-    local.writeUInt16LE(0x0800, 6)
-    local.writeUInt16LE(method, 8)
-    local.writeUInt16LE(time, 10)
-    local.writeUInt16LE(date, 12)
-    local.writeUInt32LE(crc, 14)
-    local.writeUInt32LE(body.length, 18)
-    local.writeUInt32LE(isDir ? 0 : data.length, 22)
-    local.writeUInt16LE(nameBuf.length, 26)
-    local.writeUInt16LE(0, 28)
-    const at = offset
-    put(local)
-    put(nameBuf)
-    put(body)
-    const cd = Buffer.alloc(46)
-    cd.writeUInt32LE(0x02014b50, 0)
-    cd.writeUInt16LE((3 << 8) | 20, 4) // creado en Unix: los permisos van en el atributo externo
-    cd.writeUInt16LE(20, 6)
-    cd.writeUInt16LE(0x0800, 8)
-    cd.writeUInt16LE(method, 10)
-    cd.writeUInt16LE(time, 12)
-    cd.writeUInt16LE(date, 14)
-    cd.writeUInt32LE(crc, 16)
-    cd.writeUInt32LE(body.length, 20)
-    cd.writeUInt32LE(isDir ? 0 : data.length, 24)
-    cd.writeUInt16LE(nameBuf.length, 28)
-    cd.writeUInt32LE((((mode & 0xffff) << 16) | (isDir ? 0x10 : 0)) >>> 0, 38)
-    cd.writeUInt32LE(at, 42)
-    central.push(Buffer.concat([cd, nameBuf]))
-  }
-  const walk = (abs) => {
-    for (const e of readdirSync(abs, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-      const p = join(abs, e.name)
-      const rel = relative(dir, p).split(sep).join('/')
-      if (e.isDirectory()) {
-        add(`${prefix}/${rel}/`, null, 0o40755)
-        walk(p)
-      } else if (e.isFile()) {
-        add(`${prefix}/${rel}`, readFileSync(p), isExec(rel) ? 0o100755 : 0o100644)
-      }
-    }
-  }
-  add(`${prefix}/`, null, 0o40755)
-  walk(dir)
-  const cdBuf = Buffer.concat(central)
-  const end = Buffer.alloc(22)
-  end.writeUInt32LE(0x06054b50, 0)
-  end.writeUInt16LE(central.length, 8)
-  end.writeUInt16LE(central.length, 10)
-  end.writeUInt32LE(cdBuf.length, 12)
-  end.writeUInt32LE(offset, 16)
-  writeSync(fd, cdBuf)
-  writeSync(fd, end)
-  closeSync(fd)
-  if (central.length > 0xffff) fail('Demasiados ficheros para un zip sin Zip64')
-}
-
 // ------------------------------------------------------------------ Montaje de la carpeta
 
 rmSync(join(outDir, 'portable'), { recursive: true, force: true })
 mkdirSync(stage, { recursive: true })
 const app = join(stage, 'app')
-const copy = (from, to) => cpSync(join(root, from), join(app, to ?? from), { recursive: true })
-
-copy('apps/frontend/.output', 'web')
-for (const svc of ['device-api', 'library', 'navigation', 'serial-hub', 'vault']) {
-  copy(`services/${svc}/dist`)
-  copy(`services/${svc}/package.json`)
+try {
+  stageApp(root, app, version)
+} catch (err) {
+  fail(err instanceof Error ? err.message : String(err))
 }
-copy('content')
-copy('scripts/games-server.mjs')
-copy('scripts/content-engine.mjs')
-copy('scripts/country-maps.mjs')
-copy('scripts/public-gateway.mjs')
-copy('scripts/games-sync.mjs')
-copy('scripts/portable-admin.mjs')
-for (const f of ['launcher.mjs', 'lib.mjs', 'install.mjs', 'apply-update.mjs', 'usb.mjs', 'autoopen.mjs', 'icon.mjs', 'usb-watch.sh', 'data-LEEME.txt', 'win/survival-os.vbs']) copy(`portable/${f}`)
-writeFileSync(join(app, 'VERSION'), `${version}\n`)
-writeFileSync(join(app, 'package.json'), JSON.stringify({ name: 'survival-os-portable', version, private: true, type: 'module' }, null, 2))
-
-// Iconos (ADR 0019): ventana, accesos directos, unidad USB (Windows: autorun.inf; macOS: .VolumeIcon.icns; Linux: PNG).
+// Iconos de los lanzadores (la carpeta app/ ya trae los suyos).
 const icns = makeIcns()
 const ico = makeIco()
-writeFileSync(join(app, 'portable', 'icon.png'), makeIconPng(256))
-writeFileSync(join(app, 'portable', 'icon.ico'), ico)
-writeFileSync(join(app, 'portable', 'icon.icns'), icns)
 
 // Lanzadores por sistema.
 // Windows: «Survival OS.exe» con icono propio (ADR 0019), compilado con el csc.exe de .NET Framework 4 que trae
@@ -235,11 +130,6 @@ if (process.platform !== 'win32') {
     chmodSync(join(stage, rel), 0o755)
   }
 }
-
-// Comprobación: el servidor web empaquetado debe tener sus dependencias trazadas.
-const serverDeps = Object.keys(JSON.parse(readFileSync(join(app, 'web', 'server', 'package.json'), 'utf8')).dependencies ?? {})
-const missing = serverDeps.filter((d) => !existsSync(join(app, 'web', 'server', 'node_modules', d, 'package.json')))
-if (missing.length) fail(`.output incompleto, faltan: ${missing.join(', ')}`)
 
 const size = (d) => readdirSync(d, { withFileTypes: true }).reduce((n, e) => n + (e.isDirectory() ? size(join(d, e.name)) : statSync(join(d, e.name)).size), 0)
 console.log(`[portable] Carpeta: ${stage} (${(size(stage) / 1024 ** 2).toFixed(0)} MB; ${targets.join(', ')})`)

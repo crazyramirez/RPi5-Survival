@@ -9,7 +9,7 @@ export const failed = (reason: string): ProbeError => ({ state: 'error', reason 
 export const isLinux = (): boolean => process.platform === 'linux'
 
 export const notLinux = (): ProbeUnavailable =>
-  unavailable(`Solo disponible en Linux (plataforma actual: ${process.platform})`)
+  unavailable(process.platform === 'android' ? 'No disponible en Android' : `Solo disponible en Linux (plataforma actual: ${process.platform})`)
 
 /**
  * Ejecuta un recolector y convierte cualquier excepción en un estado `error`.

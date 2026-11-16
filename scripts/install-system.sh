@@ -65,6 +65,8 @@ usermod -aG video,dialout survival
 install -d -o root -g root -m 0755 "$PREFIX" "$PREFIX/runtime" "$PREFIX/releases"
 install -d -o survival -g survival -m 0750 "$DATA"
 install -d -o root -g survival -m 0750 "$ETC"
+# Actualizaciones desde GitHub (ADR 0021): descargas y estado de root; la web (survival) solo los lee.
+install -d -o root -g root -m 0755 /var/lib/survival-os-update
 
 # --- Runtime Node ---
 NODE_DIR="$PREFIX/runtime/node-$NODE_VERSION-linux-$ARCH"
@@ -127,7 +129,7 @@ fi
 systemctl daemon-reload
 
 # Servicios base siempre; opcionales solo si su unidad declara que puede arrancar (ver hooks de fase).
-UNITS="survival-device-api.service survival-web.service survival-healthcheck.timer survival-timesync.timer survival-ups.timer survival-games.service"
+UNITS="survival-device-api.service survival-web.service survival-healthcheck.timer survival-timesync.timer survival-ups.timer survival-games.service survival-update.timer"
 [ -x "$DEST/scripts/install-hooks.sh" ] && DEST="$DEST" KIOSK_USER="$KIOSK_USER" "$DEST/scripts/install-hooks.sh"
 for extra in survival-library survival-kiwix survival-navigation survival-vault survival-esp32-gateway; do
   [ -f "/etc/systemd/system/$extra.service" ] && UNITS="$UNITS $extra.service"

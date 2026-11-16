@@ -91,10 +91,14 @@ export class GpsdClient {
   private readonly port: number
   private readonly onFix: () => void
 
-  constructor(host: string, port: number, onFix: () => void) {
+  /** Socket Unix de gpsd (Android, ADR 0020); si existe, sustituye a host:port. */
+  private readonly socketPath: string | null
+
+  constructor(host: string, port: number, onFix: () => void, socketPath: string | null = null) {
     this.host = host
     this.port = port
     this.onFix = onFix
+    this.socketPath = socketPath
   }
 
   start(): void {
@@ -113,11 +117,13 @@ export class GpsdClient {
     this.socket = s
     s.setEncoding('utf8')
     s.setTimeout(30_000)
-    s.connect(this.port, this.host, () => {
+    const onConnect = (): void => {
       this.state.connected = true
       this.retryMs = 2000
       s.write('?WATCH={"enable":true,"json":true};\n')
-    })
+    }
+    if (this.socketPath) s.connect(this.socketPath, onConnect)
+    else s.connect(this.port, this.host, onConnect)
     s.on('data', (chunk: string) => {
       this.buffer += chunk
       if (this.buffer.length > 1_000_000) this.buffer = '' // protección ante basura

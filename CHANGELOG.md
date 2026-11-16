@@ -1,5 +1,67 @@
 # Changelog
 
+## Próxima versión (sin publicar)
+
+### Añadido
+- **App Android (ADR 0020):** un APK para tablets (Android 10+, arm64; y x86_64 para el emulador y los
+  Chromebooks) con la misma aplicación que la portable.
+  - Instalar el APK y listo: la primera vez se elige dónde guardar los datos (carpeta SurvivalOS en la memoria
+    interna o en la microSD, que se conserva al desinstalar) y se conceden los permisos (ubicación, batería,
+    notificaciones).
+  - **Sin Internet, todo en la tablet:** mapas y rutas (BRouter), Wikipedia (kiwix-serve), manuales con búsqueda
+    (pdftotext), asistente (llama.cpp con la mejor variante de CPU del dispositivo), bóveda, juegos y «Descargarlo
+    todo».
+  - **Hardware de la tablet:**
+    - GNSS interno como receptor GPS;
+    - batería y cargador reales;
+    - nodo LoRa/Meshtastic, GPS y placas ESP32 por USB OTG;
+    - memorias USB y microSD para importar y hacer copias;
+    - actualizar desde un APK verificado en una memoria USB;
+    - «Fijar la pantalla» (quiosco).
+  - **Sigue funcionando con la pantalla apagada** (servicio en primer plano; CPU despierta solo mientras descarga).
+  - **Seguridad:** en Android cualquier app puede conectarse a 127.0.0.1, así que todos los servicios exigen un
+    token por arranque. La bóveda y la ubicación van por sockets privados.
+  - `npm run release:android` (binarios: `android/scripts/natives.mjs`).
+- **Asistente ligero (Qwen2.5 1.5B, 1,1 GB)** para equipos con poca memoria: «Descargarlo todo» y la bienvenida ya
+  no proponen modelos que no caben en la RAM y, en su lugar, dejan activo el ligero.
+- **Actualizaciones desde GitHub (ADR 0021)** en la Pi, la portable y Android:
+  - Mantenimiento → Red → «Actualizaciones»: versión instalada y última, novedades en tu idioma, «Buscar ahora» e
+    «Instalar»; aviso en la barra de estado cuando hay versión nueva;
+  - modos **Automática**, **Solo avisar** y **Desactivada**:
+    - la portable de escritorio viene en «Automática»: descarga sola y aplica al cerrar Survival OS, sin
+      interrumpir nunca;
+    - en la Pi y en Android, «Solo avisar» por defecto. En la Pi, «Automática» instala de 02:00 a 06:00 con la
+      bóveda cerrada;
+  - solo instala versiones **firmadas** (Ed25519) y comprueba tamaño y SHA-256 de lo descargado. Nunca baja de
+    versión; sin conexión, lo dice;
+  - la portable arranca la versión nueva en **autoprueba** y, si no responde, **vuelve sola** a la anterior (como
+    ya hacía la Pi);
+  - `npm run express -- update` (agentes): estado, «Buscar ahora», modo e instalar.
+- **Publicación sincronizada:**
+  - `npm run release:publish` se niega a publicar si el árbol tiene cambios, `main` no está subido, las versiones
+    no coinciden, falta el CHANGELOG o fallan los tests;
+  - compila la Pi, la portable completa y una por sistema (y el APK con `--android`), comprueba la versión dentro
+    de cada fichero, firma el manifiesto, publica y verifica lo publicado;
+  - `npm run set-version -- X.Y.Z` alinea todos los `package.json` y `package-lock.json`.
+
+### Cambiado
+- Versiones del monorepo alineadas: serial-hub, vault y shared-types estaban en 0.8.0/0.1.0.
+- La carpeta `app/` de la portable y la del APK salen del mismo montaje (`scripts/stage-app.mjs`); el zip se
+  extrae con `scripts/zip.mjs` (sin programas externos).
+
+### Corregido
+- Motor de descargas: instalar un modelo con `model install` registraba el estado en el elemento de Qwen3 4B,
+  fuera cual fuera el modelo.
+- Textos de los servicios sin traducir en el mapa («Receptor conectado, esperando datos»).
+- **Progreso de los mapas:** se quedaba en 0 % hasta terminar. Ahora sigue el porcentaje de pmtiles o, si va por
+  delante, los bytes que lleva recibidos.
+- **Descargas cortadas** (app cerrada, reinicio): se quedaban en «Descargando 0 %» y bloqueaban el botón de
+  descargar. Ahora salen como «Descarga interrumpida» y se pueden relanzar.
+- **Empaquetado (portable y APK):** se niega a seguir si la compilación tiene ficheros de código llenos de ceros.
+  Pasó una vez y el APK no arrancaba.
+- **Tarjeta «Sistema» del inicio:** sin la telemetría de la Pi (portable, Android) muestra la batería del equipo
+  en lugar de «Sin datos de alimentación».
+
 ## 0.9.0 — 2026-11-16 · Portable completa, mapas de cualquier país, cuatro idiomas y memoria USB integrada
 
 ### Añadido

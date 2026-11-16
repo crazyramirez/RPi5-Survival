@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BatteryWarning, Battery, Clock, HardDrive, PlugZap, Satellite, Thermometer, Wifi, WifiOff, TriangleAlert } from '@lucide/vue'
+import { BatteryWarning, Battery, Clock, CloudDownload, HardDrive, PlugZap, Satellite, Thermometer, Wifi, WifiOff, TriangleAlert } from '@lucide/vue'
 import type { MessageKey } from '~/locales/es'
 import { formatAge, formatBytes, formatClock, formatDate, formatNumber } from '~/utils/format'
 import { TEMP_CRITICAL_C, TEMP_WARN_C } from '~/utils/alerts'
@@ -55,6 +55,16 @@ const disk = computed(() => {
 /** Vista pública (móvil en el punto de acceso): solo reloj; el estado del equipo no se expone. */
 const publicView = isPublicView()
 
+// Aviso de versión nueva (ADR 0021): se relee cada 10 min (la web solo lee el estado; nunca sale a Internet).
+const updates = useUpdates()
+let updTimer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  if (publicView) return
+  void updates.refresh()
+  updTimer = setInterval(() => void updates.refresh(), 600_000)
+})
+onBeforeUnmount(() => updTimer && clearInterval(updTimer))
+
 /** Batería y red de la UPS: solo lo medido (medidor I²C y GPIO6); sin lectura → «no disponible». */
 const power = computed(() => {
   const b = status.value?.battery
@@ -91,6 +101,11 @@ const power = computed(() => {
         </div>
 
         <div class="spacer" />
+
+        <NuxtLink v-if="updates.pending.value" to="/sistema/mantenimiento#mnt-update" class="item i-update tone-info" :title="t('upd.bar', { v: updates.pending.value })">
+          <CloudDownload :size="18" aria-hidden="true" />
+          <span>{{ t('upd.bar', { v: updates.pending.value }) }}</span>
+        </NuxtLink>
 
         <div class="item i-gnss" :class="`tone-${gnss.tone}`" :title="gnss.text">
           <Satellite :size="18" aria-hidden="true" />
@@ -180,6 +195,12 @@ const power = computed(() => {
 .api-down {
   color: var(--danger);
   font-weight: 700;
+}
+
+.i-update {
+  color: var(--tone);
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .spacer {

@@ -123,6 +123,12 @@ if systemctl is-active --quiet survival-web 2>/dev/null; then
     [ -n "$deny" ] && ok "$u con IPAddressDeny=$deny" || bad "$u sin IPAddressDeny"
   done
   systemctl is-active --quiet survival-healthcheck.timer && ok "Vigilante de salud activo" || bad "survival-healthcheck.timer inactivo"
+  # Actualizaciones (ADR 0021): sin red solo anotan «sin conexión»; la descarga es de root y nunca la toca la web.
+  systemctl is-active --quiet survival-update.timer && ok "Temporizador de actualizaciones activo" || warn "survival-update.timer inactivo (actualizaciones solo a mano)"
+  if [ -d /var/lib/survival-os-update ]; then
+    owner=$(stat -c %U /var/lib/survival-os-update)
+    [ "$owner" = "root" ] && ok "/var/lib/survival-os-update es de root" || bad "/var/lib/survival-os-update es de '$owner' (debe ser root)"
+  fi
 else
   warn "survival-web no está instalado como servicio (modo manual de Fase 1)"
 fi

@@ -1,0 +1,14 @@
+# Actualizaciones desde GitHub (ADR 0021). Cada hora lanza survival-admin@update-auto, que según el modo elegido en
+# la interfaz no hace nada (Desactivada), comprueba como mucho cada 20 h (Solo avisar) o además descarga e instala
+# entre las 02:00 y las 06:00 con la bóveda cerrada (Automática). Sin red, solo anota «sin conexión».
+[Unit]
+Description=Survival OS - buscar actualizaciones
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=1h
+RandomizedDelaySec=10min
+Unit=survival-admin@update-auto.service
+
+[Install]
+WantedBy=timers.target

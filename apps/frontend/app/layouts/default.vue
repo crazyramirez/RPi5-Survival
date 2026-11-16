@@ -2,6 +2,7 @@
 const { locked } = useScreenLock()
 const { panelOpen } = useDisplaySettings()
 const portable = usePortable()
+const android = useAndroid()
 </script>
 
 <template>
@@ -13,7 +14,7 @@ const portable = usePortable()
     <ActionBar />
     <DisplayPanel v-if="panelOpen" />
     <!-- Portable desde una memoria USB (ADR 0019): «¿abrir al conectar?» la primera vez en cada equipo. -->
-    <UsbAutoOpenPrompt v-if="portable" />
+    <UsbAutoOpenPrompt v-if="portable && !android" />
     <LockOverlay v-if="locked" />
     <OnScreenKeyboard />
     <!-- Atenuación visual: no afecta a la retroiluminación ni al consumo. -->

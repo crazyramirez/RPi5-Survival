@@ -5,6 +5,7 @@ export const LLM_MODELS = [
   { id: 'qwen3-4b', file: 'Qwen3-4B-Instruct-2507-Q4_0.gguf', size: '2,4 GB', license: 'Apache-2.0' },
   { id: 'gemma3-4b', file: 'gemma-3-4b-it-Q4_K_M.gguf', size: '2,5 GB', license: 'Gemma' },
   { id: 'llama3.2-3b', file: 'Llama-3.2-3B-Instruct-Q4_0.gguf', size: '1,9 GB', license: 'Llama 3.2' },
+  { id: 'qwen2.5-1.5b', file: 'qwen2.5-1.5b-instruct-q4_0.gguf', size: '1,1 GB', license: 'Apache-2.0' },
 ] as const
 
 /** Nombre para mostrar de un fichero de modelo: el del catálogo o, si no está, el fichero sin extensión. */

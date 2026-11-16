@@ -109,7 +109,7 @@ copy('firmware')
 copy('content')
 mkdirSync(join(stage, 'scripts'), { recursive: true })
 for (const f of readdirSync(join(root, 'scripts'))) {
-  if (f.endsWith('.sh') || f.endsWith('.py') || ['start.mjs', 'public-gateway.mjs', 'games-server.mjs', 'content-engine.mjs', 'country-maps.mjs'].includes(f)) copy(`scripts/${f}`)
+  if (f.endsWith('.sh') || f.endsWith('.py') || ['start.mjs', 'public-gateway.mjs', 'games-server.mjs', 'content-engine.mjs', 'country-maps.mjs', 'zip.mjs', 'update-engine.mjs', 'update-lib.mjs'].includes(f)) copy(`scripts/${f}`)
 }
 copy('systemd')
 copy('kiosk')

@@ -68,6 +68,8 @@ export default defineNuxtConfig({
       version: pkg.version,
       // Versión portable (ADR 0014): la fija el lanzador con NUXT_PUBLIC_PORTABLE=true.
       portable: false,
+      // App Android (ADR 0020): la fija la app nativa con NUXT_PUBLIC_ANDROID=true (además de portable).
+      android: false,
     },
   },
 

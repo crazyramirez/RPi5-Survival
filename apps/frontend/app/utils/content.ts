@@ -81,19 +81,37 @@ export function countryItems(c: CountryChoice): ContentCatalogItem[] {
  *     todos los modelos del asistente.
  * Mapas: los del país (España con sus mapas propios) y el del mundo. Lo ya instalado no se repite.
  */
+/** Modelo ligero del asistente (equipos con poca memoria, p. ej. tablets Android de 3–4 GB; ADR 0020). */
+export const LIGHT_ASSISTANT = 'asistente-ligero'
+
+/**
+ * ¿Cabe el modelo en la memoria del equipo? El fichero se carga entero (mmap) más el contexto y el resto de
+ * servicios: hace falta ~1,3 × su tamaño + 1,5 GiB. Sin dato de memoria se supone que cabe (Pi, PC).
+ */
+export function llmFits(modelBytes: number, ramBytes: number | null | undefined): boolean {
+  if (!ramBytes) return true
+  return modelBytes * 1.3 + 1.5 * 1024 ** 3 <= ramBytes
+}
+
 export function downloadPlan(
   catalog: ContentCatalogItem[],
   installed: Set<string>,
   ui: ContentLang,
   country: CountryChoice | null,
   mode: 'recommended' | 'all',
+  ramBytes: number | null = null,
 ): ContentCatalogItem[] {
   const langs = contentLangs(ui)
   const rank = (x: ContentCatalogItem): number => (langs.includes(x.lang) ? langs.indexOf(x.lang) : x.lang === 'mul' ? 0 : 99)
   const best = new Map<string, ContentCatalogItem>()
+  // Con poca memoria, los modelos grandes no se descargan y el recomendado pasa a ser el ligero.
+  const main = catalog.find((i) => i.id === 'asistente')
+  const lowRam = !!main && !llmFits(main.approxBytes, ramBytes)
+  const recommendedLlm = lowRam ? LIGHT_ASSISTANT : 'asistente'
   for (const i of catalog) {
     if (i.kind === 'maps' || i.kind === 'routing' || !inLanguage(i, ui)) continue
-    if (mode === 'recommended' && (!i.default || (i.kind === 'llm' && i.id !== 'asistente'))) continue
+    if (i.kind === 'llm' && !llmFits(i.approxBytes, ramBytes)) continue
+    if (mode === 'recommended' && ((!i.default && i.id !== recommendedLlm) || (i.kind === 'llm' && i.id !== recommendedLlm))) continue
     const key = i.kind === 'llm' ? i.id : topicOf(i)
     const cur = best.get(key)
     if (!cur || rank(i) < rank(cur)) best.set(key, i)
@@ -108,10 +126,14 @@ export function downloadPlan(
   return out.filter((i) => !installed.has(i.id))
 }
 
-/** Orden final: el asistente recomendado el último (instalar un modelo lo deja activo). */
+/**
+ * Orden final: el asistente recomendado el último (instalar un modelo lo deja activo). Si el principal no está
+ * (no cabe en la memoria), el ligero.
+ */
 export function orderPlan(items: ContentCatalogItem[]): ContentCatalogItem[] {
   const ordered = orderForInstall(items)
-  const main = ordered.findIndex((i) => i.id === 'asistente')
+  let main = ordered.findIndex((i) => i.id === 'asistente')
+  if (main < 0) main = ordered.findIndex((i) => i.id === LIGHT_ASSISTANT)
   if (main >= 0) ordered.push(ordered.splice(main, 1)[0]!)
   return ordered
 }

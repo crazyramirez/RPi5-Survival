@@ -21,10 +21,11 @@
 la Wikipedia, 41 protocolos de emergencia, cientos de manuales, un asistente de IA local, mensajería por radio LoRa
 y una bóveda cifrada, en español, inglés, francés o italiano.
 
-Funciona de dos maneras:
+Funciona de tres maneras:
 
 - como **terminal dedicado** en una Raspberry Pi 5 con pantalla táctil;
-- como **aplicación portable** en Windows, macOS o Linux, desde una memoria USB o instalada en el ordenador.
+- como **aplicación portable** en Windows, macOS o Linux, desde una memoria USB o instalada en el ordenador;
+- como **app de Android** (APK) en una tablet o un móvil.
 
 ![Pantalla de inicio de Survival OS](docs/screenshots/inicio.png)
 
@@ -38,6 +39,7 @@ Funciona de dos maneras:
 - [Elige cómo usarlo](#elige-cómo-usarlo)
 - [Empezar con la versión portable](#empezar-con-la-versión-portable)
 - [Empezar en una Raspberry Pi](#empezar-en-una-raspberry-pi)
+- [Empezar en Android](#empezar-en-android)
 - [La primera vez: configurarlo todo con un clic](#la-primera-vez-configurarlo-todo-con-un-clic)
 - [Funciones](#funciones)
 - [Idiomas y país](#idiomas-y-país)
@@ -111,15 +113,15 @@ Cambia la IP y el usuario por los de tu Pi. Todas las opciones están al princip
 
 ## Elige cómo usarlo
 
-| | **Portable** (Windows, macOS, Linux) | **Raspberry Pi 5** (terminal dedicado) |
-|---|---|---|
-| Para quién | Probarlo en minutos, llevarlo en un USB o usarlo en tu ordenador | Un equipo de supervivencia propio, siempre listo |
-| Instalación | Descomprimir una carpeta y abrirla; nada que instalar | Instalar Survival OS en Raspberry Pi OS (unos minutos) |
-| Pantalla | Una ventana en tu ordenador | Pantalla táctil a pantalla completa (quiosco) |
-| Funciones | Todas: mapas, biblioteca, asistente, LoRa y GPS por USB, bóveda, juegos | Todas, más el punto de acceso Wi-Fi propio, la hora de respaldo por GPS/LoRa y el control de la Wi-Fi |
-| Dónde viven tus datos | En la carpeta `data/` de la propia app | En `/var/lib/survival-os` |
+| | **Portable** (Windows, macOS, Linux) | **Raspberry Pi 5** (terminal dedicado) | **Android** (tablet o móvil) |
+|---|---|---|---|
+| Para quién | Probarlo en minutos, llevarlo en un USB o usarlo en tu ordenador | Un equipo de supervivencia propio, siempre listo | Una tablet con batería, GPS y pantalla táctil que ya tienes |
+| Instalación | Descomprimir una carpeta y abrirla; nada que instalar | Instalar Survival OS en Raspberry Pi OS (unos minutos) | Instalar el APK y aceptar los permisos |
+| Pantalla | Una ventana en tu ordenador | Pantalla táctil a pantalla completa (quiosco) | A pantalla completa; se puede fijar (quiosco) |
+| Funciones | Todas: mapas, biblioteca, asistente, LoRa y GPS por USB, bóveda, juegos | Todas, más el punto de acceso Wi-Fi propio, la hora de respaldo por GPS/LoRa y el control de la Wi-Fi | Todas, con el GPS y la batería de la tablet; LoRa y GPS por USB OTG |
+| Dónde viven tus datos | En la carpeta `data/` de la propia app | En `/var/lib/survival-os` | En la carpeta `SurvivalOS` (memoria interna o microSD) |
 
-Las dos versiones comparten el mismo código y la misma interfaz: lo que aprendas en una sirve en la otra.
+Las tres versiones comparten el mismo código y la misma interfaz: lo que aprendas en una sirve en las otras.
 
 ## Empezar con la versión portable
 
@@ -167,6 +169,32 @@ La primera vez aparece la [bienvenida](#la-primera-vez-configurarlo-todo-con-un-
 - **Antes de retirar el USB:** cierra la ventana de Survival OS y espera unos segundos.
 - **Desinstalar:** cierra la app y borra la carpeta (y el acceso directo, si la instalaste).
 - **Si algo falla:** los registros están en `data/logs/`.
+
+## Empezar en Android
+
+Necesitas una tablet o un móvil con **Android 10 o posterior** (64 bits). Con 3–4 GB de RAM funciona todo; el
+asistente usa entonces un modelo ligero.
+
+1. **Instala el APK** `survival-os-X.Y.Z-android-arm64.apk`: ábrelo en la tablet (Android pedirá permitir «instalar
+   apps desconocidas») o, desde un ordenador, `adb install`. Para generarlo desde el código, ver
+   [Para desarrolladores](#para-desarrolladores).
+2. **Elige dónde guardar los datos.** La carpeta **SurvivalOS** de la memoria interna o de la microSD se conserva
+   aunque desinstales la app (pide «acceso a todos los archivos»).
+3. **Acepta los permisos:**
+   - notificaciones;
+   - ubicación, para usar el GPS de la tablet sin Internet;
+   - batería sin restricciones, para que las descargas, la radio y el GPS sigan con la pantalla apagada.
+4. **Sigue la bienvenida**, como en las otras versiones.
+
+- **Hardware:** la radio LoRa (Meshtastic), un GPS USB y las placas ESP32 se conectan con un cable OTG; al enchufarlos,
+  Android ofrece abrir Survival OS.
+- **Compartir con otros móviles:** activa el punto de acceso de la tablet y «Compartir en la red local».
+- **Fijar la pantalla** (quiosco) y los permisos están en Mantenimiento → «Survival OS para Android».
+- **En algunas marcas** (Realme, Xiaomi, Huawei…) activa también «Inicio automático» y «Actividad en segundo plano»
+  en los ajustes de la app.
+- **Si algo falla:** los registros están en `SurvivalOS/logs/`.
+
+Detalles técnicos: [ADR 0020](docs/adr/0020-app-android.md).
 
 ## Empezar en una Raspberry Pi
 
@@ -554,6 +582,31 @@ El zip conserva los permisos de ejecución para macOS y Linux. Más detalles en 
 [0014](docs/adr/0014-version-portable.md), [0015](docs/adr/0015-motor-de-descargas.md) y
 [0016](docs/adr/0016-portable-paridad.md).
 
+### Generar la app Android
+
+Necesitas JDK 17 o posterior, el Android SDK (plataforma 36), el NDK y Go 1.25 o posterior. El script los busca en `JAVA_HOME` y
+`ANDROID_HOME`, o en la instalación por usuario de Windows.
+
+```sh
+npm run build && npm run release:android                 # APK firmados: arm64 (tablets) y x86_64 (emulador)
+npm run release:android -- --debug --abi=x86_64          # APK de depuración para el emulador
+node android/scripts/natives.mjs [--abi=arm64-v8a] [--update-lock]   # solo los binarios nativos
+```
+
+El resultado son los ficheros `release/survival-os-X.Y.Z-android-arm64.apk` y `-x86_64.apk`, con su `.sha256`.
+
+- **Binarios nativos:**
+  - Node 24 y kiwix-tools: paquetes de Termux;
+  - llama.cpp y pdftotext: compilados con el NDK;
+  - pmtiles: compilado para Android con Go;
+  - BRouter: su jar.
+
+  Las versiones quedan fijadas en `android/natives.lock.json`.
+- **La primera compilación de release crea la clave de firma** en `.data/android-keystore.jks`. Guárdala: sin ella
+  no se puede actualizar la app instalada.
+
+Más detalles en el [ADR 0020](docs/adr/0020-app-android.md).
+
 ### Añadir textos o protocolos
 
 - **Textos de la interfaz:** en `apps/frontend/app/locales/es.ts` y la misma clave en `en.ts`, `fr.ts` e `it.ts`.
@@ -572,11 +625,14 @@ Más detalles en el [ADR 0017](docs/adr/0017-idiomas.md).
 - **Verificado en Windows (portable):**
   - asistente, bóveda, mapas, rutas y descargas;
   - copias de seguridad, importar y actualizar, probados con la portable real.
+- **Verificado en el emulador de Android** (tablet, Android 16): arranque, permisos, descargas, mapas, rutas,
+  Wikipedia, asistente, GNSS y la guarda de loopback.
 - **Pruebas automáticas:** 265, más pruebas de pantalla en escritorio y móvil.
 
 **Pendiente de prueba:**
 
 - macOS, por falta de equipo;
+- la app Android en una tablet física (USB OTG con LoRa y GPS, rendimiento en arm64);
 - LoRa, GPS y ESP32 en Windows y macOS, por falta de hardware conectado;
 - autonomía con batería;
 - el punto de acceso con varios móviles a la vez;

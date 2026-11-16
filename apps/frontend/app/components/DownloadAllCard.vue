@@ -31,7 +31,7 @@ onBeforeUnmount(() => timer && clearInterval(timer))
 
 const installed = computed(() => new Set((ov.value?.items ?? []).filter((s) => s.state === 'installed').map((s) => s.id)))
 const busy = computed(() => job.running.value || (ov.value?.items ?? []).some((s) => s.state === 'downloading' || s.state === 'verifying'))
-const plan = computed(() => (ov.value ? downloadPlan(ov.value.catalog, installed.value, locale.value, country.value, 'all') : []))
+const plan = computed(() => (ov.value ? downloadPlan(ov.value.catalog, installed.value, locale.value, country.value, 'all', ov.value.ramBytes) : []))
 const fit = computed(() => autoFit(plan.value, ov.value?.freeBytes ?? null))
 const bytes = computed(() => fit.value.keep.reduce((n, i) => n + i.approxBytes, 0))
 const droppedBytes = computed(() => fit.value.dropped.reduce((n, i) => n + i.approxBytes, 0))

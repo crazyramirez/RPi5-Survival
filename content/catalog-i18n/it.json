@@ -567,6 +567,10 @@
       "title": "Modello alternativo: Llama 3.2 3B",
       "description": "Un modello più leggero per l'assistente (Meta Llama 3.2, 3B). Risponde più velocemente."
     },
+    "asistente-ligero": {
+      "title": "Assistente leggero (Qwen2.5 1.5B)",
+      "description": "Modello piccolo per dispositivi con poca memoria (tablet e telefoni da 3–4 GB). Scelto automaticamente su di essi scaricando tutto."
+    },
     "juegos": {
       "title": "Giochi offline",
       "description": "Una raccolta di giochi Viseni Games da giocare senza Internet. Il pulsante «Giochi» compare nella barra una volta scaricati."

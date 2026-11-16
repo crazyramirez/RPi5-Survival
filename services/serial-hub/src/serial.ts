@@ -1,14 +1,38 @@
 import { execFile, spawn } from 'node:child_process'
-import { closeSync, constants, createReadStream, existsSync, openSync, readdirSync, readFileSync, realpathSync, write, type ReadStream } from 'node:fs'
+import { closeSync, constants, createReadStream, existsSync, openSync, readdirSync, readFileSync, realpathSync, write } from 'node:fs'
+import { connect } from 'node:net'
 import { basename, join } from 'node:path'
+import type { Readable } from 'node:stream'
 
 /**
  * Puerto serie en Windows, macOS y Linux SIN módulos nativos (ADR 0016).
  * - Linux/macOS: se abre el dispositivo y se configura con `stty` sobre ese mismo descriptor (su stdin),
  *   así la configuración se aplica al puerto abierto en ambos sistemas (`stty -F` es solo de GNU).
  * - Windows: `mode COMn:` fija velocidad y líneas, y se abre `\\.\COMn`.
+ * - Android (ADR 0020): las apps no pueden abrir /dev/tty*. La app nativa abre el dispositivo USB (permiso de
+ *   Android) o el GNSS interno de la tablet y lo expone como flujo TCP en 127.0.0.1 con una clave de un solo uso
+ *   (puente SURVIVAL_ANDROID_BRIDGE). Rutas: `usb:<id>` y `android:gnss`.
  * Las lecturas son bloqueantes en el pool de libuv: el lanzador sube UV_THREADPOOL_SIZE.
  */
+
+/** GNSS interno de la tablet (NMEA del propio Android). */
+export const ANDROID_GNSS = 'android:gnss'
+/** Rutas de puerto válidas en Android. */
+export const ANDROID_PORT_RE = /^(usb:\d{1,6}|android:gnss)$/
+
+async function androidBridge<T>(path: string, body?: unknown): Promise<T> {
+  const base = process.env.SURVIVAL_ANDROID_BRIDGE
+  if (!base) throw new Error('Sin puente Android')
+  const res = await fetch(`${base}${path}`, {
+    method: body === undefined ? 'GET' : 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
+    signal: AbortSignal.timeout(20_000),
+  })
+  const data = (await res.json().catch(() => ({}))) as T & { error?: string }
+  if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`)
+  return data
+}
 
 export interface PortInfo {
   /** Ruta para abrirlo: /dev/serial/by-id/…, /dev/cu.…, COM5 */
@@ -26,6 +50,10 @@ const run = (cmd: string, args: string[], timeout = 8000): Promise<string> =>
   new Promise((ok) => execFile(cmd, args, { timeout, windowsHide: true }, (err, out) => ok(err ? '' : String(out))))
 
 export async function listPorts(platform = process.platform): Promise<PortInfo[]> {
+  if (platform === 'android') {
+    const r = await androidBridge<{ ports: PortInfo[] }>('/serial/ports').catch(() => ({ ports: [] as PortInfo[] }))
+    return r.ports.filter((p) => ANDROID_PORT_RE.test(p.path))
+  }
   if (platform === 'win32') {
     const ps = "Get-CimInstance Win32_PnPEntity | Where-Object { $_.Name -match '\\(COM\\d+\\)' } | ForEach-Object { $_.Name + '|' + $_.PNPDeviceID }"
     const out = await run('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', ps])
@@ -89,13 +117,14 @@ function usbIds(dev: string): { vid: string | null; pid: string | null } {
 
 export interface SerialPort {
   readonly path: string
-  readonly stream: ReadStream
+  readonly stream: Readable
   write(data: Uint8Array): Promise<void>
   close(): void
 }
 
 /** Abre y configura el puerto (8N1, sin control de flujo, DTR activo). */
 export async function openPort(path: string, baud: number, platform = process.platform): Promise<SerialPort> {
+  if (platform === 'android') return openAndroidPort(path, baud)
   let devPath = path
   if (platform === 'win32') {
     if (!/^COM\d{1,3}$/i.test(path)) throw new Error('Puerto no válido')
@@ -140,6 +169,33 @@ export async function openPort(path: string, baud: number, platform = process.pl
       } catch {
         // ya cerrado (dispositivo retirado)
       }
+    },
+  }
+}
+
+/** Android: la app abre el puerto (pide permiso USB si hace falta) y lo sirve por TCP local con una clave. */
+async function openAndroidPort(path: string, baud: number): Promise<SerialPort> {
+  if (!ANDROID_PORT_RE.test(path)) throw new Error('Puerto no válido')
+  const r = await androidBridge<{ port: number; key: string }>('/serial/open', { path, baud })
+  const sock = connect(r.port, '127.0.0.1')
+  await new Promise<void>((ok, ko) => {
+    sock.once('connect', () => ok())
+    sock.once('error', ko)
+  })
+  sock.write(`${r.key}\n`)
+  let closed = false
+  return {
+    path,
+    stream: sock,
+    write: (data) =>
+      new Promise((ok, ko) => {
+        if (closed) return ko(new Error('Puerto cerrado'))
+        sock.write(data, (err) => (err ? ko(err) : ok()))
+      }),
+    close() {
+      if (closed) return
+      closed = true
+      sock.destroy()
     },
   }
 }

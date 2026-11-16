@@ -497,6 +497,10 @@ export type AdminJob =
   | 'games'
   /** Solo portable (ADR 0019): copiar Survival OS a otra memoria USB e integrarla en el sistema. */
   | 'usb-prepare'
+  /** Actualizaciones desde GitHub (ADR 0021): «Buscar ahora» / «Instalar» (action: check | install). */
+  | 'update-online'
+  /** Lo que lanza el temporizador (Pi) o el planificador de la web (portable) según el modo. */
+  | 'update-auto'
 
 /** Juegos offline: copia local de Viseni Games (ADR 0012, scripts/games-sync.py). */
 export interface GamesStatus {
@@ -577,6 +581,45 @@ export interface UsbFile {
   path: string
   sizeBytes: number
   kind: 'map' | 'doc' | 'release'
+}
+
+// ---------------------------------------------------------------- Actualizaciones desde GitHub (ADR 0021)
+
+/** auto = comprueba, descarga y aplica en un momento seguro · notify = solo avisa · off = nunca se conecta sola. */
+export type UpdateMode = 'auto' | 'notify' | 'off'
+
+/** system = Pi/Linux con systemd · portable = carpeta portable · android = app · dev = sin instalación (no se ofrece). */
+export type UpdateKind = 'system' | 'portable' | 'android' | 'dev'
+
+/**
+ * Resultado de la última comprobación (update-engine.mjs):
+ * up-to-date · available · newer-installed (desarrollo) · no-asset (no hay para este sistema) · needs-step (minFrom).
+ */
+export type UpdateCheckStatus = 'up-to-date' | 'available' | 'newer-installed' | 'no-asset' | 'needs-step'
+
+export interface UpdateStatus {
+  kind: UpdateKind
+  /** Se puede actualizar desde GitHub en este equipo (si no, `reason`). */
+  supported: boolean
+  reason: string | null
+  installed: string
+  mode: UpdateMode
+  /** Momentos de la última comprobación (intento) y de la última que llegó a GitHub. */
+  checkedAt: string | null
+  okAt: string | null
+  /** Error de la última comprobación: offline | no-release | http | signature | invalid | download | … */
+  error: { code: string; message: string } | null
+  status: UpdateCheckStatus | null
+  latest: { version: string; date: string; minFrom: string; notes: string | null } | null
+  /** Fichero de esta plataforma en la última versión. */
+  asset: { name: string; size: number } | null
+  /** Ya descargada y verificada (lista para instalar). */
+  downloaded: string | null
+  /** Portable: versión preparada en .update/, se aplica al cerrar (o con «Reiniciar y aplicar»). */
+  prepared: string | null
+  /** Pi en Automática: instalación aplazada (window = fuera de 02:00–06:00, vault = bóveda abierta, busy). */
+  deferred: { version: string; reason: 'window' | 'vault' | 'busy' } | null
+  lastInstall: { version: string | null; ok: boolean; message: string | null; at: string } | null
 }
 
 export interface UsbScan {
@@ -741,6 +784,44 @@ export interface PortableStatus {
   share: { on: boolean; url: string | null; error: string | null }
 }
 
+/** App Android (ADR 0020): estado que da la parte nativa de la app. */
+export interface AndroidStatus {
+  version: string
+  abi: string
+  /** Fabricante y modelo (p. ej. «realme RMP2105»). */
+  model: string
+  android: string
+  dataDir: string | null
+  /** La carpeta de datos es la privada de la app: Android la borra al desinstalar. */
+  dataDeletedOnUninstall: boolean
+  freeBytes: number | null
+  permissions: {
+    location: boolean
+    /** La tablet tiene receptor GNSS. */
+    gnssHardware: boolean
+    notifications: boolean
+    /** «Acceso a todos los archivos» (memorias USB, microSD, carpeta SurvivalOS). */
+    allFiles: boolean
+    /** Sin restricciones de batería (descargas y radio con la pantalla apagada). */
+    battery: boolean
+    /** Puede abrir el instalador (actualizar desde un APK). */
+    installApps: boolean
+  }
+  /** Pantalla fijada (modo quiosco de Android). */
+  kiosk: boolean
+}
+
+/** Acciones de la app Android que la interfaz puede pedir (lista cerrada). */
+export type AndroidAction =
+  | 'permission-location'
+  | 'permission-notifications'
+  | 'permission-files'
+  | 'permission-battery'
+  | 'permission-install'
+  | 'app-settings'
+  | 'storage'
+  | 'kiosk'
+
 /** Memoria USB de Survival OS (versión portable, ADR 0019). */
 export interface PortableUsbStatus {
   /** Dónde se ejecuta: memoria USB o disco externo (removable) o disco interno. */
@@ -830,6 +911,8 @@ export interface ContentOverview {
   catalog: ContentCatalogItem[]
   items: ContentItemStatus[]
   freeBytes: number | null
+  /** Memoria total del equipo: «Descargarlo todo» omite los modelos del asistente que no caben (ADR 0020). */
+  ramBytes: number | null
   /** Asistente de primera puesta en marcha. */
   setup: { state: 'pending' | 'completed' | 'skipped'; at: string | null }
 }

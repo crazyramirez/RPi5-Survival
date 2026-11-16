@@ -10,13 +10,13 @@
 import { createHash } from 'node:crypto'
 import {
   closeSync, copyFileSync, cpSync, createReadStream, existsSync, mkdirSync, openSync, readdirSync, readFileSync, readSync,
-  renameSync, rmSync, statfsSync, statSync, writeFileSync, appendFileSync, chmodSync,
+  renameSync, rmSync, statfsSync, statSync, writeFileSync, appendFileSync,
 } from 'node:fs'
 import { hostname, platform } from 'node:os'
-import { basename, dirname, extname, join, relative, resolve, sep } from 'node:path'
-import { inflateRawSync } from 'node:zlib'
+import { basename, extname, join, relative, resolve, sep } from 'node:path'
 // Mismo árbol en el repositorio (scripts/ + portable/) y en la carpeta portable (app/scripts/ + app/portable/).
 import { mountedMedia as listMedia, prepareUsb } from '../portable/usb.mjs'
+import { extractZip } from './zip.mjs'
 
 const [job, rawParams = '{}'] = process.argv.slice(2)
 const arg = (name) => {
@@ -32,6 +32,9 @@ const DOC_EXT = new Set(['.md', '.markdown', '.txt', '.html', '.htm', '.pdf'])
 const MAP_RE = /^[A-Za-z0-9_-]{1,80}\.pmtiles$/
 /** Versión portable: survival-os-0.9.0-portable.zip o survival-os-0.9.0-portable-win-x64.zip. */
 const RELEASE_RE = /^survival-os-\d+\.\d+\.\d+-portable(-[a-z0-9-]+)?\.zip$/
+/** App Android (ADR 0020): survival-os-0.10.0-android-arm64.apk (se instala con el instalador de Android). */
+const APK_RE = /^survival-os-\d+\.\d+\.\d+-android(-[a-z0-9_-]+)?\.apk$/
+const ANDROID = platform() === 'android'
 
 class JobError extends Error {}
 const log = (msg) => process.stdout.write(`${new Date().toTimeString().slice(0, 8)} ${msg}\n`)
@@ -71,7 +74,7 @@ function mediaPath(id, rel = '') {
 function classify(name) {
   const low = name.toLowerCase()
   if (low.endsWith('.pmtiles')) return 'map'
-  if (RELEASE_RE.test(name)) return 'release'
+  if ((ANDROID ? APK_RE : RELEASE_RE).test(name)) return 'release'
   if (DOC_EXT.has(extname(low))) return 'doc'
   return null
 }
@@ -239,51 +242,6 @@ async function backup() {
 
 // ------------------------------------------------------------------ actualizar
 
-/** Lee un zip (sin Zip64, como los que genera release-portable.mjs) y extrae bajo `dest`. */
-function extractZip(zipFile, dest, onProgress) {
-  const buf = readFileSync(zipFile)
-  let eocd = -1
-  for (let i = buf.length - 22; i >= Math.max(0, buf.length - 65_557); i--) {
-    if (buf.readUInt32LE(i) === 0x06054b50) {
-      eocd = i
-      break
-    }
-  }
-  if (eocd < 0) throw new JobError('zip no válido')
-  const count = buf.readUInt16LE(eocd + 10)
-  let p = buf.readUInt32LE(eocd + 16)
-  const destReal = resolve(dest)
-  for (let n = 0; n < count; n++) {
-    if (buf.readUInt32LE(p) !== 0x02014b50) throw new JobError('zip dañado')
-    const method = buf.readUInt16LE(p + 10)
-    const csize = buf.readUInt32LE(p + 20)
-    const nameLen = buf.readUInt16LE(p + 28)
-    const extraLen = buf.readUInt16LE(p + 30)
-    const commentLen = buf.readUInt16LE(p + 32)
-    const attrs = buf.readUInt32LE(p + 38)
-    const local = buf.readUInt32LE(p + 42)
-    const name = buf.toString('utf8', p + 46, p + 46 + nameLen)
-    p += 46 + nameLen + extraLen + commentLen
-    const out = resolve(destReal, ...name.split('/'))
-    if (!out.startsWith(destReal + sep)) throw new JobError(`ruta peligrosa en el zip: ${name}`)
-    if (name.endsWith('/')) {
-      mkdirSync(out, { recursive: true })
-      continue
-    }
-    const lNameLen = buf.readUInt16LE(local + 26)
-    const lExtraLen = buf.readUInt16LE(local + 28)
-    const start = local + 30 + lNameLen + lExtraLen
-    const raw = buf.subarray(start, start + csize)
-    const data = method === 0 ? raw : method === 8 ? inflateRawSync(raw) : null
-    if (!data) throw new JobError(`compresión no soportada en ${name}`)
-    mkdirSync(dirname(out), { recursive: true })
-    writeFileSync(out, data)
-    const mode = (attrs >>> 16) & 0o777
-    if (platform() !== 'win32' && mode) chmodSync(out, mode)
-    if (n % 200 === 0) onProgress(n, count)
-  }
-}
-
 function platformKey() {
   const os = { win32: 'win', darwin: 'darwin', linux: 'linux' }[platform()]
   return `${os}-${process.arch}`
@@ -295,6 +253,7 @@ function platformKey() {
  * al cerrarse (apply-update.mjs): los datos no se tocan.
  */
 async function update() {
+  if (ANDROID) return updateAndroid()
   const src = mediaPath(params.media, params.path)
   const name = basename(src)
   if (!RELEASE_RE.test(name) || !existsSync(src)) throw new JobError('no es una versión portable de Survival OS')
@@ -304,6 +263,16 @@ async function update() {
   const actual = await sha256File(src)
   if (!expected || expected !== actual) throw new JobError('el SHA-256 no coincide: zip dañado o incompleto')
   log('SHA-256 correcto')
+  await prepareZip(src)
+  log('Survival OS se reiniciará para aplicarla; los datos no se tocan.')
+}
+
+/**
+ * Extrae un zip YA VERIFICADO en <raíz>/.update/staging y deja .update/ready.json para apply-update.mjs.
+ * `expectVersion`: la del manifiesto firmado (actualización desde GitHub); `auto`: preparada sola (se aplica al
+ * cerrar Survival OS en lugar de al momento).
+ */
+async function prepareZip(src, { expectVersion = null, auto = false } = {}) {
   const updDir = join(ROOT, '.update')
   rmSync(updDir, { recursive: true, force: true })
   const size = statSync(src).size
@@ -317,11 +286,122 @@ async function update() {
   const base = top.length === 1 && statSync(join(staging, top[0])).isDirectory() ? join(staging, top[0]) : staging
   const key = platformKey()
   const nodeBin = join(base, 'runtime', key, platform() === 'win32' ? 'node.exe' : 'node')
-  if (!existsSync(join(base, 'app', 'portable', 'launcher.mjs'))) throw new JobError('el zip no contiene la aplicación')
-  if (!existsSync(nodeBin)) throw new JobError(`esta versión no incluye este sistema (${key})`)
+  const fail = (msg) => {
+    rmSync(updDir, { recursive: true, force: true })
+    throw new JobError(msg)
+  }
+  if (!existsSync(join(base, 'app', 'portable', 'launcher.mjs'))) fail('el zip no contiene la aplicación')
+  if (!existsSync(nodeBin)) fail(`esta versión no incluye este sistema (${key})`)
   const version = readFileSafe(join(base, 'app', 'VERSION')).trim()
-  writeFileSync(join(updDir, 'ready.json'), JSON.stringify({ version, from: readFileSafe(join(ROOT, 'app', 'VERSION')).trim(), base: relative(ROOT, base), preparedAt: new Date().toISOString() }))
-  log(`Versión ${version} lista. Survival OS se reiniciará para aplicarla; los datos no se tocan.`)
+  if (expectVersion && version !== expectVersion) fail(`el zip trae la versión ${version || '?'} y se esperaba la ${expectVersion}`)
+  // Una memoria para varios sistemas: avisar si el zip no trae alguno de los que ya tiene (se perdería).
+  let have = []
+  try {
+    have = readdirSync(join(ROOT, 'runtime'))
+  } catch {
+    have = []
+  }
+  const lost = have.filter((k) => /^(win|darwin|linux)-(x64|arm64)$/.test(k) && !existsSync(join(base, 'runtime', k)))
+  if (lost.length) log(`AVISO: esta versión no incluye ${lost.join(', ')}: esta carpeta dejará de abrirse en esos sistemas`)
+  writeFileSync(join(updDir, 'ready.json'), JSON.stringify({ version, from: readFileSafe(join(ROOT, 'app', 'VERSION')).trim(), base: relative(ROOT, base), auto, preparedAt: new Date().toISOString() }))
+  log(`Versión ${version} lista.`)
+  return version
+}
+
+/**
+ * App Android: verifica el APK (+ .sha256 al lado) y lo copia a <admin>/update.apk. Al terminar, el servidor web
+ * pide a la app que abra el instalador de Android, que muestra la versión y pide confirmación; los datos no se tocan.
+ */
+async function updateAndroid() {
+  const src = mediaPath(params.media, params.path)
+  const name = basename(src)
+  if (!APK_RE.test(name) || !existsSync(src)) throw new JobError('no es un APK de Survival OS')
+  if (!existsSync(`${src}.sha256`)) throw new JobError('falta el fichero .sha256 junto al APK')
+  const expected = readFileSafe(`${src}.sha256`).trim().split(/\s+/)[0]?.toLowerCase()
+  log(`Comprobando ${name}…`)
+  if (!expected || expected !== (await sha256File(src))) throw new JobError('el SHA-256 no coincide: APK dañado o incompleto')
+  log('SHA-256 correcto')
+  await stageApk(src, expected, name)
+}
+
+/** Copia un APK YA VERIFICADO a <admin>/update.apk (lo abre el instalador de Android, que pide confirmación). */
+async function stageApk(src, expected, name) {
+  mkdirSync(ADMIN, { recursive: true })
+  const dest = join(ADMIN, 'update.apk')
+  copyFileSync(src, `${dest}.part`)
+  renameSync(`${dest}.part`, dest)
+  if ((await sha256File(dest)) !== expected) throw new JobError('la copia no coincide con el original')
+  writeResult({ apk: dest, name })
+  log('Listo: Android pedirá confirmación para instalar la nueva versión. Los datos no se tocan.')
+}
+
+// ------------------------------------------------------------------ actualizaciones desde GitHub (ADR 0021)
+
+/** Motor común (update-engine.mjs) con las rutas de esta carpeta. */
+async function engine() {
+  const e = await import('./update-engine.mjs')
+  return { e, paths: e.enginePaths('portable', ROOT) }
+}
+
+/** Lo descargado y verificado (manifiesto firmado) → preparado para apply-update.mjs o el instalador de Android. */
+async function stageDownloaded(e, paths, { file, version, name, sha256 }, auto) {
+  if (ANDROID) {
+    await stageApk(file, sha256, name)
+    return
+  }
+  await prepareZip(file, { expectVersion: version, auto })
+  // El zip ya está extraído en .update/: fuera, para no ocupar el doble.
+  rmSync(file, { force: true })
+  rmSync(`${file}.sha256`, { force: true })
+  e.writeState(paths, (s) => {
+    s.download = null
+    s.prepared = { version, auto, at: new Date().toISOString() }
+  })
+}
+
+/** Botones de la tarjeta «Actualizaciones»: buscar ahora, o descargar y aplicar (confirmado en pantalla). */
+async function updateOnline() {
+  const { e, paths } = await engine()
+  if (params.action === 'check') {
+    const r = await e.check(paths, { force: true, log })
+    if (r.error) throw new JobError(r.error.message)
+    return
+  }
+  if (params.action !== 'install') throw new JobError('acción no válida')
+  let f
+  try {
+    f = await e.fetchUpdate(paths, { log })
+  } catch (err) {
+    throw new JobError(err instanceof Error ? err.message : String(err))
+  }
+  await stageDownloaded(e, paths, { file: f.file, version: f.version, name: f.asset.name, sha256: f.asset.sha256 }, false)
+  log(ANDROID ? 'Android pedirá confirmación para instalarla.' : 'Survival OS se reiniciará para aplicarla; los datos no se tocan.')
+}
+
+/**
+ * Planificador de la web (cada hora): según el modo, comprueba (máx. cada 20 h) y, en «Automática», descarga y deja
+ * la versión preparada para aplicarse AL CERRAR Survival OS (nunca interrumpe). En Android solo descarga: instalar
+ * siempre pide un toque.
+ */
+async function updateAuto() {
+  const { e, paths } = await engine()
+  const ready = join(ROOT, '.update', 'ready.json')
+  if (!ANDROID && existsSync(ready)) {
+    let v = '?'
+    try {
+      v = JSON.parse(readFileSync(ready, 'utf8')).version
+    } catch {
+      // ilegible: apply-update lo descartará
+    }
+    log(`Versión ${v} preparada: se aplicará al cerrar Survival OS`)
+    return
+  }
+  const r = await e.autoRun(paths, { log })
+  if (r.action === 'error') throw new JobError(r.state.error?.message ?? 'error')
+  if (r.action !== 'downloaded' || ANDROID) return
+  const d = r.state.download
+  await stageDownloaded(e, paths, { file: d.file, version: d.version, name: d.name, sha256: d.sha256 }, true)
+  log('Se aplicará al cerrar Survival OS.')
 }
 
 // ------------------------------------------------------------------ preparar una memoria USB (ADR 0019)
@@ -347,7 +427,7 @@ async function usbPrepare() {
 
 // ------------------------------------------------------------------ principal
 
-const JOBS = { 'usb-scan': usbScan, 'maps-import': mapsImport, 'docs-import': docsImport, backup, update, 'usb-prepare': usbPrepare }
+const JOBS = { 'usb-scan': usbScan, 'maps-import': mapsImport, 'docs-import': docsImport, backup, update, 'update-online': updateOnline, 'update-auto': updateAuto, 'usb-prepare': usbPrepare }
 try {
   if (!Object.hasOwn(JOBS, job)) throw new JobError(`tarea desconocida: ${job}`)
   await JOBS[job]()

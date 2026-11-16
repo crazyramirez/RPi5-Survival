@@ -45,6 +45,8 @@ pkill -u "$KIOSK_USER" -f 'class=[s]urvival-kiosk' 2>/dev/null || true
 systemctl --global disable survival-kiosk.path >/dev/null 2>&1 || true
 rm -f /etc/systemd/user/survival-kiosk.*
 rm -rf /opt/survival-os
+# Actualizaciones (ADR 0021): solo descargas y estado; no son datos del usuario.
+rm -rf /var/lib/survival-os-update
 if [ "$PURGE" -eq 1 ]; then
   rm -rf /var/lib/survival-os /etc/survival-os
   userdel survival 2>/dev/null || true

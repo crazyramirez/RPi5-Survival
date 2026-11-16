@@ -1,3 +1,4 @@
+import { chmodSync, rmSync } from 'node:fs'
 import { createServer, type Server, type Socket } from 'node:net'
 import { applyNmea, emptyNmea, toSky, toTpv, type NmeaState } from './nmea.ts'
 import { log } from './mesh.ts'
@@ -17,7 +18,22 @@ export class Gps {
   error: string | null = 'Sin receptor GNSS USB'
 
   listen(port: number, host = '127.0.0.1'): void {
-    this.server = createServer((sock) => {
+    this.server = this.createGpsd()
+    this.server.listen(port, host, () => log('info', 'gpsd_listening', { host, port }))
+  }
+
+  /** Mismo protocolo por socket Unix (Android, ADR 0020): solo lo abre la propia app (permisos de fichero). */
+  listenSocket(path: string): void {
+    rmSync(path, { force: true })
+    this.server = this.createGpsd()
+    this.server.listen(path, () => {
+      chmodSync(path, 0o600)
+      log('info', 'gpsd_listening', { socket: path })
+    })
+  }
+
+  private createGpsd(): Server {
+    return createServer((sock) => {
       this.clients.add(sock)
       sock.on('close', () => this.clients.delete(sock))
       sock.on('error', () => this.clients.delete(sock))
@@ -29,7 +45,6 @@ export class Gps {
         sock.write(`${JSON.stringify(toSky(this.state, this.path ?? ''))}\n`)
       }
     })
-    this.server.listen(port, host, () => log('info', 'gpsd_listening', { host, port }))
   }
 
   private broadcast(msg: Record<string, unknown>): void {

@@ -9,6 +9,8 @@ import type { Locale } from '~/utils/i18n'
  */
 const t = useT()
 const { settings } = useDisplaySettings()
+// Android (ADR 0020): el sistema ya tiene su teclado; el de pantalla es para el kiosco de la Pi.
+const android = useAndroid()
 const target = ref<HTMLInputElement | HTMLTextAreaElement | null>(null)
 const layer = ref<'letters' | 'symbols'>('letters')
 const shift = ref(false)
@@ -53,7 +55,7 @@ function isTextField(el: EventTarget | null): el is HTMLInputElement | HTMLTextA
 }
 
 function onFocusIn(e: FocusEvent): void {
-  if (!settings.value.osk || Date.now() < physicalUntil || !isTextField(e.target)) return
+  if (android || !settings.value.osk || Date.now() < physicalUntil || !isTextField(e.target)) return
   if (hideTimer) clearTimeout(hideTimer)
   target.value = e.target
   layer.value = e.target instanceof HTMLInputElement && e.target.type === 'number' ? 'symbols' : 'letters'

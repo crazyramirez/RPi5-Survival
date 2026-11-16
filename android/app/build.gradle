@@ -1,0 +1,85 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Versión: la del package.json del repositorio (la fija android/scripts/build.mjs).
+def appVersion = providers.gradleProperty('survivalVersion').getOrElse('0.0.0')
+def parts = appVersion.tokenize('.').collect { it.replaceAll('[^0-9]', '') as int }
+def code = parts[0] * 1000000 + parts[1] * 1000 + parts[2]
+
+android {
+    namespace = 'org.survivalos.app'
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = 'org.survivalos.app'
+        // Android 10: ejecución de binarios solo desde el APK (W^X) y almacenamiento con alcance.
+        minSdk = 29
+        targetSdk = 36
+        versionCode = code
+        versionName = appVersion
+    }
+
+    signingConfigs {
+        release {
+            // Clave fuera del repositorio (.data/android-keystore.jks); la crea build.mjs la primera vez.
+            def ks = providers.gradleProperty('survivalKeystore').getOrElse('')
+            if (ks) {
+                storeFile = file(ks)
+                storePassword = providers.gradleProperty('survivalKeystorePassword').get()
+                keyAlias = 'survival-os'
+                keyPassword = providers.gradleProperty('survivalKeystorePassword').get()
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+            signingConfig = signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix = '.debug'
+        }
+    }
+
+    // Un APK por ABI (arm64-v8a para tablets; x86_64 para el emulador y Chromebooks) y uno universal.
+    splits {
+        abi {
+            enable = true
+            reset()
+            include 'arm64-v8a', 'x86_64'
+            universalApk = false
+        }
+    }
+
+    packaging {
+        jniLibs {
+            // Los binarios (node, kiwix-serve, llama-server…) deben quedar extraídos en disco para ejecutarlos.
+            useLegacyPackaging = true
+            // Ya vienen sin símbolos: no tocarlos (algunos no son bibliotecas sino ejecutables).
+            keepDebugSymbols += ['**/*.so']
+        }
+    }
+
+    androidResources {
+        // app.zip ya va comprimido.
+        noCompress += ['zip']
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
+}
+
+dependencies {
+    implementation 'com.github.mik3y:usb-serial-for-android:3.12.0'
+    // BRouter (MIT), el mismo jar que usan la Pi y la portable; aquí lo ejecuta Android (ART), sin JRE.
+    implementation files('libs/brouter-1.7.10-all.jar')
+}

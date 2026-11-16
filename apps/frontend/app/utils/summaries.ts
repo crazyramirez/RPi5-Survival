@@ -40,7 +40,13 @@ export function moduleSummaries(status: DeviceStatus | null, extras: SummaryExtr
   let system: ModuleSummary = { key: 'summary.system.ok', tone: 'ok' }
   const throttle = status.power.state === 'ok' ? status.power.value.throttle : null
   const temp = status.cpu.state === 'ok' ? status.cpu.value.temperatureC : null
-  if (status.power.state !== 'ok' || !throttle) system = { key: 'summary.system.nodata', tone: 'muted' }
+  if (status.power.state !== 'ok' || !throttle) {
+    // Sin telemetría de la Pi (portable, Android): la batería real del equipo, si la hay.
+    const pct = status.battery.state === 'ok' ? status.battery.value.percent : null
+    system = pct !== null
+      ? { key: 'summary.system.battery', params: { pct }, tone: pct <= 15 ? 'warn' : 'ok' }
+      : { key: 'summary.system.nodata', tone: 'muted' }
+  }
   if (
     throttle?.underVoltageNow ||
     throttle?.underVoltageOccurred ||

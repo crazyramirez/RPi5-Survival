@@ -8,7 +8,9 @@ Registro legible por la UI en /run/survival-os/admin/<tarea>.log; resultado opci
 
 Nunca se ejecuta un shell con datos del usuario: solo listas de argumentos fijas.
 """
+import contextlib
 import fcntl
+import hashlib
 import json
 import os
 import re
@@ -16,6 +18,8 @@ import secrets
 import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 import time
 import uuid as uuidlib
 
@@ -36,9 +40,12 @@ LOCK_GROUPS = {
     "routing": "routing",
     "mesh": "mesh",
     "games": "games",
+    # Actualizaciones desde GitHub (ADR 0021): comprobar y descargar no bloquean otras tareas; instalar toma
+    # además el candado «system» (y en automático también «content»).
+    "update-online": "update", "update-auto": "update",
 }
 SERIAL_BYID_RE = re.compile(r"^/dev/serial/by-id/[A-Za-z0-9_.:+-]{1,200}$")
-LLM_MODELS = {"qwen3-4b", "gemma3-4b", "llama3.2-3b"}
+LLM_MODELS = {"qwen3-4b", "gemma3-4b", "llama3.2-3b", "qwen2.5-1.5b"}
 PRESETS = {"basico", "recomendado", "completo"}
 DOC_EXT = {".md", ".markdown", ".txt", ".html", ".htm", ".pdf"}
 MEDIA_RE = re.compile(r"^[\w.-]{1,64}/[^/\x00]{1,128}$")
@@ -47,6 +54,13 @@ MAP_RE = re.compile(r"^[A-Za-z0-9_-]{1,80}\.pmtiles$")
 RELEASE_RE = re.compile(r"^survival-os-\d+\.\d+\.\d+\.tar\.gz$")
 CONTENT_ID_RE = re.compile(r"^[a-z0-9-]{1,40}(:[a-z]{0,10})?$")
 NODE = "/opt/survival-os/runtime/node/bin/node"
+# Actualizaciones (ADR 0021): descargas y estado de root (la web solo lee); el modo lo escribe la web.
+UPDATE_DIR = "/var/lib/survival-os-update"
+UPDATE_SETTINGS = f"{DATA}/update-settings.json"
+UPDATE_MODES = ("auto", "notify", "off")
+VAULT_MAPPER = "/dev/mapper/survival-vault"
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+INSTALLER_RE = re.compile(r"^survival-os-\d+\.\d+\.\d+/scripts/install-system\.sh$")
 
 
 class JobError(Exception):
@@ -260,6 +274,175 @@ def job_update(p):
     if not os.path.isfile(src + ".sha256"):
         raise JobError("falta el fichero .sha256 junto a la release")
     run(["bash", f"{SCRIPTS}/install-system.sh", src])
+
+
+# ------------------------------------------------------------------ actualizaciones desde GitHub (ADR 0021)
+@contextlib.contextmanager
+def extra_lock(group):
+    """Candado adicional (no bloqueante) del grupo indicado, además del propio de la tarea."""
+    f = open(f"{ADMIN}/.lock-{group}", "w")
+    try:
+        try:
+            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise JobError("hay otra tarea de mantenimiento en curso")
+        yield
+    finally:
+        f.close()
+
+
+def update_engine(cmd, *extra, check=True):
+    return run([NODE, f"{SCRIPTS}/update-engine.mjs", cmd, *extra, "--profile", "pi"], check=check)
+
+
+def update_state():
+    try:
+        with open(f"{UPDATE_DIR}/state.json", encoding="utf-8") as f:
+            st = json.load(f)
+        return st if isinstance(st, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def write_update_state(mutate):
+    st = update_state()
+    mutate(st)
+    os.makedirs(UPDATE_DIR, mode=0o755, exist_ok=True)
+    tmp = f"{UPDATE_DIR}/state.json.{os.getpid()}.tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(st, f, indent=2)
+    os.chmod(tmp, 0o644)
+    os.replace(tmp, f"{UPDATE_DIR}/state.json")
+
+
+def update_mode():
+    """Modo elegido en la interfaz; por defecto en la Pi, «avisar» (instalar es un cambio de sistema)."""
+    try:
+        with open(UPDATE_SETTINGS, encoding="utf-8") as f:
+            mode = json.load(f).get("mode")
+        return mode if mode in UPDATE_MODES else "notify"
+    except (OSError, ValueError, AttributeError):
+        return "notify"
+
+
+def sha256_file(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def verified_download(st):
+    """La descarga que dejó update-engine (directorio de root), comprobada otra vez antes de instalar."""
+    d = st.get("download") or {}
+    name, sha, version = d.get("name"), d.get("sha256"), d.get("version")
+    if not isinstance(name, str) or not RELEASE_RE.match(name):
+        raise JobError("no hay ninguna versión descargada")
+    path = os.path.join(UPDATE_DIR, "downloads", name)
+    if os.path.realpath(path) != path or not os.path.isfile(path):
+        raise JobError("no hay ninguna versión descargada")
+    if not isinstance(sha, str) or not SHA256_RE.match(sha) or sha256_file(path) != sha:
+        raise JobError("la descarga no coincide con el manifiesto firmado")
+    if not isinstance(version, str) or name != f"survival-os-{version}.tar.gz":
+        raise JobError("versión de la descarga incoherente")
+    return path, version
+
+
+def install_release(tarball):
+    """Instala con el install-system.sh de la release NUEVA, extraído del tarball ya verificado: así una
+    versión que necesite pasos de instalación nuevos los trae consigo."""
+    with tarfile.open(tarball, "r:gz") as t:
+        member = next((m for m in t if m.isfile() and INSTALLER_RE.match(m.name)), None)
+        if member is None:
+            raise JobError("la release no contiene scripts/install-system.sh")
+        data = t.extractfile(member).read()
+    tmp = tempfile.mkdtemp(prefix="survival-update-")
+    try:
+        script = os.path.join(tmp, "install-system.sh")
+        with open(script, "wb") as f:
+            f.write(data)
+        run(["bash", script, tarball])
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def install_downloaded(st):
+    path, version = verified_download(st)
+    log(f"Instalando Survival OS {version} (la versión anterior se conserva; vuelve atrás sola si falla)")
+    now = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    try:
+        install_release(path)
+    except (JobError, OSError, subprocess.SubprocessError, tarfile.TarError) as e:
+        write_update_state(lambda s: s.update(lastInstall={"version": version, "ok": False, "message": str(e)[:300], "at": now}))
+        raise JobError(f"no se pudo instalar {version}: {e}")
+
+    def done(s):
+        s.update(lastInstall={"version": version, "ok": True, "message": None, "at": now}, installed=version, download=None, deferred=None)
+        if s.get("status") == "available":
+            s["status"] = "up-to-date"
+    write_update_state(done)
+    for f in os.listdir(os.path.join(UPDATE_DIR, "downloads")):
+        with contextlib.suppress(OSError):
+            os.remove(os.path.join(UPDATE_DIR, "downloads", f))
+    log(f"Survival OS {version} instalado")
+
+
+def job_update_online(p):
+    """Botones de la tarjeta «Actualizaciones»: buscar ahora o descargar e instalar (confirmado en pantalla)."""
+    action = p.get("action")
+    if action == "check":
+        if update_engine("check", "--force", check=False) != 0:
+            raise JobError("no se pudo comprobar (ver registro)")
+        return
+    if action != "install":
+        raise JobError("acción no válida")
+    with extra_lock("system"):
+        if update_engine("fetch", check=False) != 0:
+            raise JobError("no se pudo descargar la actualización (ver registro)")
+        install_downloaded(update_state())
+
+
+DEFER_TEXT = {"window": "se instalará entre las 02:00 y las 06:00", "vault": "la bóveda está abierta", "busy": "hay otra tarea en curso"}
+
+
+def defer_reason(now=None):
+    """Motivo (código que traduce la interfaz) para NO instalar sola ahora, o None si es un momento seguro."""
+    hour = (now or time.localtime()).tm_hour
+    if not 2 <= hour < 6:
+        return "window"
+    if os.path.exists(VAULT_MAPPER):
+        return "vault"
+    return None
+
+
+def job_update_auto(p):
+    """Temporizador survival-update.timer (cada hora): según el modo, comprueba (máx. cada 20 h), descarga e
+    instala en un momento seguro. Nunca reintenta sola una versión que ya falló al instalarse."""
+    rc = update_engine("auto", check=False)
+    if update_mode() != "auto":
+        return
+    st = update_state()
+    d, latest = st.get("download") or {}, st.get("latest") or {}
+    version = d.get("version")
+    if rc != 0 or st.get("status") != "available" or not version or version != latest.get("version"):
+        return
+    last = st.get("lastInstall") or {}
+    if last.get("version") == version and last.get("ok") is False:
+        log(f"La instalación de {version} falló antes: queda para «Instalar ahora»")
+        return
+    reason = defer_reason()
+    if reason is None:
+        try:
+            with extra_lock("system"), extra_lock("content"):
+                install_downloaded(st)
+            return
+        except JobError as e:
+            if "otra tarea" not in str(e):
+                raise
+            reason = "busy"
+    log(f"Versión {version} descargada; {DEFER_TEXT[reason]}")
+    write_update_state(lambda s: s.update(deferred={"version": version, "reason": reason, "at": time.strftime("%Y-%m-%dT%H:%M:%S%z")}))
 
 
 def job_gps_uart(p):
@@ -618,6 +801,8 @@ JOBS = {
     "routing": job_routing,
     "mesh": job_mesh,
     "games": job_games,
+    "update-online": job_update_online,
+    "update-auto": job_update_auto,
 }
 
 

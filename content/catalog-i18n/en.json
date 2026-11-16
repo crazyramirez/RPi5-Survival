@@ -567,6 +567,10 @@
       "title": "Alternative model: Llama 3.2 3B",
       "description": "A lighter model for the assistant (Meta Llama 3.2, 3B). Answers faster."
     },
+    "asistente-ligero": {
+      "title": "Light assistant (Qwen2.5 1.5B)",
+      "description": "Small model for devices with little memory (3–4 GB tablets and phones). Chosen automatically on them when downloading everything."
+    },
     "juegos": {
       "title": "Offline games",
       "description": "A collection of Viseni Games to play without Internet. A «Games» button appears in the bar once they are downloaded."

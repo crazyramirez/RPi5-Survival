@@ -1,6 +1,8 @@
 import { existsSync, promises as fs } from 'node:fs'
+import { totalmem } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
+import { jobStatus } from './admin'
 import { isPortable, portablePaths } from './portable'
 // Lógica común con el motor de descargas (mismos zooms y tamaños).
 import { countryLand, countryMaxZoom, countryName, countryZones, estimateMapBytes, ROUTING_TILE_BYTES, routingTiles, type Country } from '../../../../scripts/country-maps.mjs'
@@ -93,6 +95,16 @@ export async function contentOverview(lang = 'es'): Promise<ContentOverview> {
   const models = await ls(join(d.llm, 'models'))
   const active = (await fs.readFile(join(d.llm, 'active'), 'utf8').catch(() => '')).trim()
   const statFile = async (p: string): Promise<number | null> => (await fs.stat(p).catch(() => null))?.size ?? null
+  // «Descargando» solo si alguna tarea del motor sigue en marcha. Si se cortó (app cerrada, reinicio, reinstalación),
+  // el registro se queda en «downloading» para siempre: se muestra como interrumpida y se puede relanzar.
+  const engineRunning = (await Promise.all((['content', 'llm', 'routing'] as const).map((j) => jobStatus(j).then((st) => st.state === 'active', () => false)))).some(Boolean)
+  const stale = (st: string | undefined): boolean => !engineRunning && (st === 'downloading' || st === 'verifying')
+  for (const e of Object.values(engine.items)) {
+    if (stale(e.state)) {
+      e.state = 'failed'
+      e.error = 'Descarga interrumpida: vuelve a lanzarla'
+    }
+  }
 
   const items: ContentItemStatus[] = []
   for (const it of catalog.items) {
@@ -174,6 +186,7 @@ export async function contentOverview(lang = 'es'): Promise<ContentOverview> {
     })),
     items,
     freeBytes: s ? s.bavail * s.bsize : null,
+    ramBytes: totalmem(),
     setup: setup?.completedAt ? { state: 'completed', at: setup.completedAt } : setup?.skippedAt ? { state: 'skipped', at: setup.skippedAt } : { state: 'pending', at: null },
   }
 }

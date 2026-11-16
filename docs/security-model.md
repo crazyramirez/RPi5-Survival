@@ -27,6 +27,9 @@
 | Bóveda LUKS2/Argon2id, servicio sin red, montaje privado, límite de intentos, autobloqueo | `services/vault`, ADR 0004 | `vault-selftest.sh` |
 | Documentos de usuario en iframe `sandbox` sin scripts; Markdown con renderizador que escapa todo | `services/library/src/markdown.ts` | Tests (XSS, `javascript:`) |
 | wayvnc, cups, ModemManager desactivados | `install-system.sh` | `systemctl is-enabled` |
+| Actualizaciones desde GitHub solo con manifiesto **firmado Ed25519** (clave privada fuera del repo); tamaño y SHA-256 de cada fichero salen del manifiesto firmado; nunca baja de versión | `scripts/update-lib.mjs`, `scripts/update-engine.mjs`, ADR 0021 | `apps/frontend/test/update.test.ts` (firma ajena, fichero alterado, sin firma) |
+| La web no sale a Internet para actualizar: comprueba y descarga la tarea root `survival-admin@update-*`; descargas en `/var/lib/survival-os-update` (root), que `survival` no puede cambiar antes de instalar | `scripts/admin-job.py`, `systemd/survival-update.timer` | `tests/python/test_admin_job_update.py` |
+| Instalación automática en la Pi solo si el usuario elige «Automática», de 02:00 a 06:00, con la bóveda cerrada; vuelta atrás si `/api/health` no responde | `admin-job.py`, `install-system.sh` | Idem |
 
 ## Riesgos abiertos (del inventario)
 

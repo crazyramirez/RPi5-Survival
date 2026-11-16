@@ -6,6 +6,7 @@ import { LLM_MODELS } from '~/utils/llm'
 
 const t = useT()
 const portable = usePortable()
+const android = useAndroid()
 const router = useRouter()
 const { status, refresh: refreshDevice } = useDeviceStatus()
 const now = useNow()
@@ -226,11 +227,15 @@ const PIN_LEGEND = [
       <h2 class="ui-sec">{{ t('ui.mnt.sec.net') }}</h2>
       <!-- Portable: carpetas, instalar en este equipo, cerrar y compartir en la red local. -->
       <div v-if="portable" class="bento">
-        <PortableCard />
-        <UsbCard />
+        <!-- App Android (ADR 0020): dispositivo, carpeta de datos y permisos en lugar de carpetas e instalación. -->
+        <AndroidCard v-if="android" />
+        <PortableCard v-else />
+        <UsbCard v-if="!android" />
         <ShareCard />
       </div>
       <div class="bento">
+        <!-- Actualizaciones desde GitHub (ADR 0021): Pi, portable y Android. -->
+        <UpdateCard id="mnt-update" />
         <AppCard
           :title="t('mnt.net')" :icon="radio === 'disabled' ? WifiOff : Wifi" :tone="radio === 'enabled' ? 'info' : 'muted'"
           :pill="portable ? undefined : radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown')"
@@ -642,7 +647,8 @@ const PIN_LEGEND = [
   background: var(--accent);
 }
 
-.mnt-sec {
+.mnt-sec,
+#mnt-update {
   scroll-margin-top: 3.4rem;
 }
 

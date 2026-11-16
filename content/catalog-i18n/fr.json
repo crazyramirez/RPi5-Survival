@@ -567,6 +567,10 @@
       "title": "Modèle alternatif : Llama 3.2 3B",
       "description": "Un modèle plus léger pour l'assistant (Meta Llama 3.2, 3B). Répond plus vite."
     },
+    "asistente-ligero": {
+      "title": "Assistant léger (Qwen2.5 1.5B)",
+      "description": "Petit modèle pour les appareils avec peu de mémoire (tablettes et téléphones de 3–4 Go). Choisi automatiquement sur ceux-ci en téléchargeant tout."
+    },
     "juegos": {
       "title": "Jeux hors ligne",
       "description": "Une collection de jeux Viseni Games pour jouer sans Internet. Un bouton « Jeux » apparaît dans la barre une fois téléchargés."

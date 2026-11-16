@@ -28,7 +28,7 @@ export default tseslint.config(
   },
   {
     // Scripts CLI: la consola es su interfaz.
-    files: ['scripts/**'],
+    files: ['scripts/**', 'android/scripts/**'],
     rules: { 'no-console': 'off' },
   },
 )

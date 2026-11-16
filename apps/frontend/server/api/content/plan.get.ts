@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const countryId = typeof q.country === 'string' && /^[a-z]{3}$/.test(q.country) ? q.country : (defaults.country ?? (lang === 'es' ? 'esp' : null))
   const country = countries.find((c) => c.id === countryId) ?? null
   const installed = new Set(ov.items.filter((s) => s.state === 'installed').map((s) => s.id))
-  const plan = downloadPlan(ov.catalog as ContentCatalogItem[], installed, lang, country, mode)
+  const plan = downloadPlan(ov.catalog as ContentCatalogItem[], installed, lang, country, mode, ov.ramBytes)
   const fit = autoFit(plan, ov.freeBytes)
   const sum = (xs: ContentCatalogItem[]): number => xs.reduce((n, i) => n + i.approxBytes, 0)
   return {

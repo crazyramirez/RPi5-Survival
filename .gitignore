@@ -26,3 +26,12 @@ apps/frontend/public/pdfjs/
 
 # Datos locales de desarrollo (mapas descargados, etc.)
 .data/
+
+# App Android (ADR 0020): binarios, app.zip y compilación se generan con android/scripts/*.mjs
+android/app/src/main/jniLibs/
+android/app/src/main/assets/
+android/app/libs/
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties

@@ -1496,6 +1496,21 @@
       "description": "Modelo más ligero para el asistente (Meta Llama 3.2, 3B). Responde más rápido."
     },
     {
+      "id": "asistente-ligero",
+      "kind": "llm",
+      "group": "asistente",
+      "lang": "mul",
+      "priority": 3,
+      "default": false,
+      "llm": {
+        "model": "qwen2.5-1.5b"
+      },
+      "approxBytes": 1066227232,
+      "license": "Apache-2.0",
+      "title": "Asistente ligero (Qwen2.5 1.5B)",
+      "description": "Modelo pequeño para equipos con poca memoria (tablets y móviles de 3–4 GB). Se elige solo en ellos al descargarlo todo."
+    },
+    {
       "id": "hesperian-donde-no-hay-doctor",
       "kind": "doc",
       "group": "manuales",
@@ -4093,6 +4108,13 @@
       "sha256": "4d491003bf6b470e4d04233824c5c939b76d6c81974ba17a3ff207343e1d8e85",
       "bytes": 1921909280,
       "license": "Llama-3.2"
+    },
+    "qwen2.5-1.5b": {
+      "file": "qwen2.5-1.5b-instruct-q4_0.gguf",
+      "repo": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+      "sha256": "dcd819ff094852c38faba6873d8ff0c9d51eadb2844539e52042ae5d647bbfdb",
+      "bytes": 1066227232,
+      "license": "Apache-2.0"
     }
   },
   "components": {

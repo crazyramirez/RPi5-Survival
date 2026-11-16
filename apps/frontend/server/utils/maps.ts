@@ -1,6 +1,7 @@
 import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
 import type { MapPackage } from '@survival-os/shared-types'
+import { countryTitle } from './content'
 
 export const MAP_FILE_RE = /^[\w-]{1,80}\.pmtiles$/
 
@@ -24,13 +25,21 @@ export function describeMap(file: string, sizeBytes: number): MapPackage {
   }
 }
 
-export async function listMaps(): Promise<MapPackage[]> {
+export async function listMaps(lang = 'es'): Promise<MapPackage[]> {
   const dir = mapsDir()
   const files = (await fs.readdir(dir).catch(() => [] as string[])).filter((f) => MAP_FILE_RE.test(f))
   const out: MapPackage[] = []
   for (const f of files) {
     const st = await fs.stat(join(dir, f)).catch(() => null)
-    if (st?.isFile()) out.push(describeMap(f, st.size))
+    if (!st?.isFile()) continue
+    const m = describeMap(f, st.size)
+    // Mapas de país (ADR 0018): «pais-esp-2-…» → «España (2)», en el idioma de la interfaz.
+    const pais = /^pais-([a-z]{3})(?:-(\d+))?-\d{8}-z\d{1,2}\.pmtiles$/.exec(f)
+    if (pais) {
+      const name = await countryTitle(pais[1]!, lang)
+      if (name) m.title = pais[2] ? `${name} (${pais[2]})` : name
+    }
+    out.push(m)
   }
   return out.sort((a, b) => b.sizeBytes - a.sizeBytes)
 }

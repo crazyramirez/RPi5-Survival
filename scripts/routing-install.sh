@@ -102,6 +102,21 @@ write_manifest() {
 }
 
 case "${1:-}" in
+  install-tiles)
+    # Cuadrículas sueltas (mapas de cualquier país, ADR 0018). Nombre estricto: W10_N35, E5_S25…
+    shift
+    [ $# -gt 0 ] || die "indica al menos una cuadrícula"
+    [ $# -le 200 ] || die "demasiadas cuadrículas"
+    for t in "$@"; do [[ "$t" =~ ^[EW][0-9]{1,3}_[NS][0-9]{1,2}$ ]] || die "cuadrícula no válida: $t"; done
+    install_java
+    install_brouter
+    fetch_segments "$@"
+    write_manifest
+    systemctl daemon-reload
+    systemctl enable survival-routing.service >/dev/null 2>&1 || true
+    systemctl restart survival-routing.service
+    info "Rutas sin conexión listas: $(ls "$SEG"/*.rd5 | wc -l) cuadrícula(s)"
+    ;;
   install)
     shift
     [ $# -gt 0 ] || die "indica al menos una región: ${!REGIONS[*]}"
@@ -126,6 +141,6 @@ case "${1:-}" in
     info "Datos de rutas eliminados (BRouter y Java se conservan)"
     ;;
   *)
-    die "uso: routing-install.sh install <región>... | remove"
+    die "uso: routing-install.sh install <región>... | install-tiles <cuadrícula>... | remove"
     ;;
 esac

@@ -4,7 +4,7 @@ import * as maplibregl from 'maplibre-gl'
 import type { GeoJSONSource, Map as MlMap, Marker } from 'maplibre-gl'
 import { PMTiles, Protocol } from 'pmtiles'
 import { layers, namedFlavor } from '@protomaps/basemaps'
-import { Bike, Car, Circle, Copy, Crosshair, Download, Footprints, Info, LocateFixed, Map as MapIcon, MapPinPlus, Minus, Moon, Plus, Route, Sun, TriangleAlert, Usb, X } from '@lucide/vue'
+import { Bike, Car, Circle, Copy, Crosshair, Download, Footprints, Globe2, Info, LocateFixed, Map as MapIcon, MapPinPlus, Minus, Moon, Plus, Route, Sun, TriangleAlert, Usb, X } from '@lucide/vue'
 import type { MapPackage, RouteMode, RouteResult, RoutingStatus, TrackPoint, Waypoint, WaypointKind } from '@survival-os/shared-types'
 import { parseMapQuery } from '~/utils/coords'
 import { formatAge, formatBytes, formatDuration } from '~/utils/format'
@@ -12,6 +12,17 @@ import { formatDistance, WAYPOINT_COLORS, WAYPOINT_KINDS } from '~/utils/waypoin
 
 const t = useT()
 const portable = usePortable()
+/** Buscador de mapas de cualquier país (ADR 0018), en un panel sobre el mapa. */
+const countryOpen = ref(false)
+const { status: deviceStatus } = useDeviceStatus()
+const online = computed(() => deviceStatus.value?.network.state === 'ok' && deviceStatus.value.network.value.mode === 'local')
+async function closeCountry(): Promise<void> {
+  countryOpen.value = false
+  const before = maps.value?.length ?? 0
+  maps.value = await $fetch<MapPackage[]>('/api/maps', { timeout: 5000, retry: 0 }).catch(() => maps.value)
+  // Primer mapa instalado desde aquí: se recarga la página para montar el visor.
+  if (!before && maps.value?.length) window.location.reload()
+}
 /** `?lat=&lon=&z=`: abrir el mapa en un punto concreto (enlaces). */
 const initialView = parseMapQuery(useRoute().query as Record<string, unknown>)
 const { nav, refreshNav } = useNav()
@@ -431,7 +442,8 @@ onBeforeUnmount(() => {
     <div v-if="maps && maps.length === 0" class="page">
       <PageHeader :title="t('module.maps')" :icon="MapIcon" />
       <EmptyState :icon="MapIcon" :title="t('maps.cartography.none')" :text="t('maps.empty.text')">
-        <NuxtLink to="/sistema/mantenimiento#mnt-content" class="btn btn-primary"><Download :size="18" aria-hidden="true" />{{ t('maps.empty.download') }}</NuxtLink>
+        <button type="button" class="btn btn-primary" @click="countryOpen = true"><Globe2 :size="18" aria-hidden="true" />{{ t('maps.country.add') }}</button>
+        <NuxtLink to="/sistema/mantenimiento#mnt-content" class="btn"><Download :size="18" aria-hidden="true" />{{ t('maps.empty.download') }}</NuxtLink>
         <NuxtLink v-if="!portable" to="/sistema/mantenimiento#mnt-usb" class="btn"><Usb :size="18" aria-hidden="true" />{{ t('mnt.usb.scan') }}</NuxtLink>
       </EmptyState>
     </div>
@@ -473,7 +485,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div v-if="maps && maps.length > 1" class="chips" role="group" :aria-label="t('maps.cartography')">
+        <div v-if="maps && maps.length" class="chips" role="group" :aria-label="t('maps.cartography')">
           <button
             v-for="m in maps"
             :key="m.file"
@@ -484,6 +496,9 @@ onBeforeUnmount(() => {
             @click="selectMap(m.file)"
           >
             <MapIcon :size="16" aria-hidden="true" />{{ m.title }}
+          </button>
+          <button type="button" class="chip add" @click="countryOpen = true">
+            <Globe2 :size="16" aria-hidden="true" />{{ t('maps.country.add') }}
           </button>
         </div>
 
@@ -619,6 +634,17 @@ onBeforeUnmount(() => {
         </form>
       </div>
     </template>
+    <div v-if="countryOpen" class="country-backdrop" @click.self="closeCountry">
+      <section class="country-sheet" role="dialog" aria-modal="true" :aria-label="t('maps.country.title')">
+        <header>
+          <Globe2 :size="22" aria-hidden="true" />
+          <h2>{{ t('maps.country.title') }}</h2>
+          <button type="button" class="btn icon-btn" :aria-label="t('display.close')" @click="closeCountry"><X :size="20" /></button>
+        </header>
+        <p class="muted">{{ t('maps.country.lead') }}</p>
+        <CountryMapSearch :online="online" />
+      </section>
+    </div>
   </div>
 </template>
 
@@ -799,6 +825,54 @@ onBeforeUnmount(() => {
 .chip svg {
   flex: none;
   color: var(--text-faint);
+}
+
+.chip.add {
+  color: var(--accent);
+  border-style: dashed;
+}
+
+.chip.add svg {
+  color: var(--accent);
+}
+
+.country-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 62%);
+  animation: fade-in 0.14s ease-out;
+}
+
+.country-sheet {
+  width: min(40rem, 100%);
+  max-height: calc(100% - 1rem);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1rem 1.1rem 1.2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface-grad);
+  animation: pop-in 0.16s ease-out;
+}
+
+.country-sheet header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--accent);
+}
+
+.country-sheet h2 {
+  flex: 1;
+  font-size: 1.2rem;
+  color: var(--text);
 }
 
 .chip.on {

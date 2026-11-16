@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import type { ContentCatalogItem } from '@survival-os/shared-types'
-import { FREE_MARGIN, autoFit, orderForInstall } from '../app/utils/content'
+import { FREE_MARGIN, autoFit, downloadPlan, orderForInstall, orderPlan, type ContentLang } from '../app/utils/content'
 // @ts-expect-error módulo .mjs sin tipos
 import { platformKey, profilePaths } from '../../../scripts/content-engine.mjs'
 
@@ -42,16 +42,20 @@ describe('catálogo de descargas (content/catalog.json)', () => {
     const groups = new Set(catalog.groups.map((g: { id: string }) => g.id))
     for (const i of catalog.items) {
       expect(groups.has(i.group), i.id).toBe(true)
-      expect(i.approxBytes, i.id).toBeGreaterThan(0)
+      // Las plantillas de país no tienen tamaño propio (depende del país elegido).
+      if (!i.template) expect(i.approxBytes, i.id).toBeGreaterThan(0)
       expect(i.license, i.id).toBeTruthy()
     }
   })
-  it('español por defecto: lo que tiene equivalente en español no viene marcado', () => {
+  it('idiomas (ADR 0018): equivalentes que apuntan a un tema existente, uno por idioma', () => {
+    const seen = new Set<string>()
     for (const i of catalog.items) {
-      expect(['es', 'en', 'mul'].includes(i.lang), i.id).toBe(true)
+      expect(['es', 'en', 'fr', 'it', 'mul'].includes(i.lang), i.id).toBe(true)
       if (i.equivalentOf) {
-        expect(i.default, i.id).toBe(false)
         expect(ids).toContain(i.equivalentOf)
+        const key = `${i.equivalentOf}/${i.lang}`
+        expect(seen.has(key), key).toBe(false)
+        seen.add(key)
       }
     }
   })
@@ -98,5 +102,54 @@ describe('motor: plataforma y rutas', () => {
     expect(profilePaths('pi', '/x').zimDir).toBe('/var/lib/survival-os/library/zim')
     // Misma estructura que la Pi: el servicio de biblioteca busca en <datos>/library/zim.
     expect(profilePaths('portable', '/r').zimDir).toMatch(/[\\/]r[\\/]data[\\/]library[\\/]zim$/)
+  })
+})
+
+describe('plan de descarga por idioma y país (ADR 0018)', () => {
+  const items = catalog.items.filter((i: { template?: string }) => !i.template) as ContentCatalogItem[]
+  const plan = (ui: ContentLang, country: { id: string; name: string; mapBytes: number; routingBytes: number } | null, mode: 'recommended' | 'all' = 'recommended') =>
+    downloadPlan(items, new Set(), ui, country, mode).map((i) => i.id)
+  const esp = { id: 'esp', name: 'España', mapBytes: 1, routingBytes: 1 }
+  const fra = { id: 'fra', name: 'Francia', mapBytes: 9e9, routingBytes: 2e9 }
+
+  it('español: Wikipedia en español, no sus equivalentes; mapas propios de España', () => {
+    const p = plan('es', esp)
+    expect(p).toContain('wikipedia')
+    expect(p).not.toContain('wikipedia-en')
+    expect(p).not.toContain('wikipedia-fr')
+    expect(p).toContain('mapa-espana')
+    expect(p).toContain('mapa-canarias')
+    expect(p.some((id) => id.startsWith('mapa-pais:'))).toBe(false)
+  })
+  it('francés en Francia: Wikipedia en francés, lo que no existe en francés en inglés, mapa de Francia', () => {
+    const p = plan('fr', fra)
+    expect(p).toContain('wikipedia-fr')
+    expect(p).not.toContain('wikipedia')
+    expect(p).toContain('medlineplus-en') // no hay MedlinePlus en francés
+    expect(p).toContain('mapa-pais:fra')
+    expect(p).toContain('rutas-pais:fra')
+    expect(p).not.toContain('mapa-espana')
+    expect(p).toContain('mapa-mundo')
+  })
+  it('nunca contenidos en un idioma que el usuario no ha elegido (salvo inglés)', () => {
+    const byId = new Map(items.map((i) => [i.id, i]))
+    for (const ui of ['en', 'fr', 'it'] as const) {
+      for (const id of plan(ui, null, 'all')) {
+        const it = byId.get(id)
+        if (it && !['maps', 'routing', 'llm'].includes(it.kind)) expect([ui, 'en', 'mul'], `${ui}: ${id}`).toContain(it.lang)
+      }
+    }
+  })
+  it('«Descargarlo todo» incluye todos los modelos y deja el recomendado el último (queda activo)', () => {
+    const all = downloadPlan(items, new Set(), 'es', esp, 'all')
+    const llm = all.filter((i) => i.kind === 'llm').map((i) => i.id)
+    expect(llm.length).toBeGreaterThanOrEqual(3)
+    const ordered = orderPlan(all).map((i) => i.id)
+    expect(ordered[ordered.length - 1]).toBe('asistente')
+  })
+  it('lo instalado no se vuelve a pedir', () => {
+    const p = downloadPlan(items, new Set(['wikipedia', 'mapa-espana']), 'es', esp, 'all').map((i) => i.id)
+    expect(p).not.toContain('wikipedia')
+    expect(p).not.toContain('mapa-espana')
   })
 })

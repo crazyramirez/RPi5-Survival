@@ -425,11 +425,152 @@
     "fao-conejo-cria": {
       "title": "Le lapin : élevage et pathologie",
       "description": "Cuniculture complète : logement, alimentation, reproduction et maladies."
+    },
+    "wikipedia-medicina-fr": {
+      "title": "Wikipédia médicale",
+      "description": "Articles de médecine et de santé de Wikipédia (WikiMed), avec images."
+    },
+    "wikipedia-medicina-it": {
+      "title": "Wikipédia médicale en italien",
+      "description": "Articles de médecine et de santé de Wikipédia en italien (WikiMed), avec images."
+    },
+    "medlineplus-en": {
+      "title": "MedlinePlus (anglais)",
+      "description": "Encyclopédie médicale, maladies et médicaments, en anglais (Bibliothèque nationale de médecine des États-Unis)."
+    },
+    "ready-gov-en": {
+      "title": "Ready.gov (anglais)",
+      "description": "Préparation aux catastrophes, en anglais : plans familiaux, kits, météo extrême, incendies, coupures de courant."
+    },
+    "scoutwiki-it": {
+      "title": "ScoutWiki en italien",
+      "description": "Techniques scoutes en italien : orientation, camping, nœuds."
+    },
+    "scoutwiki-en": {
+      "title": "ScoutWiki en anglais",
+      "description": "Techniques scoutes en anglais : orientation, camping, nœuds."
+    },
+    "wikipedia-fr": {
+      "title": "Wikipédia en français",
+      "description": "L'encyclopédie complète."
+    },
+    "wikipedia-it": {
+      "title": "Wikipédia en italien",
+      "description": "L'encyclopédie complète."
+    },
+    "wikipedia-en": {
+      "title": "Wikipédia en anglais",
+      "description": "L'encyclopédie complète."
+    },
+    "wiktionary-fr": {
+      "title": "Wiktionnaire",
+      "description": "Dictionnaire : définitions, étymologie et traductions."
+    },
+    "wiktionary-it": {
+      "title": "Wikizionario (italien)",
+      "description": "Dictionnaire : définitions, étymologie et traductions."
+    },
+    "wiktionary-en": {
+      "title": "Wiktionary (anglais)",
+      "description": "Dictionnaire : définitions, étymologie et traductions."
+    },
+    "wikivoyage-fr": {
+      "title": "Wikivoyage",
+      "description": "Guide de voyage : destinations, transports, hébergement."
+    },
+    "wikivoyage-it": {
+      "title": "Wikivoyage (italien)",
+      "description": "Guide de voyage : destinations, transports, hébergement."
+    },
+    "wikivoyage-en": {
+      "title": "Wikivoyage (anglais)",
+      "description": "Guide de voyage : destinations, transports, hébergement."
+    },
+    "wikisource-fr": {
+      "title": "Wikisource",
+      "description": "Textes du domaine public : lois, documents historiques, littérature."
+    },
+    "wikisource-it": {
+      "title": "Wikisource (italien)",
+      "description": "Textes du domaine public : lois, documents historiques, littérature."
+    },
+    "wikisource-en": {
+      "title": "Wikisource (anglais)",
+      "description": "Textes du domaine public : lois, documents historiques, littérature."
+    },
+    "ifixit-fr": {
+      "title": "iFixit",
+      "description": "Guides de réparation pas à pas : électronique, véhicules, électroménager."
+    },
+    "ifixit-it": {
+      "title": "iFixit en italien",
+      "description": "Guides de réparation pas à pas en italien : électronique, véhicules, électroménager."
+    },
+    "ifixit-en": {
+      "title": "iFixit en anglais",
+      "description": "Guides de réparation pas à pas en anglais : électronique, véhicules, électroménager."
+    },
+    "wikibooks-fr": {
+      "title": "Wikilivres",
+      "description": "Manuels et livres scolaires libres."
+    },
+    "wikibooks-it": {
+      "title": "Wikibooks (italien)",
+      "description": "Manuels et livres scolaires libres."
+    },
+    "wikibooks-en": {
+      "title": "Wikibooks (anglais)",
+      "description": "Manuels et livres scolaires libres."
+    },
+    "gutenberg-fr": {
+      "title": "Projet Gutenberg",
+      "description": "Livres classiques en français du domaine public."
+    },
+    "gutenberg-it": {
+      "title": "Projet Gutenberg en italien",
+      "description": "Livres classiques en italien du domaine public."
+    },
+    "gutenberg-en": {
+      "title": "Projet Gutenberg en anglais",
+      "description": "Livres classiques en anglais du domaine public."
+    },
+    "wikiversity-fr": {
+      "title": "Wikiversité",
+      "description": "Cours et supports d'apprentissage."
+    },
+    "wikiversity-it": {
+      "title": "Wikiversità (italien)",
+      "description": "Cours et supports d'apprentissage."
+    },
+    "wikiversity-en": {
+      "title": "Wikiversity (anglais)",
+      "description": "Cours et supports d'apprentissage."
+    },
+    "phet-fr": {
+      "title": "Simulations PhET",
+      "description": "Simulations interactives de physique, chimie et mathématiques."
+    },
+    "phet-it": {
+      "title": "Simulations PhET en italien",
+      "description": "Simulations interactives de physique, chimie et mathématiques, en italien."
+    },
+    "phet-en": {
+      "title": "Simulations PhET en anglais",
+      "description": "Simulations interactives de physique, chimie et mathématiques, en anglais."
+    },
+    "asistente-gemma3": {
+      "title": "Modèle alternatif : Gemma 3 4B",
+      "description": "Un autre modèle pour l'assistant (Google Gemma 3, 4B). Il peut être choisi dans Maintenance."
+    },
+    "asistente-llama32": {
+      "title": "Modèle alternatif : Llama 3.2 3B",
+      "description": "Un modèle plus léger pour l'assistant (Meta Llama 3.2, 3B). Répond plus vite."
     }
   },
   "models": {},
   "variants": {
     "Sin imágenes": "Sans images",
-    "Con imágenes": "Avec images"
+    "Con imágenes": "Avec images",
+    "Solo introducciones": "Introductions seulement"
   }
 }

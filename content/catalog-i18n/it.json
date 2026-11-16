@@ -425,11 +425,152 @@
     "fao-conejo-cria": {
       "title": "Il coniglio: allevamento e patologia",
       "description": "Coniglicoltura completa: alloggiamento, alimentazione, riproduzione e malattie."
+    },
+    "wikipedia-medicina-fr": {
+      "title": "Wikipedia medica in francese",
+      "description": "Voci di medicina e salute di Wikipedia in francese (WikiMed), con immagini."
+    },
+    "wikipedia-medicina-it": {
+      "title": "Wikipedia medica",
+      "description": "Voci di medicina e salute di Wikipedia (WikiMed), con immagini."
+    },
+    "medlineplus-en": {
+      "title": "MedlinePlus (inglese)",
+      "description": "Enciclopedia medica, malattie e farmaci, in inglese (Biblioteca nazionale di medicina degli Stati Uniti)."
+    },
+    "ready-gov-en": {
+      "title": "Ready.gov (inglese)",
+      "description": "Preparazione alle catastrofi, in inglese: piani familiari, kit, meteo estremo, incendi, blackout."
+    },
+    "scoutwiki-it": {
+      "title": "ScoutWiki",
+      "description": "Tecniche scout: orientamento, campeggio, nodi."
+    },
+    "scoutwiki-en": {
+      "title": "ScoutWiki in inglese",
+      "description": "Tecniche scout in inglese: orientamento, campeggio, nodi."
+    },
+    "wikipedia-fr": {
+      "title": "Wikipedia in francese",
+      "description": "L'enciclopedia completa."
+    },
+    "wikipedia-it": {
+      "title": "Wikipedia in italiano",
+      "description": "L'enciclopedia completa."
+    },
+    "wikipedia-en": {
+      "title": "Wikipedia in inglese",
+      "description": "L'enciclopedia completa."
+    },
+    "wiktionary-fr": {
+      "title": "Wiktionnaire (francese)",
+      "description": "Dizionario: definizioni, etimologia e traduzioni."
+    },
+    "wiktionary-it": {
+      "title": "Wikizionario",
+      "description": "Dizionario: definizioni, etimologia e traduzioni."
+    },
+    "wiktionary-en": {
+      "title": "Wiktionary (inglese)",
+      "description": "Dizionario: definizioni, etimologia e traduzioni."
+    },
+    "wikivoyage-fr": {
+      "title": "Wikivoyage (francese)",
+      "description": "Guida di viaggio: destinazioni, trasporti, alloggi."
+    },
+    "wikivoyage-it": {
+      "title": "Wikivoyage",
+      "description": "Guida di viaggio: destinazioni, trasporti, alloggi."
+    },
+    "wikivoyage-en": {
+      "title": "Wikivoyage (inglese)",
+      "description": "Guida di viaggio: destinazioni, trasporti, alloggi."
+    },
+    "wikisource-fr": {
+      "title": "Wikisource (francese)",
+      "description": "Testi di pubblico dominio: leggi, documenti storici, letteratura."
+    },
+    "wikisource-it": {
+      "title": "Wikisource",
+      "description": "Testi di pubblico dominio: leggi, documenti storici, letteratura."
+    },
+    "wikisource-en": {
+      "title": "Wikisource (inglese)",
+      "description": "Testi di pubblico dominio: leggi, documenti storici, letteratura."
+    },
+    "ifixit-fr": {
+      "title": "iFixit in francese",
+      "description": "Guide di riparazione passo passo in francese: elettronica, veicoli, elettrodomestici."
+    },
+    "ifixit-it": {
+      "title": "iFixit",
+      "description": "Guide di riparazione passo passo: elettronica, veicoli, elettrodomestici."
+    },
+    "ifixit-en": {
+      "title": "iFixit in inglese",
+      "description": "Guide di riparazione passo passo in inglese: elettronica, veicoli, elettrodomestici."
+    },
+    "wikibooks-fr": {
+      "title": "Wikilivres (francese)",
+      "description": "Manuali e libri di testo liberi."
+    },
+    "wikibooks-it": {
+      "title": "Wikibooks",
+      "description": "Manuali e libri di testo liberi."
+    },
+    "wikibooks-en": {
+      "title": "Wikibooks (inglese)",
+      "description": "Manuali e libri di testo liberi."
+    },
+    "gutenberg-fr": {
+      "title": "Progetto Gutenberg in francese",
+      "description": "Libri classici in francese di pubblico dominio."
+    },
+    "gutenberg-it": {
+      "title": "Progetto Gutenberg",
+      "description": "Libri classici in italiano di pubblico dominio."
+    },
+    "gutenberg-en": {
+      "title": "Progetto Gutenberg in inglese",
+      "description": "Libri classici in inglese di pubblico dominio."
+    },
+    "wikiversity-fr": {
+      "title": "Wikiversité (francese)",
+      "description": "Corsi e materiali didattici."
+    },
+    "wikiversity-it": {
+      "title": "Wikiversità",
+      "description": "Corsi e materiali didattici."
+    },
+    "wikiversity-en": {
+      "title": "Wikiversity (inglese)",
+      "description": "Corsi e materiali didattici."
+    },
+    "phet-fr": {
+      "title": "Simulazioni PhET in francese",
+      "description": "Simulazioni interattive di fisica, chimica e matematica, in francese."
+    },
+    "phet-it": {
+      "title": "Simulazioni PhET",
+      "description": "Simulazioni interattive di fisica, chimica e matematica."
+    },
+    "phet-en": {
+      "title": "Simulazioni PhET in inglese",
+      "description": "Simulazioni interattive di fisica, chimica e matematica, in inglese."
+    },
+    "asistente-gemma3": {
+      "title": "Modello alternativo: Gemma 3 4B",
+      "description": "Un altro modello per l'assistente (Google Gemma 3, 4B). Si può scegliere in Manutenzione."
+    },
+    "asistente-llama32": {
+      "title": "Modello alternativo: Llama 3.2 3B",
+      "description": "Un modello più leggero per l'assistente (Meta Llama 3.2, 3B). Risponde più velocemente."
     }
   },
   "models": {},
   "variants": {
     "Sin imágenes": "Senza immagini",
-    "Con imágenes": "Con immagini"
+    "Con imágenes": "Con immagini",
+    "Solo introducciones": "Solo introduzioni"
   }
 }

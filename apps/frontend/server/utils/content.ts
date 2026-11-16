@@ -2,6 +2,8 @@ import { existsSync, promises as fs } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
 import { isPortable, portablePaths } from './portable'
+// Lógica común con el motor de descargas (mismos zooms y tamaños).
+import { countryLand, countryMaxZoom, countryName, countryZones, estimateMapBytes, ROUTING_TILE_BYTES, routingTiles, type Country } from '../../../../scripts/country-maps.mjs'
 
 /**
  * Catálogo de descargas (ADR 0015) visto desde la web: content/catalog.json + lo que hay en disco
@@ -10,7 +12,7 @@ import { isPortable, portablePaths } from './portable'
 interface Catalog {
   updated: string
   groups: { id: string; title: string }[]
-  items: (ContentCatalogItem & { zim?: { name: string; flavour: string }; maps?: { region: string }; routing?: { tiles: string[] }; llm?: { model: string }; doc?: { file?: string; parts?: { file: string }[] } })[]
+  items: (ContentCatalogItem & { template?: string; zim?: { name: string; flavour: string }; maps?: { region: string }; routing?: { tiles: string[] }; llm?: { model: string }; doc?: { file?: string; parts?: { file: string }[] } })[]
   models: Record<string, { file: string }>
 }
 
@@ -92,6 +94,7 @@ export async function contentOverview(lang = 'es'): Promise<ContentOverview> {
 
   const items: ContentItemStatus[] = []
   for (const it of catalog.items) {
+    if (it.template) continue // plantillas de país: sus elementos («mapa-pais:esp») van después
     const e = engine.items[it.id] ?? {}
     let installed: { file: string | null; bytes: number | null } | null = null
     if (it.kind === 'zim' && it.zim) {
@@ -130,6 +133,26 @@ export async function contentOverview(lang = 'es'): Promise<ContentOverview> {
       active: it.kind === 'llm' ? !!installed && active === installed.file : undefined,
     })
   }
+  // Mapas y rutas de países (ADR 0018): el registro del motor dice qué se pidió; el disco, qué hay.
+  for (const [id, e] of Object.entries(engine.items)) {
+    const m = /^(mapa|rutas)-pais:([a-z]{3})$/.exec(id)
+    if (!m) continue
+    const iso = m[2]!
+    const busy = e.state === 'downloading' || e.state === 'verifying'
+    const present = m[1] === 'mapa'
+      ? maps.some((f) => f.startsWith(`pais-${iso}-`))
+      : e.state === 'installed' && ((e as { tiles?: { name: string }[] }).tiles ?? []).every((t) => segs.includes(`${t.name}.rd5`))
+    items.push({
+      id,
+      state: present && !busy ? 'installed' : busy ? (e.state as 'downloading' | 'verifying') : e.state === 'failed' ? 'failed' : 'missing',
+      file: e.file ?? null,
+      bytes: e.bytes ?? null,
+      version: e.version ?? null,
+      done: busy ? (e.done ?? null) : null,
+      total: busy ? (e.total ?? null) : null,
+      error: e.state === 'failed' ? (e.error ?? null) : null,
+    })
+  }
   const s = await fs.statfs(d.data).catch(() => null)
   const setup = await readJson<{ completedAt?: string; skippedAt?: string } | null>(d.setup, null)
   return {
@@ -137,7 +160,7 @@ export async function contentOverview(lang = 'es'): Promise<ContentOverview> {
     portable: isPortable(),
     catalogUpdated: catalog.updated,
     groups: catalog.groups.map((g) => ({ ...g, title: tr.groups?.[g.id] ?? g.title })),
-    catalog: catalog.items.map(({ id, kind, group, lang, priority, default: def, approxBytes, license, title, description, equivalentOf, variants }) => ({
+    catalog: catalog.items.filter((i) => !i.template).map(({ id, kind, group, lang, priority, default: def, approxBytes, license, title, description, equivalentOf, variants }) => ({
       id, kind, group, lang, priority, default: def, approxBytes, license,
       title: tr.items?.[id]?.title ?? title,
       description: tr.items?.[id]?.description ?? description,
@@ -155,4 +178,58 @@ export async function writeSetup(state: 'completed' | 'skipped', selection: stri
   const body = state === 'completed' ? { completedAt: new Date().toISOString(), selection } : { skippedAt: new Date().toISOString() }
   await fs.mkdir(d.data, { recursive: true })
   await fs.writeFile(d.setup, JSON.stringify(body, null, 2))
+}
+
+// ------------------------------------------------------------------ Países (ADR 0018)
+
+export interface CountryOption {
+  id: string
+  iso2: string | null
+  name: string
+  /** Nombres en los cuatro idiomas: se busca por cualquiera. */
+  names: string[]
+  maxzoom: number
+  mapBytes: number
+  routingBytes: number
+  zones: number
+}
+
+let countriesCache: { countries: Country[]; timezones: Record<string, string> } | null = null
+
+/** content/countries.json (junto a catalog.json), leído una vez. */
+export async function loadCountries(): Promise<{ countries: Country[]; timezones: Record<string, string> }> {
+  if (!countriesCache) {
+    const d = dirs()
+    countriesCache = await readJson<{ countries: Country[]; timezones: Record<string, string> }>(join(dirname(d.catalog), 'countries.json'), { countries: [], timezones: {} })
+  }
+  return countriesCache
+}
+
+/** Nombre de un país por su id (iso3) en un idioma; null si no existe. */
+export async function countryTitle(id: string, lang = 'es'): Promise<string | null> {
+  const c = (await loadCountries()).countries.find((x) => x.id === id)
+  return c ? countryName(c, lang) : null
+}
+
+/** Países para el buscador de mapas, con el nombre en el idioma de la interfaz y tamaños estimados. */
+export async function countryOptions(lang = 'es'): Promise<{ countries: CountryOption[]; timezones: Record<string, string> }> {
+  const data = await loadCountries()
+  const countries = data.countries
+    .map((c) => {
+      const zones = countryZones(c)
+      const maxzoom = countryMaxZoom(countryLand(c))
+      return {
+        id: c.id,
+        iso2: c.iso2,
+        name: countryName(c, lang),
+        names: [...new Set(Object.values(c.names))],
+        maxzoom,
+        mapBytes: zones.reduce((n, z) => n + estimateMapBytes(z.areaKm2, maxzoom), 0),
+        routingBytes: routingTiles(c).length * ROUTING_TILE_BYTES,
+        zones: zones.length,
+        bboxes: zones.map((z) => z.bbox),
+      }
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, lang))
+  return { countries, timezones: data.timezones }
 }

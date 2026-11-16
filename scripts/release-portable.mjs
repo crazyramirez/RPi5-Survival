@@ -278,6 +278,7 @@ for (const svc of ['device-api', 'library', 'navigation', 'serial-hub', 'vault']
 copy('content')
 copy('scripts/games-server.mjs')
 copy('scripts/content-engine.mjs')
+copy('scripts/country-maps.mjs')
 copy('scripts/public-gateway.mjs')
 copy('scripts/games-sync.mjs')
 copy('scripts/portable-admin.mjs')

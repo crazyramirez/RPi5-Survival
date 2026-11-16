@@ -21,6 +21,7 @@ import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSyn
 import { statfs } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { countryLand, countryMaxZoom, countryName, countryZones, estimateMapBytes, ROUTING_TILE_BYTES, routingTiles } from './country-maps.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 
@@ -75,6 +76,37 @@ export function profilePaths(profile, root) {
 
 export function loadCatalog(file = resolve(HERE, '..', 'content', 'catalog.json')) {
   return JSON.parse(readFileSync(file, 'utf8'))
+}
+
+/** Países para los mapas «de cualquier país» (ADR 0018), junto al catálogo. */
+export function loadCountries(file = resolve(HERE, '..', 'content', 'countries.json')) {
+  try {
+    return JSON.parse(readFileSync(file, 'utf8')).countries
+  } catch {
+    return []
+  }
+}
+
+/**
+ * «mapa-pais:esp» / «rutas-pais:esp»: elemento concreto a partir de la plantilla del catálogo y del país.
+ * Devuelve null si el país no existe. El id con variante es el que se guarda en el estado.
+ */
+export function expandCountry(template, iso3, countries = loadCountries()) {
+  const c = countries.find((x) => x.id === iso3)
+  if (!c) return null
+  const zones = countryZones(c)
+  if (template.kind === 'maps') {
+    const maxzoom = countryMaxZoom(countryLand(c))
+    return {
+      ...template,
+      id: `${template.id}:${c.id}`,
+      title: `Mapa: ${countryName(c, 'es')}`,
+      maps: { region: `pais-${c.id}`, zones: zones.map((z, i) => ({ region: i ? `pais-${c.id}-${i + 1}` : `pais-${c.id}`, bbox: z.bbox })), maxzoom },
+      approxBytes: zones.reduce((n, z) => n + estimateMapBytes(z.areaKm2, maxzoom), 0),
+    }
+  }
+  const tiles = routingTiles(c)
+  return { ...template, id: `${template.id}:${c.id}`, title: `Rutas: ${countryName(c, 'es')}`, routing: { region: `pais-${c.id}`, tiles }, approxBytes: tiles.length * ROUTING_TILE_BYTES }
 }
 
 // ------------------------------------------------------------------ Utilidades
@@ -439,22 +471,39 @@ async function latestProtomapsBuild(catalog) {
 }
 
 async function installMaps(catalog, paths, item) {
+  // Un país puede tener varias zonas (España y Canarias): una extracción por zona, un solo elemento.
+  const zones = item.maps.zones ?? [{ region: item.maps.region, bbox: item.maps.bbox }]
+  if (zones.length === 1) return installMapZone(catalog, paths, item, zones[0], item.approxBytes)
+  const files = []
+  let bytes = 0
+  for (const z of zones) {
+    const share = Math.round(item.approxBytes / zones.length)
+    const r = await installMapZone(catalog, paths, { ...item, title: `${item.title} (${files.length + 1}/${zones.length})` }, z, share, true)
+    files.push(r.file)
+    bytes += r.bytes
+  }
+  setItem(paths, item.id, { state: 'installed', file: files[0], files, bytes })
+  say(`OK ${item.title}: ${files.length} zonas`)
+}
+
+async function installMapZone(catalog, paths, item, zone, approxBytes, partOfMany = false) {
   const dir = await ensureComponent(catalog, paths, 'pmtiles')
   const bin = join(dir, process.platform === 'win32' ? 'pmtiles.exe' : 'pmtiles')
   const build = await latestProtomapsBuild(catalog)
-  const { region, bbox, maxzoom } = item.maps
+  const { region, bbox } = zone
+  const { maxzoom } = item.maps
   const name = `${region}-${build.slice(0, 8)}-z${maxzoom}.pmtiles`
   const dest = join(paths.mapsDir, name)
   mkdirSync(paths.mapsDir, { recursive: true })
   if (existsSync(dest)) {
     say(`${item.title}: ya instalado (${name})`)
-    setItem(paths, item.id, { state: 'installed', file: name, version: build.slice(0, 8), bytes: statSync(dest).size })
-    return
+    if (!partOfMany) setItem(paths, item.id, { state: 'installed', file: name, version: build.slice(0, 8), bytes: statSync(dest).size })
+    return { file: name, bytes: statSync(dest).size }
   }
   const free = await freeBytes(paths.mapsDir)
-  if (item.approxBytes * 1.3 + 2 * GiB > free) throw new Error(`sin espacio para ${item.title}: libres ${fmt(free)}`)
+  if (approxBytes * 1.3 + 2 * GiB > free) throw new Error(`sin espacio para ${item.title}: libres ${fmt(free)}`)
   say(`${item.title}: extrayendo de ${catalog.sources.protomapsBase}/${build} (zoom ≤ ${maxzoom})`)
-  setItem(paths, item.id, { state: 'downloading', file: name, total: item.approxBytes, done: 0, error: null })
+  setItem(paths, item.id, { state: 'downloading', file: name, total: approxBytes, done: 0, error: null })
   const tmp = `${dest}.part`
   rmSync(tmp, { force: true })
   await new Promise((ok, ko) => {
@@ -491,14 +540,33 @@ async function installMaps(catalog, paths, item) {
   }
   writeFileSync(sums, [...prev.filter((l) => !new RegExp(`  ${region}-\\d{8}`).test(l)), `${sha}  ${name}`].join('\n') + '\n')
   own(paths, paths.mapsDir)
-  setItem(paths, item.id, { state: 'installed', file: name, version: build.slice(0, 8), bytes: statSync(dest).size, sha256: sha })
+  if (!partOfMany) setItem(paths, item.id, { state: 'installed', file: name, version: build.slice(0, 8), bytes: statSync(dest).size, sha256: sha })
   say(`OK ${item.title} (${fmt(statSync(dest).size)}, SHA-256 ${sha.slice(0, 12)}…)`)
+  return { file: name, bytes: statSync(dest).size }
 }
 
 // ------------------------------------------------------------------ Rutas (BRouter)
 
+/** Índice de cuadrículas de BRouter (las de mar no existen). null si no se puede leer: se intentan todas. */
+async function brouterIndex(catalog) {
+  try {
+    const html = await fetchText(`${catalog.sources.brouterSegments}/`)
+    return new Set([...html.matchAll(/href="([EW]\d{1,3}_[NS]\d{1,2})\.rd5"/g)].map((m) => m[1]))
+  } catch {
+    return null
+  }
+}
+
 async function installRouting(catalog, paths, item) {
-  if (paths.profile === 'pi') return runScript(paths, 'routing-install.sh', ['install', item.routing.region], item)
+  const index = await brouterIndex(catalog)
+  const available = index ? item.routing.tiles.filter((t) => index.has(t)) : item.routing.tiles
+  if (!available.length) throw new Error('no hay datos de rutas para esta zona')
+  if (index && available.length < item.routing.tiles.length) say(`${item.title}: ${item.routing.tiles.length - available.length} cuadrícula(s) sin datos (mar) omitidas`)
+  item = { ...item, routing: { ...item.routing, tiles: available } }
+  if (paths.profile === 'pi') {
+    const regionArgs = ['espana', 'canarias'].includes(item.routing.region) ? ['install', item.routing.region] : ['install-tiles', ...available]
+    return runScript(paths, 'routing-install.sh', regionArgs, item)
+  }
   await ensureComponent(catalog, paths, 'jre')
   await ensureComponent(catalog, paths, 'brouter')
   const seg = join(paths.routingDir, 'segments4')
@@ -642,7 +710,8 @@ export async function install(catalog, paths, specs) {
   let failed = 0
   for (const spec of specs) {
     const [id, variant] = spec.split(':')
-    const item = findItem(catalog, id)
+    let item = findItem(catalog, id)
+    if (item?.template === 'country') item = variant ? expandCountry(item, variant) : null
     if (!item) {
       warn(`${id}: no está en el catálogo; se omite`)
       failed++
@@ -669,11 +738,13 @@ export async function install(catalog, paths, specs) {
 
 export async function remove(catalog, paths, ids) {
   for (const id of ids) {
-    const item = findItem(catalog, id)
+    const [baseId, variant] = id.split(':')
+    let item = findItem(catalog, baseId)
+    if (item?.template === 'country') item = variant ? expandCountry(item, variant) : null
     const st = readState(paths).items[id]
     if (!item || !st) continue
     if (item.kind === 'zim' && st.file) removeZimFile(paths, st.file)
-    if (item.kind === 'maps' && st.file) rmSync(join(paths.mapsDir, st.file), { force: true })
+    if (item.kind === 'maps') for (const f of st.files ?? (st.file ? [st.file] : [])) rmSync(join(paths.mapsDir, f), { force: true })
     if (item.kind === 'doc' && st.file) rmSync(join(paths.docsDir, MANUALS, item.doc.parts ? item.id : item.doc.file), { recursive: true, force: true })
     if (item.kind === 'llm' && st.file) {
       if (paths.profile === 'pi') spawnSync('bash', [join(paths.scripts, 'llm-install.sh'), '--remove', item.llm.model], { stdio: 'inherit' })
@@ -684,7 +755,7 @@ export async function remove(catalog, paths, ids) {
     }
     if (item.kind === 'routing') {
       if (paths.profile === 'pi') spawnSync('bash', [join(paths.scripts, 'routing-install.sh'), 'remove'], { stdio: 'inherit' })
-      else for (const t of item.routing.tiles) rmSync(join(paths.routingDir, 'segments4', `${t}.rd5`), { force: true })
+      else for (const t of st.tiles?.map((x) => x.name) ?? item.routing.tiles) rmSync(join(paths.routingDir, 'segments4', `${t}.rd5`), { force: true })
     }
     writeState(paths, (s) => {
       delete s.items[id]

@@ -425,11 +425,152 @@
     "fao-conejo-cria": {
       "title": "The rabbit: husbandry, health and production",
       "description": "Complete rabbit farming: housing, feeding, reproduction and diseases."
+    },
+    "wikipedia-medicina-fr": {
+      "title": "Medical Wikipedia in French",
+      "description": "Wikipedia articles on medicine and health in French (WikiMed), with images."
+    },
+    "wikipedia-medicina-it": {
+      "title": "Medical Wikipedia in Italian",
+      "description": "Wikipedia articles on medicine and health in Italian (WikiMed), with images."
+    },
+    "medlineplus-en": {
+      "title": "MedlinePlus",
+      "description": "Medical encyclopedia, diseases and medicines (U.S. National Library of Medicine)."
+    },
+    "ready-gov-en": {
+      "title": "Ready.gov",
+      "description": "Disaster preparedness: family plans, kits, extreme weather, fires, power outages."
+    },
+    "scoutwiki-it": {
+      "title": "ScoutWiki in Italian",
+      "description": "Scouting techniques in Italian: orienteering, camping, knots."
+    },
+    "scoutwiki-en": {
+      "title": "ScoutWiki",
+      "description": "Scouting techniques: orienteering, camping, knots."
+    },
+    "wikipedia-fr": {
+      "title": "Wikipedia in French",
+      "description": "The complete encyclopedia."
+    },
+    "wikipedia-it": {
+      "title": "Wikipedia in Italian",
+      "description": "The complete encyclopedia."
+    },
+    "wikipedia-en": {
+      "title": "Wikipedia in English",
+      "description": "The complete encyclopedia."
+    },
+    "wiktionary-fr": {
+      "title": "Wiktionnaire (French)",
+      "description": "Dictionary: definitions, etymology and translations."
+    },
+    "wiktionary-it": {
+      "title": "Wikizionario (Italian)",
+      "description": "Dictionary: definitions, etymology and translations."
+    },
+    "wiktionary-en": {
+      "title": "Wiktionary",
+      "description": "Dictionary: definitions, etymology and translations."
+    },
+    "wikivoyage-fr": {
+      "title": "Wikivoyage (French)",
+      "description": "Travel guide: destinations, transport, accommodation."
+    },
+    "wikivoyage-it": {
+      "title": "Wikivoyage (Italian)",
+      "description": "Travel guide: destinations, transport, accommodation."
+    },
+    "wikivoyage-en": {
+      "title": "Wikivoyage",
+      "description": "Travel guide: destinations, transport, accommodation."
+    },
+    "wikisource-fr": {
+      "title": "Wikisource (French)",
+      "description": "Public-domain texts: laws, historical documents, literature."
+    },
+    "wikisource-it": {
+      "title": "Wikisource (Italian)",
+      "description": "Public-domain texts: laws, historical documents, literature."
+    },
+    "wikisource-en": {
+      "title": "Wikisource",
+      "description": "Public-domain texts: laws, historical documents, literature."
+    },
+    "ifixit-fr": {
+      "title": "iFixit in French",
+      "description": "Step-by-step repair guides in French: electronics, vehicles, household appliances."
+    },
+    "ifixit-it": {
+      "title": "iFixit in Italian",
+      "description": "Step-by-step repair guides in Italian: electronics, vehicles, household appliances."
+    },
+    "ifixit-en": {
+      "title": "iFixit",
+      "description": "Step-by-step repair guides: electronics, vehicles, household appliances."
+    },
+    "wikibooks-fr": {
+      "title": "Wikilivres (French)",
+      "description": "Free manuals and textbooks."
+    },
+    "wikibooks-it": {
+      "title": "Wikibooks (Italian)",
+      "description": "Free manuals and textbooks."
+    },
+    "wikibooks-en": {
+      "title": "Wikibooks",
+      "description": "Free manuals and textbooks."
+    },
+    "gutenberg-fr": {
+      "title": "Project Gutenberg in French",
+      "description": "Public-domain classic books in French."
+    },
+    "gutenberg-it": {
+      "title": "Project Gutenberg in Italian",
+      "description": "Public-domain classic books in Italian."
+    },
+    "gutenberg-en": {
+      "title": "Project Gutenberg",
+      "description": "Public-domain classic books in English."
+    },
+    "wikiversity-fr": {
+      "title": "Wikiversité (French)",
+      "description": "Courses and learning materials."
+    },
+    "wikiversity-it": {
+      "title": "Wikiversità (Italian)",
+      "description": "Courses and learning materials."
+    },
+    "wikiversity-en": {
+      "title": "Wikiversity",
+      "description": "Courses and learning materials."
+    },
+    "phet-fr": {
+      "title": "PhET Simulations in French",
+      "description": "Interactive physics, chemistry and maths simulations, in French."
+    },
+    "phet-it": {
+      "title": "PhET Simulations in Italian",
+      "description": "Interactive physics, chemistry and maths simulations, in Italian."
+    },
+    "phet-en": {
+      "title": "PhET Simulations",
+      "description": "Interactive physics, chemistry and maths simulations."
+    },
+    "asistente-gemma3": {
+      "title": "Alternative model: Gemma 3 4B",
+      "description": "Another model for the assistant (Google Gemma 3, 4B). It can be chosen in Maintenance."
+    },
+    "asistente-llama32": {
+      "title": "Alternative model: Llama 3.2 3B",
+      "description": "A lighter model for the assistant (Meta Llama 3.2, 3B). Answers faster."
     }
   },
   "models": {},
   "variants": {
     "Sin imágenes": "Without images",
-    "Con imágenes": "With images"
+    "Con imágenes": "With images",
+    "Solo introducciones": "Introductions only"
   }
 }

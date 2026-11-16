@@ -281,10 +281,13 @@ const PIN_LEGEND = [
     <!-- ============================================================ Contenidos -->
     <section id="mnt-content" data-sec="content" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.content') }}</h2>
+      <!-- Un toque: completa todo lo que falta para el idioma y el país (ADR 0018). -->
+      <DownloadAllCard :online="online" class="catalog-block" />
       <!-- Catálogo de descargas (ADR 0015): igual en la Pi y en la portable. -->
       <ContentCatalog mode="manage" :online="online" class="catalog-block" />
       <div class="bento">
         <AppCard
+          class="span-all"
           :title="t('mnt.content')" :icon="Library" :tone="library?.zim?.installed.length ? 'ok' : 'muted'"
           :pill="t('lib.books.count', { n: library?.zim?.installed.length ?? 0 })"
         >
@@ -325,6 +328,7 @@ const PIN_LEGEND = [
         </AppCard>
 
         <AppCard
+          class="span-all"
           :title="t('mnt.llm')" :icon="Bot" :tone="assistant?.available ? 'ok' : 'muted'"
           :pill="assistant?.available ? t('mnt.llm.on') : assistant?.active ? t('mnt.llm.loading') : t('mnt.llm.off')"
         >
@@ -381,6 +385,8 @@ const PIN_LEGEND = [
             </button>
           </div>
           <p class="faint">{{ t('mnt.maps.note') }}</p>
+          <h4 class="sub">{{ t('maps.country.title') }}</h4>
+          <CountryMapSearch :online="online" />
           <JobLog :status="mapImportJob.status.value" :error="mapImportJob.error.value" :lines="3" />
           <JobLog :status="mapDeleteJob.status.value" :error="mapDeleteJob.error.value" :lines="2" />
         </AppCard>

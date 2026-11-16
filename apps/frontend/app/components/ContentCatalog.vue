@@ -3,13 +3,14 @@ import { BookOpen, Bot, Check, CircleAlert, Download, FileText, HeartPulse, Life
 import type { Component } from 'vue'
 import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
 import { formatBytes } from '~/utils/format'
-import { autoFit, orderForInstall } from '~/utils/content'
+import { autoFit, contentLangs, countryItems, downloadPlan, inLanguage, orderPlan, topicOf, type CountryChoice } from '~/utils/content'
 
 /**
- * Catálogo de descargas (ADR 0015). Modo «wizard»: todo lo recomendado marcado (español por
- * defecto; inglés solo sin equivalente) y ajustado al espacio libre. Modo «manage»: Mantenimiento.
+ * Catálogo de descargas (ADR 0015/0018). Modo «wizard»: lo recomendado en el idioma de la interfaz (si no
+ * existe, en inglés) y el mapa del país, ajustado al espacio libre. Modo «manage»: Mantenimiento, con los
+ * contenidos en los idiomas del usuario (los demás, con un interruptor).
  */
-const props = defineProps<{ mode: 'wizard' | 'manage'; online: boolean }>()
+const props = defineProps<{ mode: 'wizard' | 'manage'; online: boolean; country?: CountryChoice | null }>()
 const emit = defineEmits<{ started: [items: string[]] }>()
 const t = useT()
 
@@ -19,7 +20,20 @@ const selected = ref(new Set<string>())
 const variants = reactive<Record<string, string>>({})
 const autofitCount = ref(0)
 const pendingRemove = ref<ContentCatalogItem | null>(null)
+const showOther = ref(false)
 let initialised = false
+
+/** Catálogo + mapa y rutas del país elegido (fuera de España, que tiene los suyos en el catálogo). */
+const allItems = computed<ContentCatalogItem[]>(() => [
+  ...(ov.value?.catalog ?? []),
+  ...(props.country && props.country.id !== 'esp' ? countryItems(props.country) : []),
+])
+const langs = computed(() => contentLangs(locale.value))
+const rank = (i: ContentCatalogItem): number => (langs.value.includes(i.lang) ? langs.value.indexOf(i.lang) : i.lang === 'mul' ? 0 : 99)
+/** Hay otra opción del mismo tema en un idioma mejor para este usuario. */
+const coveredBetter = (i: ContentCatalogItem): boolean =>
+  allItems.value.some((o) => o.id !== i.id && topicOf(o) === topicOf(i) && rank(o) < rank(i))
+const hiddenCount = computed(() => allItems.value.filter((i) => !inLanguage(i, locale.value)).length)
 
 const job = useAdminJob('content', () => void load())
 
@@ -34,7 +48,8 @@ async function load(): Promise<void> {
   if (!initialised) {
     initialised = true
     if (props.mode === 'wizard') {
-      const missing = ov.value.catalog.filter((i) => i.default && statusOf(i.id)?.state !== 'installed')
+      const installed = new Set(ov.value.items.filter((s) => s.state === 'installed').map((s) => s.id))
+      const missing = downloadPlan(ov.value.catalog, installed, locale.value, props.country ?? null, 'recommended')
       const fit = autoFit(missing, ov.value.freeBytes)
       selected.value = new Set(fit.keep.map((i) => i.id))
       autofitCount.value = fit.dropped.length
@@ -54,10 +69,16 @@ const sizeOf = (i: ContentCatalogItem): number => i.variants?.find((v) => v.flav
 
 const GROUP_ICONS: Record<string, Component> = { salud: HeartPulse, preparacion: LifeBuoy, saber: BookOpen, oficios: Wrench, libros: BookOpen, manuales: FileText, mapas: MapIcon, asistente: Bot }
 const groups = computed(() =>
-  (ov.value?.groups ?? []).map((g) => ({ ...g, icon: GROUP_ICONS[g.id] ?? BookOpen, items: (ov.value?.catalog ?? []).filter((i) => i.group === g.id) })).filter((g) => g.items.length),
+  (ov.value?.groups ?? [])
+    .map((g) => ({
+      ...g,
+      icon: GROUP_ICONS[g.id] ?? BookOpen,
+      items: allItems.value.filter((i) => i.group === g.id && (showOther.value || inLanguage(i, locale.value) || selected.value.has(i.id))),
+    }))
+    .filter((g) => g.items.length),
 )
 
-const selectedItems = computed(() => (ov.value?.catalog ?? []).filter((i) => selected.value.has(i.id)))
+const selectedItems = computed(() => allItems.value.filter((i) => selected.value.has(i.id)))
 const selectedBytes = computed(() => selectedItems.value.reduce((n, i) => n + sizeOf(i), 0))
 const MARGIN = 2 * 1024 ** 3
 const shortfall = computed(() => (ov.value?.freeBytes == null ? 0 : Math.max(0, selectedBytes.value + MARGIN - ov.value.freeBytes)))
@@ -79,7 +100,7 @@ function selectGroup(items: ContentCatalogItem[], on: boolean): void {
 }
 
 function specs(): string[] {
-  return orderForInstall(selectedItems.value).map((i) => {
+  return orderPlan(selectedItems.value).map((i) => {
     const def = i.variants?.[0]?.flavour
     const v = variants[i.id]
     return v && v !== def ? `${i.id}:${v}` : i.id
@@ -122,6 +143,10 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
     <p v-if="loadError" class="notice tone-danger">{{ t('content.error') }}</p>
     <p v-if="!online" class="notice tone-warn">{{ t('content.offline') }}</p>
     <p v-if="autofitCount" class="notice tone-info">{{ t('content.autofit', { n: autofitCount }) }}</p>
+    <label v-if="mode === 'manage' && hiddenCount" class="ui-row check other">
+      <input v-model="showOther" type="checkbox" />
+      {{ t('content.showOther', { n: hiddenCount }) }}
+    </label>
 
     <section v-for="g in groups" :key="g.id" class="group">
       <header class="g-head">
@@ -143,8 +168,8 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
           <span class="meta">
             <strong>
               {{ i.title }}
-              <span v-if="i.lang === 'en'" class="ui-chip lang" :title="t('content.lang.enHint')">{{ t('content.lang.en') }}</span>
-              <span v-if="i.equivalentOf" class="ui-chip faint">{{ t('content.equivalent') }}</span>
+              <span v-if="i.lang !== locale && ['es', 'en', 'fr', 'it'].includes(i.lang)" class="ui-chip lang" :title="t('content.lang.enHint')">{{ t(`content.lang.${i.lang}` as 'content.lang.en') }}</span>
+              <span v-if="coveredBetter(i)" class="ui-chip faint">{{ t('content.equivalent') }}</span>
             </strong>
             <small>{{ i.description }}</small>
           </span>

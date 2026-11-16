@@ -3,6 +3,19 @@
 ## Sin publicar
 
 ### Añadido
+- **Mapas de cualquier país (ADR 0018):**
+  - buscador en Mapas («Añadir país») y en Mantenimiento, por nombre en cualquier idioma, con tamaño estimado;
+  - mapa con zoom según el tamaño del país y rutas sin conexión opcionales;
+  - 242 países con datos de dominio público.
+- **Idioma y región del equipo:**
+  - el país se detecta sin Internet: posición GNSS o LoRa, zona horaria o idioma del navegador;
+  - el idioma inicial, por el navegador y la zona horaria;
+  - los contenidos por defecto, en tu idioma: 33 libros nuevos en francés, italiano e inglés; en inglés si no existe en el tuyo;
+  - en Mantenimiento solo se ven los contenidos de tus idiomas (los demás, con un interruptor).
+- **«Descargarlo todo»** al principio de Contenidos y en la bienvenida (un clic):
+  - completa lo que falta para tu idioma y tu país, incluidos todos los modelos del asistente, ajustado al espacio;
+  - si no falta nada, lo confirma.
+- Mantenimiento → Contenidos: las tarjetas de Kiwix y del asistente ocupan todo el ancho.
 - **Portable igual de completa que la Pi (ADR 0016):**
   - **Mantenimiento** con las mismas secciones y tareas.
   - **USB y copias:**

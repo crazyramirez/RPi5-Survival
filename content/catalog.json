@@ -70,6 +70,23 @@
       "description": "Enciclopedia médica, enfermedades y medicamentos (Biblioteca Nacional de Medicina de EE. UU.)."
     },
     {
+      "id": "medlineplus-en",
+      "equivalentOf": "medlineplus",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "medlineplus.gov_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 1944841216,
+      "license": "Public-Domain-US-Gov",
+      "title": "MedlinePlus (inglés)",
+      "description": "Enciclopedia médica, enfermedades y medicamentos, en inglés (Biblioteca Nacional de Medicina de EE. UU.)."
+    },
+    {
       "id": "zimgit-medicine",
       "kind": "zim",
       "group": "salud",
@@ -123,7 +140,7 @@
       "group": "salud",
       "lang": "en",
       "priority": 3,
-      "default": false,
+      "default": true,
       "equivalentOf": "wikipedia-medicina",
       "zim": {
         "name": "mdwiki_en_all",
@@ -133,6 +150,40 @@
       "license": "CC-BY-SA-4.0",
       "title": "MDWiki",
       "description": "Enciclopedia médica en inglés. Ya cubierta en español por Wikipedia médica y MedlinePlus."
+    },
+    {
+      "id": "wikipedia-medicina-fr",
+      "equivalentOf": "wikipedia-medicina",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "fr",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_fr_medicine",
+        "flavour": "maxi"
+      },
+      "approxBytes": 864254976,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia médica en francés",
+      "description": "Artículos de medicina y salud de Wikipedia en francés (WikiMed), con imágenes."
+    },
+    {
+      "id": "wikipedia-medicina-it",
+      "equivalentOf": "wikipedia-medicina",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "it",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_it_medicine",
+        "flavour": "maxi"
+      },
+      "approxBytes": 273359872,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia médica en italiano",
+      "description": "Artículos de medicina y salud de Wikipedia en italiano (WikiMed), con imágenes."
     },
     {
       "id": "ready-gov",
@@ -149,6 +200,23 @@
       "license": "Public-Domain-US-Gov",
       "title": "Ready.gov",
       "description": "Preparación ante desastres: planes familiares, kits, clima extremo, incendios, apagones."
+    },
+    {
+      "id": "ready-gov-en",
+      "equivalentOf": "ready-gov",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ready.gov_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 2063895552,
+      "license": "Public-Domain-US-Gov",
+      "title": "Ready.gov (inglés)",
+      "description": "Preparación ante desastres, en inglés: planes familiares, kits, clima extremo, incendios, apagones."
     },
     {
       "id": "zimgit-post-disaster",
@@ -231,6 +299,40 @@
       "description": "Técnicas scout: orientación, campamento, nudos."
     },
     {
+      "id": "scoutwiki-it",
+      "equivalentOf": "scoutwiki",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "it",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "scoutwiki.org_it_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 16755712,
+      "license": "CC-BY-SA",
+      "title": "ScoutWiki en italiano",
+      "description": "Técnicas scout en italiano: orientación, campamento, nudos."
+    },
+    {
+      "id": "scoutwiki-en",
+      "equivalentOf": "scoutwiki",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "scoutwiki.org_en_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 25332736,
+      "license": "CC-BY-SA",
+      "title": "ScoutWiki en inglés",
+      "description": "Técnicas scout en inglés: orientación, campamento, nudos."
+    },
+    {
       "id": "outdoors-qa",
       "kind": "zim",
       "group": "preparacion",
@@ -291,6 +393,98 @@
       "description": "La enciclopedia completa."
     },
     {
+      "id": "wikipedia-fr",
+      "equivalentOf": "wikipedia",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "fr",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_fr_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 12912823296,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 12912823296,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 55438794752,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia en francés",
+      "description": "La enciclopedia completa."
+    },
+    {
+      "id": "wikipedia-it",
+      "equivalentOf": "wikipedia",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "it",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_it_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 9034780672,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 9034780672,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 31788252160,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia en italiano",
+      "description": "La enciclopedia completa."
+    },
+    {
+      "id": "wikipedia-en",
+      "equivalentOf": "wikipedia",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_en_all",
+        "flavour": "mini"
+      },
+      "approxBytes": 14386799616,
+      "variants": [
+        {
+          "flavour": "mini",
+          "approxBytes": 14386799616,
+          "label": "Solo introducciones"
+        },
+        {
+          "flavour": "nopic",
+          "approxBytes": 52690707456,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 127418088448,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia en inglés",
+      "description": "La enciclopedia completa."
+    },
+    {
       "id": "wiktionary",
       "kind": "zim",
       "group": "saber",
@@ -304,6 +498,57 @@
       "approxBytes": 660000000,
       "license": "CC-BY-SA-4.0",
       "title": "Wikcionario",
+      "description": "Diccionario: definiciones, etimología y traducciones."
+    },
+    {
+      "id": "wiktionary-fr",
+      "equivalentOf": "wiktionary",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "fr",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wiktionary_fr_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 4935857152,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wiktionnaire (francés)",
+      "description": "Diccionario: definiciones, etimología y traducciones."
+    },
+    {
+      "id": "wiktionary-it",
+      "equivalentOf": "wiktionary",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "it",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wiktionary_it_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 402951168,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikizionario (italiano)",
+      "description": "Diccionario: definiciones, etimología y traducciones."
+    },
+    {
+      "id": "wiktionary-en",
+      "equivalentOf": "wiktionary",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "en",
+      "priority": 2,
+      "default": false,
+      "zim": {
+        "name": "wiktionary_en_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 14847562752,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wiktionary (inglés)",
       "description": "Diccionario: definiciones, etimología y traducciones."
     },
     {
@@ -323,6 +568,93 @@
       "description": "Guía de viaje: destinos, transporte, alojamiento."
     },
     {
+      "id": "wikivoyage-fr",
+      "equivalentOf": "wikivoyage",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "fr",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikivoyage_fr_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 248984576,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 68398080,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 248984576,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikivoyage (francés)",
+      "description": "Guía de viaje: destinos, transporte, alojamiento."
+    },
+    {
+      "id": "wikivoyage-it",
+      "equivalentOf": "wikivoyage",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "it",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikivoyage_it_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 598747136,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 109837312,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 598747136,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikivoyage (italiano)",
+      "description": "Guía de viaje: destinos, transporte, alojamiento."
+    },
+    {
+      "id": "wikivoyage-en",
+      "equivalentOf": "wikivoyage",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikivoyage_en_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 1071169536,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 272495616,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 1071169536,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikivoyage (inglés)",
+      "description": "Guía de viaje: destinos, transporte, alojamiento."
+    },
+    {
       "id": "wikisource",
       "kind": "zim",
       "group": "saber",
@@ -336,6 +668,93 @@
       "approxBytes": 400000000,
       "license": "CC-BY-SA-4.0",
       "title": "Wikisource",
+      "description": "Textos de dominio público: leyes, documentos históricos, literatura."
+    },
+    {
+      "id": "wikisource-fr",
+      "equivalentOf": "wikisource",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "fr",
+      "priority": 3,
+      "default": false,
+      "zim": {
+        "name": "wikisource_fr_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 11737461760,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 11737461760,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 15680109568,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikisource (francés)",
+      "description": "Textos de dominio público: leyes, documentos históricos, literatura."
+    },
+    {
+      "id": "wikisource-it",
+      "equivalentOf": "wikisource",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "it",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikisource_it_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 1315990528,
+      "variants": [
+        {
+          "flavour": "maxi",
+          "approxBytes": 1315990528,
+          "label": "Con imágenes"
+        },
+        {
+          "flavour": "nopic",
+          "approxBytes": 1912685568,
+          "label": "Sin imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikisource (italiano)",
+      "description": "Textos de dominio público: leyes, documentos históricos, literatura."
+    },
+    {
+      "id": "wikisource-en",
+      "equivalentOf": "wikisource",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikisource_en_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 3905589248,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 3905589248,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 8615937024,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikisource (inglés)",
       "description": "Textos de dominio público: leyes, documentos históricos, literatura."
     },
     {
@@ -353,6 +772,57 @@
       "license": "CC-BY-NC-SA-3.0",
       "title": "iFixit",
       "description": "Guías de reparación paso a paso: electrónica, vehículos, electrodomésticos."
+    },
+    {
+      "id": "ifixit-fr",
+      "equivalentOf": "ifixit",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "fr",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ifixit_fr_all",
+        "flavour": ""
+      },
+      "approxBytes": 3652281344,
+      "license": "CC-BY-NC-SA-3.0",
+      "title": "iFixit en francés",
+      "description": "Guías de reparación paso a paso en francés: electrónica, vehículos, electrodomésticos."
+    },
+    {
+      "id": "ifixit-it",
+      "equivalentOf": "ifixit",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "it",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ifixit_it_all",
+        "flavour": ""
+      },
+      "approxBytes": 3640310784,
+      "license": "CC-BY-NC-SA-3.0",
+      "title": "iFixit en italiano",
+      "description": "Guías de reparación paso a paso en italiano: electrónica, vehículos, electrodomésticos."
+    },
+    {
+      "id": "ifixit-en",
+      "equivalentOf": "ifixit",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ifixit_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 3570696192,
+      "license": "CC-BY-NC-SA-3.0",
+      "title": "iFixit en inglés",
+      "description": "Guías de reparación paso a paso en inglés: electrónica, vehículos, electrodomésticos."
     },
     {
       "id": "lowtech",
@@ -515,6 +985,93 @@
       "description": "Manuales y libros de texto libres."
     },
     {
+      "id": "wikibooks-fr",
+      "equivalentOf": "wikibooks",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "fr",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikibooks_fr_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 1151934464,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 332192768,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 1151934464,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikilivres (francés)",
+      "description": "Manuales y libros de texto libres."
+    },
+    {
+      "id": "wikibooks-it",
+      "equivalentOf": "wikibooks",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "it",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikibooks_it_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 2007337984,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 1691470848,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 2007337984,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikibooks (italiano)",
+      "description": "Manuales y libros de texto libres."
+    },
+    {
+      "id": "wikibooks-en",
+      "equivalentOf": "wikibooks",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikibooks_en_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 4739740672,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 3544612864,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 4739740672,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikibooks (inglés)",
+      "description": "Manuales y libros de texto libres."
+    },
+    {
       "id": "gutenberg",
       "kind": "zim",
       "group": "libros",
@@ -529,6 +1086,57 @@
       "license": "Public-Domain",
       "title": "Proyecto Gutenberg",
       "description": "Libros clásicos en español de dominio público."
+    },
+    {
+      "id": "gutenberg-fr",
+      "equivalentOf": "gutenberg",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "fr",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "gutenberg_fr_all",
+        "flavour": ""
+      },
+      "approxBytes": 10534730752,
+      "license": "Public-Domain",
+      "title": "Proyecto Gutenberg en francés",
+      "description": "Libros clásicos en francés de dominio público."
+    },
+    {
+      "id": "gutenberg-it",
+      "equivalentOf": "gutenberg",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "it",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "gutenberg_it_all",
+        "flavour": ""
+      },
+      "approxBytes": 1074391040,
+      "license": "Public-Domain",
+      "title": "Proyecto Gutenberg en italiano",
+      "description": "Libros clásicos en italiano de dominio público."
+    },
+    {
+      "id": "gutenberg-en",
+      "equivalentOf": "gutenberg",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "en",
+      "priority": 2,
+      "default": false,
+      "zim": {
+        "name": "gutenberg_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 221251591168,
+      "license": "Public-Domain",
+      "title": "Proyecto Gutenberg en inglés",
+      "description": "Libros clásicos en inglés de dominio público."
     },
     {
       "id": "wikiversity",
@@ -547,6 +1155,93 @@
       "description": "Cursos y materiales de aprendizaje."
     },
     {
+      "id": "wikiversity-fr",
+      "equivalentOf": "wikiversity",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "fr",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikiversity_fr_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 305217536,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 110234624,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 305217536,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikiversité (francés)",
+      "description": "Cursos y materiales de aprendizaje."
+    },
+    {
+      "id": "wikiversity-it",
+      "equivalentOf": "wikiversity",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "it",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikiversity_it_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 245157888,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 43225088,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 245157888,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikiversità (italiano)",
+      "description": "Cursos y materiales de aprendizaje."
+    },
+    {
+      "id": "wikiversity-en",
+      "equivalentOf": "wikiversity",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikiversity_en_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 2110168064,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 1614819328,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 2110168064,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikiversity (inglés)",
+      "description": "Cursos y materiales de aprendizaje."
+    },
+    {
       "id": "phet",
       "kind": "zim",
       "group": "libros",
@@ -561,6 +1256,57 @@
       "license": "CC-BY-4.0",
       "title": "Simulaciones PhET",
       "description": "Simulaciones interactivas de física, química y matemáticas."
+    },
+    {
+      "id": "phet-fr",
+      "equivalentOf": "phet",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "fr",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "phet_fr_all",
+        "flavour": ""
+      },
+      "approxBytes": 109152256,
+      "license": "CC-BY-4.0",
+      "title": "Simulaciones PhET en francés",
+      "description": "Simulaciones interactivas de física, química y matemáticas, en francés."
+    },
+    {
+      "id": "phet-it",
+      "equivalentOf": "phet",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "it",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "phet_it_all",
+        "flavour": ""
+      },
+      "approxBytes": 109216768,
+      "license": "CC-BY-4.0",
+      "title": "Simulaciones PhET en italiano",
+      "description": "Simulaciones interactivas de física, química y matemáticas, en italiano."
+    },
+    {
+      "id": "phet-en",
+      "equivalentOf": "phet",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "phet_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 108981248,
+      "license": "CC-BY-4.0",
+      "title": "Simulaciones PhET en inglés",
+      "description": "Simulaciones interactivas de física, química y matemáticas, en inglés."
     },
     {
       "id": "mapa-espana",
@@ -629,6 +1375,36 @@
       "description": "Países, ciudades y carreteras principales (zoom 6)."
     },
     {
+      "id": "mapa-pais",
+      "kind": "maps",
+      "template": "country",
+      "group": "mapas",
+      "lang": "mul",
+      "priority": 2,
+      "default": false,
+      "maps": {},
+      "approxBytes": 0,
+      "license": "ODbL-1.0",
+      "title": "Mapa de un país",
+      "description": "Plantilla: «mapa-pais:<código>» (content/countries.json). Zoom según el tamaño del país."
+    },
+    {
+      "id": "rutas-pais",
+      "kind": "routing",
+      "template": "country",
+      "group": "mapas",
+      "lang": "mul",
+      "priority": 2,
+      "default": false,
+      "routing": {
+        "tiles": []
+      },
+      "approxBytes": 0,
+      "license": "ODbL-1.0",
+      "title": "Rutas de un país",
+      "description": "Plantilla: «rutas-pais:<código>»: cuadrículas BRouter que cubren el país."
+    },
+    {
       "id": "rutas-espana",
       "kind": "routing",
       "group": "mapas",
@@ -684,6 +1460,36 @@
       "license": "Apache-2.0",
       "title": "Asistente sin conexión (Qwen3 4B)",
       "description": "Responde preguntas citando los protocolos y la biblioteca. Funciona sin Internet."
+    },
+    {
+      "id": "asistente-gemma3",
+      "kind": "llm",
+      "group": "asistente",
+      "lang": "mul",
+      "priority": 3,
+      "default": false,
+      "llm": {
+        "model": "gemma3-4b"
+      },
+      "approxBytes": 2489757856,
+      "license": "Gemma",
+      "title": "Modelo alternativo: Gemma 3 4B",
+      "description": "Otro modelo para el asistente (Google Gemma 3, 4B). Se puede elegir en Mantenimiento."
+    },
+    {
+      "id": "asistente-llama32",
+      "kind": "llm",
+      "group": "asistente",
+      "lang": "mul",
+      "priority": 3,
+      "default": false,
+      "llm": {
+        "model": "llama3.2-3b"
+      },
+      "approxBytes": 1921909280,
+      "license": "Llama-3.2",
+      "title": "Modelo alternativo: Llama 3.2 3B",
+      "description": "Modelo más ligero para el asistente (Meta Llama 3.2, 3B). Responde más rápido."
     },
     {
       "id": "hesperian-donde-no-hay-doctor",

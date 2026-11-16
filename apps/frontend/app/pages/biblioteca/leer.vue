@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DOC_SCROLLBAR_CSS, isDocumentLink, linkTitle, viewerUrl } from '~/utils/viewer'
+import { DOC_SCROLLBAR_CSS, isDocumentLink, linkTitle, syncDocScrollbar, viewerUrl } from '~/utils/viewer'
 import { ArrowLeft, Moon, Sun } from '@lucide/vue'
 import { isSafeReaderPath } from '~/utils/snippet'
 
@@ -96,6 +96,8 @@ function applyNight(doc: Document | null | undefined): void {
     root.setAttribute('data-survival-kind', '')
   }
   root.classList.toggle('survival-night', night.value)
+  // Pista de la barra del color de la página tal como se ve (con o sin el filtro del modo noche).
+  if (!root.hasAttribute('data-survival-viewer')) syncDocScrollbar(doc, night.value && root.hasAttribute('data-survival-light'))
 }
 
 /** Documento del visor y artículos que muestra en su iframe interno. */

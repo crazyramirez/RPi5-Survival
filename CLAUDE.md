@@ -8,6 +8,7 @@ Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, 
 - `npm run check` — lint + typecheck + tests (obligatorio antes de desplegar).
 - `npm run dev` — device-api + Nuxt en 127.0.0.1 (en Windows las sondas dan "no disponible": correcto).
 - `npm run build && npm run release` — tarball en `release/`.
+- `npm run release:portable [-- --targets=win-x64]` — versión portable Windows/macOS/Linux (ADR 0014), carpeta + zip en `release/`.
 - En la Pi: `bash install.sh <tarball>`, `~/survival-os/current/scripts/test-offline.sh`, `run.sh`.
 
 ## Dispositivo

@@ -1,6 +1,6 @@
 # ADR 0004 — Bóveda: contenedor LUKS2 en fichero, servicio root sin red y montaje privado
 
-- **Estado:** aceptada (2026-11-08)
+- **Estado:** aceptada (2026-11-08). Modificada por el ADR 0013: clave de recuperación y contraseñas sencillas.
 - **Decisión:**
   - Contenedor `/var/lib/survival-os/vault/vault.luks` (fichero con `fallocate`), LUKS2, AES-XTS, KDF
     Argon2id (256 MiB, 2 s). Sin reparticionar la SD. Única clave: contraseña robusta (≥ 12 caracteres o

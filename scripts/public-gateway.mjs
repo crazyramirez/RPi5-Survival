@@ -61,7 +61,8 @@ export const server = createServer((req, res) => {
   const host = String(req.headers.host || '').toLowerCase()
   // Portal cautivo: cualquier dominio ajeno → portada de Survival OS.
   if (!PUBLIC_NAMES.has(host)) {
-    res.writeHead(302, { location: `http://${HOST}/`, 'cache-control': 'no-store' })
+    // Con puerto distinto de 80 (versión portable, «Compartir en la red local») hay que incluirlo.
+    res.writeHead(302, { location: `http://${HOST}${PORT === 80 ? '' : `:${PORT}`}/`, 'cache-control': 'no-store' })
     return res.end()
   }
   const url = req.url || '/'

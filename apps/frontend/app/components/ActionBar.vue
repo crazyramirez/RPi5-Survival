@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, House, Lock, SunDim } from '@lucide/vue'
+import { ArrowLeft, Gamepad2, House, Lock, SunDim } from '@lucide/vue'
 
 const t = useT()
 const route = useRoute()
@@ -8,6 +8,10 @@ const { lock } = useScreenLock()
 const { panelOpen } = useDisplaySettings()
 
 const atHome = computed(() => route.path === '/')
+const atGames = computed(() => route.path === '/juegos')
+/** El botón «Juegos» solo se ofrece si la copia offline está descargada (Mantenimiento → Juegos offline). */
+const { installed: gamesInstalled, refresh: refreshGames } = useGamesInstalled()
+onMounted(() => void refreshGames())
 /** En la vista pública el bloqueo de pantalla no tiene sentido (es el móvil de otra persona). */
 const publicView = isPublicView()
 
@@ -32,6 +36,10 @@ function back(): void {
       <SunDim :size="26" aria-hidden="true" />
       <span>{{ t('nav.display') }}</span>
     </button>
+    <NuxtLink v-if="!publicView && (gamesInstalled || atGames)" to="/juegos" class="action" :class="{ current: atGames }">
+      <Gamepad2 :size="26" aria-hidden="true" />
+      <span>{{ t('nav.games') }}</span>
+    </NuxtLink>
     <button v-if="!publicView" type="button" class="action" @click="lock">
       <Lock :size="26" aria-hidden="true" />
       <span>{{ t('nav.lock') }}</span>

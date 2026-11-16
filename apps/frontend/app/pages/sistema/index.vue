@@ -276,6 +276,17 @@ async function confirmPower(): Promise<void> {
 }
 
 const appRestartPending = ref(false)
+const portable = usePortable()
+const quitPending = ref(false)
+async function doQuit(): Promise<void> {
+  quitPending.value = false
+  try {
+    await quitPortable()
+    actionMessage.value = { tone: 'info', text: t('portable.closing') }
+  } catch (err) {
+    actionMessage.value = { tone: 'danger', text: actionErrorMessage(err) }
+  }
+}
 const desktopPending = ref(false)
 
 async function exitToDesktop(): Promise<void> {
@@ -543,7 +554,22 @@ async function displayOff(): Promise<void> {
 
     <!-- Control -->
     <h2 class="sec">{{ t('sys.sec.control') }}</h2>
-    <section class="control">
+    <!-- Versión portable: no se apaga ni se toca el equipo anfitrión; solo recargar o cerrar la app. -->
+    <section v-if="portable" class="control">
+      <div class="ctl-grid">
+        <span class="ctl-group">{{ t('sys.ctl.app') }}</span>
+        <button type="button" class="ctl" @click="reloadUi">
+          <RefreshCw :size="24" aria-hidden="true" />
+          <span><strong>{{ t('sys.app.reload') }}</strong><small>{{ t('sys.ctl.reload.hint') }}</small></span>
+        </button>
+        <button type="button" class="ctl ctl-danger tone-danger" @click="quitPending = true">
+          <Power :size="24" aria-hidden="true" />
+          <span><strong>{{ t('portable.quit') }}</strong><small>{{ t('portable.quitHint') }}</small></span>
+        </button>
+      </div>
+      <p v-if="actionMessage" :class="`tone-${actionMessage.tone} action-msg`" role="status">{{ actionMessage.text }}</p>
+    </section>
+    <section v-else class="control">
       <p class="control-note"><Info :size="18" aria-hidden="true" />{{ t('sys.shutdown.note') }}</p>
       <div class="ctl-grid">
         <span class="ctl-group">{{ t('sys.ctl.app') }}</span>
@@ -577,6 +603,15 @@ async function displayOff(): Promise<void> {
       <p v-if="actionMessage" :class="`tone-${actionMessage.tone} action-msg`" role="status">{{ actionMessage.text }}</p>
     </section>
 
+    <ConfirmDialog
+      v-if="quitPending"
+      :title="t('portable.quitTitle')"
+      :message="t('portable.quitBody')"
+      :confirm-label="t('portable.quit')"
+      danger
+      @confirm="doQuit"
+      @cancel="quitPending = false"
+    />
     <ConfirmDialog
       v-if="desktopPending"
       :title="t('sys.app.desktopConfirm')"

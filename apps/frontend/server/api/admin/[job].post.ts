@@ -1,4 +1,6 @@
 import { ADMIN_JOBS, isAdminJob, jobStatus, startJob, stopJob } from '../../utils/admin'
+import { isPortable } from '../../utils/portable'
+import { portableSupports } from '../../utils/portable-jobs'
 import { assertTrustedAction } from '../../utils/system'
 
 /** Lanza (o detiene con ?stop=1) una tarea de mantenimiento. Solo loopback + cabecera de acción. */
@@ -6,6 +8,8 @@ export default defineEventHandler(async (event) => {
   assertTrustedAction(event)
   const job = getRouterParam(event, 'job') ?? ''
   if (!isAdminJob(job)) throw createError({ statusCode: 404 })
+  // Portable: solo las tareas que sabe ejecutar sin systemd (el resto se van añadiendo, ADR 0014/0015).
+  if (isPortable() && !portableSupports(job)) throw createError({ statusCode: 409, statusMessage: 'No disponible en la versión portable' })
   if (getQuery(event).stop === '1') {
     await stopJob(job)
     return await jobStatus(job)

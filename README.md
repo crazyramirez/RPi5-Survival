@@ -188,6 +188,29 @@ Los contenidos (Wikipedia, mapas, asistente, rutas) se descargan después desde 
 importan desde un USB sin red. La [puesta en marcha](docs/commissioning.md) explica cada paso. Para desinstalar,
 `uninstall-system.sh`.
 
+## Versión portable (Windows, macOS, Linux)
+
+Survival OS también funciona fuera de la Pi, desde una carpeta en un USB, en un disco o en el propio equipo:
+
+```bash
+npm run build && npm run release:portable      # release/portable/Survival OS/ + zip (~210 MB)
+```
+
+- **Abrir:**
+  - Windows: «Abrir Survival OS»;
+  - macOS: «Survival OS.app»;
+  - Linux: `abrir-survival-os.sh`.
+- Se abre en una ventana propia; al cerrarla, Survival OS se detiene.
+- **Sistema → Mantenimiento → «Instalar en este equipo»** copia la app y crea un acceso directo, sin pedir administrador.
+- **Igual de completa que la Pi:**
+  - descargas con detección del sistema, asistente, Wikipedia, rutas y juegos;
+  - bóveda cifrada;
+  - malla LoRa y GPS por USB, sin módulos nativos;
+  - batería del portátil;
+  - «Compartir en la red local».
+- Detalles en los ADR [0014](docs/adr/0014-version-portable.md), [0015](docs/adr/0015-motor-de-descargas.md) y
+  [0016](docs/adr/0016-portable-paridad.md), y en `portable/LEEME.txt`.
+
 ## Desarrollo
 
 ```sh

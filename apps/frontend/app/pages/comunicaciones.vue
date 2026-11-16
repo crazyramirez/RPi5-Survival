@@ -21,9 +21,22 @@ const radioLabel = computed(() =>
 )
 // Malla LoRa: estado del servicio survival-mesh (null si no está instalado o no responde).
 const mesh = ref<MeshStatus | null>(null)
-onMounted(async () => {
-  mesh.value = await ($fetch as (u: string, o: Record<string, unknown>) => Promise<MeshStatus>)('/api/mesh/status', { timeout: 5000, retry: 0 }).catch(() => null)
+// Se refresca cada 10 s y tolera fallos aislados (reinicio del servicio al actualizar): solo tras 3 fallos
+// seguidos se muestra «no disponible».
+let meshFailures = 0
+async function loadMesh(): Promise<void> {
+  const s = await ($fetch as (u: string, o: Record<string, unknown>) => Promise<MeshStatus>)('/api/mesh/status', { timeout: 5000, retry: 0 }).catch(() => null)
+  if (s) {
+    meshFailures = 0
+    mesh.value = s
+  } else if (++meshFailures >= 3) mesh.value = null
+}
+let meshTimer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  void loadMesh()
+  meshTimer = setInterval(() => void loadMesh(), 10_000)
 })
+onBeforeUnmount(() => meshTimer && clearInterval(meshTimer))
 const ifaceIcon = (kind: string) => (kind === 'wifi' ? Wifi : kind === 'ethernet' ? Cable : Network)
 </script>
 

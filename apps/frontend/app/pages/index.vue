@@ -20,6 +20,13 @@ const summaries = computed(() => moduleSummaries(status.value, { nav: nav.value,
 
 const publicView = isPublicView()
 
+// Primera puesta en marcha (ADR 0015): si aún no se ha hecho ni omitido, se abre la bienvenida.
+onMounted(async () => {
+  if (publicView) return
+  const ov = await $fetch<{ setup: { state: string } }>('/api/content', { timeout: 8000, retry: 0 }).catch(() => null)
+  if (ov?.setup.state === 'pending') await navigateTo('/bienvenida')
+})
+
 const tiles = computed(() =>
   MODULES.filter((m) => !publicView || PUBLIC_MODULES.has(m.id)).map((m) => {
     // Vista pública: sin estado del equipo; resumen fijo de qué ofrece cada módulo.
@@ -39,6 +46,7 @@ const loading = computed(() => status.value === null && alerts.value.length === 
 
 <template>
   <div class="home">
+    <ContentProgress v-if="!publicView" />
     <div class="tiles">
       <ModuleTile
         v-for="tile in tiles"

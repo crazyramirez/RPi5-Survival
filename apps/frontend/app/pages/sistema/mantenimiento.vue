@@ -5,6 +5,7 @@ import { formatBytes, formatClock, formatDate } from '~/utils/format'
 import { LLM_MODELS } from '~/utils/llm'
 
 const t = useT()
+const portable = usePortable()
 const router = useRouter()
 const { status, refresh: refreshDevice } = useDeviceStatus()
 const now = useNow()
@@ -159,54 +160,61 @@ const PIN_LEGEND = [
       <button type="button" class="btn back" @click="router.push('/sistema')">{{ t('mnt.back') }}</button>
     </PageHeader>
 
-    <!-- Resumen: cada baldosa lleva a su sección. -->
-    <div class="overview">
-      <button type="button" class="ov" :class="`tone-${radio === 'enabled' ? (online ? 'ok' : 'info') : 'muted'}`" @click="goTo('net')">
-        <span class="ov-icon"><component :is="radio === 'disabled' ? WifiOff : Wifi" :size="20" aria-hidden="true" /></span>
-        <span class="ov-text">
-          <small>{{ t('ui.mnt.ov.net') }}</small>
-          <strong>{{ radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown') }}</strong>
-          <span>{{ online ? t('bar.net.local') : t('bar.net.offline') }}</span>
-        </span>
-      </button>
-      <button type="button" class="ov" :class="`tone-${timeSource === 'unverified' || !timeSource ? 'warn' : 'ok'}`" @click="goTo('net')">
-        <span class="ov-icon"><Clock :size="20" aria-hidden="true" /></span>
-        <span class="ov-text">
-          <small>{{ t('ui.mnt.ov.time') }}</small>
-          <strong class="mono">{{ formatClock(now) }}</strong>
-          <span>{{ timeSource ? t(`sys.time.source.${timeSource}` as never) : t('state.unavailable') }}</span>
-        </span>
-      </button>
-      <button type="button" class="ov" :class="`tone-${library?.zim?.downloads.length ? 'info' : library?.zim?.installed.length ? 'ok' : 'muted'}`" @click="goTo('content')">
-        <span class="ov-icon"><Library :size="20" aria-hidden="true" /></span>
-        <span class="ov-text">
-          <small>{{ t('ui.mnt.ov.content') }}</small>
-          <strong>{{ t('lib.books.count', { n: library?.zim?.installed.length ?? 0 }) }}</strong>
-          <span>{{ library?.zim?.downloads.length ? t('ui.mnt.downloading', { n: library?.zim?.downloads.length }) : t('summary.maps.count', { n: maps.length }) }}</span>
-        </span>
-      </button>
-      <button type="button" class="ov" :class="`tone-${assistant?.available ? 'ok' : assistant?.active ? 'info' : 'muted'}`" @click="goTo('content')">
-        <span class="ov-icon"><Bot :size="20" aria-hidden="true" /></span>
-        <span class="ov-text">
-          <small>{{ t('ui.mnt.ov.llm') }}</small>
-          <strong>{{ assistant?.available ? t('mnt.llm.on') : assistant?.active ? t('mnt.llm.loading') : t('mnt.llm.off') }}</strong>
-          <span>{{ activeModel ? t(`mnt.llm.${activeModel.id}` as never) : '—' }}</span>
-        </span>
-      </button>
+    <!-- Versión portable (ADR 0014): sin tareas de la Pi; carpetas, instalar y cerrar. -->
+    <div v-if="portable" class="bento">
+      <PortableCard />
     </div>
 
-    <!-- Pestañas fijas de sección. -->
-    <nav class="tabs" :aria-label="t('mnt.title')">
-      <button
-        v-for="sec in SECTIONS" :key="sec" type="button" class="tab"
-        :aria-current="activeSection === sec ? 'true' : undefined" @click="goTo(sec)"
-      >
-        {{ t(`ui.mnt.sec.${sec}`) }}
-      </button>
-    </nav>
+    <template v-else>
+      <!-- Resumen: cada baldosa lleva a su sección. -->
+      <div class="overview">
+        <button type="button" class="ov" :class="`tone-${radio === 'enabled' ? (online ? 'ok' : 'info') : 'muted'}`" @click="goTo('net')">
+          <span class="ov-icon"><component :is="radio === 'disabled' ? WifiOff : Wifi" :size="20" aria-hidden="true" /></span>
+          <span class="ov-text">
+            <small>{{ t('ui.mnt.ov.net') }}</small>
+            <strong>{{ radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown') }}</strong>
+            <span>{{ online ? t('bar.net.local') : t('bar.net.offline') }}</span>
+          </span>
+        </button>
+        <button type="button" class="ov" :class="`tone-${timeSource === 'unverified' || !timeSource ? 'warn' : 'ok'}`" @click="goTo('net')">
+          <span class="ov-icon"><Clock :size="20" aria-hidden="true" /></span>
+          <span class="ov-text">
+            <small>{{ t('ui.mnt.ov.time') }}</small>
+            <strong class="mono">{{ formatClock(now) }}</strong>
+            <span>{{ timeSource ? t(`sys.time.source.${timeSource}` as never) : t('state.unavailable') }}</span>
+          </span>
+        </button>
+        <button type="button" class="ov" :class="`tone-${library?.zim?.downloads.length ? 'info' : library?.zim?.installed.length ? 'ok' : 'muted'}`" @click="goTo('content')">
+          <span class="ov-icon"><Library :size="20" aria-hidden="true" /></span>
+          <span class="ov-text">
+            <small>{{ t('ui.mnt.ov.content') }}</small>
+            <strong>{{ t('lib.books.count', { n: library?.zim?.installed.length ?? 0 }) }}</strong>
+            <span>{{ library?.zim?.downloads.length ? t('ui.mnt.downloading', { n: library?.zim?.downloads.length }) : t('summary.maps.count', { n: maps.length }) }}</span>
+          </span>
+        </button>
+        <button type="button" class="ov" :class="`tone-${assistant?.available ? 'ok' : assistant?.active ? 'info' : 'muted'}`" @click="goTo('content')">
+          <span class="ov-icon"><Bot :size="20" aria-hidden="true" /></span>
+          <span class="ov-text">
+            <small>{{ t('ui.mnt.ov.llm') }}</small>
+            <strong>{{ assistant?.available ? t('mnt.llm.on') : assistant?.active ? t('mnt.llm.loading') : t('mnt.llm.off') }}</strong>
+            <span>{{ activeModel ? t(`mnt.llm.${activeModel.id}` as never) : '—' }}</span>
+          </span>
+        </button>
+      </div>
+
+      <!-- Pestañas fijas de sección. -->
+      <nav class="tabs" :aria-label="t('mnt.title')">
+        <button
+          v-for="sec in SECTIONS" :key="sec" type="button" class="tab"
+          :aria-current="activeSection === sec ? 'true' : undefined" @click="goTo(sec)"
+        >
+          {{ t(`ui.mnt.sec.${sec}`) }}
+        </button>
+      </nav>
+    </template>
 
     <!-- ============================================================ Red y hora -->
-    <section id="mnt-net" data-sec="net" class="mnt-sec">
+    <section v-if="!portable" id="mnt-net" data-sec="net" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.net') }}</h2>
       <div class="bento">
         <AppCard
@@ -258,6 +266,8 @@ const PIN_LEGEND = [
     <!-- ============================================================ Contenidos -->
     <section id="mnt-content" data-sec="content" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.content') }}</h2>
+      <!-- Catálogo de descargas (ADR 0015): igual en la Pi y en la portable. -->
+      <ContentCatalog mode="manage" :online="online" class="catalog-block" />
       <div class="bento">
         <AppCard
           :title="t('mnt.content')" :icon="Library" :tone="library?.zim?.installed.length ? 'ok' : 'muted'"
@@ -341,6 +351,9 @@ const PIN_LEGEND = [
         <!-- Rutas sin conexión (ADR 0010) -->
         <RoutingCard :online="online" />
 
+        <!-- Juegos offline (ADR 0012) -->
+        <GamesCard :online="online" />
+
         <AppCard class="span-all" :title="t('mnt.maps')" :icon="MapIcon" :tone="maps.length ? 'ok' : 'muted'" :pill="t('summary.maps.count', { n: maps.length })">
           <div v-for="m in maps" :key="m.file" class="ui-row">
             <MapIcon :size="16" class="faint" aria-hidden="true" />
@@ -360,7 +373,7 @@ const PIN_LEGEND = [
     </section>
 
     <!-- ============================================================ USB y copias -->
-    <section id="mnt-usb" data-sec="usb" class="mnt-sec">
+    <section v-if="!portable" id="mnt-usb" data-sec="usb" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.usb') }}</h2>
       <div class="bento">
         <AppCard :title="t('mnt.usb')" :icon="Usb" :tone="scan?.media.length ? 'info' : 'muted'">
@@ -427,7 +440,7 @@ const PIN_LEGEND = [
     </section>
 
     <!-- ============================================================ Hardware -->
-    <section id="mnt-hw" data-sec="hw" class="mnt-sec">
+    <section v-if="!portable" id="mnt-hw" data-sec="hw" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.hw') }}</h2>
       <AppCard :title="t('mnt.gps')" :icon="Satellite" tone="muted">
         <div class="notice tone-danger"><TriangleAlert :size="18" aria-hidden="true" /><span>{{ t('mnt.gps.voltage') }}</span></div>
@@ -468,7 +481,6 @@ const PIN_LEGEND = [
         </div>
       </AppCard>
     </section>
-
     <ConfirmDialog v-if="pending" :title="pending.title" :message="pending.body" :confirm-label="pending.label" danger @confirm="confirm" @cancel="pending = null" />
   </div>
 </template>

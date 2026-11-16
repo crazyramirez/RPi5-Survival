@@ -15,20 +15,22 @@
     "services/navigation",
     "services/vault",
     "services/esp32-gateway",
+    "services/serial-hub",
     "packages/*"
   ],
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "npm run build -w @survival-os/device-api && npm run build -w @survival-os/library && npm run build -w @survival-os/navigation && npm run build -w @survival-os/vault && npm run build -w @survival-os/esp32-gateway && npm run build -w @survival-os/frontend",
+    "build": "npm run build -w @survival-os/device-api && npm run build -w @survival-os/library && npm run build -w @survival-os/navigation && npm run build -w @survival-os/vault && npm run build -w @survival-os/esp32-gateway && npm run build -w @survival-os/serial-hub && npm run build -w @survival-os/frontend",
     "start": "node scripts/start.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
-    "typecheck": "npm run typecheck -w @survival-os/device-api && npm run typecheck -w @survival-os/library && npm run typecheck -w @survival-os/navigation && npm run typecheck -w @survival-os/vault && npm run typecheck -w @survival-os/esp32-gateway && npm run typecheck -w @survival-os/frontend",
+    "typecheck": "npm run typecheck -w @survival-os/device-api && npm run typecheck -w @survival-os/library && npm run typecheck -w @survival-os/navigation && npm run typecheck -w @survival-os/vault && npm run typecheck -w @survival-os/esp32-gateway && npm run typecheck -w @survival-os/serial-hub && npm run typecheck -w @survival-os/frontend",
     "check": "npm run lint && npm run typecheck && npm run test",
     "release": "node scripts/release.mjs",
     "guide": "node scripts/build-emergency-guide.mjs --size a5 && node scripts/build-emergency-guide.mjs --size a4",
-    "e2e": "node tests/e2e/run.mjs"
+    "e2e": "node tests/e2e/run.mjs",
+    "release:portable": "node scripts/release-portable.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",

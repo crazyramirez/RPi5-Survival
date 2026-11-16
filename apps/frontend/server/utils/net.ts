@@ -47,7 +47,9 @@ export function isTrustedActionRequest(headers: Record<string, string | string[]
   if (typeof origin !== 'string') return false
   try {
     const u = new URL(origin)
-    return u.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(u.hostname)
+    // Mismo host Y puerto que esta web: otro servicio en loopback (p. ej. los juegos en :8790, ADR 0012)
+    // es otro origen y nunca puede lanzar acciones aunque consiguiera enviar la cabecera.
+    return u.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(u.hostname) && u.host === headers.host
   } catch {
     return false
   }
@@ -65,7 +67,17 @@ export const CONTENT_SECURITY_POLICY = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  // El lector de la biblioteca embebe /kiwix y documentos del mismo origen.
+  // El lector de la biblioteca embebe /kiwix y documentos del mismo origen; Juegos embebe la copia
+  // offline de Viseni Games, servida en loopback como OTRO origen (ADR 0012).
   "frame-ancestors 'self'",
-  "frame-src 'self'",
+  `frame-src 'self' ${gamesOrigin()}`,
 ].join('; ')
+
+/** Origen de los juegos (ADR 0012). En la versión portable el puerto lo elige el lanzador. */
+function gamesOrigin(): string {
+  try {
+    return new URL(process.env.NUXT_GAMES_URL ?? '').origin
+  } catch {
+    return 'http://127.0.0.1:8790'
+  }
+}

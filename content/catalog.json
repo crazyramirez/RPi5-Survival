@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-11-16",
+  "notes": "Catálogo de descargas (ADR 0015). Español por defecto; inglés solo si no hay equivalente en español. approxBytes es orientativo (catálogo Kiwix 2026-11); el motor resuelve el tamaño real y la última versión al descargar. priority: 1 imprescindible, 2 recomendado, 3 extra (si falta espacio se desmarca primero lo de prioridad más alta).",
+  "groups": [
+    { "id": "salud", "title": "Salud y primeros auxilios" },
+    { "id": "preparacion", "title": "Preparación y supervivencia" },
+    { "id": "saber", "title": "Enciclopedias y referencia" },
+    { "id": "oficios", "title": "Reparación, oficios y autosuficiencia" },
+    { "id": "libros", "title": "Libros y aprendizaje" },
+    { "id": "mapas", "title": "Mapas y rutas" },
+    { "id": "asistente", "title": "Asistente sin conexión" }
+  ],
+  "items": [
+    { "id": "wikipedia-medicina", "kind": "zim", "group": "salud", "lang": "es", "priority": 1, "default": true, "zim": { "name": "wikipedia_es_medicine", "flavour": "maxi" }, "approxBytes": 470000000, "license": "CC-BY-SA-4.0", "title": "Wikipedia médica", "description": "Artículos de medicina y salud de Wikipedia, con imágenes." },
+    { "id": "medlineplus", "kind": "zim", "group": "salud", "lang": "es", "priority": 1, "default": true, "zim": { "name": "medlineplus.gov_es_all", "flavour": "" }, "approxBytes": 1770000000, "license": "Public-Domain-US-Gov", "title": "MedlinePlus", "description": "Enciclopedia médica, enfermedades y medicamentos (Biblioteca Nacional de Medicina de EE. UU.)." },
+    { "id": "zimgit-medicine", "kind": "zim", "group": "salud", "lang": "en", "priority": 1, "default": true, "zim": { "name": "zimgit-medicine_en", "flavour": "" }, "approxBytes": 70000000, "license": "Various", "title": "Medical Library", "description": "Libros de medicina de campo y de emergencia." },
+    { "id": "military-medicine", "kind": "zim", "group": "salud", "lang": "en", "priority": 2, "default": true, "zim": { "name": "irp.fas.org_en_military-medicine", "flavour": "" }, "approxBytes": 60000000, "license": "Public-Domain-US-Gov", "title": "Military Medicine", "description": "Manuales militares de medicina de combate y de campo." },
+    { "id": "cdc-travel", "kind": "zim", "group": "salud", "lang": "en", "priority": 3, "default": true, "zim": { "name": "wwwnc.cdc.gov_en_all", "flavour": "" }, "approxBytes": 180000000, "license": "Public-Domain-US-Gov", "title": "CDC Travelers' Health", "description": "Enfermedades por región, vacunas y salud en viaje." },
+    { "id": "mdwiki", "kind": "zim", "group": "salud", "lang": "en", "priority": 3, "default": false, "equivalentOf": "wikipedia-medicina", "zim": { "name": "mdwiki_en_all", "flavour": "maxi" }, "approxBytes": 2300000000, "license": "CC-BY-SA-4.0", "title": "MDWiki", "description": "Enciclopedia médica en inglés. Ya cubierta en español por Wikipedia médica y MedlinePlus." },
+
+    { "id": "ready-gov", "kind": "zim", "group": "preparacion", "lang": "es", "priority": 1, "default": true, "zim": { "name": "ready.gov_es_all", "flavour": "" }, "approxBytes": 2070000000, "license": "Public-Domain-US-Gov", "title": "Ready.gov", "description": "Preparación ante desastres: planes familiares, kits, clima extremo, incendios, apagones." },
+    { "id": "zimgit-post-disaster", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 1, "default": true, "zim": { "name": "zimgit-post-disaster_en", "flavour": "" }, "approxBytes": 640000000, "license": "Various", "title": "Post-Disaster Library", "description": "Recursos para después de un desastre: refugio, saneamiento, energía, comunicación." },
+    { "id": "zimgit-water", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 1, "default": true, "zim": { "name": "zimgit-water_en", "flavour": "" }, "approxBytes": 20000000, "license": "Various", "title": "Water Treatment Library", "description": "Captación y potabilización de agua." },
+    { "id": "zimgit-food", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 2, "default": true, "zim": { "name": "zimgit-food-preparation_en", "flavour": "" }, "approxBytes": 100000000, "license": "Various", "title": "Food for Preppers", "description": "Conservación y preparación de alimentos." },
+    { "id": "zimgit-knots", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 2, "default": true, "zim": { "name": "zimgit-knots_en", "flavour": "" }, "approxBytes": 30000000, "license": "Various", "title": "A Library of Knots", "description": "Nudos, amarres y suturas ilustrados." },
+    { "id": "scoutwiki", "kind": "zim", "group": "preparacion", "lang": "es", "priority": 2, "default": true, "zim": { "name": "scoutwiki.org_es_all", "flavour": "maxi" }, "approxBytes": 20000000, "license": "CC-BY-SA", "title": "WikiRoca (scouts)", "description": "Técnicas scout: orientación, campamento, nudos." },
+    { "id": "outdoors-qa", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 2, "default": true, "zim": { "name": "outdoors.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 140000000, "license": "CC-BY-SA-4.0", "title": "The Great Outdoors Q&A", "description": "Preguntas y respuestas sobre montaña, acampada y supervivencia." },
+    { "id": "armypubs", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 3, "default": true, "zim": { "name": "armypubs_en_all", "flavour": "" }, "approxBytes": 8230000000, "license": "Public-Domain-US-Gov", "title": "Manuales del Ejército de EE. UU.", "description": "Army Publishing Directorate: incluye manuales de supervivencia, primeros auxilios y orientación." },
+
+    { "id": "wikipedia", "kind": "zim", "group": "saber", "lang": "es", "priority": 1, "default": true, "zim": { "name": "wikipedia_es_all", "flavour": "nopic" }, "variants": [ { "flavour": "nopic", "approxBytes": 13300000000, "label": "Sin imágenes" }, { "flavour": "maxi", "approxBytes": 36520000000, "label": "Con imágenes" } ], "approxBytes": 13300000000, "license": "CC-BY-SA-4.0", "title": "Wikipedia en español", "description": "La enciclopedia completa." },
+    { "id": "wiktionary", "kind": "zim", "group": "saber", "lang": "es", "priority": 2, "default": true, "zim": { "name": "wiktionary_es_all", "flavour": "nopic" }, "approxBytes": 660000000, "license": "CC-BY-SA-4.0", "title": "Wikcionario", "description": "Diccionario: definiciones, etimología y traducciones." },
+    { "id": "wikivoyage", "kind": "zim", "group": "saber", "lang": "es", "priority": 2, "default": true, "zim": { "name": "wikivoyage_es_all", "flavour": "maxi" }, "approxBytes": 140000000, "license": "CC-BY-SA-4.0", "title": "Wikiviajes", "description": "Guía de viaje: destinos, transporte, alojamiento." },
+    { "id": "wikisource", "kind": "zim", "group": "saber", "lang": "es", "priority": 3, "default": true, "zim": { "name": "wikisource_es_all", "flavour": "nopic" }, "approxBytes": 400000000, "license": "CC-BY-SA-4.0", "title": "Wikisource", "description": "Textos de dominio público: leyes, documentos históricos, literatura." },
+
+    { "id": "ifixit", "kind": "zim", "group": "oficios", "lang": "es", "priority": 1, "default": true, "zim": { "name": "ifixit_es_all", "flavour": "" }, "approxBytes": 3680000000, "license": "CC-BY-NC-SA-3.0", "title": "iFixit", "description": "Guías de reparación paso a paso: electrónica, vehículos, electrodomésticos." },
+    { "id": "lowtech", "kind": "zim", "group": "oficios", "lang": "es", "priority": 2, "default": true, "zim": { "name": "solar.lowtechmagazine.com_mul_all", "flavour": "" }, "approxBytes": 700000000, "license": "CC-BY-NC-SA", "title": "Low-Tech Magazine", "description": "Energía y técnicas sencillas sin alta tecnología (artículos también en español)." },
+    { "id": "appropedia", "kind": "zim", "group": "oficios", "lang": "en", "priority": 2, "default": true, "zim": { "name": "appropedia_en_all", "flavour": "maxi" }, "approxBytes": 580000000, "license": "CC-BY-SA", "title": "Appropedia", "description": "Tecnología apropiada: agua, energía, construcción, agricultura." },
+    { "id": "energypedia", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "energypedia_en_all", "flavour": "nopic" }, "approxBytes": 720000000, "license": "CC-BY-SA", "title": "energypedia", "description": "Energía solar, biomasa y electrificación en lugares aislados." },
+    { "id": "diy-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "diy.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 2090000000, "license": "CC-BY-SA-4.0", "title": "Home Improvement Q&A", "description": "Fontanería, electricidad, carpintería y reparaciones de casa." },
+    { "id": "gardening-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "gardening.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 930000000, "license": "CC-BY-SA-4.0", "title": "Gardening Q&A", "description": "Huerto, plantas y plagas." },
+    { "id": "mechanics-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "mechanics.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 340000000, "license": "CC-BY-SA-4.0", "title": "Motor Vehicle Mechanics Q&A", "description": "Mecánica de coches y motos." },
+    { "id": "ham-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "ham.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 80000000, "license": "CC-BY-SA-4.0", "title": "Amateur Radio Q&A", "description": "Radioafición, antenas y comunicaciones." },
+    { "id": "cooking-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "cooking.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 240000000, "license": "CC-BY-SA-4.0", "title": "Seasoned Advice", "description": "Cocina y conservación de alimentos." },
+    { "id": "sustainability-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "sustainability.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 30000000, "license": "CC-BY-SA-4.0", "title": "Sustainable Living Q&A", "description": "Vida sostenible y autosuficiencia." },
+
+    { "id": "wikibooks", "kind": "zim", "group": "libros", "lang": "es", "priority": 2, "default": true, "zim": { "name": "wikibooks_es_all", "flavour": "maxi" }, "approxBytes": 280000000, "license": "CC-BY-SA-4.0", "title": "Wikilibros", "description": "Manuales y libros de texto libres." },
+    { "id": "gutenberg", "kind": "zim", "group": "libros", "lang": "es", "priority": 2, "default": true, "zim": { "name": "gutenberg_es_all", "flavour": "" }, "approxBytes": 1860000000, "license": "Public-Domain", "title": "Proyecto Gutenberg", "description": "Libros clásicos en español de dominio público." },
+    { "id": "wikiversity", "kind": "zim", "group": "libros", "lang": "es", "priority": 3, "default": true, "zim": { "name": "wikiversity_es_all", "flavour": "maxi" }, "approxBytes": 40000000, "license": "CC-BY-SA-4.0", "title": "Wikiversidad", "description": "Cursos y materiales de aprendizaje." },
+    { "id": "phet", "kind": "zim", "group": "libros", "lang": "es", "priority": 3, "default": true, "zim": { "name": "phet_es_all", "flavour": "" }, "approxBytes": 110000000, "license": "CC-BY-4.0", "title": "Simulaciones PhET", "description": "Simulaciones interactivas de física, química y matemáticas." },
+
+    { "id": "mapa-espana", "kind": "maps", "group": "mapas", "lang": "es", "priority": 1, "default": true, "maps": { "region": "espana", "bbox": [-9.5, 35.9, 4.4, 43.9], "maxzoom": 15 }, "approxBytes": 3400000000, "license": "ODbL-1.0", "title": "Mapa de España peninsular y Baleares", "description": "Calles, caminos y relieve hasta nivel de calle (zoom 15)." },
+    { "id": "mapa-canarias", "kind": "maps", "group": "mapas", "lang": "es", "priority": 1, "default": true, "maps": { "region": "canarias", "bbox": [-18.3, 27.5, -13.3, 29.5], "maxzoom": 15 }, "approxBytes": 63000000, "license": "ODbL-1.0", "title": "Mapa de Canarias", "description": "Calles y caminos hasta nivel de calle (zoom 15)." },
+    { "id": "mapa-mundo", "kind": "maps", "group": "mapas", "lang": "es", "priority": 2, "default": true, "maps": { "region": "mundo", "bbox": [-180, -85, 180, 85], "maxzoom": 6 }, "approxBytes": 120000000, "license": "ODbL-1.0", "title": "Mapa del mundo (general)", "description": "Países, ciudades y carreteras principales (zoom 6)." },
+    { "id": "rutas-espana", "kind": "routing", "group": "mapas", "lang": "es", "priority": 2, "default": true, "routing": { "region": "espana", "tiles": ["W10_N35", "W10_N40", "W5_N35", "W5_N40", "E0_N35", "E0_N40"] }, "approxBytes": 1100000000, "license": "ODbL-1.0", "title": "Rutas sin conexión: España", "description": "Cálculo de rutas a pie, en bici y en coche (BRouter)." },
+    { "id": "rutas-canarias", "kind": "routing", "group": "mapas", "lang": "es", "priority": 2, "default": true, "routing": { "region": "canarias", "tiles": ["W20_N25", "W15_N25"] }, "approxBytes": 40000000, "license": "ODbL-1.0", "title": "Rutas sin conexión: Canarias", "description": "Cálculo de rutas a pie, en bici y en coche (BRouter)." },
+
+    { "id": "asistente", "kind": "llm", "group": "asistente", "lang": "es", "priority": 2, "default": true, "llm": { "model": "qwen3-4b" }, "approxBytes": 2400000000, "license": "Apache-2.0", "title": "Asistente sin conexión (Qwen3 4B)", "description": "Responde preguntas citando los protocolos y la biblioteca. Funciona sin Internet." }
+  ],
+  "models": {
+    "qwen3-4b": { "file": "Qwen3-4B-Instruct-2507-Q4_0.gguf", "repo": "unsloth/Qwen3-4B-Instruct-2507-GGUF", "sha256": "e0ba675d86ab277c61701c6793659b2ae801d95e3be791464c321e6fbf613be2", "bytes": 2375773280, "license": "Apache-2.0" },
+    "gemma3-4b": { "file": "gemma-3-4b-it-Q4_K_M.gguf", "repo": "ggml-org/gemma-3-4b-it-GGUF", "sha256": "882e8d2db44dc554fb0ea5077cb7e4bc49e7342a1f0da57901c0802ea21a0863", "bytes": 2489757856, "license": "Gemma" },
+    "llama3.2-3b": { "file": "Llama-3.2-3B-Instruct-Q4_0.gguf", "repo": "bartowski/Llama-3.2-3B-Instruct-GGUF", "sha256": "4d491003bf6b470e4d04233824c5c939b76d6c81974ba17a3ff207343e1d8e85", "bytes": 1921909280, "license": "Llama-3.2" }
+  },
+  "components": {
+    "kiwix-tools": {
+      "version": "3.8.2",
+      "bins": ["kiwix-serve", "kiwix-manage"],
+      "assets": {
+        "win-x64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_win-x86_64-3.8.1.zip", "sha256": "fcd01ed2b93e9a68632c7863c83b9f66bf64406a66357be1df7b8b75596f3e45", "bytes": 18301924, "strip": "" },
+        "darwin-arm64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_macos-arm64-3.8.2.tar.gz", "sha256": "5c64d43176627e558a117146b02ea36b7da2b0cd3a332cbff075cde05d9585f9", "bytes": 10283222, "strip": "kiwix-tools_macos-arm64-3.8.2/" },
+        "darwin-x64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_macos-x86_64-3.8.2.tar.gz", "sha256": "ae341280e97ad5902e7a4282a24340eac7d7061c267661c0ef2a88a34547f247", "bytes": 10817537, "strip": "kiwix-tools_macos-x86_64-3.8.2/" },
+        "linux-x64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-x86_64-3.8.2.tar.gz", "sha256": "b0ae98dd344aa0469a15ab42feff6d5aafb79541a82fb4e2647c74b073123815", "bytes": 21661067, "strip": "kiwix-tools_linux-x86_64-3.8.2/" },
+        "linux-arm64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-aarch64-3.8.2.tar.gz", "sha256": "a9898fc5363437327350db669bbc03dcc7ecfd498dae727d7184bebe77019514", "bytes": 20507463, "strip": "kiwix-tools_linux-aarch64-3.8.2/" }
+      }
+    },
+    "llama": {
+      "version": "b12428",
+      "bins": ["llama-server"],
+      "assets": {
+        "win-x64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-win-cpu-x64.zip", "sha256": "4ebc7fb961cf707e3b61396806e62c9e4065e42990cfc31f238eb48264a465b2", "bytes": 25212756, "strip": "" },
+        "darwin-arm64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-macos-arm64.tar.gz", "sha256": "7d72477a2a375cc1d93e308b34e26fb9a608c2f93750517d2bafc59af578d3e2", "bytes": 17004150, "strip": "llama-b12428/" },
+        "darwin-x64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-macos-x64.tar.gz", "sha256": "27e4277bdbabcc9a4925cac77d99cd792abe0600c71bc33f265c43b8ea379d87", "bytes": 12760709, "strip": "llama-b12428/" },
+        "linux-x64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-ubuntu-x64.tar.gz", "sha256": "a9b243a3bc4ca172010e96c64062fc02afd1dc4f8b699716f813ae6845ada4c6", "bytes": 23457554, "strip": "llama-b12428/" },
+        "linux-arm64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-ubuntu-arm64.tar.gz", "sha256": "68fdee3e3086de8d1b6b3ef3bb791ff03ec4a6f2a8e7e199130fb70167d33d6d", "bytes": 19090408, "strip": "llama-b12428/" }
+      }
+    },
+    "pmtiles": {
+      "version": "1.31.2",
+      "bins": ["pmtiles"],
+      "assets": {
+        "win-x64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Windows_x86_64.zip", "sha256": "a658baa4d7e55020aef6ca17bd9ff9faa1582671266b36f58c52db0ac8e785a1", "bytes": 17842310, "strip": "" },
+        "darwin-arm64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles-1.31.2_Darwin_arm64.zip", "sha256": "40528f7f616fcbf91207cd48c8fc023d213f6d86c0cbf1f748732803d1880f3d", "bytes": 15963714, "strip": "" },
+        "darwin-x64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles-1.31.2_Darwin_x86_64.zip", "sha256": "1f0dc02eee6c58312dd6c509faee1b5c32f0596568af1bf51f1b034e7a88a65b", "bytes": 18093572, "strip": "" },
+        "linux-x64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Linux_x86_64.tar.gz", "sha256": "3ed7dbf4ec2e6dfe5e25b6f70d1ffc932729f93c86db353bf514dd71010a312f", "bytes": 17444324, "strip": "" },
+        "linux-arm64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Linux_arm64.tar.gz", "sha256": "f8bd47e7ea866863489cad588fbaf2f31f42e5821f7a03f009b3769f05801cb1", "bytes": 15779781, "strip": "" }
+      }
+    },
+    "jre": {
+      "version": "21.0.13+9",
+      "bins": ["bin/java"],
+      "assets": {
+        "win-x64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip", "sha256": "2332c0b4cff6bed722da3567c91d5e47568bcba863fa4945d0a8d6fc76158628", "bytes": 49106397, "strip": "jdk-21.0.13+9-jre/" },
+        "darwin-arm64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.13_9.tar.gz", "sha256": "225bab0a09491ef06835488cd942f5d2befa9a0410a2484f0c8bbcf7506ec09a", "bytes": 47935740, "strip": "jdk-21.0.13+9-jre/Contents/Home/" },
+        "darwin-x64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.13_9.tar.gz", "sha256": "c909674b1c10c261b9a3fb7e9c0efebd303e33f88a4fe84be7135b5e2d711f89", "bytes": 41902098, "strip": "jdk-21.0.13+9-jre/Contents/Home/" },
+        "linux-x64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_linux_hotspot_21.0.13_9.tar.gz", "sha256": "a535a1df9c6284d9618872984e026ae0352d1f7e9e0605425c0e6114f47351dd", "bytes": 52181297, "strip": "jdk-21.0.13+9-jre/" },
+        "linux-arm64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.13_9.tar.gz", "sha256": "b1734db7ade49c3f6acc6ae06233b8c2dd90e3e2f00f67000ae1c972aaa64d8c", "bytes": 51266660, "strip": "jdk-21.0.13+9-jre/" }
+      }
+    },
+    "brouter": {
+      "version": "1.7.10",
+      "bins": [],
+      "assets": {
+        "any": { "url": "https://github.com/abrensch/brouter/releases/download/v1.7.10/brouter-1.7.10.zip", "sha256": "023fec3ba997758e8cd7ab9e1bae52e962af3f00b57683e3de86b84ffad01532", "bytes": 6724983, "strip": "brouter-1.7.10/" }
+      }
+    }
+  },
+  "sources": {
+    "kiwixCatalog": "https://library.kiwix.org/catalog/v2/entries",
+    "kiwixMirrors": ["https://ftp.fau.de/kiwix", "https://mirror.accum.se/mirror/kiwix.org", "https://mirrors.dotsrc.org/kiwix", "https://download.kiwix.org"],
+    "kiwixMaster": "https://download.kiwix.org",
+    "protomapsBuilds": "https://build-metadata.protomaps.dev/builds.json",
+    "protomapsBase": "https://build.protomaps.com",
+    "brouterSegments": "https://brouter.de/brouter/segments4",
+    "huggingface": "https://huggingface.co"
+  }
+}

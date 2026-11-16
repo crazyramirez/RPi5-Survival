@@ -404,6 +404,16 @@ export interface VaultStatus {
   retryAfterSeconds: number
   failedAttempts: number
   cryptsetup: boolean
+  /** Tiene clave de recuperación (segundo keyslot). null = sin bóveda o sin medida. */
+  recoveryKey: boolean | null
+  /** Bytes de bóvedas descartadas que siguen en disco (cifradas) hasta borrarlas a mano. */
+  discardedBytes: number
+}
+
+/** Respuesta de /setup y /recovery-key: la clave se muestra UNA vez y no se guarda en ningún sitio. */
+export interface VaultRecoveryKeyResult extends VaultStatus {
+  /** Clave en claro, formato XXXX-XXXX-… (8 grupos de 4, base32 de Crockford). */
+  newRecoveryKey: string
 }
 
 export interface VaultFile {
@@ -469,6 +479,7 @@ export type AdminJob =
   | 'maps-delete'
   | 'docs-import'
   | 'content-fetch'
+  | 'content'
   | 'content-delete'
   | 'backup'
   | 'update'
@@ -481,6 +492,28 @@ export type AdminJob =
   | 'ap'
   | 'routing'
   | 'mesh'
+  | 'games'
+
+/** Juegos offline: copia local de Viseni Games (ADR 0012, scripts/games-sync.py). */
+export interface GamesStatus {
+  /** Hay copia instalada y el servidor local de juegos responde. */
+  available: boolean
+  installed: boolean
+  reason: string | null
+  /** URL del portal servido en loopback (otro origen que la web). */
+  url: string
+  installedAt: string | null
+  /** Fecha del offline-manifest.json de la web cuando se descargó. */
+  manifestGeneratedAt: string | null
+  files: number
+  bytes: number
+  games: string[]
+  /** Juegos con algún archivo que no se pudo verificar (pueden fallar). */
+  incompleteGames: string[]
+  failedFiles: number
+  /** Recursos externos (CDN, fuentes) que el sitio declara y que no funcionarán sin Internet. */
+  external: { file: string; url: string }[]
+}
 
 /** Rutas sin conexión (BRouter, ADR 0010). */
 export type RouteMode = 'foot' | 'bike' | 'car'
@@ -677,4 +710,73 @@ export interface MeshPortScan {
   ports: { path: string; device: string }[]
   configured: string | null
   installed: boolean
+}
+
+/** Versión portable (ADR 0014): /api/portable/status. */
+export interface PortableStatus {
+  /** Carpeta desde la que se ejecuta (USB, disco o instalada). */
+  root: string
+  /** Carpeta de datos del usuario (mapas, documentos, ZIM…). */
+  data: string
+  platform: string
+  arch: string
+  freeBytes: number | null
+  /** Plan de «Instalar en este equipo»; null si el instalador no está disponible. */
+  install: {
+    dest: string
+    /** Ya se ejecuta desde la carpeta instalada. */
+    installedHere: boolean
+    /** Hay una instalación previa: se actualiza conservando sus datos. */
+    update: boolean
+    bytes: number
+    copiesData: boolean
+    supported: boolean
+  } | null
+  installJob: { state: 'idle' | 'running' | 'done' | 'failed'; message: string | null; dest: string | null; shortcuts: string[] }
+  /** «Compartir en la red local»: vista pública de solo lectura en la IP privada del equipo. */
+  share: { on: boolean; url: string | null; error: string | null }
+}
+
+/** Catálogo de descargas (ADR 0015): un elemento tal como lo ve la interfaz. */
+export interface ContentCatalogItem {
+  id: string
+  kind: 'zim' | 'maps' | 'routing' | 'llm'
+  group: string
+  /** es | en | mul. Español por defecto; inglés solo si no hay equivalente en español. */
+  lang: string
+  /** 1 imprescindible, 2 recomendado, 3 extra (se desmarca primero si falta espacio). */
+  priority: 1 | 2 | 3
+  default: boolean
+  approxBytes: number
+  license: string
+  title: string
+  description: string
+  /** Id del contenido en español que ya cubre este (no se marca por defecto). */
+  equivalentOf: string | null
+  variants: { flavour: string; approxBytes: number; label: string }[] | null
+}
+
+export interface ContentItemStatus {
+  id: string
+  state: 'installed' | 'missing' | 'downloading' | 'verifying' | 'failed'
+  file: string | null
+  bytes: number | null
+  version: string | null
+  done: number | null
+  total: number | null
+  error: string | null
+  /** Solo asistente: modelo activo. */
+  active?: boolean
+}
+
+export interface ContentOverview {
+  platform: string
+  portable: boolean
+  catalogUpdated: string
+  groups: { id: string; title: string }[]
+  catalog: ContentCatalogItem[]
+  items: ContentItemStatus[]
+  freeBytes: number | null
+  /** Asistente de primera puesta en marcha. */
+  setup: { state: 'pending' | 'completed' | 'skipped'; at: string | null }
 }

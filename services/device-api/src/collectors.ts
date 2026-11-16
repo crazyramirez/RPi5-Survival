@@ -35,10 +35,13 @@ import {
   parseKeyValue,
   parseMeminfo,
   parseNmcliTerse,
+  parsePmsetBatt,
   parsePmicAdc,
   parseSdHealth,
   parseSystemctlShow,
   parseThrottled,
+  parseW32tmLeap,
+  parseWinPowerStatus,
   timeSourceFrom,
   upsFrom,
 } from './parsers.ts'
@@ -140,7 +143,52 @@ const UPS_STATUS_PATH = '/run/survival-os/ups.json'
  * (/sys/class/power_supply/<x>/type == Battery con 'capacity'); si no, la UPS X120x
  * leída por survival-ups. Nunca se estima.
  */
+/**
+ * Equipo anfitrión de la versión portable (ADR 0016): batería y cargador del portátil en Windows y macOS.
+ * Una sola consulta cada 30 s (PowerShell tarda ~0,5 s).
+ */
+let hostPowerCache: { at: number; battery: Probe<BatteryInfo>; mains: Probe<MainsInfo> } | null = null
+async function hostPower(): Promise<{ battery: Probe<BatteryInfo>; mains: Probe<MainsInfo> }> {
+  if (hostPowerCache && Date.now() - hostPowerCache.at < 30_000) return hostPowerCache
+  let battery: Probe<BatteryInfo> = unavailable('Sin dato de batería del sistema')
+  let mains: Probe<MainsInfo> = unavailable('Sin dato de alimentación del sistema')
+  if (process.platform === 'win32') {
+    const res = await run(
+      'powershell.exe',
+      ['-NoProfile', '-NonInteractive', '-Command', 'Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SystemInformation]::PowerStatus | Select-Object PowerLineStatus,BatteryChargeStatus,BatteryLifePercent | ConvertTo-Json -Compress'],
+      8000,
+    )
+    if (res.ok) {
+      const p = parseWinPowerStatus(res.stdout.trim())
+      battery = p.noBattery ? unavailable('Equipo sin batería') : p.percent !== null ? ok({ percent: p.percent, voltageV: null }) : battery
+      mains = p.present !== null ? ok({ present: p.present }) : mains
+    }
+  } else if (process.platform === 'darwin') {
+    const res = await run('pmset', ['-g', 'batt'], 5000)
+    if (res.ok) {
+      const p = parsePmsetBatt(res.stdout)
+      battery = p.percent !== null ? ok({ percent: p.percent, voltageV: null }) : unavailable('Equipo sin batería')
+      mains = p.present !== null ? ok({ present: p.present }) : mains
+    }
+  }
+  hostPowerCache = { at: Date.now(), battery, mains }
+  return hostPowerCache
+}
+
+/** Linux sin UPS (portátil con la versión portable): adaptador de corriente del kernel. */
+async function linuxMainsAdapter(): Promise<Probe<MainsInfo> | null> {
+  const base = '/sys/class/power_supply'
+  for (const dev of await listDir(base)) {
+    const type = (await readText(`${base}/${dev}/type`))?.trim()
+    if (type !== 'Mains') continue
+    const online = (await readText(`${base}/${dev}/online`))?.trim()
+    if (online === '1' || online === '0') return ok({ present: online === '1' })
+  }
+  return null
+}
+
 export async function collectBattery(): Promise<Probe<BatteryInfo>> {
+  if (process.platform === 'win32' || process.platform === 'darwin') return (await hostPower()).battery
   if (!isLinux()) return notLinux()
   const base = '/sys/class/power_supply'
   for (const dev of await listDir(base)) {
@@ -157,8 +205,11 @@ export async function collectBattery(): Promise<Probe<BatteryInfo>> {
 
 /** Red eléctrica en la entrada de la UPS X120x (survival-ups). Sin UPS → 'unavailable', nunca se supone. */
 export async function collectMains(): Promise<Probe<MainsInfo>> {
+  if (process.platform === 'win32' || process.platform === 'darwin') return (await hostPower()).mains
   if (!isLinux()) return notLinux()
-  return upsFrom(await readText(UPS_STATUS_PATH), Date.now()).mains
+  const ups = upsFrom(await readText(UPS_STATUS_PATH), Date.now()).mains
+  if (ups.state === 'ok') return ups
+  return (await linuxMainsAdapter()) ?? ups
 }
 
 export async function collectRtc(pmic: Record<string, number> | null): Promise<Probe<RtcInfo>> {
@@ -174,6 +225,16 @@ export async function collectRtc(pmic: Record<string, number> | null): Promise<P
 }
 
 export async function collectTime(rtc: Probe<RtcInfo>): Promise<Probe<TimeInfo>> {
+  if (process.platform === 'win32') {
+    // Windows mantiene la hora con su servicio NTP (w32time): verificada solo si informa sincronización.
+    const res = await run('w32tm', ['/query', '/status'], 5000)
+    const ntp = res.ok ? parseW32tmLeap(res.stdout) : null
+    return ok({ ...timeSourceFrom(ntp, false, null, Date.now()), ntpSynchronized: ntp, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null })
+  }
+  if (process.platform === 'darwin') {
+    // macOS no expone el estado de sincronización sin administrador: no se afirma (fuente «sin verificar»).
+    return ok({ ...timeSourceFrom(null, false, null, Date.now()), ntpSynchronized: null, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null })
+  }
   if (!isLinux()) return notLinux()
   const res = await run('timedatectl', ['show', '-p', 'NTPSynchronized', '-p', 'Timezone'])
   const kv = res.ok ? parseKeyValue(res.stdout) : {}

@@ -1,6 +1,8 @@
 import { execFile } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import type { AdminJob, AdminJobStatus } from '@survival-os/shared-types'
+import { isPortable } from './portable'
+import { portableJobState, startPortableJob, stopPortableJob } from './portable-jobs'
 
 export const ADMIN_DIR = process.env.SURVIVAL_ADMIN_DIR ?? '/run/survival-os/admin'
 
@@ -40,6 +42,14 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
   'content-fetch': (b) => {
     if (!['basico', 'recomendado', 'completo'].includes(String(b.preset))) bad('Paquete no válido')
     return { preset: b.preset }
+  },
+  content: (b) => {
+    if (b.action !== 'install' && b.action !== 'remove') bad('Acción no válida')
+    const items = b.items
+    if (!Array.isArray(items) || items.length === 0 || items.length > 100 || items.some((i) => typeof i !== 'string' || !/^[a-z0-9-]{1,40}(:[a-z]{0,10})?$/.test(i))) {
+      bad('Selección no válida')
+    }
+    return { action: b.action, items }
   },
   'content-delete': (b) => {
     if (typeof b.file !== 'string' || !/^[a-z0-9_]+_\d{4}-\d{2}\.zim$/.test(b.file)) bad('ZIM no válido')
@@ -86,11 +96,18 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
     if (!['on', 'off', 'status', 'password'].includes(String(b.action))) bad('Acción no válida')
     return { action: b.action }
   },
+  /** Juegos offline (ADR 0012): descargar/actualizar la copia o quitarla. La URL es fija en el equipo. */
+  games: (b) => {
+    if (b.action !== 'sync' && b.action !== 'remove') bad('Acción no válida')
+    return { action: b.action }
+  },
   /** Pasarela Meshtastic (nodo LoRa por USB). */
   mesh: (b) => {
     if (b.action === 'scan' || b.action === 'remove') return { action: b.action }
     if (b.action !== 'install' && b.action !== 'port') bad('Acción no válida')
-    if (typeof b.port !== 'string' || !/^\/dev\/serial\/by-id\/[A-Za-z0-9_.:+-]{1,200}$/.test(b.port)) bad('Puerto no válido')
+    // Pi: /dev/serial/by-id. Portable (serial-hub, ADR 0016): también COMn (Windows) y /dev/cu.* o tty (macOS/Linux).
+    const portRe = isPortable() ? /^(COM\d{1,3}|\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100}))$/ : /^\/dev\/serial\/by-id\/[A-Za-z0-9_.:+-]{1,200}$/
+    if (typeof b.port !== 'string' || !portRe.test(b.port)) bad('Puerto no válido')
     return { action: b.action, port: b.port }
   },
 }
@@ -110,6 +127,7 @@ function systemctl(args: string[]): Promise<string> {
 const unitOf = (job: AdminJob): string => `survival-admin@${job}.service`
 
 export async function startJob(job: AdminJob, params: Record<string, unknown>): Promise<void> {
+  if (isPortable()) return startPortableJob(job, params, ADMIN_DIR)
   if (process.platform !== 'linux') throw createError({ statusCode: 501, statusMessage: 'Solo disponible en el equipo' })
   const st = await jobStatus(job)
   if (st.state === 'active' || st.state === 'activating') throw createError({ statusCode: 409, statusMessage: 'La tarea ya está en curso' })
@@ -127,6 +145,7 @@ export async function startJob(job: AdminJob, params: Record<string, unknown>): 
 }
 
 export async function stopJob(job: AdminJob): Promise<void> {
+  if (isPortable()) return stopPortableJob(job)
   await systemctl(['stop', '--no-block', unitOf(job)])
 }
 
@@ -141,7 +160,8 @@ function parseSystemdTime(v: string | undefined): string | null {
 
 export async function jobStatus(job: AdminJob): Promise<AdminJobStatus> {
   let kv: Record<string, string> = {}
-  try {
+  const portable = isPortable() ? portableJobState(job) : null
+  if (!portable) try {
     const out = await systemctl(['show', '-p', 'ActiveState,Result,ExecMainStartTimestamp,ExecMainExitTimestamp', unitOf(job)])
     kv = Object.fromEntries(
       out
@@ -170,6 +190,7 @@ export async function jobStatus(job: AdminJob): Promise<AdminJobStatus> {
     }
   }
   const known = ['inactive', 'activating', 'active', 'deactivating', 'failed']
+  if (portable) return { job, ...portable, log, data }
   return {
     job,
     state: (known.includes(kv.ActiveState ?? '') ? kv.ActiveState : 'unknown') as AdminJobStatus['state'],

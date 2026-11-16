@@ -40,7 +40,7 @@ export function moduleSummaries(status: DeviceStatus | null, extras: SummaryExtr
   let system: ModuleSummary = { key: 'summary.system.ok', tone: 'ok' }
   const throttle = status.power.state === 'ok' ? status.power.value.throttle : null
   const temp = status.cpu.state === 'ok' ? status.cpu.value.temperatureC : null
-  if (status.power.state !== 'ok' || !throttle) system = { key: 'summary.system.warn', tone: 'muted' }
+  if (status.power.state !== 'ok' || !throttle) system = { key: 'summary.system.nodata', tone: 'muted' }
   if (
     throttle?.underVoltageNow ||
     throttle?.underVoltageOccurred ||

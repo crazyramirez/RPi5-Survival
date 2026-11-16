@@ -67,7 +67,8 @@ describe('comportamiento HTTP', () => {
   it('portal cautivo: otro host → 302 a la portada', async () => {
     const r = await call('/generate_204', { host: 'connectivitycheck.gstatic.com' })
     expect(r.status).toBe(302)
-    expect(r.headers.location).toBe('http://127.0.0.1/')
+    // Con puerto distinto de 80 la redirección lo incluye (portable, «Compartir en la red local»).
+    expect(r.headers.location).toBe(`http://127.0.0.1:${GW_PORT}/`)
   })
   it('página privada → 302 a la portada; API privada → 403', async () => {
     expect((await call('/boveda', { accept: 'text/html' })).status).toBe(302)

@@ -27,7 +27,7 @@ MEDIA = "/media"
 # Tareas que no deben solaparse comparten grupo de bloqueo; grupos distintos pueden ir en paralelo
 # (p. ej. instalar el asistente mientras se descarga la Wikipedia).
 LOCK_GROUPS = {
-    "content-fetch": "content", "content-delete": "content",
+    "content-fetch": "content", "content-delete": "content", "content": "content",
     "maps-import": "maps", "maps-delete": "maps",
     "docs-import": "docs",
     "backup": "system", "update": "system", "gps-uart": "system",
@@ -35,6 +35,7 @@ LOCK_GROUPS = {
     "ap": "network", "wifi": "network",
     "routing": "routing",
     "mesh": "mesh",
+    "games": "games",
 }
 SERIAL_BYID_RE = re.compile(r"^/dev/serial/by-id/[A-Za-z0-9_.:+-]{1,200}$")
 LLM_MODELS = {"qwen3-4b", "gemma3-4b", "llama3.2-3b"}
@@ -44,6 +45,8 @@ MEDIA_RE = re.compile(r"^[\w.-]{1,64}/[^/\x00]{1,128}$")
 ZIM_RE = re.compile(r"^[a-z0-9_]+_\d{4}-\d{2}\.zim$")
 MAP_RE = re.compile(r"^[A-Za-z0-9_-]{1,80}\.pmtiles$")
 RELEASE_RE = re.compile(r"^survival-os-\d+\.\d+\.\d+\.tar\.gz$")
+CONTENT_ID_RE = re.compile(r"^[a-z0-9-]{1,40}(:[a-z]{0,10})?$")
+NODE = "/opt/survival-os/runtime/node/bin/node"
 
 
 class JobError(Exception):
@@ -187,6 +190,25 @@ def job_content_fetch(p):
     if preset not in PRESETS:
         raise JobError("paquete de contenidos no válido")
     run([f"{SCRIPTS}/content-fetch.sh", preset])
+
+
+def job_content(p):
+    """Catálogo de descargas (ADR 0015): content/catalog.json + scripts/content-engine.mjs."""
+    action = p.get("action")
+    items = p.get("items")
+    if action not in ("install", "remove"):
+        raise JobError("acción no válida")
+    if not isinstance(items, list) or not 1 <= len(items) <= 100 or any(not isinstance(i, str) or not CONTENT_ID_RE.match(i) for i in items):
+        raise JobError("selección no válida")
+    with open(f"{APP}/content/catalog.json", encoding="utf-8") as f:
+        known = {i["id"] for i in json.load(f)["items"]}
+    unknown = [i for i in items if i.split(":")[0] not in known]
+    if unknown:
+        raise JobError(f"contenidos desconocidos: {', '.join(unknown)}")
+    rc = run([NODE, f"{SCRIPTS}/content-engine.mjs", action, *items, "--profile", "pi"], check=False)
+    run(["systemctl", "try-restart", "survival-kiwix.service"], check=False)
+    if rc != 0:
+        raise JobError("algunos contenidos no se pudieron completar (ver registro)")
 
 
 def job_content_delete(p):
@@ -567,12 +589,22 @@ def job_routing(p):
     run(["bash", f"{SCRIPTS}/routing-install.sh", "install"] + sorted(set(regions)))
 
 
+# ------------------------------------------------------------------ juegos offline (ADR 0012)
+def job_games(p):
+    """Descargar o actualizar la copia de Viseni Games (URL fija en games-sync.py), o quitarla."""
+    action = p.get("action")
+    if action not in ("sync", "remove"):
+        raise JobError("acción no válida")
+    run(["/usr/bin/python3", "-I", f"{SCRIPTS}/games-sync.py", action])
+
+
 JOBS = {
     "usb-scan": job_usb_scan,
     "maps-import": job_maps_import,
     "maps-delete": job_maps_delete,
     "docs-import": job_docs_import,
     "content-fetch": job_content_fetch,
+    "content": job_content,
     "content-delete": job_content_delete,
     "backup": job_backup,
     "update": job_update,
@@ -585,6 +617,7 @@ JOBS = {
     "ap": job_ap,
     "routing": job_routing,
     "mesh": job_mesh,
+    "games": job_games,
 }
 
 

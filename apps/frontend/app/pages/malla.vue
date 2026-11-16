@@ -19,9 +19,24 @@ async function get<T>(path: string): Promise<T | null> {
   return await ($fetch as (u: string, o: Record<string, unknown>) => Promise<T>)(`/api/mesh/${path}`, { timeout: 8000, retry: 0 }).catch(() => null)
 }
 
+// Un fallo aislado (p. ej. el servicio se reinicia ~2 s al actualizar) NO debe mostrar «no disponible»
+// ni la configuración como si el nodo no estuviera configurado: se conserva el último estado bueno y se
+// reintenta en 2 s; solo tras 3 fallos seguidos se informa de que el servicio no responde.
+let failures = 0
 async function loadStatus(): Promise<void> {
   const s = await get<MeshStatus>('status')
-  reachable.value = s !== null
+  if (s === null) {
+    failures++
+    if (failures < 3) {
+      setTimeout(() => void loadStatus(), 2000)
+      return
+    }
+    reachable.value = false
+    status.value = null
+    return
+  }
+  failures = 0
+  reachable.value = true
   status.value = s
 }
 async function loadAll(): Promise<void> {

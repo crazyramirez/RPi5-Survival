@@ -262,3 +262,44 @@ export function timeSourceFrom(
     lastStep,
   }
 }
+
+// ------------------------------------------------------------------ equipo anfitrión (versión portable, ADR 0016)
+
+/**
+ * Windows: [System.Windows.Forms.SystemInformation]::PowerStatus en JSON.
+ * PowerLineStatus 0 = sin red, 1 = con red, 255 = desconocido. BatteryChargeStatus 128 = sin batería,
+ * 255 = desconocido. BatteryLifePercent 0–1.
+ */
+export function parseWinPowerStatus(json: string): { percent: number | null; present: boolean | null; noBattery: boolean } {
+  try {
+    const p = JSON.parse(json) as { PowerLineStatus?: number; BatteryChargeStatus?: number; BatteryLifePercent?: number }
+    const noBattery = p.BatteryChargeStatus === 128
+    const pct = typeof p.BatteryLifePercent === 'number' && p.BatteryLifePercent >= 0 && p.BatteryLifePercent <= 1 && !noBattery && p.BatteryChargeStatus !== 255
+    return {
+      percent: pct ? Math.round((p.BatteryLifePercent as number) * 100) : null,
+      present: p.PowerLineStatus === 1 ? true : p.PowerLineStatus === 0 ? false : null,
+      noBattery,
+    }
+  } catch {
+    return { percent: null, present: null, noBattery: false }
+  }
+}
+
+/** macOS: `pmset -g batt` → "Now drawing from 'AC Power'" / " -InternalBattery-0 (id=…)	87%; charging;…" */
+export function parsePmsetBatt(out: string): { percent: number | null; present: boolean | null } {
+  const src = /drawing from '([^']+)'/.exec(out)?.[1] ?? null
+  const pct = /InternalBattery[^\n]*?\t(\d{1,3})%/.exec(out)?.[1]
+  const n = pct !== undefined ? Number(pct) : Number.NaN
+  return { percent: Number.isFinite(n) && n <= 100 ? n : null, present: src === 'AC Power' ? true : src === 'Battery Power' ? false : null }
+}
+
+/**
+ * Windows: `w32tm /query /status` (salida traducida). La primera línea es el indicador de salto:
+ * 0–2 = sincronizado por NTP, 3 = sin sincronizar. Independiente del idioma.
+ */
+export function parseW32tmLeap(out: string): boolean | null {
+  const first = out.split(/\r?\n/).find((l) => l.trim()) ?? ''
+  const m = /:\s*(\d)\s*\(/.exec(first)
+  if (!m) return null
+  return Number(m[1]) < 3
+}

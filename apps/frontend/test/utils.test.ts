@@ -5,7 +5,7 @@ import { parseDecimalDegrees, parseMapQuery, toDms } from '../app/utils/coords'
 import { formatBytes, formatDuration } from '../app/utils/format'
 import { interpolate, translate } from '../app/utils/i18n'
 import { moduleSummaries } from '../app/utils/summaries'
-import { allowPrivateRequest, isLoopbackAddress, isPrivatePath } from '../server/utils/net'
+import { allowPrivateRequest, isLoopbackAddress, isPrivatePath, isTrustedActionRequest } from '../server/utils/net'
 
 const at = '2026-11-08T17:00:00.000Z'
 
@@ -207,6 +207,18 @@ describe('red y rutas privadas', () => {
       expect(isPrivatePath(p), p).toBe(false)
     }
   })
+  it('acciones: solo con la cabecera y desde el mismo origen (host y puerto)', () => {
+    const h = { 'x-survival-action': '1', host: '127.0.0.1:3000' }
+    expect(isTrustedActionRequest(h)).toBe(true)
+    expect(isTrustedActionRequest({ ...h, origin: 'http://127.0.0.1:3000' })).toBe(true)
+    expect(isTrustedActionRequest({ ...h, host: 'localhost:3000', origin: 'http://localhost:3000' })).toBe(true)
+    expect(isTrustedActionRequest({ ...h, origin: 'http://127.0.0.1:8790' })).toBe(false)
+    expect(isTrustedActionRequest({ ...h, origin: 'http://localhost:3000' })).toBe(false)
+    expect(isTrustedActionRequest({ ...h, origin: 'http://evil.example' })).toBe(false)
+    expect(isTrustedActionRequest({ ...h, origin: 'null' })).toBe(false)
+    expect(isTrustedActionRequest({ host: '127.0.0.1:3000', origin: 'http://127.0.0.1:3000' })).toBe(false)
+  })
+
   it('deniega remoto y peticiones reenviadas por proxy', () => {
     expect(allowPrivateRequest('127.0.0.1', {})).toBe(true)
     expect(allowPrivateRequest('192.168.68.20', {})).toBe(false)

@@ -7,6 +7,7 @@ import {
   FileType,
   FileUp,
   KeyRound,
+  LifeBuoy,
   Lock,
   LockOpen,
   Pencil,
@@ -18,11 +19,13 @@ import {
   Vault,
   X,
 } from '@lucide/vue'
-import type { RemovableFile, VaultFile, VaultStatus } from '@survival-os/shared-types'
+import type { RemovableFile, VaultFile, VaultRecoveryKeyResult, VaultStatus } from '@survival-os/shared-types'
 import type { Tone } from '~/utils/alerts'
 import { formatBytes, formatDuration } from '~/utils/format'
+import { groupRecoveryInput, passphraseIsWeak } from '~/utils/passphrase'
 
 const t = useT()
+const portable = usePortable()
 const isLocal = ref(true)
 const st = ref<VaultStatus | null>(null)
 const down = ref(false)
@@ -81,6 +84,7 @@ async function refresh(): Promise<void> {
 }
 
 function clearSensitive(): void {
+  rotating.value = false
   files.value = []
   removable.value = null
   if (preview.value) URL.revokeObjectURL(preview.value.url)
@@ -100,11 +104,48 @@ async function act(fn: () => Promise<void>): Promise<void> {
   }
 }
 
+// ---- Clave de recuperación (ADR 0013): se muestra una vez y se borra de memoria al cerrar.
+const shownKey = ref<string | null>(null)
+const keyWritten = ref(false)
+const rotating = ref(false)
+const recovering = ref(false)
+const recoverKey = ref('')
+const recoverOk = ref(false)
+const pendingDiscard = ref(false)
+const weak = computed(() => pass.value.length > 0 && passphraseIsWeak(pass.value))
+
+function showKey(r: VaultRecoveryKeyResult): void {
+  keyWritten.value = false
+  shownKey.value = r.newRecoveryKey
+}
+function closeKey(): void {
+  shownKey.value = null
+  keyWritten.value = false
+}
+const mismatch = (): Error => Object.assign(new Error(t('vault.mismatch')), { statusMessage: t('vault.mismatch') })
+
+function startRecover(): void {
+  recovering.value = true
+  recoverOk.value = false
+  pass.value = ''
+}
+function startRotate(): void {
+  rotating.value = true
+  pass.value = ''
+}
+function cancelRotate(): void {
+  rotating.value = false
+  pass.value = ''
+}
+function onRecoverInput(e: Event): void {
+  recoverKey.value = groupRecoveryInput((e.target as HTMLInputElement).value)
+}
+
 function setup(): Promise<void> {
   return act(async () => {
-    if (pass.value !== pass2.value) throw Object.assign(new Error(t('vault.mismatch')), { statusMessage: t('vault.mismatch') })
+    if (pass.value !== pass2.value) throw mismatch()
     try {
-      await vaultFetch('setup', { method: 'POST', body: { passphrase: pass.value, sizeMiB: sizeMiB.value } })
+      showKey(await vaultFetch<VaultRecoveryKeyResult>('setup', { method: 'POST', body: { passphrase: pass.value, sizeMiB: sizeMiB.value } }))
     } finally {
       pass.value = ''
       pass2.value = ''
@@ -119,6 +160,40 @@ function unlock(): Promise<void> {
     } finally {
       pass.value = ''
     }
+  })
+}
+
+function rotateKey(): Promise<void> {
+  return act(async () => {
+    try {
+      showKey(await vaultFetch<VaultRecoveryKeyResult>('recovery-key', { method: 'POST', body: { passphrase: pass.value } }))
+      rotating.value = false
+    } finally {
+      pass.value = ''
+    }
+  })
+}
+
+function recover(): Promise<void> {
+  return act(async () => {
+    if (pass.value !== pass2.value) throw mismatch()
+    try {
+      await vaultFetch('recover', { method: 'POST', body: { recoveryKey: recoverKey.value, newPassphrase: pass.value } })
+      recovering.value = false
+      recoverOk.value = true
+    } finally {
+      pass.value = ''
+      pass2.value = ''
+      recoverKey.value = ''
+    }
+  })
+}
+
+function discard(): Promise<void> {
+  pendingDiscard.value = false
+  return act(async () => {
+    await vaultFetch('discard', { method: 'POST', body: { confirm: 'DESCARTAR' } })
+    recovering.value = false
   })
 }
 
@@ -252,6 +327,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (timer) clearInterval(timer)
   clearSensitive()
+  closeKey()
 })
 </script>
 
@@ -278,7 +354,7 @@ onBeforeUnmount(() => {
         <div class="hero-text">
           <h2>{{ hero.title }}</h2>
           <p>{{ hero.sub }}</p>
-          <p class="hero-id mono">{{ t('ui.vault.cipher') }}</p>
+          <p class="hero-id mono">{{ portable ? t('ui.vault.cipherPortable') : t('ui.vault.cipher') }}</p>
         </div>
         <dl class="hero-stats">
           <div v-for="h in heroStats" :key="h.key">
@@ -298,6 +374,7 @@ onBeforeUnmount(() => {
           <p>{{ t('vault.design') }}</p>
           <input v-model="pass" type="password" class="ui-field pass" autocomplete="new-password" :placeholder="t('vault.pass')" />
           <input v-model="pass2" type="password" class="ui-field pass" autocomplete="new-password" :placeholder="t('vault.pass2')" />
+          <span v-if="weak" class="weak-line"><TriangleAlert :size="16" aria-hidden="true" />{{ t('vault.weak') }}</span>
           <span class="cap">{{ t('ui.vault.size') }}</span>
           <div class="seg" role="group" :aria-label="t('ui.vault.size')">
             <button v-for="s in [512, 1024, 4096]" :key="s" type="button" class="seg-btn mono" :aria-pressed="sizeMiB === s" @click="sizeMiB = s">
@@ -309,6 +386,7 @@ onBeforeUnmount(() => {
             {{ busy ? t('vault.creating') : t('vault.create') }}
           </button>
           <span v-if="!st.cryptsetup" class="err-line"><TriangleAlert :size="16" aria-hidden="true" />{{ t('vault.noCryptsetup') }}</span>
+          <span v-if="st.discardedBytes > 0" class="weak-line">{{ t('vault.discarded', { size: formatBytes(st.discardedBytes) }) }}</span>
         </AppCard>
 
         <AppCard :title="t('ui.vault.security')" :icon="ShieldAlert" tone="warn">
@@ -318,8 +396,45 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- Bloqueada -->
+      <div v-else-if="st && !st.unlocked && recovering" class="bento">
+        <AppCard :title="t('vault.recover.title')" :icon="LifeBuoy" tone="warn">
+          <template v-if="st.recoveryKey !== false">
+            <p>{{ t('vault.recover.intro') }}</p>
+            <form class="stack" @submit.prevent="recover">
+              <input
+                :value="recoverKey"
+                class="ui-field pass mono selectable"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                :placeholder="t('vault.recover.key')"
+                :aria-label="t('vault.recover.key')"
+                @input="onRecoverInput"
+              />
+              <input v-model="pass" type="password" class="ui-field pass" autocomplete="new-password" :placeholder="t('vault.recover.newPass')" />
+              <input v-model="pass2" type="password" class="ui-field pass" autocomplete="new-password" :placeholder="t('vault.pass2')" />
+              <span v-if="weak" class="weak-line"><TriangleAlert :size="16" aria-hidden="true" />{{ t('vault.weak') }}</span>
+              <button type="submit" class="btn btn-primary big" :disabled="busy || recoverKey.length < 39 || !pass || st.retryAfterSeconds > 0">
+                <KeyRound :size="20" aria-hidden="true" />
+                {{ busy ? t('vault.opening') : st.retryAfterSeconds > 0 ? t('vault.wait', { s: st.retryAfterSeconds }) : t('vault.recover.submit') }}
+              </button>
+            </form>
+          </template>
+          <p v-else class="weak-line">{{ t('vault.recover.noKey') }}</p>
+          <button type="button" class="btn" :disabled="busy" @click="recovering = false">{{ t('vault.recover.back') }}</button>
+        </AppCard>
+
+        <AppCard :title="t('vault.discard')" :icon="Trash2" tone="danger">
+          <p>{{ t('vault.discard.body') }}</p>
+          <button type="button" class="btn btn-danger big" :disabled="busy" @click="pendingDiscard = true">
+            <Trash2 :size="20" aria-hidden="true" />{{ t('vault.discard') }}
+          </button>
+        </AppCard>
+      </div>
+
       <div v-else-if="st && !st.unlocked" class="bento">
         <AppCard :title="t('ui.vault.unlockTitle')" :icon="KeyRound" :tone="st.retryAfterSeconds > 0 ? 'warn' : 'ok'">
+          <div v-if="recoverOk" class="notice tone-ok" role="status"><ShieldCheck :size="18" aria-hidden="true" /><span>{{ t('vault.recover.done') }}</span></div>
           <form class="stack" @submit.prevent="unlock">
             <input v-model="pass" type="password" class="ui-field pass selectable" autocomplete="current-password" :placeholder="t('vault.pass')" />
             <button type="submit" class="btn btn-primary big" :disabled="busy || !pass || st.retryAfterSeconds > 0">
@@ -328,6 +443,9 @@ onBeforeUnmount(() => {
             </button>
           </form>
           <span v-if="st.failedAttempts" class="ui-chip tone-warn attempts"><TriangleAlert :size="14" aria-hidden="true" />{{ t('vault.attempts', { n: st.failedAttempts }) }}</span>
+          <button type="button" class="btn forgot" :disabled="busy" @click="startRecover">
+            <LifeBuoy :size="18" aria-hidden="true" />{{ t('vault.forgot') }}
+          </button>
         </AppCard>
 
         <AppCard :title="t('ui.vault.security')" :icon="ShieldCheck" tone="info">
@@ -355,6 +473,12 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="notice tone-warn never"><ShieldAlert :size="18" aria-hidden="true" /><span>{{ t('vault.never') }}</span></div>
+        <div class="rk-row" :class="st.recoveryKey === false ? 'notice tone-danger' : ''">
+          <span v-if="st.recoveryKey === false"><TriangleAlert :size="18" aria-hidden="true" />{{ t('vault.rk.missing') }}</span>
+          <button type="button" class="btn" :class="st.recoveryKey === false ? 'btn-primary' : ''" :disabled="busy" @click="startRotate">
+            <LifeBuoy :size="18" aria-hidden="true" />{{ st.recoveryKey === false ? t('vault.rk.create') : t('vault.rk.rotate') }}
+          </button>
+        </div>
 
         <template v-if="removable">
           <h2 class="ui-sec">{{ t('vault.fromUsb') }}</h2>
@@ -417,6 +541,40 @@ onBeforeUnmount(() => {
       @confirm="confirmDelete"
       @cancel="pendingDelete = null"
     />
+    <ConfirmDialog
+      v-if="pendingDiscard"
+      :title="t('vault.discard.title')"
+      :message="t('vault.discard.body')"
+      :confirm-label="t('vault.discard')"
+      danger
+      @confirm="discard"
+      @cancel="pendingDiscard = false"
+    />
+    <!-- Pedir la contraseña actual para crear/regenerar la clave de recuperación. -->
+    <div v-if="rotating" class="rn-backdrop" @click.self="cancelRotate">
+      <form class="rn-dialog" @submit.prevent="rotateKey">
+        <h2><LifeBuoy :size="20" aria-hidden="true" />{{ st?.recoveryKey === false ? t('vault.rk.create') : t('vault.rk.rotate') }}</h2>
+        <p>{{ t('vault.rk.rotateBody') }}</p>
+        <input v-model="pass" type="password" class="ui-field pass" autocomplete="current-password" :placeholder="t('vault.pass')" />
+        <div class="rn-actions">
+          <button type="button" class="btn" @click="cancelRotate">{{ t('common.cancel') }}</button>
+          <button type="submit" class="btn btn-primary" :disabled="!pass || busy">{{ busy ? t('vault.opening') : t('vault.rk.generate') }}</button>
+        </div>
+      </form>
+    </div>
+    <!-- Clave de recuperación: una sola vez; sin cierre por clic fuera para no perderla sin querer. -->
+    <div v-if="shownKey" class="rn-backdrop">
+      <section class="rn-dialog rk-dialog" role="alertdialog" aria-modal="true" :aria-label="t('vault.rk.title')">
+        <h2><LifeBuoy :size="20" aria-hidden="true" />{{ t('vault.rk.title') }}</h2>
+        <p>{{ t('vault.rk.intro') }}</p>
+        <p class="rk-key mono selectable">
+          <span v-for="(g, i) in shownKey.split('-')" :key="i">{{ g }}</span>
+        </p>
+        <p class="weak-line"><ShieldAlert :size="16" aria-hidden="true" />{{ t('vault.rk.once') }}</p>
+        <label class="rk-check"><input v-model="keyWritten" type="checkbox" />{{ t('vault.rk.written') }}</label>
+        <button type="button" class="btn btn-primary big" :disabled="!keyWritten" @click="closeKey">{{ t('vault.rk.done') }}</button>
+      </section>
+    </div>
     <div v-if="renaming" class="rn-backdrop" @click.self="renaming = null">
       <form class="rn-dialog" @submit.prevent="saveRename">
         <h2><Pencil :size="20" aria-hidden="true" />{{ t('ui.vault.rename') }}</h2>
@@ -639,6 +797,68 @@ onBeforeUnmount(() => {
 .attempts {
   align-self: flex-start;
   font-weight: 700;
+}
+
+.weak-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  color: var(--warn);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.weak-line svg {
+  flex: none;
+  margin-top: 0.1rem;
+}
+
+.forgot {
+  align-self: flex-start;
+  margin-top: 0.2rem;
+}
+
+/* ---------- Clave de recuperación ---------- */
+.rk-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: var(--gap);
+}
+
+.rk-row > span {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rk-key {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem 0.6rem;
+  padding: 0.8rem;
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+  background: var(--bg);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.rk-check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: var(--touch);
+  font-weight: 700;
+}
+
+.rk-check input {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 /* Texto de seguridad: color pleno (no atenuado) y con icono del tono. */

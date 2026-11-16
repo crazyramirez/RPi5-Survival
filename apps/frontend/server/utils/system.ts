@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process'
 import { constants, promises as fs } from 'node:fs'
 import type { H3Event } from 'h3'
 import { isTrustedActionRequest } from './net'
+import { isPortable } from './portable'
 
 export const KIOSK_FIFO = process.env.SURVIVAL_KIOSK_FIFO ?? '/run/survival-os/kiosk.fifo'
 
@@ -13,8 +14,9 @@ export function assertTrustedAction(event: H3Event): void {
 }
 
 export function assertLinux(): void {
-  if (process.platform !== 'linux') {
-    throw createError({ statusCode: 501, statusMessage: 'Solo disponible en el equipo (Linux)' })
+  // En la versión portable el anfitrión puede ser Linux, pero nunca se apaga ni se toca su escritorio.
+  if (process.platform !== 'linux' || isPortable()) {
+    throw createError({ statusCode: 501, statusMessage: 'Solo disponible en el equipo Survival OS' })
   }
 }
 

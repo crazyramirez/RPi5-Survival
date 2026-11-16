@@ -3,6 +3,84 @@
 ## Sin publicar
 
 ### Añadido
+- **Portable igual de completa que la Pi (ADR 0016):**
+  - **Nuevo servicio `serial-hub`:** malla LoRa (Meshtastic) y GPS por USB en Windows, macOS y Linux, sin módulos nativos.
+    - Ofrece la misma API que `survival-mesh` y un servidor compatible con gpsd, así que la interfaz y la navegación no cambian.
+    - Detecta solo el nodo y el receptor.
+    - Contra el nodo Heltec V4 real da lo mismo que la versión Python.
+  - **Bóveda portable:** Argon2id (256 MiB) y AES-256-GCM.
+    - Keyslots para la contraseña y la clave de recuperación, como en LUKS.
+    - Documentos cifrados por bloques, con detección de manipulación y truncado, e índice cifrado.
+    - Misma API y misma pantalla que en la Pi.
+  - **Batería y hora del portátil:** Windows (PowerStatus y w32tm), macOS (pmset) y Linux (adaptador del kernel).
+  - **Juegos:** la tarea `games` usa `games-sync.mjs`, y el servidor de juegos arranca en cuanto hay copia.
+  - **«Compartir en la red local»:** pasarela de solo lectura en la IP de la Wi-Fi. Nunca se activa sola.
+- **Motor de descargas y catálogo (ADR 0015):** catálogo único `content/catalog.json` y motor `scripts/content-engine.mjs`, iguales en la Pi y en la portable.
+  - **Catálogo:** 38 contenidos.
+    - Biblioteca ampliada, en español: MedlinePlus, Ready.gov, Proyecto Gutenberg, Wikisource, Low-Tech Magazine, WikiRoca, Wikiversidad y PhET.
+    - Supervivencia en inglés, solo lo que no existe en español: bibliotecas zimgit (desastres, medicina, agua, nudos, alimentos), Military Medicine, Appropedia, energypedia, Stack Exchange (outdoor, bricolaje, huerto, mecánica, radio, cocina) y los manuales del Ejército de EE. UU.
+    - Mapas: España, Canarias y mundo.
+    - Rutas: España y Canarias.
+    - Asistente.
+  - **Detecta el sistema** y descarga el componente adecuado con su SHA-256 fijado: kiwix-tools, llama.cpp, go-pmtiles, Java (Temurin) y BRouter, para Windows, macOS y Linux x64/arm64.
+  - **Descargas de ZIM:**
+    - espejos con reanudación;
+    - SHA-256 del servidor maestro, con reintentos ante 429;
+    - registro en la biblioteca y retirada de versiones anteriores.
+  - **Mapas:** extracción por región del último build de Protomaps.
+  - **Primera puesta en marcha** (`/bienvenida`):
+    - todo marcado por defecto, español primero;
+    - se ajusta solo al espacio libre, desmarcando primero lo de menor prioridad;
+    - avisa de que el sistema tardará en estar listo al 100 % y de que se puede usar mientras tanto;
+    - el inicio muestra el progreso.
+  - **Mantenimiento → Contenidos:** catálogo completo para instalar y quitar. En la Pi, tarea `content` (admin-job.py, validada contra el catálogo).
+  - **Portable:**
+    - descargas, asistente (llama.cpp), Wikipedia (kiwix-serve) y rutas (BRouter) funcionan igual que en la Pi;
+    - el lanzador arranca cada servicio en cuanto existen su componente y sus datos.
+- **Versión portable (ADR 0014):** Survival OS en una carpeta para USB, disco o equipo; Windows, macOS y Linux (x64 y arm64).
+  - `npm run release:portable` genera `release/portable/Survival OS/` y un zip.
+    - Node v24.22.2 de cada sistema, verificado con SHA-256.
+    - El zip conserva los permisos Unix, así que `node`, el `.sh` y la `.app` son ejecutables al descomprimir.
+  - Se abre con doble clic:
+    - Windows: «Abrir Survival OS», sin consola;
+    - macOS: «Survival OS.app»;
+    - Linux: «abrir-survival-os.sh».
+  - El lanzador:
+    - arranca los servicios en loopback con puertos libres y reinicios;
+    - abre una ventana propia del navegador y lo detiene todo al cerrarla;
+    - deja los registros en `data/logs` y muestra los errores de forma visible.
+  - «Instalar en este equipo», sin administrador: copia la app a la carpeta de aplicaciones del usuario y crea accesos
+    directos. Si ya estaba instalada, la actualiza y conserva sus datos.
+  - Modo portable en la interfaz:
+    - tarjeta en Mantenimiento: carpetas de contenido, instalar y cerrar;
+    - «Cerrar Survival OS» en Sistema;
+    - la Bóveda se oculta.
+  - Modo portable en el servidor:
+    - nunca se apaga ni se toca el equipo anfitrión;
+    - las tareas de la Pi se rechazan con un aviso claro.
+  - Probado en Windows 11 y en Linux arm64. Falta probarlo en macOS.
+- Inicio: si no hay medida de alimentación, Sistema dice «Sin datos de alimentación» en lugar de «Revisar alimentación/temperatura».
+- **Bóveda: clave de recuperación (ADR 0013).**
+  - Al crear la bóveda se genera una clave aleatoria de 160 bits (`XXXX-XXXX-…`). Se muestra una sola vez para apuntarla en papel.
+  - Queda en un segundo keyslot LUKS2 con la misma KDF Argon2id que la contraseña.
+  - «He olvidado la contraseña»: con la clave se pone una contraseña nueva y los documentos se conservan.
+  - Con la bóveda abierta se puede crear la clave (bóvedas antiguas) o regenerarla.
+  - «Descartar bóveda»: si no hay ni contraseña ni clave, aparta el contenedor cifrado (no lo borra) para crear otra.
+  - `vault-e2e.sh` prueba la API real en la Pi con una instancia temporal (14/14).
+  - `vault-selftest.sh` ejecuta en la Pi el código real del servicio (`dist/luks.js`) contra un contenedor temporal (17/17).
+  - Corregido antes de usarse: crear la bóveda fallaba con «Error interno de la bóveda» (`luksAddKey: Failed to open key file`).
+    - Causa: la clave se pasaba por `/dev/fd/3`, y en Node ese descriptor es un socket.
+    - Ahora va en un fichero efímero en tmpfs, privado del servicio.
+- **Bóveda: se admiten contraseñas sencillas y PIN** (mínimo 4 caracteres; solo se rechazan `1111`, `1234`…).
+  - La pantalla avisa de que una contraseña débil no protege si roban la microSD.
+- **Juegos offline (ADR 0012):** botón «Juegos» en la barra inferior, antes de «Bloquear», que abre la copia local completa de Viseni Games.
+  - Tarea `games` (`scripts/games-sync.py`): descarga verificada por hash.
+    - El inventario sale de `sw.js` y de `offline-manifest.json`, ambos publicados por el propio sitio.
+    - Las actualizaciones son incrementales (hardlinks) y el cambio de copia es atómico.
+  - Servicio `survival-games`, en `127.0.0.1:8790`: otro origen a propósito, con CSP sin red externa.
+  - Tarjeta «Juegos offline» en Mantenimiento: descargar, volver a descargar o quitar.
+  - El botón «Juegos» de la barra inferior solo aparece si la copia está descargada; aparece o desaparece al terminar la descarga o al quitarla.
+- Seguridad: las acciones de la web exigen ahora su mismo origen exacto, con host y puerto (`isTrustedActionRequest`).
 - UPS Geekworm X120x (X1202): `survival-ups.timer` lee cada 30 s, sin escribir nunca en el chip.
   - **Red eléctrica:** por el GPIO6, leído con pull-down y con pull-up para descartar un pin al aire.
   - **Batería:** por el medidor MAX17040 (I²C 0x36): carga y tensión de la celda.
@@ -14,6 +92,12 @@
   - `i2c-dev` se añade a `modules-load.d`.
 
 ### Corregido
+- **Malla y Comunicaciones:** un fallo momentáneo del servicio (por ejemplo, al actualizar, que lo reinicia unos 2 s) mostraba «no disponible» y la configuración con «Buscar puertos USB», aunque el nodo estuviera configurado por USB.
+  - Ahora se conserva el último estado bueno y se reintenta a los 2 s.
+  - Solo tras 3 fallos seguidos se informa de que el servicio no responde.
+  - Comunicaciones consultaba una única vez al abrir la página; ahora se refresca cada 10 s.
+- **`content-engine.mjs` no hacía nada en la Pi:** `/opt/survival-os/current` es un enlace simbólico y la comprobación de «ejecutado directamente» fallaba. Ahora compara rutas reales.
+- **Pasarela pública:** el portal cautivo incluye el puerto en la redirección cuando no es el 80.
 - Nodo LoRa enchufado después de arrancar: `survival-mesh` daba `PermissionError` en bucle y la pasarela ESP32 daba `stty_failed`.
   - Causa: `DeviceAllow=char-ttyACM` y `char-ttyUSB` se resuelven al arrancar la unidad. Si el driver aún no está cargado, el permiso queda vacío.
   - Arreglo: nuevo `systemd/modules-load.d/survival-os-serial.conf`, que carga `cdc_acm` y `usbserial` al arrancar.

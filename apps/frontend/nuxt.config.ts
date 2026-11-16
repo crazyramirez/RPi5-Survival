@@ -53,9 +53,14 @@ export default defineNuxtConfig({
     navigationUrl: 'http://127.0.0.1:8784',
     esp32Url: 'http://127.0.0.1:8785',
     meshUrl: 'http://127.0.0.1:8787',
+    // Juegos offline (ADR 0012): otro origen a propósito; el navegador del kiosco lo carga en un iframe.
+    gamesUrl: 'http://127.0.0.1:8790/',
+    gamesDir: '/var/lib/survival-os/games',
     vaultSocket: '/run/survival-os/vault.sock',
     public: {
       version: pkg.version,
+      // Versión portable (ADR 0014): la fija el lanzador con NUXT_PUBLIC_PORTABLE=true.
+      portable: false,
     },
   },
 

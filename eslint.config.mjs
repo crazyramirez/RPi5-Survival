@@ -3,7 +3,7 @@ import pluginVue from 'eslint-plugin-vue'
 
 export default tseslint.config(
   {
-    ignores: ['**/node_modules/**', '**/.output/**', '**/.nuxt/**', '**/dist/**', 'release/**', 'coverage/**', '.data/**', 'apps/frontend/public/map-assets/**'],
+    ignores: ['**/node_modules/**', '**/.output/**', '**/.nuxt/**', '**/dist/**', 'release/**', 'coverage/**', '.data/**', 'apps/frontend/public/map-assets/**', 'apps/frontend/public/pdfjs/**'],
   },
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],

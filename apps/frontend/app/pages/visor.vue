@@ -16,6 +16,28 @@ const src = computed(() => {
   const u = route.query.u
   return typeof u === 'string' && u.length <= 2000 && isViewerPath(u) ? u : null
 })
+/** PDF: visor propio (estilos de la app). Las rutas de documentos de la biblioteca no llevan extensión: se
+ * pregunta el tipo al servidor. Si no se sabe, se muestra en el iframe (el navegador decide). */
+const PDF_RE = /\.pdf(?:[?#]|$)/i
+const kind = ref<'pdf' | 'page' | null>(null)
+watch(
+  src,
+  async (u) => {
+    kind.value = null
+    if (!u) return
+    if (PDF_RE.test(u)) {
+      kind.value = 'pdf'
+      return
+    }
+    try {
+      const res = await fetch(u, { method: 'HEAD', cache: 'no-store' })
+      kind.value = (res.headers.get('content-type') ?? '').includes('application/pdf') ? 'pdf' : 'page'
+    } catch {
+      kind.value = 'page'
+    }
+  },
+  { immediate: true },
+)
 const title = computed(() => (typeof route.query.t === 'string' && route.query.t.trim() ? route.query.t.slice(0, 200) : t('viewer.title')))
 
 /** Páginas HTML locales (no PDF: el visor de PDF del navegador no admite estilos): barra de la app. */
@@ -49,8 +71,10 @@ function back(): void {
       <span class="title">{{ title }}</span>
       <NuxtLink to="/biblioteca" class="btn icon-only" :aria-label="t('viewer.close')"><X :size="20" aria-hidden="true" /></NuxtLink>
     </header>
+    <PdfViewer v-if="src && kind === 'pdf'" :src="src" />
     <!-- Solo contenido local (lista cerrada). Sin sandbox: Chromium bloquea su visor de PDF en iframes con sandbox. -->
-    <iframe v-if="src" :src="src" :title="title" @load="onLoad" />
+    <iframe v-else-if="src && kind === 'page'" :src="src" :title="title" @load="onLoad" />
+    <div v-else-if="src" />
     <EmptyState v-else :icon="FileText" :title="t('viewer.invalid')">
       <NuxtLink to="/biblioteca" class="btn btn-primary">{{ t('module.library') }}</NuxtLink>
     </EmptyState>

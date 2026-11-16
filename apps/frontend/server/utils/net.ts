@@ -58,7 +58,8 @@ export function isTrustedActionRequest(headers: Record<string, string | string[]
 export const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   // Nuxt inyecta un script inline con la configuración en modo SPA.
-  "script-src 'self' 'unsafe-inline'",
+  // 'wasm-unsafe-eval': solo compilar WebAssembly (decodificadores de imágenes del visor de PDF); no permite eval.
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",

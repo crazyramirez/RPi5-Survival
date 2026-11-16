@@ -21,6 +21,8 @@ data/private/
 
 # Recursos de mapa descargados por scripts/fetch-map-assets.mjs
 apps/frontend/public/map-assets/
+# Recursos de pdf.js copiados por scripts/copy-pdfjs-assets.mjs
+apps/frontend/public/pdfjs/
 
 # Datos locales de desarrollo (mapas descargados, etc.)
 .data/

@@ -5,7 +5,7 @@ import type { DocSummary } from '@survival-os/shared-types'
 /**
  * Documento propio. El HTML generado (Markdown/TXT) se muestra en un iframe
  * `sandbox` sin scripts: aunque el documento sea hostil, no puede ejecutar nada.
- * Los PDF usan el visor integrado de Chromium.
+ * Los PDF usan el visor propio (PdfViewer: pdf.js local, con los estilos de la app).
  */
 const t = useT()
 const route = useRoute()
@@ -53,7 +53,7 @@ const srcdoc = computed(() => {
       </button>
     </header>
     <div v-if="error" class="notice tone-danger">{{ error }}</div>
-    <iframe v-else-if="doc?.kind === 'pdf'" :src="`/api/library/docs/${doc.id}/raw`" :title="doc.title" />
+    <PdfViewer v-else-if="doc?.kind === 'pdf'" :src="`/api/library/docs/${doc.id}/raw`" />
     <iframe v-else-if="doc" :srcdoc="srcdoc" sandbox="" :title="doc.title" />
   </div>
 </template>

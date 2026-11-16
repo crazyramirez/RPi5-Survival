@@ -13,6 +13,8 @@ const timeSource = computed(() => {
   const time = status.value?.time
   if (!time || time.state !== 'ok') return { key: 'bar.time.unverified' as MessageKey, tone: 'warn' }
   const src = time.value.source
+  // Android: la hora del dispositivo es lo normal; sin etiqueta (no se deja un recuadro vacío).
+  if (src === 'device') return null
   return { key: `bar.time.${src}` as MessageKey, tone: src === 'unverified' ? 'warn' : 'ok' }
 })
 
@@ -78,6 +80,9 @@ const power = computed(() => {
   if (mains) return { text: t('bar.mains.on'), tone: 'ok', icon: PlugZap }
   return { text: t('bar.battery.unavailable'), tone: 'muted', icon: BatteryWarning }
 })
+
+/** Versión de la interfaz, en pequeño junto a la fecha. */
+const appVersion = String(useRuntimeConfig().public.version ?? '')
 </script>
 
 <template>
@@ -87,7 +92,8 @@ const power = computed(() => {
         <Clock :size="18" aria-hidden="true" />
         <span class="mono strong">{{ formatClock(now) }}</span>
         <span class="date statusbar-date">{{ formatDate(now) }}</span>
-        <span v-if="!publicView" class="tag" :class="`tone-${timeSource.tone}`">{{ t(timeSource.key) }}</span>
+        <span v-if="!publicView && timeSource" class="tag" :class="`tone-${timeSource.tone}`">{{ t(timeSource.key) }}</span>
+        <span class="ver mono" :title="`Survivelia OS v${appVersion}`">v{{ appVersion }}</span>
       </div>
 
       <template v-if="publicView">
@@ -255,5 +261,11 @@ const power = computed(() => {
   .tag {
     display: none;
   }
+}
+
+.ver {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
 }
 </style>

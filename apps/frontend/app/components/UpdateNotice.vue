@@ -57,13 +57,19 @@ onBeforeUnmount(() => timer && clearTimeout(timer))
 
 const show = computed(() => !!notice.value && !route.path.startsWith('/bienvenida'))
 
+/** «Ver novedades»: el registro de cambios en una ventana encima, sin cambiar de pantalla. */
+const changelog = ref<{ version: string; from: string | null } | null>(null)
 function details(): void {
+  const n = notice.value
+  if (!n) return
+  changelog.value = { version: n.version, from: n.ok ? n.from : null }
   notice.value = null
-  void navigateTo('/sistema/mantenimiento#mnt-update')
+  if (timer) clearTimeout(timer)
 }
 </script>
 
 <template>
+  <ChangelogDialog v-if="changelog" :version="changelog.version" :from="changelog.from" @close="changelog = null" />
   <aside v-if="show && notice" class="notice-upd" :class="notice.ok ? 'tone-ok' : 'tone-warn'" role="status" aria-live="polite">
     <span class="orb" aria-hidden="true">
       <CircleCheckBig v-if="notice.ok" :size="22" />

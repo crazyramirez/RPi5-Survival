@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.8 — 2026-11-16 · Novedades, versión a la vista y brújula en Android
+
+### Añadido
+- **«Ver novedades» tras actualizar** abre una ventana con el registro de cambios de las versiones nuevas, sin
+  cambiar de pantalla, y se cierra con «Entendido».
+- **Versión en la barra de arriba**, en pequeño, junto a la hora.
+- **Brújula del dispositivo en Android** (y en móviles): Navegación usa los sensores de la tablet (magnetómetro,
+  giroscopio y acelerómetro) para el rumbo, con el norte magnético; sin sensores, sigue el rumbo del GNSS.
+
+### Corregido
+- En Android ya no queda un recuadro vacío en la barra donde iba la fuente de la hora.
+
 ## 0.11.7 — 2026-11-16 · Aviso de versión nueva
 
 ### Añadido

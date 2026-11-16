@@ -178,7 +178,11 @@ function useUnwrapped(src: () => number | null) {
   )
   return out
 }
-const needleRot = useUnwrapped(() => g.value?.courseDeg ?? null)
+// Rumbo: la brújula del dispositivo si tiene sensores (tablet/móvil); si no, el rumbo del GNSS al moverse.
+const compassDeg = useDeviceHeading()
+const heading = computed(() => compassDeg.value ?? g.value?.courseDeg ?? null)
+const headingFromCompass = computed(() => compassDeg.value !== null)
+const needleRot = useUnwrapped(() => heading.value)
 const targetRot = useUnwrapped(() => toTarget.value?.b ?? null)
 </script>
 
@@ -240,9 +244,9 @@ const targetRot = useUnwrapped(() => toTarget.value?.b ?? null)
 
     <!-- Rumbo y destino -->
     <div class="bento">
-      <AppCard :title="t('nav.heading')" :icon="Navigation" :tone="g?.courseDeg != null ? 'ok' : 'muted'">
+      <AppCard :title="t('nav.heading')" :icon="Navigation" :tone="heading != null ? 'ok' : 'muted'" :pill="headingFromCompass ? t('nav.compass.pill') : undefined">
         <div class="compass">
-          <svg class="rose" viewBox="0 0 120 120" role="img" :aria-label="g?.courseDeg != null ? `${t('nav.heading')} ${formatNumber(g.courseDeg, 0)}°` : t('nav.heading')">
+          <svg class="rose" viewBox="0 0 120 120" role="img" :aria-label="heading != null ? `${t('nav.heading')} ${formatNumber(heading, 0)}°` : t('nav.heading')">
             <circle cx="60" cy="60" r="57" class="rim" />
             <circle cx="60" cy="60" r="33" class="inner" />
             <line
@@ -252,18 +256,20 @@ const targetRot = useUnwrapped(() => toTarget.value?.b ?? null)
             <text v-for="c in CARDINALS" :key="c.deg" :x="c.x" :y="c.y" class="cardinal" :class="{ north: c.deg === 0 }">{{ c.label }}</text>
             <!-- Marca del destino sobre el aro (rumbo verdadero al punto). -->
             <path v-if="targetRot !== null" class="target-mark" d="M60 15 L66 4 H54 Z" :style="{ transform: `rotate(${targetRot}deg)` }" />
-            <!-- Aguja: solo con rumbo medido por el GNSS; sin medida no se dibuja. -->
+            <!-- Aguja: solo con rumbo medido (brújula del dispositivo o GNSS); sin medida no se dibuja. -->
             <path v-if="needleRot !== null" class="needle" d="M60 30 L71 84 L60 76 L49 84 Z" :style="{ transform: `rotate(${needleRot}deg)` }" />
             <circle v-else cx="60" cy="60" r="3" class="hub" />
           </svg>
           <div class="compass-info">
             <p class="ui-figure">
-              <span class="num mono">{{ g?.courseDeg != null ? `${formatNumber(g.courseDeg, 0)}°` : '—' }}</span>
-              <span v-if="g?.courseDeg != null" class="unit">{{ cardinal(g.courseDeg) }}</span>
-              <span class="cap">{{ t('ui.nav.courseCap') }}</span>
+              <span class="num mono">{{ heading != null ? `${formatNumber(heading, 0)}°` : '—' }}</span>
+              <span v-if="heading != null" class="unit">{{ cardinal(heading) }}</span>
+              <span class="cap">{{ headingFromCompass ? t('nav.compass.cap') : t('ui.nav.courseCap') }}</span>
             </p>
+            <KvRow v-if="headingFromCompass" :label="t('ui.nav.courseCap')" :value="g?.courseDeg != null ? `${formatNumber(g.courseDeg, 0)}° ${cardinal(g.courseDeg)}` : null" mono />
             <KvRow :label="t('nav.speed')" :value="g?.speedMs != null ? `${formatNumber(g.speedMs * 3.6)} km/h` : null" mono />
-            <p v-if="g?.courseDeg == null" class="note">{{ t('nav.heading.note') }}</p>
+            <p v-if="heading == null" class="note">{{ t('nav.heading.note') }}</p>
+            <p v-else-if="headingFromCompass" class="note">{{ t('nav.compass.note') }}</p>
           </div>
         </div>
       </AppCard>

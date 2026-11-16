@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.11.9 — 2026-11-17 · GPS por USB en cualquier equipo, y varios a la vez
+
+### Añadido
+- **Varios receptores GNSS a la vez** en la Pi, la portable y Android: Navegación usa siempre el mejor (fijación
+  3D, error que informa el propio receptor, HDOP, satélites) y cambia solo si otro es claramente mejor o el actual
+  deja de enviar datos. Se ve cuál se usa: «Receptor · … · el mejor de N receptores».
+- **Android:** el GNSS interno de la tablet funciona siempre junto con un GPS USB, y su precisión real se compara
+  con la del USB.
+- **GPS USB de cualquier fabricante:**
+  - Pi: al conectar un puerto USB-serie se escucha si emite NMEA y se añade a gpsd (antes solo los chips que gpsd
+    conoce; ahora también CH340, CH9102 y otros). Nunca toca el puerto del nodo LoRa ni de las placas ESP32.
+  - Portable y Android: se detectan receptores de cualquier fabricante (solo se escucha, nunca se les escribe); en
+    macOS, también GPS Bluetooth emparejados; en Android, cualquier receptor USB CDC.
+
 ## 0.11.8 — 2026-11-16 · Novedades, versión a la vista y brújula en Android
 
 ### Añadido

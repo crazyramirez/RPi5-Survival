@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { afterAll, describe, expect, it } from 'vitest'
 import type { NavFix } from '@survival-os/shared-types'
 import { haversineM, isValidLatLon, pathLengthM } from '../src/geo.ts'
-import { applyMessage, emptyState, MIN_SPEED_FOR_COURSE, toFix } from '../src/gpsd.ts'
+import { applyMessage, emptyState, MIN_SPEED_FOR_COURSE, STALE_AFTER_S, toFix } from '../src/gpsd.ts'
 import { parseGpx, trackToGpx, waypointsToGpx } from '../src/gpx.ts'
 import { DEFAULT_POLICY, shouldRecord } from '../src/recorder.ts'
 import { NavStore } from '../src/store.ts'
@@ -58,6 +58,72 @@ describe('gpsd → NavFix', () => {
     applyMessage(s, { class: 'DEVICE', path: '/dev/ttyACM0', activated: '2026-01-01' })
     applyMessage(s, { class: 'DEVICE', path: '/dev/ttyACM0', activated: 0 })
     expect(s.devices).toEqual([])
+  })
+})
+
+describe('varios receptores: se usa el mejor', () => {
+  const usb = (extra: Record<string, unknown>) => ({ ...TPV_3D, device: '/dev/ttyUSB0', ...extra })
+  const tab = (extra: Record<string, unknown>) => ({ ...TPV_3D, device: 'android:gnss', ...extra })
+
+  it('3D gana a 2D aunque el 2D diga menos error', () => {
+    const s = emptyState()
+    applyMessage(s, usb({ mode: 2, epx: 1, epy: 1 }), 1000)
+    applyMessage(s, tab({ lat: 41 }), 1000)
+    expect(toFix(s, 1500)?.latitude).toBe(41)
+    expect(s.active).toBe('android:gnss')
+  })
+
+  it('con la misma fijación gana el de menor error estimado', () => {
+    const s = emptyState()
+    applyMessage(s, usb({ epx: 8, epy: 8, lat: 40 }), 1000)
+    applyMessage(s, tab({ eph: 3, lat: 41 }), 1000)
+    expect(toFix(s, 1500)?.latitude).toBe(41)
+  })
+
+  it('quien informa su error gana a quien no; sin error, HDOP y luego satélites', () => {
+    const s = emptyState()
+    applyMessage(s, usb({ epx: undefined, epy: undefined, lat: 40 }), 1000)
+    applyMessage(s, tab({ eph: 20, lat: 41 }), 1000)
+    expect(toFix(s, 1500)?.latitude).toBe(41)
+    const h = emptyState()
+    applyMessage(h, usb({ epx: undefined, epy: undefined, lat: 40 }), 1000)
+    applyMessage(h, tab({ epx: undefined, epy: undefined, lat: 41 }), 1000)
+    applyMessage(h, { class: 'SKY', device: '/dev/ttyUSB0', hdop: 0.9, uSat: 5 }, 1000)
+    applyMessage(h, { class: 'SKY', device: 'android:gnss', hdop: 2.1, uSat: 12 }, 1000)
+    expect(toFix(h, 1500)?.latitude).toBe(40)
+  })
+
+  it('el GST de gpsd (error medido por el receptor) manda sobre el eph calculado con el HDOP', () => {
+    const s = emptyState()
+    applyMessage(s, usb({ eph: 17.1, lat: 40 }), 1000)
+    applyMessage(s, tab({ eph: 17.1, lat: 41 }), 1000)
+    applyMessage(s, { class: 'GST', device: '/dev/ttyUSB0', lat: 5.7, lon: 5.7 }, 1000)
+    applyMessage(s, { class: 'GST', device: 'android:gnss', lat: 1.4, lon: 1.4 }, 1000)
+    const f = toFix(s, 1500)
+    expect(f?.latitude).toBe(41)
+    expect(f?.horizontalErrorM).toBeCloseTo(2, 0)
+    // GST caducado: vuelve el eph de gpsd
+    expect(toFix(s, 12_000)?.horizontalErrorM).toBe(17.1)
+  })
+
+  it('no salta de receptor por diferencias pequeñas (histéresis)', () => {
+    const s = emptyState()
+    applyMessage(s, usb({ eph: 5, lat: 40 }), 1000)
+    expect(toFix(s, 1100)?.latitude).toBe(40)
+    applyMessage(s, tab({ eph: 4.5, lat: 41 }), 1200)
+    expect(toFix(s, 1300)?.latitude).toBe(40)
+    applyMessage(s, tab({ eph: 2, lat: 41 }), 1400)
+    expect(toFix(s, 1500)?.latitude).toBe(41)
+  })
+
+  it('un receptor caducado cede al que sigue enviando; al desconectarse se olvida', () => {
+    const s = emptyState()
+    applyMessage(s, usb({ eph: 1, lat: 40 }), 1000)
+    applyMessage(s, tab({ eph: 9, lat: 41 }), 1000 + STALE_AFTER_S * 1000)
+    expect(toFix(s, 2000 + STALE_AFTER_S * 1000)?.latitude).toBe(41)
+    applyMessage(s, { class: 'DEVICE', path: 'android:gnss', activated: 0 })
+    expect(s.receivers['android:gnss']).toBeUndefined()
+    expect(toFix(s, 2000 + STALE_AFTER_S * 1000)?.latitude).toBe(40)
   })
 })
 

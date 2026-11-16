@@ -33,10 +33,17 @@ const PORT_RE =
       ? ANDROID_PORT_RE
       : /^\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100})$/
 
+interface GpsEntry {
+  path: string
+  baud: number
+}
 interface Config {
   meshPort: string | null
+  /** GPS elegido a mano (se abre sin sondeo y no caduca). */
   gpsPort: string | null
   gpsBaud: number | null
+  /** Receptores detectados solos: pueden ser varios a la vez; navegación usa el mejor. */
+  gpsAuto: GpsEntry[]
   /** Puertos asignados a mano a placas ESP32 (se abren sin sondeo). */
   esp32: string[]
   auto: boolean
@@ -45,12 +52,21 @@ function loadConfig(): Config {
   try {
     const c = JSON.parse(readFileSync(CONFIG, 'utf8')) as Partial<Config>
     const esp32 = Array.isArray(c.esp32) ? c.esp32.filter((p): p is string => typeof p === 'string' && PORT_RE.test(p)) : []
-    return { meshPort: c.meshPort ?? null, gpsPort: c.gpsPort ?? null, gpsBaud: c.gpsBaud ?? null, esp32, auto: c.auto !== false }
+    const gpsAuto = Array.isArray(c.gpsAuto)
+      ? c.gpsAuto.filter((g): g is GpsEntry => !!g && typeof g.path === 'string' && PORT_RE.test(g.path) && Number.isInteger(g.baud)).slice(0, MAX_GPS)
+      : []
+    return { meshPort: c.meshPort ?? null, gpsPort: c.gpsPort ?? null, gpsBaud: c.gpsBaud ?? null, gpsAuto, esp32, auto: c.auto !== false }
   } catch {
-    return { meshPort: null, gpsPort: null, gpsBaud: null, esp32: [], auto: true }
+    return { meshPort: null, gpsPort: null, gpsBaud: null, gpsAuto: [], esp32: [], auto: true }
   }
 }
+/** Receptores GNSS a la vez como mucho. */
+const MAX_GPS = 4
+/** Un receptor detectado que deja de enviar NMEA durante este tiempo se suelta (el puerto pudo cambiar de aparato). */
+const GPS_SILENT_MS = 45_000
 const config = loadConfig()
+/** Puertos con función GPS (manual + detectados). */
+const gpsPorts = (): string[] => [config.gpsPort, ...config.gpsAuto.map((g) => g.path)].filter((p): p is string => !!p)
 function saveConfig(): void {
   writeFileSync(`${CONFIG}.tmp`, JSON.stringify(config, null, 2))
   renameSync(`${CONFIG}.tmp`, CONFIG)
@@ -115,7 +131,7 @@ async function sync(): Promise<void> {
     // Un puerto desenchufado y vuelto a enchufar se evalúa enseguida.
     for (const p of failed.keys()) if (!present.has(p)) failed.delete(p)
     // ESP32 primero: suelta los puertos que ahora son de la malla o del GPS antes de que estos los abran.
-    await esp32.reconcile(ports, { mesh: config.meshPort, gps: config.gpsPort, manual: config.esp32 })
+    await esp32.reconcile(ports, { mesh: config.meshPort, gps: gpsPorts(), manual: config.esp32 })
     // Conexiones configuradas.
     if (config.meshPort && !mesh.connected && present.has(config.meshPort)) {
       await mesh.connect(config.meshPort).catch((err: Error) => {
@@ -123,35 +139,59 @@ async function sync(): Promise<void> {
         log('warn', 'connect_failed', { error: err.message })
       })
     } else if (config.meshPort && !present.has(config.meshPort)) mesh.setError('Nodo no conectado por USB')
-    if (config.gpsPort && !gps.connected && present.has(config.gpsPort)) {
+    if (config.gpsPort && !gps.has(config.gpsPort) && present.has(config.gpsPort)) {
       await gps.connect(config.gpsPort, config.gpsBaud ?? 9600).catch((err: Error) => log('warn', 'gps_connect_failed', { error: err.message }))
     }
+    // Receptores detectados antes: se reabren sin sondeo. Si uno calla, se suelta (el puerto puede ser ahora otra
+    // cosa) y se vuelve a evaluar. El GNSS interno de Android no caduca: sin cielo a la vista también calla.
+    let autoChanged = false
+    for (const g of [...config.gpsAuto]) {
+      if (g.path === config.gpsPort) continue
+      const silent = gps.silentMs(g.path)
+      if (silent !== null && silent > GPS_SILENT_MS && g.path !== ANDROID_GNSS) {
+        log('info', 'gps_silent', { port: g.path })
+        gps.disconnect(g.path)
+        config.gpsAuto = config.gpsAuto.filter((x) => x.path !== g.path)
+        autoChanged = true
+        continue
+      }
+      if (silent === null && present.has(g.path) && config.auto) {
+        await gps.connect(g.path, g.baud).catch((err: Error) => log('warn', 'gps_connect_failed', { error: err.message }))
+      }
+    }
+    // Detectados que ya no están en la lista (modo automático desactivado, reasignados): se cierran.
+    for (const p of gps.paths()) if (!gpsPorts().includes(p) || (!config.auto && p !== config.gpsPort)) gps.disconnect(p)
+    if (autoChanged) saveConfig()
     // Detección automática de lo que falte, solo en puertos USB-serie conocidos y libres. Las placas ESP32
     // pueden ser varias: se busca siempre, pero cada puerto sin respuesta se deja tranquilo un rato (Esp32Hub).
     if (config.auto) {
-      // Android: el GNSS interno de la tablet es un receptor conocido; se usa sin sondeo si no hay otro GPS.
-      if (!config.gpsPort && present.has(ANDROID_GNSS)) {
-        config.gpsPort = ANDROID_GNSS
-        config.gpsBaud = 9600
+      // Android: el GNSS interno de la tablet es un receptor conocido; se usa siempre, junto con los GPS USB.
+      if (present.has(ANDROID_GNSS) && !gpsPorts().includes(ANDROID_GNSS)) {
+        config.gpsAuto.push({ path: ANDROID_GNSS, baud: 9600 })
         saveConfig()
         log('info', 'gps_detected', { port: ANDROID_GNSS })
         await gps.connect(ANDROID_GNSS, 9600).catch((err: Error) => log('warn', 'gps_connect_failed', { error: err.message }))
       }
-      const reserved = new Set([config.meshPort, config.gpsPort].filter((p): p is string => !!p).map((p) => portKey(p)))
+      const reserved = new Set([config.meshPort, ...gpsPorts()].filter((p): p is string => !!p).map((p) => portKey(p)))
       for (const p of ports) {
         if (p.path === ANDROID_GNSS) continue
-        if (reserved.has(portKey(p.path)) || esp32.busy().has(portKey(p.path)) || (p.vid && !KNOWN_VIDS.has(p.vid))) continue
+        if (reserved.has(portKey(p.path)) || esp32.busy().has(portKey(p.path))) continue
         if (Date.now() - (failed.get(p.path) ?? 0) < 120_000) continue
-        if (!config.gpsPort) {
+        // Fabricante desconocido: solo se escucha NMEA (no se escribe nada); así vale cualquier receptor GNSS.
+        const known = !p.listenOnly && (!p.vid || KNOWN_VIDS.has(p.vid))
+        if (gpsPorts().length < MAX_GPS) {
           const baud = await probeNmea(p.path)
           if (baud) {
-            config.gpsPort = p.path
-            config.gpsBaud = baud
+            config.gpsAuto.push({ path: p.path, baud })
             saveConfig()
             log('info', 'gps_detected', { port: p.path, baud })
             await gps.connect(p.path, baud).catch(() => undefined)
             continue
           }
+        }
+        if (!known) {
+          failed.set(p.path, Date.now())
+          continue
         }
         if (esp32.shouldProbe(p.path) && (await esp32.probe(p)) === 'esp32') continue
         if (!config.meshPort && (await probeMeshtastic(p.path))) {
@@ -230,7 +270,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     if (u.pathname === '/gps') return send(res, 200, gps.status())
     if (u.pathname === '/ports') {
       ports = await listPorts()
-      return send(res, 200, { ports, configured: { mesh: config.meshPort, gps: config.gpsPort, gpsBaud: config.gpsBaud, esp32: config.esp32, auto: config.auto } })
+      return send(res, 200, { ports, configured: { mesh: config.meshPort, gps: config.gpsPort, gpsBaud: config.gpsBaud, gpsAuto: config.gpsAuto.map((g) => g.path), esp32: config.esp32, auto: config.auto } })
     }
     return send(res, 404, { error: 'not_found' })
   }
@@ -254,14 +294,16 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       'esp32' in body
         ? parseEsp32Ports(body.esp32, (s) => PORT_RE.test(s), [nextMesh, nextGps], (p) => portKey(p))
         : config.esp32.filter((p) => ![nextMesh, nextGps].some((t) => t && portKey(t) === portKey(p)))
+    // Un puerto solo tiene una función: la malla o el GPS manual sacan ese puerto de los GPS detectados.
+    config.gpsAuto = config.gpsAuto.filter((g) => ![nextMesh, nextGps].some((t) => t && portKey(t) === portKey(g.path)))
     config.esp32 = nextEsp32
     if ('mesh' in body) {
       config.meshPort = port(body.mesh)
       mesh.close()
     }
     if ('gps' in body) {
+      if (config.gpsPort) gps.disconnect(config.gpsPort)
       config.gpsPort = port(body.gps)
-      gps.close()
     }
     if ('gpsBaud' in body) {
       const b = Number(body.gpsBaud)
@@ -272,7 +314,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     saveConfig()
     failed.clear()
     esp32.forget()
-    esp32.release([config.meshPort, config.gpsPort])
+    esp32.release([config.meshPort, ...gpsPorts()])
     void sync()
     return send(res, 200, { configured: config })
   }

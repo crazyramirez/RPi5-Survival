@@ -105,6 +105,7 @@ function status(): NavStatus {
   return {
     gpsd: gpsd.state.connected || SIMULATE ? 'connected' : 'unreachable',
     devices: gpsd.state.devices,
+    activeDevice: SIMULATE ? null : gpsd.state.active,
     gnss,
     fallback,
     recording: recording

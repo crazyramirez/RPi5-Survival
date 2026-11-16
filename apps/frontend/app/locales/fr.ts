@@ -1062,6 +1062,8 @@ export const fr: Record<MessageKey, string> = {
   'nav.serviceDown': 'Le service de navigation ne répond pas.',
   'nav.accuracy': 'Précision',
   'nav.device': 'Récepteur',
+  'nav.deviceInternal': "GNSS intégré de l'appareil",
+  'nav.devicesBest': 'le meilleur de {n} récepteurs',
   'nav.saveHere': 'Enregistrer la position actuelle',
   'nav.saved': 'Position enregistrée',
   'nav.target': 'Destination',

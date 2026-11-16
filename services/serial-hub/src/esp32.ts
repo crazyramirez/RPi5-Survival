@@ -111,15 +111,15 @@ export function applyLine(dev: Esp32Device, limiter: RateLimiter, line: string, 
 /** Tabla de puertos de /status: por qué se usa o no cada uno (mismo criterio y orden que la Pi). */
 export function describePorts(
   list: PortInfo[],
-  roles: { gps: string | null; mesh: string | null; esp32: Set<string>; meshtastic: Set<string> },
+  roles: { gps: string | string[] | null; mesh: string | null; esp32: Set<string>; meshtastic: Set<string> },
   key: (p: string) => string,
 ): Esp32Status['ports'] {
-  const gps = roles.gps ? key(roles.gps) : null
+  const gps = new Set((Array.isArray(roles.gps) ? roles.gps : [roles.gps]).filter((g): g is string => !!g).map(key))
   const mesh = roles.mesh ? key(roles.mesh) : null
   return list.map((p) => {
     const k = key(p.path)
     let use: Esp32Status['ports'][number]['use'] = 'ignorado'
-    if (k === gps) use = 'gpsd'
+    if (gps.has(k)) use = 'gpsd'
     else if (k === mesh || roles.meshtastic.has(k)) use = 'meshtastic'
     else if (roles.esp32.has(k)) use = 'esp32'
     return { path: p.path, vendorId: p.vid, productId: p.pid, chip: chipOf(p), use }
@@ -160,7 +160,7 @@ export class Esp32Hub {
   /** Puertos sondeados sin respuesta → momento del sondeo. */
   private tried = new Map<string, number>()
   private list: PortInfo[] = []
-  private roles: { gps: string | null; mesh: string | null } = { gps: null, mesh: null }
+  private roles: { gps: string[]; mesh: string | null } = { gps: [], mesh: null }
   private readonly open: Opener
   private readonly platform: NodeJS.Platform
 
@@ -220,14 +220,15 @@ export class Esp32Hub {
    * Reconcilia puertos presentes ↔ placas: retira lo desenchufado o reasignado y abre los puertos manuales.
    * La detección automática va aparte (probe), desde el bucle de sondeo de serial-hub.
    */
-  async reconcile(list: PortInfo[], opts: { mesh: string | null; gps: string | null; manual: string[] }, now = Date.now()): Promise<void> {
+  async reconcile(list: PortInfo[], opts: { mesh: string | null; gps: string | string[] | null; manual: string[] }, now = Date.now()): Promise<void> {
     this.list = list
-    this.roles = { mesh: opts.mesh, gps: opts.gps }
+    const gpsList = (Array.isArray(opts.gps) ? opts.gps : [opts.gps]).filter((g): g is string => !!g)
+    this.roles = { mesh: opts.mesh, gps: gpsList }
     const present = new Map(list.map((p) => [this.key(p.path), p]))
     // Un puerto que desaparece queda libre: lo que se conecte después se vuelve a evaluar.
     for (const k of this.meshtastic) if (!present.has(k)) this.meshtastic.delete(k)
     for (const k of this.tried.keys()) if (!present.has(k)) this.tried.delete(k)
-    const reserved = new Set([opts.mesh, opts.gps].filter((p): p is string => !!p).map(this.key))
+    const reserved = new Set([opts.mesh, ...gpsList].filter((p): p is string => !!p).map(this.key))
     const manual = new Set(opts.manual.map(this.key))
     for (const [k, c] of this.conns) {
       if (!present.has(k)) {

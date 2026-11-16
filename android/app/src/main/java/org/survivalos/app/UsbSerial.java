@@ -54,13 +54,13 @@ final class UsbSerial {
     private UsbSerialDriver driverFor(UsbDevice d) {
         UsbSerialDriver drv = prober.probeDevice(d);
         if (drv != null) return drv;
-        // CDC-ACM genérico: cualquier dispositivo con interfaz de comunicaciones de un fabricante conocido.
-        for (int vid : CDC_VIDS) {
-            if (d.getVendorId() != vid) continue;
-            for (int i = 0; i < d.getInterfaceCount(); i++) {
-                int cls = d.getInterface(i).getInterfaceClass();
-                if (cls == UsbConstants.USB_CLASS_COMM || cls == UsbConstants.USB_CLASS_CDC_DATA) return new CdcAcmSerialDriver(d);
-            }
+        // CDC-ACM genérico: placas conocidas con interfaz de datos, y cualquier aparato con interfaz de
+        // comunicaciones (receptores GNSS de cualquier fabricante: serial-hub solo escucha NMEA en los desconocidos).
+        boolean known = false;
+        for (int vid : CDC_VIDS) if (d.getVendorId() == vid) known = true;
+        for (int i = 0; i < d.getInterfaceCount(); i++) {
+            int cls = d.getInterface(i).getInterfaceClass();
+            if (cls == UsbConstants.USB_CLASS_COMM || (known && cls == UsbConstants.USB_CLASS_CDC_DATA)) return new CdcAcmSerialDriver(d);
         }
         return null;
     }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { HW_MODELS } from '../src/enums.ts'
 import { estimateTime, nodeSummary, precisionM, rememberPosition, Store, textMessage, timeSample, validateSend, validateTrack } from '../src/mesh.ts'
 import { FrameParser, Session, decodeFromRadio, frame, positionRequest, textPacket, wantConfig } from '../src/meshtastic.ts'
-import { applyNmea, checksumOk, coord, emptyNmea, looksLikeNmea, toTpv } from '../src/nmea.ts'
+import { applyNmea, checksumOk, coord, emptyNmea, looksLikeNmea, toSky, toTpv } from '../src/nmea.ts'
 import { Msg, Writer } from '../src/proto.ts'
 
 const hwNum = (name: string): number => Number(Object.entries(HW_MODELS).find(([, v]) => v === name)?.[0])
@@ -176,5 +176,21 @@ describe('NMEA', () => {
   it('detecta un flujo NMEA', () => {
     expect(looksLikeNmea(`${withSum('GPGGA,1,,,,,0,00,,,,,,,')}\r\n${withSum('GPRMC,1,V,,,,,,,,,,N')}\r\n`)).toBe(true)
     expect(looksLikeNmea('INFO | booting\r\nhello')).toBe(false)
+  })
+
+  it('GST da epx/epy (error real del receptor) y GGA el HDOP en SKY', () => {
+    const st = emptyNmea()
+    applyNmea(st, withSum('GPGGA,120000.00,4023.1234,N,00342.2274,W,1,09,0.9,657.2,M,49.0,M,,'), 1000)
+    applyNmea(st, withSum('GPGST,120000.00,1.2,,,,2.5,3.5,4.0'), 1000)
+    expect(toTpv(st, 'COM5', 2000)).toMatchObject({ device: 'COM5', mode: 3, epx: 3.5, epy: 2.5 })
+    expect(toSky(st, 'COM5')).toMatchObject({ hdop: 0.9, uSat: 9 })
+    // GST antiguo: el error ya no vale
+    expect(toTpv(st, 'COM5', 20_000).epx).toBeUndefined()
+  })
+
+  it('GST vacío no cuenta como dato', () => {
+    const st = emptyNmea()
+    expect(applyNmea(st, withSum('GPGST,120000.00,,,,,,,'), 1000)).toBe(false)
+    expect(st.epx).toBeNull()
   })
 })

@@ -1065,6 +1065,8 @@ export const es = {
   'nav.serviceDown': 'El servicio de navegación no responde.',
   'nav.accuracy': 'Precisión',
   'nav.device': 'Receptor',
+  'nav.deviceInternal': 'GNSS interno del dispositivo',
+  'nav.devicesBest': 'el mejor de {n} receptores',
   'nav.saveHere': 'Guardar posición actual',
   'nav.saved': 'Posición guardada',
   'nav.target': 'Destino',

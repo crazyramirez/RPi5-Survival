@@ -11,4 +11,7 @@
     <usb-device vendor-id="1659" />   <!-- 0x067b Prolific PL2303 -->
     <usb-device vendor-id="6421" />   <!-- 0x1915 Nordic -->
     <usb-device vendor-id="10374" />  <!-- 0x2886 Seeed -->
+    <usb-device vendor-id="3725" />   <!-- 0x0e8d MediaTek (receptores GNSS) -->
+    <usb-device vendor-id="1155" />   <!-- 0x0483 STMicroelectronics (receptores GNSS con puerto virtual) -->
+    <usb-device class="2" />          <!-- cualquier CDC-ACM (receptores GNSS de otros fabricantes) -->
 </resources>

@@ -41,10 +41,12 @@ export interface PortInfo {
   label: string
   vid: string | null
   pid: string | null
+  /** Solo se sondea escuchando NMEA (nunca se le escribe): puertos que no son de un puente USB-serie conocido. */
+  listenOnly?: boolean
 }
 
 /** Puentes USB-serie y placas habituales en nodos LoRa y receptores GNSS. */
-export const KNOWN_VIDS = new Set(['303a', '10c4', '1a86', '0403', '239a', '2e8a', '1546', '067b', '1915', '2886'])
+export const KNOWN_VIDS = new Set(['303a', '10c4', '1a86', '0403', '239a', '2e8a', '1546', '067b', '1915', '2886', '0e8d', '0483'])
 
 const run = (cmd: string, args: string[], timeout = 8000): Promise<string> =>
   new Promise((ok) => execFile(cmd, args, { timeout, windowsHide: true }, (err, out) => ok(err ? '' : String(out))))
@@ -71,8 +73,10 @@ export async function listPorts(platform = process.platform): Promise<PortInfo[]
   }
   if (platform === 'darwin') {
     return readdirSync('/dev')
-      .filter((f) => /^cu\.(usbmodem|usbserial|SLAB_USBtoUART|wchusbserial)/.test(f))
-      .map((f) => ({ path: `/dev/${f}`, label: f.slice(3), vid: null, pid: null }))
+      // Cualquier puerto serie salvo los del propio Mac (Bluetooth entrante, consola de depuración).
+      .filter((f) => /^cu\.[\w.-]{1,100}$/.test(f) && !/^cu\.(Bluetooth-Incoming-Port|debug-console)$/i.test(f))
+      // Los que no son USB-serie (p. ej. accesorios Bluetooth emparejados) solo se escuchan: un GPS Bluetooth vale.
+      .map((f) => ({ path: `/dev/${f}`, label: f.slice(3), vid: null, pid: null, ...(/^cu\.(usbmodem|usbserial|SLAB_USBtoUART|wchusbserial|PL2303|UC-)/i.test(f) ? {} : { listenOnly: true }) }))
   }
   // Linux: nombres estables de /dev/serial/by-id y su VID/PID en sysfs.
   const out: PortInfo[] = []

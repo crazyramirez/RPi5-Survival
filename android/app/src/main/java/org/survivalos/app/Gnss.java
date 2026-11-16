@@ -25,6 +25,9 @@ import java.util.TimeZone;
  * Se reenvían las frases NMEA que entrega el propio receptor (OnNmeaMessageListener). Si un fabricante no las
  * entrega, se componen GGA y RMC con la posición real de Location y los satélites de GnssStatus; lo que Android no
  * da (HDOP, altitud sobre el nivel del mar en Android < 14) se deja vacío: nunca se inventa.
+ *
+ * La precisión que calcula Android (Location.getAccuracy) se envía como GST si el receptor no manda el suyo: así
+ * navegación puede comparar el GNSS interno con un GPS USB conectado a la vez y quedarse con el mejor.
  */
 final class Gnss {
     static final String PATH = "android:gnss";
@@ -55,6 +58,7 @@ final class Gnss {
         thread.start();
         Handler h = new Handler(thread.getLooper());
         final long[] lastNmea = {0};
+        final long[] lastGst = {0};
         final int[] used = {-1};
         final int[] visible = {-1};
 
@@ -64,6 +68,7 @@ final class Gnss {
             // ninguna válida, se componen con Location.
             if (!validNmea(line)) return;
             lastNmea[0] = SystemClock.elapsedRealtime();
+            if (line.length() > 6 && line.startsWith("GST", 3)) lastGst[0] = lastNmea[0];
             byte[] b = (line + "\r\n").getBytes(StandardCharsets.US_ASCII);
             relay.send(b, b.length);
         };
@@ -80,10 +85,18 @@ final class Gnss {
             @Override
             public void onLocationChanged(Location l) {
                 checkClock(l);
+                long now = SystemClock.elapsedRealtime();
                 // Sin NMEA del fabricante en los últimos 5 s: frases compuestas con los datos reales.
-                if (SystemClock.elapsedRealtime() - lastNmea[0] < 5000) return;
-                for (String s : synth(l, used[0])) {
-                    byte[] b = (s + "\r\n").getBytes(StandardCharsets.US_ASCII);
+                if (now - lastNmea[0] >= 5000) {
+                    for (String s : synth(l, used[0])) {
+                        byte[] b = (s + "\r\n").getBytes(StandardCharsets.US_ASCII);
+                        relay.send(b, b.length);
+                    }
+                }
+                // Precisión de Android como GST si el receptor no envía el suyo.
+                String gst = now - lastGst[0] >= 5000 ? gst(l) : null;
+                if (gst != null) {
+                    byte[] b = (gst + "\r\n").getBytes(StandardCharsets.US_ASCII);
                     relay.send(b, b.length);
                 }
             }
@@ -167,6 +180,21 @@ final class Gnss {
         String course = l.hasBearing() ? String.format(Locale.ROOT, "%.1f", l.getBearing()) : "";
         String rmc = "GPRMC," + time + ",A," + lat + "," + lon + "," + speed + "," + course + "," + date + ",,,A";
         return new String[]{"$" + gga + "*" + checksum(gga), "$" + rmc + "*" + checksum(rmc)};
+    }
+
+    /**
+     * GST con la precisión horizontal de Android (radio del 68 %), repartida por igual en latitud y longitud
+     * (σ = r/√2, así √(σlat² + σlon²) = r). Sin precisión informada → null (no se envía).
+     */
+    static String gst(Location l) {
+        if (!l.hasAccuracy() || l.getAccuracy() <= 0) return null;
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.ROOT);
+        c.setTimeInMillis(l.getTime());
+        String time = String.format(Locale.ROOT, "%02d%02d%02d.%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND), c.get(Calendar.MILLISECOND) / 10);
+        String sigma = String.format(Locale.ROOT, "%.1f", Math.max(0.1, l.getAccuracy() / Math.sqrt(2)));
+        String alt = l.hasVerticalAccuracy() ? String.format(Locale.ROOT, "%.1f", l.getVerticalAccuracyMeters()) : "";
+        String body = "GPGST," + time + ",,,,," + sigma + "," + sigma + "," + alt;
+        return "$" + body + "*" + checksum(body);
     }
 
     /** 40.385390 → "4023.1234" (grados con 2 o 3 cifras + minutos). */

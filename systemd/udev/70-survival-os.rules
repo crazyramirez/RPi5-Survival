@@ -5,3 +5,6 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", GROUP="dialout", MODE="0660", ENV{ID_
 # (Para dedicar uno concreto al ESP32, ver services/esp32-gateway/README.md.)
 SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ENV{ID_MM_DEVICE_IGNORE}="1"
 SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ENV{ID_MM_DEVICE_IGNORE}="1"
+# Receptores GNSS USB de cualquier fabricante: al conectar un puerto se escucha si emite NMEA y, si es así, se
+# añade a gpsd (scripts/gps-usb-probe.py). gpsd solo reconoce solo unos pocos chips.
+ACTION=="add", SUBSYSTEM=="tty", KERNEL=="ttyACM[0-9]*|ttyUSB[0-9]*", TAG+="systemd", ENV{SYSTEMD_WANTS}+="survival-gps-probe@%k.service"

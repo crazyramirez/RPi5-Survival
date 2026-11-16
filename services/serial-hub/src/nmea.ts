@@ -1,7 +1,8 @@
 /**
  * Receptor GNSS por USB (NMEA 0183) → mensajes con forma de gpsd (TPV/SKY), para que el servicio de
  * navegación funcione igual que en la Pi (ADR 0016). Solo frases con checksum válido. Sin inventar:
- * el error horizontal no se deriva del HDOP (necesitaría el UERE del receptor), se deja sin dato.
+ * el error horizontal no se deriva del HDOP (necesitaría el UERE del receptor): solo sale de GST, donde el propio
+ * receptor informa la desviación típica de su error en latitud y longitud (m). El HDOP se pasa en SKY, como gpsd.
  */
 
 export function checksumOk(line: string): boolean {
@@ -40,12 +41,18 @@ export interface NmeaState {
   quality: number | null
   uSat: number | null
   nSat: number | null
+  hdop: number | null
+  /** Desviación típica del error en longitud (x) y latitud (y), en m, según GST. */
+  epx: number | null
+  epy: number | null
+  /** Momento del último GST: si deja de llegar, su error caduca. */
+  gstAt: number | null
   satsByTalker: Record<string, number>
   updatedAt: number | null
 }
 
 export function emptyNmea(): NmeaState {
-  return { date: null, time: null, lat: null, lon: null, altMSL: null, speed: null, track: null, mode: 1, quality: null, uSat: null, nSat: null, satsByTalker: {}, updatedAt: null }
+  return { date: null, time: null, lat: null, lon: null, altMSL: null, speed: null, track: null, mode: 1, quality: null, uSat: null, nSat: null, hdop: null, epx: null, epy: null, gstAt: null, satsByTalker: {}, updatedAt: null }
 }
 
 const hhmmss = (v: string | undefined): string | null => {
@@ -74,6 +81,7 @@ export function applyNmea(st: NmeaState, line: string, now = Date.now()): boolea
         if (st.mode < 2) st.mode = st.altMSL !== null ? 3 : 2
       }
       st.uSat = num(f[7])
+      st.hdop = num(f[8])
       break
     }
     case 'RMC': {
@@ -92,9 +100,21 @@ export function applyNmea(st: NmeaState, line: string, now = Date.now()): boolea
       }
       break
     }
+    case 'GST': {
+      // $xxGST,hhmmss,rms,semiMayor,semiMenor,orient,σlat,σlon,σalt
+      const lat = num(f[6])
+      const lon = num(f[7])
+      if (lat === null || lon === null || lat <= 0 || lon <= 0) return false
+      st.epy = lat
+      st.epx = lon
+      st.gstAt = now
+      break
+    }
     case 'GSA': {
       const mode = num(f[2])
       if (mode !== null && mode >= 1 && mode <= 3) st.mode = mode
+      const hdop = num(f[16])
+      if (hdop !== null) st.hdop = hdop
       break
     }
     case 'GSV': {
@@ -113,7 +133,7 @@ export function applyNmea(st: NmeaState, line: string, now = Date.now()): boolea
 }
 
 /** Estado → mensaje TPV de gpsd. */
-export function toTpv(st: NmeaState, device: string): Record<string, unknown> {
+export function toTpv(st: NmeaState, device: string, now = Date.now()): Record<string, unknown> {
   const tpv: Record<string, unknown> = { class: 'TPV', device, mode: st.mode }
   if (st.date && st.time) {
     const [h, m, sec] = st.time.split(':')
@@ -124,6 +144,11 @@ export function toTpv(st: NmeaState, device: string): Record<string, unknown> {
     tpv.lon = st.lon
     if (st.speed !== null) tpv.speed = st.speed
     if (st.track !== null) tpv.track = st.track
+    // Error del GST solo si es reciente (un receptor puede dejar de enviarlo).
+    if (st.epx !== null && st.epy !== null && st.gstAt !== null && now - st.gstAt < 10_000) {
+      tpv.epx = st.epx
+      tpv.epy = st.epy
+    }
   }
   if (st.mode >= 3 && st.altMSL !== null) tpv.altMSL = st.altMSL
   return tpv
@@ -133,6 +158,7 @@ export function toSky(st: NmeaState, device: string): Record<string, unknown> {
   const sky: Record<string, unknown> = { class: 'SKY', device }
   if (st.uSat !== null) sky.uSat = st.uSat
   if (st.nSat !== null) sky.nSat = st.nSat
+  if (st.hdop !== null) sky.hdop = st.hdop
   return sky
 }
 

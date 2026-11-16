@@ -340,6 +340,8 @@ export interface NavStatus {
   gpsd: 'connected' | 'unreachable'
   /** Dispositivos que gpsd está usando (ruta /dev). */
   devices: string[]
+  /** Receptor del que sale la posición mostrada: el mejor de los conectados (fijación, error estimado, HDOP…). */
+  activeDevice: string | null
   gnss: Probe<NavFix>
   /**
    * Posición de respaldo cuando no hay GNSS propio: la última que informó el nodo LoRa Meshtastic.

@@ -29,6 +29,9 @@ const { nav, navDown, refreshNav } = useNav()
 const gnss = computed(() => nav.value?.gnss)
 const fallback = computed(() => (nav.value?.fallback?.state === 'ok' ? nav.value.fallback.value : null))
 const g = computed(() => (gnss.value?.state === 'ok' ? gnss.value.value : null))
+// Varios receptores (USB, GNSS interno de la tablet…): navegación usa el mejor y aquí se dice cuál.
+const activeDevice = computed(() => nav.value?.activeDevice ?? nav.value?.devices[0] ?? '')
+const deviceName = (d: string): string => (d === 'android:gnss' ? t('nav.deviceInternal') : d)
 const hasPos = computed(() => !!g.value && g.value.fix !== 'none' && g.value.latitude !== null && g.value.longitude !== null)
 
 const waypoints = ref<Waypoint[]>([])
@@ -224,7 +227,9 @@ const targetRot = useUnwrapped(() => toTarget.value?.b ?? null)
             {{ t('nav.fallback.note') }}
           </p>
         </div>
-        <p v-if="nav?.devices.length" class="hero-id mono">{{ t('nav.device') }} · {{ nav.devices.join(', ') }}</p>
+        <p v-if="nav?.devices.length" class="hero-id mono">
+          {{ t('nav.device') }} · {{ deviceName(activeDevice) }}<template v-if="nav.devices.length > 1"> · {{ t('nav.devicesBest', { n: nav.devices.length }) }}</template>
+        </p>
       </div>
       <dl class="hero-stats">
         <div>

@@ -49,9 +49,21 @@ function pickRegion(id: string): void {
 /** Con red local hay salida probable a Internet; sin ella, las descargas no pueden empezar. */
 const online = computed(() => status.value?.network.state === 'ok' && status.value.network.value.mode === 'local')
 
+let finished = false
 async function finish(state: 'completed' | 'skipped', selection: string[] = []): Promise<void> {
+  finished = true
   await postAction('/api/content/setup', { state, selection }).catch(() => undefined)
 }
+
+/**
+ * Salir de la bienvenida por otro camino (Inicio, otro módulo) cuenta como «Más tarde»: si no, Inicio la vuelve a
+ * abrir sola. Solo si aún estaba pendiente: abierta de nuevo desde Sistema, salir no cambia nada.
+ */
+onBeforeRouteLeave(async () => {
+  if (finished) return
+  const state = ov.value?.setup.state ?? (await $fetch<ContentOverview>('/api/content', { timeout: 5000, retry: 0 }).catch(() => null))?.setup.state
+  if (state === 'pending') await finish('skipped')
+})
 
 async function startDownloads(): Promise<void> {
   if (!catalog.value) return

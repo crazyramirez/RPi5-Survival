@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.11.3 — 2026-11-16 · Aviso de versión, bienvenida y accesos en Sistema
+
+### Añadido
+- **Aviso al actualizar:** «Survivelia OS actualizado — ya tienes la versión X (antes Y)», una vez por versión; y
+  si una actualización falla y vuelve atrás, qué versión no se instaló. En la Pi, la portable y Android.
+- **Sistema → accesos rápidos:** «Mantenimiento» en una tarjeta naranja bien visible (descargas,
+  actualizaciones, copias, USB y red) y «Bienvenida» para volver al asistente (idioma, país y «Descargarlo todo»).
+
+### Corregido
+- **La bienvenida volvía a abrirse sola** si se salía de ella sin pulsar «Ahora no» (p. ej. con «Inicio»):
+  salir cuenta como «Ahora no».
+- La versión lista de la portable dice que se aplica «al cerrar o al volver a abrir» Survivelia OS.
+
 ## 0.11.2 — 2026-11-16 · Actualizaciones de la portable en Linux
 
 ### Corregido

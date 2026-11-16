@@ -19,6 +19,9 @@
   --warn: #e5b85c;
   --danger: #ec8466;
   --info: #93b8cc;
+  /* Acceso a Mantenimiento (y otros accesos que deben verse a la primera): naranja con tinta oscura. */
+  --maint: #f0954a;
+  --maint-ink: #1a1006;
   --focus: #f2d27a;
 
   --radius: 10px;
@@ -65,6 +68,8 @@
   --warn: #ffd84d;
   --danger: #ff7a66;
   --info: #9fdcff;
+  --maint: #ffa04d;
+  --maint-ink: #000;
 }
 
 :root[data-text='large'] {

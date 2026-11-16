@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import {
   Activity,
+  ChevronRight,
   Clock,
+  Compass,
   Cpu,
   Info,
   HardDrive,
@@ -336,11 +338,27 @@ async function displayOff(): Promise<void> {
 <template>
   <div class="page">
     <PageHeader :title="t('module.system')" :icon="Cpu">
-      <NuxtLink to="/sistema/mantenimiento" class="btn mnt-btn">
-        <Wrench :size="20" aria-hidden="true" />
-        {{ t('mnt.title') }}
-      </NuxtLink>
     </PageHeader>
+
+    <!-- Accesos rápidos bien visibles: Mantenimiento (naranja, lo más buscado) y volver a la bienvenida. -->
+    <nav class="quick" :aria-label="t('sys.quick')">
+      <NuxtLink to="/sistema/mantenimiento" class="quick-card maint">
+        <span class="q-ico" aria-hidden="true"><Wrench :size="26" /></span>
+        <span class="q-text">
+          <strong>{{ t('mnt.title') }}</strong>
+          <small>{{ t('sys.mnt.hint') }}</small>
+        </span>
+        <ChevronRight :size="22" class="q-go" aria-hidden="true" />
+      </NuxtLink>
+      <NuxtLink to="/bienvenida" class="quick-card welcome">
+        <span class="q-ico" aria-hidden="true"><Compass :size="24" /></span>
+        <span class="q-text">
+          <strong>{{ t('sys.welcome') }}</strong>
+          <small>{{ t('sys.welcome.hint') }}</small>
+        </span>
+        <ChevronRight :size="22" class="q-go" aria-hidden="true" />
+      </NuxtLink>
+    </nav>
 
     <!-- Estado global: derivado solo de alertas sobre datos medidos. -->
     <section class="hero" :class="`tone-${hero.tone}`">
@@ -693,17 +711,92 @@ async function displayOff(): Promise<void> {
 }
 
 /* ------------------------------------------------------------ Cabecera */
-.mnt-btn {
-  margin-left: auto;
-  min-height: 2.75rem; /* ≥ 44 px táctil */
-  text-decoration: none;
-  color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+.quick {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--gap);
+  margin-bottom: var(--gap);
 }
 
-.mnt-btn svg {
+.quick-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3.75rem; /* ≥ 48 px táctil */
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  transition: filter 0.15s;
+}
+
+.quick-card:active {
+  filter: brightness(1.1);
+}
+
+.q-ico {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: var(--radius);
+}
+
+.q-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.q-text strong {
+  font-size: 1.1rem;
+}
+
+.q-text small {
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.q-go {
+  flex: none;
+}
+
+/* Mantenimiento: naranja sólido con texto oscuro (contraste ≥ 7:1). */
+.maint {
+  border-color: var(--maint);
+  background: var(--maint);
+  color: var(--maint-ink);
+}
+
+.maint .q-ico {
+  background: color-mix(in srgb, var(--maint-ink) 14%, transparent);
+}
+
+.maint small {
+  color: color-mix(in srgb, var(--maint-ink) 82%, transparent);
+}
+
+.welcome {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--surface-grad);
+}
+
+.welcome .q-ico {
   color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.welcome small {
+  color: var(--text-muted);
+}
+
+@media (max-width: 720px) {
+  .quick {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* ------------------------------------------------------------ Estado global */

@@ -15,6 +15,8 @@ const android = useAndroid()
     <DisplayPanel v-if="panelOpen" />
     <!-- Portable desde una memoria USB (ADR 0019): «¿abrir al conectar?» la primera vez en cada equipo. -->
     <UsbAutoOpenPrompt v-if="portable && !android" />
+    <!-- «Survivelia OS actualizado a la versión X» (una vez por versión) o aviso si la actualización falló. -->
+    <UpdateNotice />
     <LockOverlay v-if="locked" />
     <OnScreenKeyboard />
     <!-- Atenuación visual: no afecta a la retroiluminación ni al consumo. -->

@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/navigation",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "private": true,
   "type": "module",
   "description": "Navegación: cliente gpsd, waypoints y tracks GPX. Solo loopback.",
@@ -13,6 +13,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@survival-os/shared-types": "0.11.2"
+    "@survival-os/shared-types": "0.11.3"
   }
 }

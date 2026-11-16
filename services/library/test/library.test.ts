@@ -131,3 +131,21 @@ describe('rankZimHits', () => {
     expect(r.slice(1, 4)).toEqual(['Mal de montaña', 'Golpe de calor', 'Campo Grande'])
   })
 })
+
+describe('Markdown: tablas y código', () => {
+  it('tabla GFM con alineación, celdas escapadas y filas cortas', () => {
+    const html = renderMarkdown('| Situación | Qué hacer |\n|---|:---:|\n| Corte | **Esperar** <b> |\n| Solo una |\n\nDespués')
+    expect(html).toContain('<div class="table"><table><thead><tr><th>Situación</th><th style="text-align:center">Qué hacer</th></tr></thead>')
+    expect(html).toContain('<td>Corte</td><td style="text-align:center"><strong>Esperar</strong> &lt;b&gt;</td>')
+    expect(html).toContain('<tr><td>Solo una</td><td style="text-align:center"></td></tr>')
+    expect(html).toContain('<p>Después</p>')
+  })
+
+  it('bloque de código cercado, escapado y sin formato en línea', () => {
+    expect(renderMarkdown('```\nsudo **x** <y>\n```\nfin')).toBe('<pre><code>sudo **x** &lt;y&gt;</code></pre>\n<p>fin</p>')
+  })
+
+  it('una barra suelta en un párrafo no es una tabla', () => {
+    expect(renderMarkdown('a | b\nsigue')).toBe('<p>a | b sigue</p>')
+  })
+})

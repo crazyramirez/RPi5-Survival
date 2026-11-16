@@ -32,6 +32,8 @@ const RESOURCES = [
   /^\/api\/maps\/?$/,
   /^\/api\/library\/(status|books)$/,
   /^\/api\/library\/protocols(\/[a-z0-9-]{1,80})?$/,
+  // Buscador de lugares: nombres de los propios mapas, sin datos personales (la referencia es el centro del mapa).
+  /^\/api\/library\/places\/search$/,
 ]
 // SOLO para probar en el PC contra `nuxt dev` (Vite sirve /_nuxt/@vite, /_nuxt/@fs/…). Nunca en la Pi.
 if (process.env.PUBLIC_GATEWAY_DEV === '1') RESOURCES.push(/^\/_nuxt\/[^\0]*$/)

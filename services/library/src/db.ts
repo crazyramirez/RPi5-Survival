@@ -1,7 +1,7 @@
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
-import type { AskHistoryEntry, AskSource, DocKind, DocSummary, Favorite } from '@survival-os/shared-types'
+import type { AskHistoryEntry, AskSource, DocKind, DocSummary, Favorite, Note, NoteSummary } from '@survival-os/shared-types'
 
 export interface DocRow {
   id: number
@@ -50,7 +50,84 @@ export class LibraryDb {
         created_at TEXT NOT NULL,
         ms INTEGER NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS notes (
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        pinned INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE VIRTUAL TABLE IF NOT EXISTS notes_fts USING fts5(
+        title, body, tokenize = 'unicode61 remove_diacritics 2'
+      );
     `)
+  }
+
+  // ------------------------------------------------------------------ Notas
+  listNotes(): NoteSummary[] {
+    return (this.db.prepare('SELECT * FROM notes ORDER BY pinned DESC, updated_at DESC').all() as unknown as NoteRow[]).map((r) => noteSummary(r))
+  }
+
+  getNote(id: number): Note | undefined {
+    const r = this.db.prepare('SELECT * FROM notes WHERE id = ?').get(id) as unknown as NoteRow | undefined
+    return r && { ...noteSummary(r), body: r.body }
+  }
+
+  createNote(n: { title: string; body: string; pinned?: boolean }): Note {
+    const now = new Date().toISOString()
+    const r = this.db.prepare('INSERT INTO notes (title, body, pinned, created_at, updated_at) VALUES (?, ?, ?, ?, ?)').run(n.title, n.body, n.pinned ? 1 : 0, now, now)
+    const id = Number(r.lastInsertRowid)
+    this.db.prepare('INSERT INTO notes_fts (rowid, title, body) VALUES (?, ?, ?)').run(id, n.title, n.body)
+    return this.getNote(id)!
+  }
+
+  /** Actualiza los campos dados; undefined si no existe. */
+  updateNote(id: number, n: { title?: string; body?: string; pinned?: boolean }): Note | undefined {
+    const cur = this.getNote(id)
+    if (!cur) return undefined
+    const title = n.title ?? cur.title
+    const body = n.body ?? cur.body
+    const pinned = n.pinned ?? cur.pinned
+    // Fijar o soltar no cambia la fecha de edición (no reordena la lista por un toque).
+    const touched = n.title !== undefined || n.body !== undefined
+    this.db
+      .prepare('UPDATE notes SET title = ?, body = ?, pinned = ?, updated_at = ? WHERE id = ?')
+      .run(title, body, pinned ? 1 : 0, touched ? new Date().toISOString() : cur.updatedAt, id)
+    this.db.prepare('DELETE FROM notes_fts WHERE rowid = ?').run(id)
+    this.db.prepare('INSERT INTO notes_fts (rowid, title, body) VALUES (?, ?, ?)').run(id, title, body)
+    return this.getNote(id)
+  }
+
+  deleteNote(id: number): boolean {
+    this.db.prepare('DELETE FROM notes_fts WHERE rowid = ?').run(id)
+    return Number(this.db.prepare('DELETE FROM notes WHERE id = ?').run(id).changes) > 0
+  }
+
+  /** Búsqueda en notas (todas las palabras, prefijo en la última). */
+  searchNotes(query: string, limit: number): { id: number; title: string; snippet: string }[] {
+    const match = toFtsQuery(query)
+    if (!match) return []
+    return this.db
+      .prepare(
+        `SELECT n.id, n.title, snippet(notes_fts, 1, '[[', ']]', '…', 12) AS snippet
+         FROM notes_fts JOIN notes n ON n.id = notes_fts.rowid
+         WHERE notes_fts MATCH ? ORDER BY rank LIMIT ?`,
+      )
+      .all(match, limit) as unknown as { id: number; title: string; snippet: string }[]
+  }
+
+  /** Para el asistente: cualquiera de las palabras clave. */
+  searchNotesAny(words: string[], limit: number): { id: number; title: string; snippet: string }[] {
+    const terms = words.map((w) => w.replace(/[^\p{L}\p{N}]/gu, '')).filter((w) => w.length > 2)
+    if (!terms.length) return []
+    return this.db
+      .prepare(
+        `SELECT n.id, n.title, snippet(notes_fts, 1, '[[', ']]', '…', 40) AS snippet
+         FROM notes_fts JOIN notes n ON n.id = notes_fts.rowid
+         WHERE notes_fts MATCH ? ORDER BY rank LIMIT ?`,
+      )
+      .all(terms.map((w) => `"${w}"*`).join(' OR '), limit) as unknown as { id: number; title: string; snippet: string }[]
   }
 
   /** Guarda una consulta y conserva solo las `keep` más recientes. */
@@ -185,6 +262,40 @@ export function toFtsQuery(input: string): string | null {
     .slice(0, 8)
   if (!words.length) return null
   return words.map((w, i) => `"${w}"${i === words.length - 1 && w.length >= 2 ? '*' : ''}`).join(' ')
+}
+
+interface NoteRow {
+  id: number
+  title: string
+  body: string
+  pinned: number
+  created_at: string
+  updated_at: string
+}
+
+const TASK_RE = /^\s*[-*] \[( |x|X)\] /
+
+/** Tareas del texto: líneas «- [ ] …» (pendiente) y «- [x] …» (hecha). */
+export function noteTasks(body: string): { done: number; total: number } {
+  let done = 0
+  let total = 0
+  for (const line of body.split('\n')) {
+    const m = TASK_RE.exec(line)
+    if (!m) continue
+    total++
+    if (m[1] !== ' ') done++
+  }
+  return { done, total }
+}
+
+function noteSummary(r: NoteRow): NoteSummary {
+  const preview = r.body
+    .split('\n')
+    .map((l) => l.replace(TASK_RE, '').trim())
+    .filter(Boolean)
+    .join(' · ')
+    .slice(0, 160)
+  return { id: r.id, title: r.title, preview, pinned: r.pinned === 1, tasks: noteTasks(r.body), createdAt: r.created_at, updatedAt: r.updated_at }
 }
 
 interface AskHistoryRow {

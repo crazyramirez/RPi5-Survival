@@ -48,12 +48,12 @@ function call(path: string, opts: { method?: string; host?: string; accept?: str
 
 describe('lista blanca', () => {
   it('permite solo contenido público de lectura', () => {
-    for (const ok of ['/', '/mapas', '/emergencias', '/emergencias/rcp-adulto', '/biblioteca', '/biblioteca/leer?u=/kiwix/x', '/_nuxt/app.js', '/maps-data/espana.pmtiles', '/map-assets/fonts/Noto Sans Regular,Noto Sans Bold/0-255.pbf', '/map-assets/sprites/light.json', '/kiwix/content/wiki/A/Agua', '/api/maps', '/api/library/protocols', '/api/library/protocols/rcp-adulto', '/api/health']) {
+    for (const ok of ['/', '/mapas', '/emergencias', '/emergencias/rcp-adulto', '/biblioteca', '/biblioteca/leer?u=/kiwix/x', '/_nuxt/app.js', '/maps-data/espana.pmtiles', '/map-assets/fonts/Noto Sans Regular,Noto Sans Bold/0-255.pbf', '/map-assets/sprites/light.json', '/kiwix/content/wiki/A/Agua', '/api/maps', '/api/library/protocols', '/api/library/protocols/rcp-adulto', '/api/library/places/search?q=madrid&lat=40.4&lon=-3.7', '/api/health']) {
       expect(gw.allowed('GET', ok), ok).toBe(true)
     }
   })
   it('bloquea lo privado, el asistente, la posición y los documentos propios', () => {
-    for (const no of ['/boveda', '/sistema', '/sistema/mantenimiento', '/api/vault/status', '/api/admin/backup', '/api/system/power', '/api/library/ask', '/api/library/search?q=x', '/api/library/docs', '/api/nav/status', '/api/device/status', '/biblioteca/preguntar', '/%62oveda', '/api/maps/../vault/status', '/kiwix/..%2f..%2fapi/vault']) {
+    for (const no of ['/boveda', '/sistema', '/sistema/mantenimiento', '/api/vault/status', '/api/admin/backup', '/api/system/power', '/api/library/ask', '/api/library/search?q=x', '/api/library/docs', '/api/library/notes', '/api/library/notes/1', '/api/library/places/status', '/api/nav/status', '/api/device/status', '/biblioteca/preguntar', '/%62oveda', '/api/maps/../vault/status', '/kiwix/..%2f..%2fapi/vault']) {
       expect(gw.allowed('GET', no), no).toBe(false)
     }
   })

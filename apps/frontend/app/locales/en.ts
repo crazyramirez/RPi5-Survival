@@ -1,7 +1,9 @@
 import type { MessageKey } from './es'
+import { fieldEn } from './field/en'
 
 /** Catálogo en inglés. Mismas claves que es.ts (el tipo obliga a que estén todas). */
 export const en: Record<MessageKey, string> = {
+  ...fieldEn,
   'app.name': 'Survival OS',
 
   'nav.back': 'Back',

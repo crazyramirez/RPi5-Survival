@@ -14,6 +14,8 @@ const lat = computed(() => (latText.value.trim() ? parseDecimalDegrees(latText.v
 const lon = computed(() => (lonText.value.trim() ? parseDecimalDegrees(lonText.value, 'lon') : null))
 const latInvalid = computed(() => latText.value.trim() !== '' && lat.value === null)
 const lonInvalid = computed(() => lonText.value.trim() !== '' && lon.value === null)
+/** Coordenadas escritas en el conversor: posición para Sol y Luna si no hay GNSS ni LoRa. */
+const typed = computed(() => (lat.value !== null && lon.value !== null ? { lat: lat.value, lon: lon.value } : null))
 
 const kindLabel = (kind: InputDeviceInfo['kind']): string => t(`tools.input.kind.${kind}`)
 
@@ -64,9 +66,19 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
       </div>
     </section>
 
+    <!-- Herramientas de campo: todas funcionan sin red y sin hardware adicional. -->
+    <h2 class="ui-sec">{{ t('field.section') }}</h2>
+    <div class="bento quad">
+      <ToolsSunMoon :typed="typed" />
+      <ToolsSignals />
+      <ToolsUnits />
+      <ToolsRations />
+      <ToolsFrequencies />
+    </div>
+
     <!-- Hardware conectado -->
     <h2 class="ui-sec">{{ t('ui.tools.secHardware') }}</h2>
-    <div class="bento">
+    <div class="bento quad">
       <AppCard
         :title="t('tools.serial')"
         :icon="Usb"
@@ -253,12 +265,29 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
   color: var(--text-faint);
 }
 
-/* ------------------------------------------------------------ Hardware */
+/* ------------------------------------------------------------ Rejillas de 4 tarjetas */
+/*
+ * Siempre filas completas (nada de 3 + 1 con un hueco): 2 columnas en la Pi (1024 px) y en tablets,
+ * 4 en monitores anchos y 1 en el móvil. Frecuencias ocupa una fila entera aparte.
+ */
 .bento {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--gap);
   align-items: stretch;
+  margin-bottom: var(--gap);
+}
+
+@media (min-width: 1500px) {
+  .bento.quad {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .bento {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .list {

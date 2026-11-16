@@ -4,11 +4,12 @@ import * as maplibregl from 'maplibre-gl'
 import type { GeoJSONSource, Map as MlMap, Marker } from 'maplibre-gl'
 import { PMTiles, Protocol } from 'pmtiles'
 import { layers, namedFlavor } from '@protomaps/basemaps'
-import { Bike, Car, Circle, Copy, Crosshair, Download, Footprints, Globe2, Info, LocateFixed, Map as MapIcon, MapPinPlus, Minus, Moon, Plus, Route, Sun, TriangleAlert, Usb, X } from '@lucide/vue'
-import type { MapPackage, RouteMode, RouteResult, RoutingStatus, TrackPoint, Waypoint, WaypointKind } from '@survival-os/shared-types'
+import { Bike, Car, Circle, Copy, Crosshair, Download, Footprints, Globe2, Info, LocateFixed, Map as MapIcon, MapPin, MapPinPlus, Minus, Moon, Plus, Route, Ruler, Search, Sun, TriangleAlert, Undo2, Usb, X } from '@lucide/vue'
+import type { MapPackage, PlaceHit, RouteMode, RouteResult, RoutingStatus, TrackPoint, Waypoint, WaypointKind } from '@survival-os/shared-types'
 import { parseMapQuery } from '~/utils/coords'
 import { formatAge, formatBytes, formatDuration } from '~/utils/format'
 import { formatDistance, WAYPOINT_COLORS, WAYPOINT_KINDS } from '~/utils/waypoints'
+import { formatArea, pathLengthM, polygonAreaM2, type LonLat } from '~/utils/geo'
 
 const t = useT()
 const portable = usePortable()
@@ -110,7 +111,16 @@ function addOverlays(): void {
     map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout, paint: { 'line-color': '#ffffff', 'line-width': 9, 'line-opacity': 0.9 } })
     map.addLayer({ id: 'route-line', type: 'line', source: 'route', layout, paint: { 'line-color': '#2f6fe0', 'line-width': 5 } })
   }
+  if (!map.getSource('measure')) {
+    map.addSource('measure', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
+    const round = { 'line-join': 'round' as const, 'line-cap': 'round' as const }
+    map.addLayer({ id: 'measure-fill', type: 'fill', source: 'measure', filter: ['==', '$type', 'Polygon'], paint: { 'fill-color': '#f2b33d', 'fill-opacity': 0.14 } })
+    map.addLayer({ id: 'measure-casing', type: 'line', source: 'measure', filter: ['==', '$type', 'LineString'], layout: round, paint: { 'line-color': '#1b1b1b', 'line-width': 6, 'line-opacity': 0.55 } })
+    map.addLayer({ id: 'measure-line', type: 'line', source: 'measure', filter: ['==', '$type', 'LineString'], layout: round, paint: { 'line-color': '#f2b33d', 'line-width': 3, 'line-dasharray': [2, 1.2] } })
+    map.addLayer({ id: 'measure-points', type: 'circle', source: 'measure', filter: ['==', '$type', 'Point'], paint: { 'circle-radius': 6, 'circle-color': '#f2b33d', 'circle-stroke-color': '#1b1b1b', 'circle-stroke-width': 2 } })
+  }
   drawRoute()
+  drawMeasure()
 }
 
 function webgl2Available(): boolean {
@@ -163,6 +173,10 @@ async function initMap(file: string): Promise<void> {
     center.value = { lat: c.lat, lon: c.lng, zoom: m.getZoom() }
   }
   m.on('moveend', updateCenter)
+  // Modo medición: cada toque en el mapa añade un vértice.
+  m.on('click', (e) => {
+    if (measuring.value) addMeasurePoint([e.lngLat.lng, e.lngLat.lat])
+  })
   m.on('load', () => {
     updateCenter()
     addOverlays()
@@ -308,6 +322,7 @@ function pointOf(kind: 'gnss' | 'lora' | 'center' | string): { lat: number; lon:
   if (kind === 'gnss') return fix.value?.latitude != null && fix.value.longitude != null ? { lat: fix.value.latitude, lon: fix.value.longitude } : null
   if (kind === 'lora') return lora.value ? { lat: lora.value.latitude, lon: lora.value.longitude } : null
   if (kind === 'center') return center.value ? { lat: center.value.lat, lon: center.value.lon } : null
+  if (kind === 'place') return place.value ? { lat: place.value.lat, lon: place.value.lon } : null
   const w = waypoints.value.find((x) => x.id === kind)
   return w ? { lat: w.latitude, lon: w.longitude } : null
 }
@@ -384,6 +399,81 @@ async function toggleRecording(): Promise<void> {
   }
 }
 
+// ------------------------------------------------------------------ Buscar lugares sin conexión
+const searchOpen = ref(false)
+const place = ref<PlaceHit | null>(null)
+let placeMarker: Marker | null = null
+/** Zoom al abrir un lugar según su tamaño. */
+const PLACE_ZOOM: Record<string, number> = { city: 12, town: 13, village: 14, suburb: 14, quarter: 14 }
+
+function pickPlace(h: PlaceHit): void {
+  searchOpen.value = false
+  place.value = h
+  if (!map) return
+  placeMarker?.remove()
+  const el = document.createElement('div')
+  el.className = 'place-marker'
+  el.appendChild(document.createElement('i'))
+  placeMarker = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([h.lon, h.lat]).addTo(map)
+  map.flyTo({ center: [h.lon, h.lat], zoom: PLACE_ZOOM[h.detail] ?? 15, speed: 1.8 })
+}
+
+function clearPlace(): void {
+  place.value = null
+  placeMarker?.remove()
+  placeMarker = null
+  if (routeTo.value === 'place') routeTo.value = 'center'
+}
+
+function routeToPlace(): void {
+  openRoute()
+  routeTo.value = 'place'
+}
+
+function savePlace(): void {
+  if (!place.value || !map) return
+  // Se guarda en la mira, que queda sobre el lugar: se ve exactamente qué punto se guarda.
+  map.jumpTo({ center: [place.value.lon, place.value.lat] })
+  center.value = { lat: place.value.lat, lon: place.value.lon, zoom: map.getZoom() }
+  newName.value = place.value.name
+  adding.value = true
+}
+
+// ------------------------------------------------------------------ Medir distancias y áreas
+const measuring = ref(false)
+const measurePts = ref<LonLat[]>([])
+const measureLen = computed(() => pathLengthM(measurePts.value))
+const measureArea = computed(() => (measurePts.value.length >= 3 ? polygonAreaM2(measurePts.value) : null))
+
+function drawMeasure(): void {
+  const src = map?.getSource('measure') as GeoJSONSource | undefined
+  if (!src) return
+  const pts = measurePts.value
+  type Geom = { type: 'Point'; coordinates: LonLat } | { type: 'LineString'; coordinates: LonLat[] } | { type: 'Polygon'; coordinates: LonLat[][] }
+  const features: { type: 'Feature'; properties: Record<string, never>; geometry: Geom }[] = pts.map((c) => ({ type: 'Feature' as const, properties: {}, geometry: { type: 'Point' as const, coordinates: c } }))
+  if (pts.length >= 2) features.push({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: pts } })
+  if (pts.length >= 3) features.push({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[...pts, pts[0]!]] } })
+  src.setData({ type: 'FeatureCollection', features })
+}
+
+function addMeasurePoint(p: LonLat): void {
+  measurePts.value = [...measurePts.value, p]
+  drawMeasure()
+}
+
+function toggleMeasure(): void {
+  measuring.value = !measuring.value
+  measurePts.value = []
+  // Al empezar, el primer vértice es la mira (lo más preciso con el dedo).
+  if (measuring.value && center.value) measurePts.value = [[center.value.lon, center.value.lat]]
+  drawMeasure()
+}
+
+function undoMeasure(): void {
+  measurePts.value = measurePts.value.slice(0, -1)
+  drawMeasure()
+}
+
 function selectMap(file: string): void {
   selected.value = file
   savePrefs()
@@ -429,6 +519,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (navTimer) clearInterval(navTimer)
+  placeMarker?.remove()
   map?.remove() // libera WebGL: no se renderiza nada fuera de esta pantalla
   map = null
   maplibregl.removeProtocol('pmtiles')
@@ -502,6 +593,10 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
+        <button type="button" class="search-pill" @click="searchOpen = true">
+          <Search :size="18" aria-hidden="true" /><span>{{ t('places.open') }}</span>
+        </button>
+
         <div v-if="message" class="toast" role="status"><Info :size="16" aria-hidden="true" /><span>{{ message }}</span></div>
       </div>
 
@@ -509,6 +604,9 @@ onBeforeUnmount(() => {
         <div class="rail">
           <button type="button" class="mbtn" :aria-label="t('maps.zoomIn')" @click="map?.zoomIn()"><Plus :size="26" /></button>
           <button type="button" class="mbtn" :aria-label="t('maps.zoomOut')" @click="map?.zoomOut()"><Minus :size="26" /></button>
+          <button type="button" class="mbtn measure" :class="{ on: measuring }" :aria-label="t('measure.toggle')" :aria-pressed="measuring" @click="toggleMeasure">
+            <Ruler :size="22" />
+          </button>
         </div>
         <div class="rail">
           <button type="button" class="mbtn" :disabled="!fix && !lora" :aria-label="fix || !lora ? t('maps.centerMe') : t('maps.centerLora')" @click="centerOnMe"><LocateFixed :size="24" /></button>
@@ -542,18 +640,50 @@ onBeforeUnmount(() => {
         <span class="mono">{{ formatBytes(currentMap.sizeBytes) }}</span>
       </p>
 
-      <!-- Ruta calculada: resumen con lo que da BRouter (sin inventar tiempos ni desniveles). -->
-      <div v-if="route" class="route-card">
-        <span class="route-icon" aria-hidden="true"><component :is="ROUTE_MODES.find((m) => m.id === route!.mode)!.icon" :size="20" /></span>
-        <span class="route-main">
-          <strong class="mono">{{ formatDistance(route.distanceM) }}</strong>
-          <span v-if="route.timeS != null" class="mono">{{ formatDuration(route.timeS) }}</span>
-          <span v-if="route.ascentM != null" class="mono">↑ {{ Math.round(route.ascentM) }} m</span>
-        </span>
-        <a v-if="routeQuery" class="btn small" :href="`/api/routing/route?${routeQuery}&format=gpx`" :download="`ruta-${route.mode}.gpx`">
-          <Download :size="18" aria-hidden="true" />GPX
-        </a>
-        <button type="button" class="btn small icon-only" :aria-label="t('maps.route.clear')" @click="clearRoute"><X :size="18" /></button>
+      <!-- Abajo, apiladas sin taparse: medición, lugar elegido y ruta calculada. -->
+      <div class="bottom-stack">
+        <div v-if="measuring" class="b-card measure-card" role="status">
+          <span class="b-icon" aria-hidden="true"><Ruler :size="20" /></span>
+          <span class="b-main">
+            <template v-if="measurePts.length >= 2">
+              <strong class="mono">{{ formatDistance(measureLen) }}</strong>
+              <small v-if="measureArea !== null" class="mono">{{ t('measure.area', { a: formatArea(measureArea, bcp47()) }) }}</small>
+            </template>
+            <small v-else>{{ t('measure.hint') }}</small>
+          </span>
+          <button type="button" class="btn small" :disabled="!center" @click="center && addMeasurePoint([center.lon, center.lat])">
+            <Crosshair :size="18" aria-hidden="true" />{{ t('measure.addCenter') }}
+          </button>
+          <button type="button" class="btn small icon-only" :disabled="!measurePts.length" :aria-label="t('measure.undo')" @click="undoMeasure"><Undo2 :size="18" /></button>
+          <button type="button" class="btn small icon-only" :aria-label="t('measure.close')" @click="toggleMeasure"><X :size="18" /></button>
+        </div>
+
+        <div v-if="place" class="b-card place-card">
+          <span class="b-icon" aria-hidden="true"><MapPin :size="20" /></span>
+          <span class="b-main">
+            <strong>{{ place.name }}</strong>
+            <small class="mono">{{ place.lat.toFixed(5) }}, {{ place.lon.toFixed(5) }}<template v-if="place.localName"> · {{ place.localName }}</template></small>
+          </span>
+          <template v-if="!publicView">
+            <button type="button" class="btn small" @click="routeToPlace"><Route :size="18" aria-hidden="true" />{{ t('places.routeHere') }}</button>
+            <button type="button" class="btn small icon-only" :aria-label="t('places.save')" @click="savePlace"><MapPinPlus :size="18" /></button>
+          </template>
+          <button type="button" class="btn small icon-only" :aria-label="t('places.clear')" @click="clearPlace"><X :size="18" /></button>
+        </div>
+
+        <!-- Ruta calculada: resumen con lo que da BRouter (sin inventar tiempos ni desniveles). -->
+        <div v-if="route" class="route-card">
+          <span class="route-icon" aria-hidden="true"><component :is="ROUTE_MODES.find((m) => m.id === route!.mode)!.icon" :size="20" /></span>
+          <span class="route-main">
+            <strong class="mono">{{ formatDistance(route.distanceM) }}</strong>
+            <span v-if="route.timeS != null" class="mono">{{ formatDuration(route.timeS) }}</span>
+            <span v-if="route.ascentM != null" class="mono">↑ {{ Math.round(route.ascentM) }} m</span>
+          </span>
+          <a v-if="routeQuery" class="btn small" :href="`/api/routing/route?${routeQuery}&format=gpx`" :download="`ruta-${route.mode}.gpx`">
+            <Download :size="18" aria-hidden="true" />GPX
+          </a>
+          <button type="button" class="btn small icon-only" :aria-label="t('maps.route.clear')" @click="clearRoute"><X :size="18" /></button>
+        </div>
       </div>
 
       <div v-if="routeOpen" class="sheet-backdrop" @click.self="routeOpen = false">
@@ -581,6 +711,7 @@ onBeforeUnmount(() => {
             <span class="route-lbl">{{ t('maps.route.to') }}</span>
             <select v-model="routeTo" class="ui-field route-to">
               <option value="center" :disabled="routeFrom === 'center'">{{ t('maps.route.toCenter') }}</option>
+              <option v-if="place" value="place">{{ t('places.routeOption', { name: place.name }) }}</option>
               <option v-for="w in waypoints" :key="w.id" :value="w.id">{{ w.name }}</option>
             </select>
           </div>
@@ -601,6 +732,8 @@ onBeforeUnmount(() => {
           </div>
         </form>
       </div>
+
+      <MapPlaceSearch v-if="searchOpen" :near="center" @pick="pickPlace" @close="searchOpen = false" />
 
       <div v-if="adding" class="sheet-backdrop" @click.self="adding = false">
         <form class="sheet add-point-sheet" @submit.prevent="saveWaypoint">
@@ -921,8 +1054,9 @@ onBeforeUnmount(() => {
 }
 
 .mbtn {
-  width: 3.25rem;
-  height: 3.25rem;
+  /* 9 botones en ~488 px de alto útil (1024×600): 48 px, el mínimo táctil. */
+  width: var(--touch);
+  height: var(--touch);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -947,6 +1081,11 @@ onBeforeUnmount(() => {
   color: var(--text-faint);
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.mbtn.measure.on {
+  color: #1b1b1b;
+  background: #f2b33d;
 }
 
 .mbtn.route svg {
@@ -991,13 +1130,107 @@ onBeforeUnmount(() => {
   flex: none;
 }
 
-/* Resumen de la ruta calculada: abajo en el centro, opaco (sin desenfoque sobre el mapa). */
-.route-card {
+/* Tarjetas de abajo (medición, lugar, ruta): columna centrada, opacas y sin desenfoque. */
+.bottom-stack {
   position: absolute;
   left: 50%;
   bottom: 0.7rem;
   z-index: 5;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: calc(100% - 9rem);
+  pointer-events: none;
+}
+
+.bottom-stack > * {
+  pointer-events: auto;
+}
+
+.b-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+  padding: 0.35rem 0.4rem 0.35rem 0.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--b) 60%, var(--chrome-border));
+  background: var(--chrome-bg);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+  animation: pop-in 0.16s ease-out;
+}
+
+.measure-card {
+  --b: #f2b33d;
+}
+
+.place-card {
+  --b: #e5527a;
+}
+
+.b-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  color: var(--b);
+  background: color-mix(in srgb, var(--b) 20%, transparent);
+}
+
+.b-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-right: 0.3rem;
+}
+
+.b-main strong {
+  font-size: 1.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.b-main small {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Buscar lugar: siempre a mano, bajo la lectura de posición. */
+.search-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--touch);
+  padding: 0 1rem 0 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 70%, var(--chrome-border));
+  background: var(--chrome-bg);
+  box-shadow: var(--chrome-shadow);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-pill svg {
+  color: var(--accent);
+}
+
+.search-pill:active {
+  transform: scale(0.97);
+}
+
+/* Resumen de la ruta calculada (dentro de la columna de abajo). */
+.route-card {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -1355,6 +1588,26 @@ onBeforeUnmount(() => {
   white-space: nowrap;
   font: 700 12px/1.2 system-ui, sans-serif;
   color: #111;
+}
+
+/* Lugar elegido en el buscador: chincheta (la punta marca el sitio). */
+:deep(.place-marker) {
+  width: 30px;
+  height: 38px;
+  display: flex;
+  justify-content: center;
+}
+
+/* MapLibre fija el transform del contenedor: la chincheta girada va en el hijo. */
+:deep(.place-marker i) {
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: #e5527a;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 45%);
 }
 
 :deep(.maplibregl-ctrl-scale) {

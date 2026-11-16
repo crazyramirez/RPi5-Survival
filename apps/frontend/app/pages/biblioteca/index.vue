@@ -10,6 +10,7 @@ import {
   FolderOpen,
   Library,
   LibraryBig,
+  NotebookPen,
   RefreshCw,
   Search,
   SearchX,
@@ -68,7 +69,7 @@ const router = useRouter()
  * sesión para no repetir la consulta al volver del lector.
  */
 const lastResults = useState<SearchResults | null>('lib:lastResults', () => null)
-const FILTERS: readonly Filter[] = ['all', 'protocol', 'doc', 'zim', 'history']
+const FILTERS: readonly Filter[] = ['all', 'protocol', 'doc', 'note', 'zim', 'history']
 
 function syncUrl(): void {
   const q = results.value?.query
@@ -168,24 +169,27 @@ const SOURCE_LABEL = computed<Record<SearchHit['source'], string>>(() => ({
   doc: t('lib.source.doc'),
   zim: t('lib.source.zim'),
   history: t('lib.source.history'),
+  note: t('lib.source.note'),
 }))
 const SOURCE_TONE: Record<SearchHit['source'], string> = {
   protocol: 'tone-warn',
   doc: 'tone-info',
   zim: 'tone-ok',
   history: 'tone-muted',
+  note: 'tone-info',
 }
 const SOURCE_KEY: Record<keyof SearchResults['sources'], SearchHit['source']> = {
   protocols: 'protocol',
   docs: 'doc',
   zim: 'zim',
   history: 'history',
+  notes: 'note',
 }
 
 const filters = computed(() => {
   const hits = results.value?.hits ?? []
   const count = (s: SearchHit['source']): number => hits.filter((h) => h.source === s).length
-  return (['protocol', 'doc', 'zim', 'history'] as const)
+  return (['protocol', 'doc', 'note', 'zim', 'history'] as const)
     .map((s) => ({ key: s, label: SOURCE_LABEL.value[s], n: count(s) }))
     .filter((f) => f.n > 0)
 })
@@ -247,6 +251,10 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
           {{ searching ? t('state.loading') : t('lib.search.go') }}
         </button>
       </form>
+      <NuxtLink v-if="!publicView" to="/biblioteca/notas" class="btn" :title="t('notes.hint')">
+        <NotebookPen :size="20" aria-hidden="true" />
+        {{ t('notes.title') }}
+      </NuxtLink>
       <NuxtLink v-if="!publicView" to="/biblioteca/preguntar" class="btn ask" :title="t('lib.ask.hint')">
         <Bot :size="20" aria-hidden="true" />
         {{ t('lib.ask.short') }}

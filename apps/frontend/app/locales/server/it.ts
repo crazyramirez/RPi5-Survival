@@ -1,5 +1,7 @@
+import { fieldServerIt } from '../field/server'
 /** Textos de los servicios (en español) → italiano. Ver translateServer en utils/i18n.ts. */
 export const serverIt: Record<string, string> = {
+  ...fieldServerIt,
   'Sin ventilador PWM detectado': 'Nessuna ventola PWM rilevata',
   'Ventilador sin tacómetro legible': 'Ventola senza tachimetro leggibile',
   'Ningún punto de montaje configurado es accesible': 'Nessun punto di montaggio configurato è accessibile',

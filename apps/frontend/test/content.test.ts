@@ -166,3 +166,21 @@ describe('ajuste al espacio', () => {
     expect(keep.map((i) => i.id).sort()).toEqual(['base', 'mediano', 'pequeno'])
   })
 })
+
+describe('«Descargarlo todo» cabe en una sola tarea', () => {
+  // La API (server/utils/admin.ts) y la tarea root (scripts/admin-job.py) rechazan listas más largas con
+  // «Selección no válida»: el catálogo creció y en español el plan completo pasó de 100 elementos.
+  const src = (p: string) => readFileSync(new URL(`../../../${p}`, import.meta.url), 'utf8')
+  const apiMax = Number(/CONTENT_MAX_ITEMS = (\d+)/.exec(src('apps/frontend/server/utils/admin.ts'))?.[1])
+  const jobMax = Number(/CONTENT_MAX_ITEMS = (\d+)/.exec(src('scripts/admin-job.py'))?.[1])
+  const country = { id: 'usa', name: 'USA', mapBytes: GB, routingBytes: GB }
+
+  it('la API y la tarea root usan el mismo tope', () => {
+    expect(apiMax).toBeGreaterThan(0)
+    expect(jobMax).toBe(apiMax)
+  })
+  it.each(['es', 'en', 'fr', 'it'] as ContentLang[])('plan completo en %s ≤ tope', (lang) => {
+    const ids = orderPlan(downloadPlan(catalog.items, new Set(), lang, country as never, 'all')).map((i) => i.id)
+    expect(ids.length).toBeLessThanOrEqual(apiMax)
+  })
+})

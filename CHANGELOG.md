@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.1 — 2026-11-16 · «Descargarlo todo» en español
+
+### Corregido
+- **«Descargarlo todo» decía «Selección no válida» en español** (bienvenida y Mantenimiento, en la Pi, Linux,
+  la portable y Android): con el catálogo actual el plan completo en español pasa de 100 elementos y la API y la
+  tarea root solo aceptaban 100. El tope sube a 500 y un test comprueba que el plan completo de cada idioma cabe.
+
 ## 0.11.0 — 2026-11-16 · Survivelia OS, icono de Android y actualizaciones al abrir
 
 ### Cambiado

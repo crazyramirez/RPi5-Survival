@@ -6,6 +6,9 @@ import { portableJobState, startPortableJob, stopPortableJob } from './portable-
 
 export const ADMIN_DIR = process.env.SURVIVAL_ADMIN_DIR ?? '/run/survival-os/admin'
 
+/** Tope de elementos por tarea de contenidos (= CONTENT_MAX_ITEMS de admin-job.py). «Descargarlo todo» en español ya pasa de 100. */
+const CONTENT_MAX_ITEMS = 500
+
 const MEDIA_RE = /^[\w.-]{1,64}\/[^/\0]{1,128}$/
 
 function bad(msg: string): never {
@@ -46,7 +49,7 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
   content: (b) => {
     if (b.action !== 'install' && b.action !== 'remove') bad('Acción no válida')
     const items = b.items
-    if (!Array.isArray(items) || items.length === 0 || items.length > 100 || items.some((i) => typeof i !== 'string' || !/^[a-z0-9-]{1,40}(:[a-z]{0,10})?$/.test(i))) {
+    if (!Array.isArray(items) || items.length === 0 || items.length > CONTENT_MAX_ITEMS || items.some((i) => typeof i !== 'string' || !/^[a-z0-9-]{1,40}(:[a-z]{0,10})?$/.test(i))) {
       bad('Selección no válida')
     }
     return { action: b.action, items }

@@ -53,6 +53,8 @@ ZIM_RE = re.compile(r"^[a-z0-9_]+_\d{4}-\d{2}\.zim$")
 MAP_RE = re.compile(r"^[A-Za-z0-9_-]{1,80}\.pmtiles$")
 RELEASE_RE = re.compile(r"^survival-os-\d+\.\d+\.\d+\.tar\.gz$")
 CONTENT_ID_RE = re.compile(r"^[a-z0-9-]{1,40}(:[a-z]{0,10})?$")
+# Tope de elementos por tarea de contenidos (= server/utils/admin.ts). «Descargarlo todo» en español ya pasa de 100.
+CONTENT_MAX_ITEMS = 500
 NODE = "/opt/survival-os/runtime/node/bin/node"
 # Actualizaciones (ADR 0021): descargas y estado de root (la web solo lee); el modo lo escribe la web.
 UPDATE_DIR = "/var/lib/survival-os-update"
@@ -212,7 +214,7 @@ def job_content(p):
     items = p.get("items")
     if action not in ("install", "remove"):
         raise JobError("acción no válida")
-    if not isinstance(items, list) or not 1 <= len(items) <= 100 or any(not isinstance(i, str) or not CONTENT_ID_RE.match(i) for i in items):
+    if not isinstance(items, list) or not 1 <= len(items) <= CONTENT_MAX_ITEMS or any(not isinstance(i, str) or not CONTENT_ID_RE.match(i) for i in items):
         raise JobError("selección no válida")
     with open(f"{APP}/content/catalog.json", encoding="utf-8") as f:
         known = {i["id"] for i in json.load(f)["items"]}

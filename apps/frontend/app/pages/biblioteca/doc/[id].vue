@@ -26,14 +26,37 @@ onMounted(async () => {
 
 const srcdoc = computed(() => {
   if (!doc.value || doc.value.kind === 'pdf') return ''
-  const bg = night.value ? '#0f1412' : '#fbfaf6'
-  const fg = night.value ? '#ece6d6' : '#1b1f1d'
+  // Paleta del documento (día / noche) con el acento de la app.
+  const c = night.value
+    ? { bg: '#0f1412', fg: '#ece6d6', muted: '#a9b0a8', line: '#2a332e', soft: '#18201c', head: '#1d2622', accent: '#8cbf96' }
+    : { bg: '#fbfaf6', fg: '#1b1f1d', muted: '#5b625d', line: '#e3e0d6', soft: '#f3f1ea', head: '#ebe8de', accent: '#3d7a4c' }
+  // Ancho completo de la pantalla: márgenes y cuerpo de letra crecen con ella (Pi 1024 px → monitor 4K).
   return `<!doctype html><html lang="${locale.value}"><head><meta charset="utf-8"><style>
-    body{margin:0;padding:18px 22px 40px;background:${bg};color:${fg};font:18px/1.55 system-ui,sans-serif;max-width:860px}
-    h2,h3,h4{line-height:1.25} pre{white-space:pre-wrap;font:16px/1.5 ui-monospace,monospace}
-    blockquote{margin:0;padding:8px 14px;border-left:4px solid #e5b85c;background:rgba(229,184,92,.12)}
-    a{color:inherit}
+    html{background:${c.bg}}
+    body{margin:0;padding:clamp(14px,2.2vw,40px) clamp(16px,3.5vw,72px) 48px;background:${c.bg};color:${c.fg};
+      font:clamp(17px,0.45vw + 13px,22px)/1.6 system-ui,'Segoe UI',sans-serif;overflow-wrap:break-word}
+    h2,h3,h4{line-height:1.25;margin:1.4em 0 .5em;letter-spacing:-.01em}
+    h2{font-size:1.45em;padding-bottom:.3em;border-bottom:2px solid ${c.accent}}
+    h2:first-child{margin-top:0}
+    h3{font-size:1.2em;color:${c.accent}} h4{font-size:1.05em}
+    p,ul,ol{margin:.6em 0} li{margin:.25em 0} li::marker{color:${c.accent}}
+    strong{font-weight:700}
+    a{color:${c.accent};text-underline-offset:2px}
+    code{font:.88em/1.5 ui-monospace,'Cascadia Mono',monospace;background:${c.soft};border:1px solid ${c.line};border-radius:5px;padding:.08em .35em}
+    pre{margin:1em 0;padding:12px 16px;background:${c.soft};border:1px solid ${c.line};border-radius:10px;overflow-x:auto}
+    pre code{background:none;border:0;padding:0;white-space:pre-wrap}
+    blockquote{margin:1em 0;padding:10px 16px;border-left:4px solid #e5b85c;border-radius:0 10px 10px 0;background:rgba(229,184,92,.12)}
+    .table{margin:1em 0;overflow-x:auto;border:1px solid ${c.line};border-radius:10px}
+    table{width:100%;border-collapse:collapse;font-size:.92em}
+    th,td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid ${c.line}}
+    th{background:${c.head};font-weight:700;white-space:nowrap}
+    tbody tr:nth-child(even) td{background:${c.soft}}
+    tbody tr:last-child td{border-bottom:0}
+    img{max-width:100%;height:auto;border-radius:8px}
+    hr{border:0;border-top:1px solid ${c.line};margin:1.6em 0}
+    ::selection{background:${c.accent};color:${c.bg}}
     html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:pan-x pan-y;overscroll-behavior:contain}
+    pre,pre *{-webkit-user-select:text;user-select:text}
   </style></head><body>${doc.value.html}</body></html>`
 })
 </script>

@@ -2,7 +2,8 @@
  * Renderizador Markdown mínimo y SEGURO (sin dependencias).
  *
  * Todo el texto se escapa; solo se generan etiquetas conocidas: h2–h4, p, ul/ol/li,
- * blockquote, strong, em, code, a (solo rutas relativas o http(s), con rel="noopener").
+ * blockquote, table (tablas GFM con barras), pre/code (bloques ```), strong, em, code,
+ * a (solo rutas relativas o http(s), con rel="noopener").
  * Suficiente para los protocolos y documentos propios; no es CommonMark completo.
  */
 
@@ -60,7 +61,46 @@ export function renderMarkdown(source: string): string {
     flushQuote()
   }
 
-  for (const line of lines) {
+  /** Celdas de una fila «| a | b |» (sin las barras de los extremos). */
+  const cells = (row: string): string[] =>
+    row
+      .trim()
+      .replace(/^\|/, '')
+      .replace(/\|$/, '')
+      .split('|')
+      .map((c) => c.trim())
+  const isSeparator = (row: string | undefined): boolean => !!row && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/.test(row)
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? ''
+    // Bloque de código cercado: se copia tal cual (escapado).
+    if (/^```/.test(line.trim())) {
+      flushAll()
+      const code: string[] = []
+      while (++i < lines.length && !/^```/.test((lines[i] ?? '').trim())) code.push(lines[i] ?? '')
+      out.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`)
+      continue
+    }
+    // Tabla: cabecera «| … |» seguida de «|---|---|».
+    if (line.includes('|') && isSeparator(lines[i + 1])) {
+      flushAll()
+      const head = cells(line)
+      const align = cells(lines[i + 1] ?? '').map((c) => (c.startsWith(':') && c.endsWith(':') ? 'center' : c.endsWith(':') ? 'right' : null))
+      const td = (tag: 'th' | 'td', text: string, k: number): string => {
+        const a = align[k]
+        return `<${tag}${a ? ` style="text-align:${a}"` : ''}>${inline(escapeHtml(text))}</${tag}>`
+      }
+      const body: string[] = []
+      i += 2
+      while (i < lines.length && (lines[i] ?? '').includes('|') && (lines[i] ?? '').trim()) {
+        const row = cells(lines[i] ?? '')
+        body.push(`<tr>${head.map((_, k) => td('td', row[k] ?? '', k)).join('')}</tr>`)
+        i++
+      }
+      i--
+      out.push(`<div class="table"><table><thead><tr>${head.map((h, k) => td('th', h, k)).join('')}</tr></thead><tbody>${body.join('')}</tbody></table></div>`)
+      continue
+    }
     const heading = /^(#{1,4})\s+(.*)$/.exec(line)
     const bullet = /^\s*[-*]\s+(.*)$/.exec(line)
     const ordered = /^\s*\d+[.)]\s+(.*)$/.exec(line)

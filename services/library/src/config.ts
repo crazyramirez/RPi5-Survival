@@ -7,6 +7,9 @@ export interface LibraryConfig {
   dataDir: string
   docsDir: string
   dbPath: string
+  /** Mapas PMTiles instalados (índice de lugares). Por defecto, hermana de la carpeta de datos de la biblioteca. */
+  mapsDir: string
+  placesDbPath: string
   protocolsDir: string
   kiwixUrl: string
   llmUrl: string
@@ -26,6 +29,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): LibraryConfig 
     dataDir,
     docsDir: env.LIBRARY_DOCS_DIR || resolve(dataDir, 'docs'),
     dbPath: env.LIBRARY_DB || resolve(dataDir, 'index.sqlite'),
+    mapsDir: env.SURVIVAL_MAPS_DIR || resolve(dataDir, '..', 'maps'),
+    placesDbPath: resolve(dataDir, 'places.sqlite'),
     protocolsDir: env.LIBRARY_PROTOCOLS_DIR || resolve(appRoot, 'content/protocols'),
     kiwixUrl: (env.KIWIX_URL || 'http://127.0.0.1:8783/kiwix').replace(/\/$/, ''),
     llmUrl: (env.LLM_URL || 'http://127.0.0.1:8786').replace(/\/$/, ''),

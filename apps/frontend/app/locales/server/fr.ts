@@ -1,5 +1,7 @@
+import { fieldServerFr } from '../field/server'
 /** Textos de los servicios (en español) → francés. Ver translateServer en utils/i18n.ts. */
 export const serverFr: Record<string, string> = {
+  ...fieldServerFr,
   'Descarga interrumpida: vuelve a lanzarla': "Téléchargement interrompu : relancez-le",
   'Receptor conectado, esperando datos': "Récepteur connecté, en attente de données",
   'No disponible en Android': "Non disponible sur Android",

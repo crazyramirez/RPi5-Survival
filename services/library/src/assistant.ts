@@ -9,7 +9,7 @@ export interface Source {
   n: number
   title: string
   href: string
-  source: 'protocol' | 'doc' | 'zim'
+  source: 'protocol' | 'doc' | 'zim' | 'note'
   text: string
 }
 

@@ -262,7 +262,7 @@ export interface ZimBook {
 }
 
 export interface SearchHit {
-  source: 'protocol' | 'doc' | 'zim' | 'history'
+  source: 'protocol' | 'doc' | 'zim' | 'history' | 'note'
   title: string
   snippet: string
   /** Ruta interna de la UI o del lector Kiwix. */
@@ -274,7 +274,7 @@ export interface SearchResults {
   query: string
   hits: SearchHit[]
   /** Estado por fuente: una fuente caída no anula las demás. */
-  sources: Record<'protocols' | 'docs' | 'zim' | 'history', Probe<{ count: number }>>
+  sources: Record<'protocols' | 'docs' | 'zim' | 'history' | 'notes', Probe<{ count: number }>>
 }
 
 export interface Favorite {
@@ -652,7 +652,7 @@ export interface AskSource {
   n: number
   title: string
   href: string
-  source: 'protocol' | 'doc' | 'zim'
+  source: 'protocol' | 'doc' | 'zim' | 'note'
 }
 
 /** Consulta guardada en el historial del asistente (solo en el equipo, borrable). */
@@ -916,3 +916,6 @@ export interface ContentOverview {
   /** Asistente de primera puesta en marcha. */
   setup: { state: 'pending' | 'completed' | 'skipped'; at: string | null }
 }
+
+export type * from './notes.ts'
+export type * from './places.ts'

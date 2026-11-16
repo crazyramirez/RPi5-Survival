@@ -2,7 +2,7 @@ import { createReadStream, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import { join, resolve, sep } from 'node:path'
-import type { AskHistory, AskSource, AssistantStatus, LibraryStatus, Probe, SearchHit, SearchResults, ZimBook, ZimDownload, ZimInstalled } from '@survival-os/shared-types'
+import type { AskHistory, PlaceSearch, AskSource, AssistantStatus, LibraryStatus, Probe, SearchHit, SearchResults, ZimBook, ZimDownload, ZimInstalled } from '@survival-os/shared-types'
 import { loadConfig } from './config.ts'
 import { LibraryDb, docSummary } from './db.ts'
 import { indexDocs } from './indexer.ts'
@@ -10,6 +10,7 @@ import { KiwixClient } from './kiwix.ts'
 import { escapeHtml, htmlToText, renderMarkdown } from './markdown.ts'
 import { buildMessages, clip, excerpt, isLang, keywords, LANGS, NOT_FOUND, relevance, searchTerms, sse, streamCompletion, type Lang, type Source } from './assistant.ts'
 import { loadProtocols, localized, summarize, type LoadedProtocol } from './protocols.ts'
+import { PlaceIndex } from './places.ts'
 
 const config = loadConfig()
 mkdirSync(config.docsDir, { recursive: true })
@@ -47,6 +48,9 @@ function pdftotextPresent(): boolean {
 function log(level: 'info' | 'warn' | 'error', msg: string, extra: Record<string, unknown> = {}): void {
   process.stdout.write(`${JSON.stringify({ t: new Date().toISOString(), level, svc: 'library', msg, ...extra })}\n`)
 }
+
+/** Buscador de lugares sin conexión (índice de los mapas instalados). */
+const places = new PlaceIndex(config.placesDbPath, config.mapsDir, log)
 
 function send(res: ServerResponse, status: number, body: unknown): void {
   const payload = JSON.stringify(body)
@@ -155,6 +159,15 @@ async function search(q: string, lang: Lang = 'es'): Promise<SearchResults> {
     zimProbe = { state: 'unavailable', reason: books.reason }
   }
 
+  let notesProbe: Probe<{ count: number }>
+  try {
+    const noteHits = db.searchNotes(query, 10).map<SearchHit>((n) => ({ source: 'note', title: n.title, snippet: n.snippet, href: `/biblioteca/notas?id=${n.id}` }))
+    hits.push(...noteHits)
+    notesProbe = { state: 'ok', value: { count: noteHits.length }, at: now }
+  } catch (err) {
+    notesProbe = { state: 'error', reason: err instanceof Error ? err.message : 'error de las notas' }
+  }
+
   let historyProbe: Probe<{ count: number }>
   if (!historyEnabled()) {
     historyProbe = { state: 'unavailable', reason: 'historial desactivado' }
@@ -176,6 +189,7 @@ async function search(q: string, lang: Lang = 'es'): Promise<SearchResults> {
       docs: docsProbe,
       zim: zimProbe,
       history: historyProbe,
+      notes: notesProbe,
     },
   }
 }
@@ -275,6 +289,13 @@ async function retrieve(question: string, lang: Lang = 'es'): Promise<Source[]> 
     // índice no disponible
   }
 
+  // Notas propias: lo que el usuario apuntó (p. ej. dónde guardó el agua) también responde preguntas.
+  try {
+    for (const n of db.searchNotesAny(kw, 1)) add({ title: n.title, href: `/biblioteca/notas?id=${n.id}`, source: 'note', text: clip(n.snippet.replace(/\[\[|\]\]/g, ''), 500) })
+  } catch {
+    // índice no disponible
+  }
+
   // ZIM: búsqueda por palabras clave en todos los libros y reordenación por relevancia + peso del libro.
   const books = await kiwixBooks()
   if (books.state === 'ok' && books.value.length) {
@@ -338,6 +359,34 @@ const RAW_TYPES: Record<string, string> = {
   txt: 'text/plain; charset=utf-8',
   md: 'text/plain; charset=utf-8',
   html: 'text/plain; charset=utf-8', // nunca se sirve HTML de usuario como HTML: se renderiza en iframe aislado
+}
+
+/** Notas: tamaño máximo del texto y número máximo (un diario de años cabe de sobra). */
+const NOTE_MAX_BYTES = 64 * 1024
+const NOTES_LIMIT = 2000
+
+/** Título por defecto: la primera línea con texto (sin marcas de tarea). */
+function deriveTitle(body: string): string {
+  return body.split('\n').map((l) => l.replace(/^\s*[-*] \[( |x|X)\] /, '').trim()).find(Boolean)?.slice(0, 120) ?? ''
+}
+
+/** Valida la entrada de una nota: solo los campos presentes. */
+function noteInput(body: Record<string, unknown>): { title?: string; body?: string; pinned?: boolean } | { error: string } {
+  const out: { title?: string; body?: string; pinned?: boolean } = {}
+  if (body.title !== undefined) {
+    if (typeof body.title !== 'string') return { error: 'título no válido' }
+    out.title = body.title.replace(/[\r\n]+/g, ' ').trim().slice(0, 120)
+  }
+  if (body.body !== undefined) {
+    if (typeof body.body !== 'string') return { error: 'texto no válido' }
+    if (Buffer.byteLength(body.body) > NOTE_MAX_BYTES) return { error: 'La nota es demasiado larga (máx. 64 KB)' }
+    out.body = body.body.replace(/\r\n?/g, '\n')
+  }
+  if (body.pinned !== undefined) {
+    if (typeof body.pinned !== 'boolean') return { error: 'pinned debe ser true o false' }
+    out.pinned = body.pinned
+  }
+  return out
 }
 
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -432,6 +481,22 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
     return
   }
+  if (method === 'GET' && path === '/places/status') {
+    await places.refresh(10_000)
+    send(res, 200, places.status())
+    return
+  }
+  if (method === 'GET' && path === '/places/search') {
+    void places.refresh()
+    const q = (url.searchParams.get('q') ?? '').trim().slice(0, 80)
+    const lat = Number.parseFloat(url.searchParams.get('lat') ?? '')
+    const lon = Number.parseFloat(url.searchParams.get('lon') ?? '')
+    const near = Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180 ? { lat, lon } : null
+    const limit = Number.parseInt(url.searchParams.get('limit') ?? '20', 10)
+    const body: PlaceSearch = { status: places.status(), hits: q.length >= 2 ? places.search(q, langOf(req), near, Number.isFinite(limit) ? limit : 20) : [] }
+    send(res, 200, body)
+    return
+  }
   if (method === 'GET' && path === '/books') {
     send(res, 200, await kiwixBooks())
     return
@@ -499,6 +564,52 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     send(res, 200, await indexing)
     return
   }
+  if (path === '/notes' && (method === 'GET' || method === 'POST')) {
+    if (method === 'GET') {
+      send(res, 200, db.listNotes())
+      return
+    }
+    const n = noteInput(await readJson(req, NOTE_MAX_BYTES + 4096))
+    if ('error' in n) {
+      send(res, 400, { error: n.error })
+      return
+    }
+    if (db.listNotes().length >= NOTES_LIMIT) {
+      send(res, 409, { error: 'Demasiadas notas: borra alguna antes de crear otra' })
+      return
+    }
+    const title = n.title || deriveTitle(n.body ?? '')
+    if (!title) {
+      send(res, 400, { error: 'La nota está vacía' })
+      return
+    }
+    send(res, 201, db.createNote({ title, body: n.body ?? '', pinned: n.pinned }))
+    return
+  }
+  const note = /^\/notes\/(\d{1,12})$/.exec(path)
+  if (note && (method === 'GET' || method === 'PUT' || method === 'DELETE')) {
+    const id = Number(note[1])
+    if (method === 'GET') {
+      const n = db.getNote(id)
+      if (!n) send(res, 404, { error: 'not_found' })
+      else send(res, 200, n)
+      return
+    }
+    if (method === 'DELETE') {
+      send(res, db.deleteNote(id) ? 200 : 404, { deleted: id })
+      return
+    }
+    const n = noteInput(await readJson(req, NOTE_MAX_BYTES + 4096))
+    if ('error' in n) {
+      send(res, 400, { error: n.error })
+      return
+    }
+    if (n.title === '') n.title = deriveTitle(n.body ?? db.getNote(id)?.body ?? '') || '…'
+    const updated = db.updateNote(id, n)
+    if (!updated) send(res, 404, { error: 'not_found' })
+    else send(res, 200, updated)
+    return
+  }
   if (method === 'GET' && path === '/favorites') {
     send(res, 200, db.listFavorites())
     return
@@ -550,6 +661,8 @@ async function start(): Promise<void> {
     log('info', 'protocols_translated', { lang, count: tr.protocols.length })
   }
   pdftotextAvailable = pdftotextPresent()
+  // Índice de lugares: se comprueba al arrancar y se reconstruye en segundo plano si cambiaron los mapas.
+  void places.refresh(0)
   indexing = indexDocs(db, config.docsDir, config.maxDocBytes)
     .then((r) => log('info', 'indexed', { ...r, skipped: r.skipped.length }))
     .catch((err: unknown) => log('error', 'index_failed', { error: String(err) }))
@@ -564,6 +677,7 @@ async function start(): Promise<void> {
 function shutdown(): void {
   server.close(() => {
     db.close()
+    places.close()
     process.exit(0)
   })
   setTimeout(() => process.exit(0), 3000).unref()

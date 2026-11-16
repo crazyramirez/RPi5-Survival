@@ -1,7 +1,9 @@
 import type { MessageKey } from './es'
+import { fieldFr } from './field/fr'
 
 /** Catálogo en francés. Mismas claves que es.ts (el tipo obliga a que estén todas). */
 export const fr: Record<MessageKey, string> = {
+  ...fieldFr,
   'app.name': 'Survival OS',
 
   'nav.back': 'Retour',

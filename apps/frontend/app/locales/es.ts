@@ -1,9 +1,12 @@
+import { fieldEs } from './field/es'
 /**
  * Catálogo de mensajes en español (idioma principal y de referencia).
  * Traducciones: en.ts, fr.ts, it.ts con las mismas claves (el tipo obliga a que estén todas); se registran en
  * utils/i18n.ts. Una clave nueva se añade aquí y en las tres traducciones.
  */
 export const es = {
+  // Módulos de campo (lugares, medición, herramientas y notas): en field/es.ts.
+  ...fieldEs,
   'app.name': 'Survival OS',
 
   'nav.back': 'Atrás',

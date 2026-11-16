@@ -13,8 +13,6 @@ const t = useT()
 const night = useState<boolean>('pdf:night', () => false)
 
 const PAD = 16
-/** En monitores grandes, «ajustar al ancho» no pasa de una anchura de lectura cómoda. */
-const MAX_FIT_WIDTH = 1100
 const ZOOMS = [0.5, 0.67, 0.8, 1, 1.25, 1.5, 2, 2.5, 3, 4]
 /** Tope de píxeles por lienzo (con zoom alto una página llegaría a cientos de MB). */
 const MAX_CANVAS_PX = 16e6
@@ -29,7 +27,8 @@ const avail = ref(800)
 const sizes = shallowRef<{ w: number; h: number }[]>([])
 
 const numPages = computed(() => sizes.value.length)
-const fitScale = computed(() => Math.min(avail.value - PAD * 2, MAX_FIT_WIDTH) / (sizes.value[0]?.w ?? 612))
+/** «Ajustar» = todo el ancho de la vista, sin tope (el lienzo ya se limita con MAX_CANVAS_PX). */
+const fitScale = computed(() => Math.max(1, avail.value - PAD * 2) / (sizes.value[0]?.w ?? 612))
 const scale = computed(() => Math.max(0.1, fitScale.value * zoom.value))
 /** Porcentaje como en cualquier visor: 100 % = tamaño real (1 pt = 96/72 px). */
 const zoomPct = computed(() => Math.round(scale.value * 75))

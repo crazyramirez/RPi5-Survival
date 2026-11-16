@@ -298,7 +298,7 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
           <NuxtLink v-for="s in sources" :key="s.n" :to="linkFor(s)" class="src">
             <span class="num mono">{{ s.n }}</span>
             <span class="grow">{{ s.title }}</span>
-            <StatePill :tone="s.source === 'protocol' ? 'warn' : s.source === 'doc' ? 'info' : 'ok'" :label="t(`lib.source.${s.source}` as never)" />
+            <StatePill :tone="s.source === 'protocol' ? 'warn' : s.source === 'doc' || s.source === 'note' ? 'info' : 'ok'" :label="t(`lib.source.${s.source}` as never)" />
             <ChevronRight :size="18" class="chev" aria-hidden="true" />
           </NuxtLink>
         </section>

@@ -17,6 +17,8 @@ const android = useAndroid()
     <UsbAutoOpenPrompt v-if="portable && !android" />
     <!-- «Survivelia OS actualizado a la versión X» (una vez por versión) o aviso si la actualización falló. -->
     <UpdateNotice />
+    <!-- Versión nueva disponible: tarjeta en superposición que invita a instalarla. -->
+    <UpdatePrompt />
     <LockOverlay v-if="locked" />
     <OnScreenKeyboard />
     <!-- Atenuación visual: no afecta a la retroiluminación ni al consumo. -->

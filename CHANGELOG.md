@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.7 — 2026-11-16 · Aviso de versión nueva
+
+### Añadido
+- **Aviso de versión nueva en superposición:** tarjeta con el icono, «Survivelia OS X está disponible», las
+  novedades, el tamaño y «Firmada y verificada», con «Instalar ahora» (o «Reiniciar y actualizar» si ya está
+  descargada) y «Más tarde» (vuelve a avisar a las 12 h). Una vez por versión; nunca en la bienvenida ni bloqueada.
+- **La pantalla se recarga sola tras actualizar:** si el equipo ya responde con otra versión, la interfaz abierta
+  (el quiosco de la Pi, la ventana de la portable) se recarga para mostrar la nueva.
+
 ## 0.11.6 — 2026-11-16 · Bienvenida a pantalla completa
 
 ### Cambiado

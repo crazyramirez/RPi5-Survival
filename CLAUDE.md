@@ -27,7 +27,6 @@ Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, 
     `main`, `npm run release:publish -- --yes` **desde Bash, no PowerShell**: PowerShell se come el `--` y solo hace
     un ensayo). Siempre con los APK de Android.
   - **Después, borrar las releases antiguas** (`gh release delete vX.Y.Z --yes`): en GitHub queda solo la última.
-  - **Nunca mencionar NOMAD** (competencia) en la app, la documentación, los commits ni la landing.
 - En la Pi: `bash install.sh <tarball>`, `~/survival-os/current/scripts/test-offline.sh`, `run.sh`.
 
 ## Dispositivo

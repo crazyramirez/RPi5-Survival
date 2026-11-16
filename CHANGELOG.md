@@ -3,6 +3,8 @@
 ## Sin publicar
 
 ### Añadido
+- **Visor integrado de documentos (`/visor`):** los PDF y enlaces de los libros de la biblioteca (ZIM) que antes abrían una ventana sin salida en el kiosco se abren ahora dentro de la app, con barra para volver y cerrar. Ningún enlace (`target="_blank"`, `window.open`, navegación de la ventana principal) puede sacar al usuario de la app; los enlaces externos se ignoran (no hay Internet). El lector de ZIM va en un iframe con `sandbox` sin ventanas emergentes ni navegación superior.
+- **Barras de desplazamiento del tema** en toda la app (listas, modales, textos, paneles) y dentro de los artículos de la biblioteca y del visor: píldora redondeada sin flechas sobre pista transparente, que se ilumina en el acento al usarla; clara u oscura según la página y el modo noche; variante de alto contraste. El visor de PDF del navegador mantiene su barra propia (no admite estilos).
 - **Manuales en PDF (ADR 0015, ampliado):** 66 manuales, 709 MB, 59 de ellos en español. Cada uno se ha verificado (URL directa, licencia y SHA-256 fijado) y se descarga desde la fuente oficial, sin copias de terceros.
   - **Salud:**
     - Hesperian: «Donde no hay doctor», «… para mujeres», «Donde no hay dentista», «Un libro para parteras», «Guía comunitaria para la salud ambiental» y «Aprendiendo a promover la salud»;

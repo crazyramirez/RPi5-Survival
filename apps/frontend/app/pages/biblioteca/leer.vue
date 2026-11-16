@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DOC_SCROLLBAR_CSS, isDocumentLink, linkTitle, viewerUrl } from '~/utils/viewer'
 import { ArrowLeft, Moon, Sun } from '@lucide/vue'
 import { isSafeReaderPath } from '~/utils/snippet'
 
@@ -26,6 +27,8 @@ const frame = ref<HTMLIFrameElement | null>(null)
 const TOUCH_CSS =
   'html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:pan-x pan-y;overscroll-behavior:contain}' +
   'a,button{touch-action:manipulation}' +
+  // Barra de desplazamiento de la app (claro u oscuro según la página y el modo noche).
+  DOC_SCROLLBAR_CSS +
   // Icono «imagen interactiva» de los banners de Wikiviajes: en la web lo colocan pequeño con CSS/JS que el
   // ZIM no incluye, así que se pinta a ~250 px encima de la foto. Decorativo y sin función offline.
   'img[src*="Interactive_icon"]{display:none!important}' +
@@ -118,6 +121,8 @@ function injectTouch(doc: Document | null | undefined): void {
   st.textContent = TOUCH_CSS
   doc.head.appendChild(st)
   doc.addEventListener('contextmenu', (e) => e.preventDefault())
+  // Enlaces que sacarían al usuario de la app (PDF, ventana nueva, ventana principal): al visor integrado.
+  doc.addEventListener('click', (e) => keepInApp(e), true)
   // El visor de Kiwix muestra el artículo en un iframe interno: se aplica también ahí.
   for (const inner of Array.from(doc.querySelectorAll('iframe'))) {
     inner.addEventListener('load', () => {
@@ -126,6 +131,34 @@ function injectTouch(doc: Document | null | undefined): void {
     })
     injectTouch(inner.contentDocument)
   }
+}
+
+/**
+ * Los ZIM de bibliotecas (zimgit, manuales) enlazan PDF y a veces abren en ventana nueva o en la ventana
+ * principal. En el kiosco eso deja al usuario sin forma de volver: se abren en /visor, con barra para volver.
+ */
+function keepInApp(e: MouseEvent): void {
+  const a = (e.target as Element | null)?.closest?.('a')
+  if (!a || !a.href) return
+  const target = (a.getAttribute('target') ?? '').toLowerCase()
+  const escapes = target === '_blank' || target === '_top' || target === '_parent' || a.hasAttribute('download')
+  let url: URL
+  try {
+    url = new URL(a.href)
+  } catch {
+    return
+  }
+  if (url.origin !== window.location.origin) {
+    // Enlace externo: sin Internet no lleva a ningún sitio y fuera de la app no hay vuelta atrás.
+    e.preventDefault()
+    e.stopPropagation()
+    return
+  }
+  if (!escapes && !isDocumentLink(url.pathname)) return // navegación normal dentro del lector
+  const v = viewerUrl(a.href, linkTitle(a), window.location.origin)
+  e.preventDefault()
+  e.stopPropagation()
+  if (v) void router.push(v)
 }
 
 /** Ruta del artículo abierto ahora (el visor la refleja en su #hash); para Favorito. */
@@ -173,7 +206,11 @@ onMounted(() => {
         {{ night ? t('lib.reader.day') : t('lib.reader.night') }}
       </button>
     </header>
-    <iframe v-if="src" ref="frame" :src="src" :class="{ night }" :title="t('lib.reader')" @load="onLoad" />
+    <!-- Red de seguridad: sin allow-top-navigation ni allow-popups, nada del ZIM puede sacar al usuario de la app. -->
+    <iframe
+      v-if="src" ref="frame" :src="src" :class="{ night }" :title="t('lib.reader')"
+      sandbox="allow-scripts allow-same-origin allow-forms" @load="onLoad"
+    />
     <div v-else class="notice tone-danger">{{ t('lib.reader.invalid') }}</div>
   </div>
 </template>

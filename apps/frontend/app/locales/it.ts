@@ -79,7 +79,7 @@ export const it: Record<MessageKey, string> = {
   'summary.navigation.noGnss': 'Nessun ricevitore GNSS',
   'summary.navigation.gnss': 'Posizione GNSS disponibile',
   'summary.navigation.noFix': 'Ricevitore GNSS senza fix',
-  'summary.navigation.lora': 'Ultima posizione del nodo LoRa',
+  'summary.navigation.lora': 'Ultima posizione nodo LoRa',
   'summary.library.empty': 'Ricerca nei documenti personali',
   'summary.library.kiwix': 'Documentazione offline',
   'summary.emergency': 'Protocolli offline · 112',

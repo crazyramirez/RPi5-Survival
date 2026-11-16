@@ -81,7 +81,7 @@ export const es = {
   'summary.navigation.noGnss': 'Sin receptor GNSS',
   'summary.navigation.gnss': 'Posición GNSS disponible',
   'summary.navigation.noFix': 'Receptor GNSS sin fijación',
-  'summary.navigation.lora': 'Última posición del nodo LoRa',
+  'summary.navigation.lora': 'Última posición nodo LoRa',
   'summary.library.empty': 'Documentos propios búsqueda',
   'summary.library.kiwix': 'Documentación offline',
   'summary.emergency': 'Protocolos offline · 112',

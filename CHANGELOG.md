@@ -3,6 +3,7 @@
 ## Sin publicar
 
 ### Añadido
+- **Juegos en «Descargarlo todo»:** los juegos son un contenido más del catálogo (grupo «Juegos») y se descargan también con un clic. En la barra, «Juegos» va antes que «Pantalla» y solo aparece si están descargados.
 - **Mapas de cualquier país (ADR 0018):**
   - buscador en Mapas («Añadir país») y en Mantenimiento, por nombre en cualquier idioma, con tamaño estimado;
   - mapa con zoom según el tamaño del país y rutas sin conexión opcionales;

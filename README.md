@@ -160,7 +160,8 @@ La bienvenida aparece una sola vez y cabe en una pantalla:
    La pantalla dice cómo lo ha detectado. «Cambiar» permite elegir cualquier otro.
 3. **«Descargarlo todo».** Un clic descarga todo lo recomendado para tu idioma y tu país:
    - biblioteca, manuales, mapas y rutas;
-   - el asistente con todos sus modelos.
+   - el asistente con todos sus modelos;
+   - los juegos.
 
    Se ajusta al espacio libre y avisa de lo que no cabe.
 
@@ -297,8 +298,8 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
   - brújula;
   - conversor de coordenadas (de decimal a grados, minutos y segundos);
   - lista de puertos serie USB y dispositivos de entrada.
-- **Juegos sin conexión:** una colección de juegos que se descarga desde Mantenimiento. El botón «Juegos» solo
-  aparece cuando ya están descargados.
+- **Juegos sin conexión:** una colección de juegos que se descarga con «Descargarlo todo» o desde Mantenimiento.
+  El botón «Juegos» aparece en la barra (entre Inicio y Pantalla) solo cuando ya están descargados.
 
 ### Sistema y mantenimiento
 
@@ -371,6 +372,7 @@ Todo se gestiona en **Sistema → Mantenimiento → Contenidos** (o con la bienv
 | Manuales en PDF | 66 manuales de salud, protección civil, agricultura y orientación | es · en |
 | Mapas y rutas | Cualquier país, mundo, rutas BRouter | todos |
 | Asistente | Qwen3 4B (recomendado), Gemma 3 4B, Llama 3.2 3B | todos |
+| Juegos | Colección de juegos sin conexión (unos 1,6 GB) | todos |
 
 - **Cuánto ocupa:** lo recomendado para un idioma suma unos **40–60 GB**, más los mapas de tu país (España completa:
   unos 4,5 GB con rutas). En una tarjeta de 128 GB cabe con holgura; si el espacio no llega, la selección se ajusta

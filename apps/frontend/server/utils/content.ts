@@ -16,7 +16,7 @@ interface Catalog {
   models: Record<string, { file: string }>
 }
 
-function dirs(): { data: string; zim: string; maps: string; llm: string; routing: string; docs: string; state: string; setup: string; catalog: string } {
+function dirs(): { data: string; zim: string; maps: string; llm: string; routing: string; docs: string; games: string; state: string; setup: string; catalog: string } {
   if (isPortable()) {
     const { root, data } = portablePaths()
     return {
@@ -26,6 +26,7 @@ function dirs(): { data: string; zim: string; maps: string; llm: string; routing
       llm: join(data, 'llm'),
       routing: join(data, 'routing'),
       docs: join(data, 'library', 'docs'),
+      games: join(data, 'games'),
       state: join(data, 'content-state.json'),
       setup: join(data, 'setup.json'),
       catalog: join(root, 'app', 'content', 'catalog.json'),
@@ -42,6 +43,7 @@ function dirs(): { data: string; zim: string; maps: string; llm: string; routing
     llm: join(v, 'llm'),
     routing: process.env.SURVIVAL_ROUTING_DIR ?? join(v, 'routing'),
     docs: join(v, 'library', 'docs'),
+    games: join(v, 'games'),
     state: join(v, 'content-state.json'),
     setup: join(v, 'setup.json'),
     catalog: catalog ?? '',
@@ -116,6 +118,9 @@ export async function contentOverview(lang = 'es'): Promise<ContentOverview> {
         const size = await statFile(join(d.docs, 'manuales', it.doc.file))
         if (size !== null) installed = { file: it.doc.file, bytes: size }
       }
+    } else if (it.kind === 'games') {
+      // Copia offline montada (games-sync): `current/index.html`, igual que /api/games/status.
+      if (await statFile(join(d.games, 'current', 'index.html')) !== null) installed = { file: null, bytes: null }
     } else if (it.kind === 'llm' && it.llm) {
       const file = catalog.models[it.llm.model]?.file
       if (file && models.includes(file)) installed = { file, bytes: await statFile(join(d.llm, 'models', file)) }

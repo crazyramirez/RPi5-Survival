@@ -699,6 +699,27 @@ async function installDoc(catalog, paths, item) {
   say(`OK ${item.title} (SHA-256 verificado)`)
 }
 
+// ------------------------------------------------------------------ Juegos (ADR 0012)
+
+/** Mismo sincronizador que la tarea «games»: games-sync.py en la Pi (root), games-sync.mjs en la portable. */
+function gamesCommand(paths, action) {
+  if (paths.profile === 'pi') return { cmd: '/usr/bin/python3', args: ['-I', join(paths.scripts, 'games-sync.py'), action], env: process.env }
+  return { cmd: process.execPath, args: [join(HERE, 'games-sync.mjs'), action], env: { ...process.env, GAMES_ROOT: join(paths.data, 'games') } }
+}
+
+async function installGames(paths, item) {
+  setItem(paths, item.id, { state: 'downloading', error: null })
+  say(`${item.title}: sincronizando la copia offline`)
+  const { cmd, args, env } = gamesCommand(paths, 'sync')
+  await new Promise((ok, ko) => {
+    const child = spawn(cmd, args, { stdio: ['ignore', 'inherit', 'inherit'], env })
+    child.on('error', ko)
+    child.on('close', (code) => (code === 0 ? ok() : ko(new Error(`la sincronización de juegos terminó con código ${code}`))))
+  })
+  setItem(paths, item.id, { state: 'installed' })
+  say(`OK ${item.title}`)
+}
+
 // ------------------------------------------------------------------ Orquestación
 
 export function findItem(catalog, id) {
@@ -723,6 +744,7 @@ export async function install(catalog, paths, specs) {
       else if (item.kind === 'routing') await installRouting(catalog, paths, item)
       else if (item.kind === 'llm') await installLlm(catalog, paths, item)
       else if (item.kind === 'doc') await installDoc(catalog, paths, item)
+      else if (item.kind === 'games') await installGames(paths, item)
       else throw new Error(`tipo desconocido ${item.kind}`)
     } catch (err) {
       failed++
@@ -752,6 +774,10 @@ export async function remove(catalog, paths, ids) {
         rmSync(join(paths.llmDir, 'models', st.file), { force: true })
         if (existsSync(join(paths.llmDir, 'active')) && readFileSync(join(paths.llmDir, 'active'), 'utf8').trim() === st.file) rmSync(join(paths.llmDir, 'active'))
       }
+    }
+    if (item.kind === 'games') {
+      const { cmd, args, env } = gamesCommand(paths, 'remove')
+      spawnSync(cmd, args, { stdio: 'inherit', env })
     }
     if (item.kind === 'routing') {
       if (paths.profile === 'pi') spawnSync('bash', [join(paths.scripts, 'routing-install.sh'), 'remove'], { stdio: 'inherit' })

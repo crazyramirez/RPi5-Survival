@@ -146,6 +146,9 @@ describe('plan de descarga por idioma y país (ADR 0018)', () => {
     expect(llm.length).toBeGreaterThanOrEqual(3)
     const ordered = orderPlan(all).map((i) => i.id)
     expect(ordered[ordered.length - 1]).toBe('asistente')
+    // Los juegos también entran en «Descargarlo todo» (en cualquier idioma).
+    expect(all.map((i) => i.id)).toContain('juegos')
+    expect(downloadPlan(items, new Set(), 'fr', null, 'all').map((i) => i.id)).toContain('juegos')
   })
   it('lo instalado no se vuelve a pedir', () => {
     const p = downloadPlan(items, new Set(['wikipedia', 'mapa-espana']), 'es', esp, 'all').map((i) => i.id)

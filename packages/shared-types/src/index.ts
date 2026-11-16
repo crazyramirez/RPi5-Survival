@@ -742,7 +742,7 @@ export interface PortableStatus {
 /** Catálogo de descargas (ADR 0015): un elemento tal como lo ve la interfaz. */
 export interface ContentCatalogItem {
   id: string
-  kind: 'zim' | 'maps' | 'routing' | 'llm' | 'doc'
+  kind: 'zim' | 'maps' | 'routing' | 'llm' | 'doc' | 'games'
   group: string
   /** es | en | mul. Español por defecto; inglés solo si no hay equivalente en español. */
   lang: string

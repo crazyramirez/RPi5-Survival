@@ -32,14 +32,15 @@ function back(): void {
       <House :size="26" aria-hidden="true" />
       <span>{{ t('nav.home') }}</span>
     </NuxtLink>
-    <button type="button" class="action" @click="panelOpen = true">
-      <SunDim :size="26" aria-hidden="true" />
-      <span>{{ t('nav.display') }}</span>
-    </button>
+    <!-- Juegos solo si están descargados (Mantenimiento o «Descargarlo todo»). -->
     <NuxtLink v-if="!publicView && (gamesInstalled || atGames)" to="/juegos" class="action" :class="{ current: atGames }">
       <Gamepad2 :size="26" aria-hidden="true" />
       <span>{{ t('nav.games') }}</span>
     </NuxtLink>
+    <button type="button" class="action" @click="panelOpen = true">
+      <SunDim :size="26" aria-hidden="true" />
+      <span>{{ t('nav.display') }}</span>
+    </button>
     <button v-if="!publicView" type="button" class="action" @click="lock">
       <Lock :size="26" aria-hidden="true" />
       <span>{{ t('nav.lock') }}</span>

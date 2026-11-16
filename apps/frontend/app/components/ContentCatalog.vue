@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, Bot, Check, CircleAlert, Download, FileText, HeartPulse, LifeBuoy, LoaderCircle, Map as MapIcon, Trash2, Wrench } from '@lucide/vue'
+import { BookOpen, Bot, Check, CircleAlert, Download, FileText, Gamepad2, HeartPulse, LifeBuoy, LoaderCircle, Map as MapIcon, Trash2, Wrench } from '@lucide/vue'
 import type { Component } from 'vue'
 import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
 import { formatBytes } from '~/utils/format'
@@ -67,7 +67,7 @@ onBeforeUnmount(() => timer && clearInterval(timer))
 const statusOf = (id: string): ContentItemStatus | undefined => ov.value?.items.find((s) => s.id === id)
 const sizeOf = (i: ContentCatalogItem): number => i.variants?.find((v) => v.flavour === variants[i.id])?.approxBytes ?? i.approxBytes
 
-const GROUP_ICONS: Record<string, Component> = { salud: HeartPulse, preparacion: LifeBuoy, saber: BookOpen, oficios: Wrench, libros: BookOpen, manuales: FileText, mapas: MapIcon, asistente: Bot }
+const GROUP_ICONS: Record<string, Component> = { salud: HeartPulse, preparacion: LifeBuoy, saber: BookOpen, oficios: Wrench, libros: BookOpen, manuales: FileText, mapas: MapIcon, asistente: Bot, juegos: Gamepad2 }
 const groups = computed(() =>
   (ov.value?.groups ?? [])
     .map((g) => ({

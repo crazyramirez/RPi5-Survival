@@ -7,7 +7,8 @@
     "libros": "Livres et apprentissage",
     "manuales": "Manuels en PDF",
     "mapas": "Cartes et itinéraires",
-    "asistente": "Assistant hors ligne"
+    "asistente": "Assistant hors ligne",
+    "juegos": "Jeux"
   },
   "items": {
     "wikipedia-medicina": {
@@ -565,6 +566,10 @@
     "asistente-llama32": {
       "title": "Modèle alternatif : Llama 3.2 3B",
       "description": "Un modèle plus léger pour l'assistant (Meta Llama 3.2, 3B). Répond plus vite."
+    },
+    "juegos": {
+      "title": "Jeux hors ligne",
+      "description": "Une collection de jeux Viseni Games pour jouer sans Internet. Un bouton « Jeux » apparaît dans la barre une fois téléchargés."
     }
   },
   "models": {},

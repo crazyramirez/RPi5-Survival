@@ -7,7 +7,8 @@
     "libros": "Libri e apprendimento",
     "manuales": "Manuali in PDF",
     "mapas": "Mappe e percorsi",
-    "asistente": "Assistente offline"
+    "asistente": "Assistente offline",
+    "juegos": "Giochi"
   },
   "items": {
     "wikipedia-medicina": {
@@ -565,6 +566,10 @@
     "asistente-llama32": {
       "title": "Modello alternativo: Llama 3.2 3B",
       "description": "Un modello più leggero per l'assistente (Meta Llama 3.2, 3B). Risponde più velocemente."
+    },
+    "juegos": {
+      "title": "Giochi offline",
+      "description": "Una raccolta di giochi Viseni Games da giocare senza Internet. Il pulsante «Giochi» compare nella barra una volta scaricati."
     }
   },
   "models": {},

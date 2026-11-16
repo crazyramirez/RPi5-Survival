@@ -34,6 +34,10 @@
     {
       "id": "asistente",
       "title": "Asistente sin conexión"
+    },
+    {
+      "id": "juegos",
+      "title": "Juegos"
     }
   ],
   "items": [
@@ -4054,6 +4058,18 @@
       "publisher": "FAO",
       "title": "El conejo: cría y patología",
       "description": "Cunicultura completa: alojamiento, alimentación, reproducción y enfermedades."
+    },
+    {
+      "id": "juegos",
+      "kind": "games",
+      "group": "juegos",
+      "lang": "mul",
+      "priority": 3,
+      "default": false,
+      "approxBytes": 1630000000,
+      "license": "Viseni Games (uso personal)",
+      "title": "Juegos sin conexión",
+      "description": "Colección de juegos de Viseni Games para jugar sin Internet. Botón «Juegos» en la barra cuando están descargados."
     }
   ],
   "models": {

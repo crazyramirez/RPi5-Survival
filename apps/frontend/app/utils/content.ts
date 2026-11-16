@@ -36,8 +36,8 @@ export function contentLangs(ui: ContentLang): string[] {
   return ui === 'es' ? ['es', 'en'] : [ui, 'en']
 }
 
-/** Mapas, rutas y asistente no dependen del idioma. */
-const NEUTRAL = new Set(['maps', 'routing', 'llm'])
+/** Mapas, rutas, asistente y juegos no dependen del idioma. */
+const NEUTRAL = new Set(['maps', 'routing', 'llm', 'games'])
 
 /** ¿Este contenido está en un idioma que el usuario entiende? (los demás se pueden mostrar aparte) */
 export function inLanguage(i: ContentCatalogItem, ui: ContentLang): boolean {

@@ -136,6 +136,19 @@ if (existsSync(RUN_FILE)) {
     if (prev.pid && alive(prev.pid) && (await healthy(prev.url))) {
       // En la autoprueba no puede haber otra instancia: si la hay, no se puede probar la nueva versión.
       if (SELF_TEST) fatal('otra instancia en marcha durante la autoprueba')
+      // Actualización preparada y la instancia anterior nunca se cerró (Linux/macOS con Firefox o Chromium en snap
+      // como navegador: cerrar la ventana no cierra Survivelia OS). Volver a abrirla es el momento de aplicarla:
+      // la instancia en marcha la aplica y se reabre con la versión nueva (SIGUSR2 → applyUpdate). En Windows
+      // no hace falta: la ventana de Chrome/Edge sí cierra la app, y allí no hay SIGUSR2.
+      if (platform !== 'win32' && existsSync(join(ROOT, '.update', 'ready.json'))) {
+        try {
+          process.kill(prev.pid, 'SIGUSR2')
+          say('Hay una actualización preparada: se aplica ahora y Survivelia OS se reabrirá en unos segundos…')
+          process.exit(0)
+        } catch {
+          // no se pudo avisar: se abre otra ventana como siempre
+        }
+      }
       say(`Ya está en marcha (${prev.url}); abriendo otra ventana.`)
       if (!NO_BROWSER) openBrowser(prev.url, { attach: false })
       process.exit(0)
@@ -605,6 +618,8 @@ if (!SELF_TEST) {
 process.on('SIGINT', () => stop(0))
 process.on('SIGTERM', () => stop(0))
 process.on('SIGHUP', () => stop(0))
+// Otra apertura con una actualización preparada (ver «Una sola instancia»): aplicarla y reabrir.
+if (platform !== 'win32') process.on('SIGUSR2', () => applyUpdate())
 
 let ready = false
 for (let i = 0; i < 120 && !ready && !stopping; i++) {

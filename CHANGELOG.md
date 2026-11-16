@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.11.2 — 2026-11-16 · Actualizaciones de la portable en Linux
+
+### Corregido
+- **La portable en Linux (y macOS) no se actualizaba sola** cuando el navegador era Firefox o Chromium en snap:
+  cerrar la ventana no cierra Survivelia OS, así que la versión descargada («se aplica al cerrar») nunca se
+  aplicaba, y al volver a abrirla solo se abría otra ventana de la versión antigua. Ahora, al volver a abrir
+  Survivelia OS con una actualización preparada, la instancia en marcha la aplica y se reabre con la versión nueva.
+  - Las portables ya instaladas necesitan aplicar esta versión una vez a mano: Mantenimiento → Actualizaciones →
+    «Instalar ahora», o Sistema → «Cerrar Survivelia OS» y volver a abrir.
+
 ## 0.11.1 — 2026-11-16 · «Descargarlo todo» en español
 
 ### Corregido

@@ -589,7 +589,7 @@ async function displayOff(): Promise<void> {
     <h2 class="sec">{{ t('sys.sec.control') }}</h2>
     <!-- Versión portable: no se apaga ni se toca el equipo anfitrión; solo recargar o cerrar la app. -->
     <section v-if="portable" class="control">
-      <div class="ctl-grid">
+      <div class="ctl-row">
         <span class="ctl-group">{{ t('sys.ctl.app') }}</span>
         <button type="button" class="ctl" @click="reloadUi">
           <RefreshCw :size="24" aria-hidden="true" />
@@ -609,7 +609,7 @@ async function displayOff(): Promise<void> {
     </section>
     <section v-else class="control">
       <p class="control-note"><Info :size="18" aria-hidden="true" />{{ t('sys.shutdown.note') }}</p>
-      <div class="ctl-grid">
+      <div class="ctl-row">
         <span class="ctl-group">{{ t('sys.ctl.app') }}</span>
         <button type="button" class="ctl" @click="desktopPending = true">
           <Monitor :size="24" aria-hidden="true" />
@@ -623,7 +623,8 @@ async function displayOff(): Promise<void> {
           <RotateCw :size="24" aria-hidden="true" />
           <span><strong>{{ t('sys.app.restart') }}</strong><small>{{ t('sys.ctl.restart.hint') }}</small></span>
         </button>
-
+      </div>
+      <div class="ctl-row">
         <span class="ctl-group">{{ t('sys.ctl.device') }}</span>
         <button type="button" class="ctl" @click="displayOff">
           <MonitorOff :size="24" aria-hidden="true" />
@@ -1165,11 +1166,20 @@ async function displayOff(): Promise<void> {
   color: var(--info);
 }
 
-.ctl-grid {
-  display: grid;
-  grid-template-columns: auto repeat(3, minmax(0, 1fr));
+/* Cada grupo en una fila: los botones se reparten el ancho a partes iguales (2 o 3, según el equipo). */
+.ctl-row {
+  display: flex;
   gap: var(--gap);
   align-items: stretch;
+}
+
+.ctl-row + .ctl-row {
+  margin-top: var(--gap);
+}
+
+.ctl-row > .ctl {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .ctl-group {
@@ -1283,12 +1293,15 @@ async function displayOff(): Promise<void> {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .ctl-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Estrecho: etiqueta del grupo arriba y botones uno por fila. */
+  .ctl-row {
+    flex-direction: column;
   }
 
   .ctl-group {
-    grid-column: 1 / -1;
+    writing-mode: horizontal-tb;
+    transform: none;
+    align-self: flex-start;
   }
 }
 </style>

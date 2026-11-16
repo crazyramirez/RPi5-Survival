@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.6 — 2026-11-16 · Bienvenida a pantalla completa
+
+### Cambiado
+- **Bienvenida nueva:** pantalla completa, sin barra de estado ni botones de abajo, con fondo topográfico, el icono
+  de la app, una frase, el país y un botón grande «Descargarlo todo» con su tamaño. Debajo, «Elegir contenidos» y
+  «Entrar sin descargar» (antes «Ahora no») repartidos a lo ancho. Menos texto: fuera los datos técnicos.
+- **Sistema → Control:** los botones de cada grupo ocupan todo el ancho a partes iguales (también en la portable).
+
 ## 0.11.5 — 2026-11-16 · Pantalla de bloqueo y arranque de Android renovados
 
 ### Cambiado

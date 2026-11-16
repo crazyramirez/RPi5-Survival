@@ -10,7 +10,8 @@ import { autoFit, downloadPlan, orderPlan } from '~/utils/content'
  * equipo — bibliotecas, manuales, mapas y rutas del país, mundo y todos los modelos del asistente —,
  * ajustado al espacio libre. Si ya está todo, lo confirma. Lo instalado no se vuelve a bajar.
  */
-const props = defineProps<{ online: boolean; compact?: boolean; noConfirm?: boolean }>()
+/** `hero`: solo el botón grande con una línea de detalle (bienvenida). */
+const props = defineProps<{ online: boolean; compact?: boolean; noConfirm?: boolean; hero?: boolean }>()
 const emit = defineEmits<{ started: [items: string[]] }>()
 const t = useT()
 const { load: loadRegion, country } = useRegion()
@@ -48,7 +49,30 @@ async function start(): Promise<void> {
 </script>
 
 <template>
-  <section class="all" :class="{ compact: props.compact, done }">
+  <div v-if="props.hero" class="hero-cta">
+    <button
+      type="button" class="btn btn-primary hero-btn" :disabled="done || !props.online || busy || !fit.keep.length"
+      @click="props.noConfirm ? start() : (confirming = true)"
+    >
+      <span class="hero-ico" aria-hidden="true">
+        <CircleCheckBig v-if="done" :size="26" />
+        <LoaderCircle v-else-if="busy" :size="26" class="spin" />
+        <CloudDownload v-else :size="26" />
+      </span>
+      <span class="hero-text">
+        <strong>{{ done ? t('all.doneTitle') : busy ? t('all.running') : t('all.go') }}</strong>
+        <small v-if="!done && ov">{{ t('all.heroSub', { size: formatBytes(bytes) }) }}</small>
+      </span>
+    </button>
+    <p v-if="!props.online && !done" class="hero-note tone-warn">{{ t('setup.offline') }}</p>
+    <p v-else-if="fit.dropped.length" class="hero-note tone-warn">{{ t('all.noSpace', { n: fit.dropped.length, size: formatBytes(droppedBytes) }) }}</p>
+    <p v-if="job.error.value" class="hero-note tone-danger">{{ job.error.value }}</p>
+    <ConfirmDialog
+      v-if="confirming" :title="t('all.confirm')" :message="t('all.confirmBody', { n: fit.keep.length, size: formatBytes(bytes) })"
+      :confirm-label="t('all.go')" @confirm="start" @cancel="confirming = false"
+    />
+  </div>
+  <section v-else class="all" :class="{ compact: props.compact, done }">
     <span class="orb" aria-hidden="true">
       <CircleCheckBig v-if="done" :size="34" />
       <LoaderCircle v-else-if="busy" :size="34" class="spin" />
@@ -203,4 +227,56 @@ h3 {
   width: 100%;
   min-height: 3.2rem;
 }
+
+/* ------------------------------------------------------------ Bienvenida (hero) */
+.hero-cta {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.hero-btn {
+  justify-content: flex-start;
+  gap: 1rem;
+  width: 100%;
+  min-height: 4.6rem;
+  padding: 0.7rem 1.4rem 0.7rem 0.8rem;
+  border-radius: 999px;
+  text-align: left;
+  box-shadow: 0 10px 34px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.hero-ico {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-ink) 14%, transparent);
+}
+
+.hero-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.hero-text strong {
+  font-size: 1.2rem;
+}
+
+.hero-text small {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.hero-note {
+  margin: 0;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--tone);
+}
 </style>
+

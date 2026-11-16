@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Compass, Download, Globe2, Languages, ListChecks, PartyPopper, Search } from '@lucide/vue'
+import { ArrowLeft, ArrowRight, Download, Globe2, ListChecks, PartyPopper, Search } from '@lucide/vue'
 import type { ContentOverview } from '@survival-os/shared-types'
 import { searchCountries } from '~/composables/useRegion'
 import { formatBytes } from '~/utils/format'
@@ -9,6 +9,9 @@ import { formatBytes } from '~/utils/format'
  * todo lo recomendado (marcado por defecto, español primero) y avisa de que el sistema tardará en
  * estar listo al 100 %, mientras tanto se puede usar.
  */
+// Pantalla completa, sin barra de estado ni barra de acciones: la bienvenida guía por sí misma.
+definePageMeta({ layout: 'bare' })
+
 const t = useT()
 const { status } = useDeviceStatus()
 const step = ref<'intro' | 'pick' | 'done'>('intro')
@@ -20,7 +23,6 @@ const region = useRegion()
 const regionQuery = ref('')
 const regionOpen = ref(false)
 const regionResults = computed(() => searchCountries(region.countries.value ?? [], regionQuery.value, 6))
-const DETECTED_BY = { position: 'maps.country.byPosition', lora: 'maps.country.byLora', timezone: 'maps.country.byTimezone', language: 'maps.country.byLanguage' } as const
 
 onMounted(async () => {
   await region.load()
@@ -87,74 +89,65 @@ async function later(): Promise<void> {
 </script>
 
 <template>
-  <div class="page wizard" :class="{ centered: step === 'intro' }">
-    <!-- 1 · Bienvenida: una sola tarjeta que cabe sin desplazar en el panel de 1024×600. -->
-    <section v-if="step === 'intro'" class="welcome">
-      <div class="col intro-col">
-        <!-- Lo primero, el idioma: cada uno con su nombre en su idioma. -->
-        <div class="langs" role="group" :aria-label="t('setup.language')">
-          <Languages :size="18" class="langs-icon" aria-hidden="true" />
-          <button
-            v-for="l in LOCALES" :key="l.code" type="button" class="lang" :lang="l.code"
-            :aria-pressed="locale === l.code" @click="setLocale(l.code)"
-          >
-            {{ l.name }}
-          </button>
-        </div>
-        <div class="brand">
-          <span class="orb" aria-hidden="true"><Compass :size="30" /></span>
-          <h1>{{ t('setup.title') }}</h1>
-        </div>
-        <p class="lead">{{ t('setup.lead') }}</p>
-        <p class="muted small">{{ t('setup.default') }}</p>
-        <p v-if="ov" class="faint mono small">{{ t('setup.where', { platform: ov.platform, free: ov.freeBytes != null ? formatBytes(ov.freeBytes) : '—' }) }}</p>
+  <div class="welcome-screen" :class="`step-${step}`">
+    <img class="bg" src="/backgrounds/welcome-topo.webp" alt="" aria-hidden="true" decoding="async" draggable="false" />
+    <div class="shade" aria-hidden="true" />
+
+    <!-- 1 · Bienvenida: pantalla completa, sin barras; solo lo esencial. -->
+    <div v-if="step === 'intro'" class="page stage">
+      <div class="langs" role="group" :aria-label="t('setup.language')">
+        <button
+          v-for="l in LOCALES" :key="l.code" type="button" class="lang" :lang="l.code"
+          :aria-pressed="locale === l.code" @click="setLocale(l.code)"
+        >
+          {{ l.name }}
+        </button>
       </div>
 
-      <div class="col action-col">
-        <!-- País (detectado sin Internet; se puede cambiar): mapas, rutas y contenidos por defecto. -->
-        <div class="region">
-          <Globe2 :size="20" class="accent" aria-hidden="true" />
-          <span class="grow">
-            <small>{{ t('setup.region') }}</small>
-            <strong>{{ region.country.value?.name ?? t('setup.regionNone') }}</strong>
-            <small v-if="region.detection.value && region.detection.value.country.id === region.country.value?.id">{{ t(DETECTED_BY[region.detection.value.by]) }}</small>
-          </span>
-          <button type="button" class="btn small" :aria-expanded="regionOpen" @click="regionOpen = !regionOpen">{{ regionOpen ? t('common.cancel') : t('setup.regionChange') }}</button>
-        </div>
+      <section class="hero">
+        <img src="/icon-192.png" alt="" class="app-icon" width="84" height="84" />
+        <h1>{{ t('setup.title') }}</h1>
+        <p class="lead">{{ t('setup.lead') }}</p>
 
-        <!-- Mientras se elige país, el selector ocupa el sitio de la descarga (nunca hace falta desplazar). -->
-        <div v-if="regionOpen" class="region-pick">
+        <!-- País (detectado sin Internet; se puede cambiar): mapas y rutas. -->
+        <div v-if="!regionOpen" class="region">
+          <Globe2 :size="18" aria-hidden="true" />
+          <span>{{ region.country.value?.name ?? t('setup.regionNone') }}</span>
+          <button type="button" class="link-btn" @click="regionOpen = true">{{ t('setup.regionChange') }}</button>
+        </div>
+        <div v-else class="region-pick">
           <label class="search">
             <Search :size="18" aria-hidden="true" />
             <input v-model="regionQuery" type="search" class="ui-field" :placeholder="t('maps.country.search')" :aria-label="t('maps.country.search')" autocomplete="off" />
           </label>
           <div class="opts">
-            <button v-for="c in regionResults" :key="c.id" type="button" class="btn small" @click="pickRegion(c.id)">{{ c.name }}</button>
+            <button v-for="c in regionResults" :key="c.id" type="button" class="btn glass" @click="pickRegion(c.id)">{{ c.name }}</button>
+            <button type="button" class="btn ghost" @click="regionOpen = false">{{ t('common.cancel') }}</button>
           </div>
         </div>
-        <template v-else>
-          <p v-if="!online" class="notice tone-warn small">{{ t('setup.offline') }}</p>
-          <!-- Un clic: todo lo del idioma y el país, ajustado al espacio (ADR 0018). -->
-          <DownloadAllCard :online="online" compact no-confirm @started="onStarted" />
-        </template>
 
-        <div class="actions">
-          <button type="button" class="btn" @click="step = 'pick'"><ListChecks :size="18" aria-hidden="true" />{{ t('setup.next') }}</button>
-          <button type="button" class="btn" :title="t('setup.laterHint')" @click="later">{{ t('setup.later') }}</button>
-        </div>
-      </div>
-    </section>
+        <template v-if="!regionOpen">
+          <!-- Un toque: todo lo del idioma y el país, ajustado al espacio (ADR 0018). -->
+          <DownloadAllCard :online="online" hero no-confirm @started="onStarted" />
+          <div class="secondary">
+            <button type="button" class="btn glass" @click="step = 'pick'"><ListChecks :size="18" aria-hidden="true" />{{ t('setup.next') }}</button>
+            <button type="button" class="btn glass" @click="later">{{ t('setup.later') }}<ArrowRight :size="18" aria-hidden="true" /></button>
+          </div>
+          <p class="foot">{{ t('setup.laterHint') }}</p>
+        </template>
+      </section>
+    </div>
 
     <!-- 2 · Elegir contenidos (todo marcado por defecto) -->
-    <template v-else-if="step === 'pick'">
+    <div v-else-if="step === 'pick'" class="page pick">
       <header class="pick-head">
-        <button type="button" class="btn" @click="step = 'intro'"><ArrowLeft :size="18" aria-hidden="true" />{{ t('setup.back') }}</button>
+        <button type="button" class="btn glass" @click="step = 'intro'"><ArrowLeft :size="18" aria-hidden="true" />{{ t('setup.back') }}</button>
         <h1>{{ t('content.title') }}</h1>
       </header>
       <p class="muted">{{ t('content.intro') }}</p>
       <ContentCatalog ref="catalog" mode="wizard" :online="online" :country="region.country.value" @started="onStarted" />
       <div class="sticky-actions">
-        <button type="button" class="btn" @click="later">{{ t('setup.later') }}</button>
+        <button type="button" class="btn glass" @click="later">{{ t('setup.later') }}</button>
         <button
           type="button" class="btn btn-primary big"
           :disabled="busy || !online || !catalog || catalog.selectedCount === 0 || catalog.shortfall > 0 || catalog.running"
@@ -164,143 +157,85 @@ async function later(): Promise<void> {
           {{ catalog ? t('content.download', { n: catalog.selectedCount, size: formatBytes(catalog.selectedBytes) }) : t('setup.start') }}
         </button>
       </div>
-    </template>
+    </div>
 
     <!-- 3 · En marcha -->
-    <section v-else class="hero-card">
-      <span class="orb tone-ok" aria-hidden="true"><PartyPopper :size="40" /></span>
-      <h1>{{ t('setup.doneTitle') }}</h1>
-      <p class="lead">{{ t('setup.doneBody') }}</p>
-      <p class="faint">{{ t('setup.doneHint') }}</p>
-      <div class="actions">
-        <NuxtLink to="/" class="btn btn-primary big">{{ t('setup.go') }}</NuxtLink>
-      </div>
-    </section>
+    <div v-else class="page stage">
+      <section class="hero">
+        <span class="done-orb" aria-hidden="true"><PartyPopper :size="40" /></span>
+        <h1>{{ t('setup.doneTitle') }}</h1>
+        <p class="lead">{{ t('setup.doneBody') }}</p>
+        <NuxtLink to="/" class="btn btn-primary hero-go">{{ t('setup.go') }}<ArrowRight :size="20" aria-hidden="true" /></NuxtLink>
+        <p class="foot">{{ t('setup.doneHint') }}</p>
+      </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.wizard {
-  max-width: 64rem;
-  margin: 0 auto;
+.welcome-screen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #070a09;
+  color: #f3efe4;
 }
 
-.hero-card {
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  animation: settle 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 70% at 50% 50%, rgb(7 10 9 / 0.5), rgb(7 10 9 / 0.88));
+}
+
+.step-pick .bg,
+.step-pick .shade {
+  opacity: 0.35;
+}
+
+.page {
+  position: relative;
+}
+
+/* ------------------------------------------------------------ Bienvenida y «en marcha» */
+.stage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
-  padding: 2rem 1.5rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  background: var(--surface-grad);
-  text-align: center;
-}
-
-.orb {
-  display: grid;
-  place-items: center;
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
-  border: 1.5px solid color-mix(in srgb, var(--accent) 70%, transparent);
-}
-
-.orb.tone-ok {
-  color: var(--ok);
-}
-
-h1 {
-  font-size: 1.6rem;
-}
-
-.region {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: min(36rem, 100%);
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius);
-  background: var(--surface);
-  text-align: left;
-}
-
-.region .grow {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.region small {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-.accent {
-  color: var(--accent);
-  flex: none;
-}
-
-.region-pick {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.4rem;
-  width: min(36rem, 100%);
-}
-
-.region-pick .search {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding-left: 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  color: var(--text-muted);
-}
-
-.region-pick input {
-  flex: 1;
-  border: 0;
-  background: transparent;
-}
-
-.one-click {
-  width: 100%;
-  text-align: left;
+  padding: clamp(0.8rem, 3vh, 1.6rem) 1rem;
 }
 
 .langs {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   padding: 0.25rem;
-  border: 1px solid var(--hairline);
+  border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 999px;
-  background: var(--surface);
-}
-
-.langs-icon {
-  margin: 0 0.3rem 0 0.5rem;
-  color: var(--accent);
+  background: rgb(14 20 17 / 0.5);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 .lang {
-  min-height: 2.5rem;
+  min-height: 2.4rem;
   padding: 0 0.95rem;
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--text-muted);
+  color: rgb(243 239 228 / 0.7);
   font: inherit;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
@@ -311,33 +246,152 @@ h1 {
   color: var(--accent-ink);
 }
 
-.lead {
-  max-width: 44rem;
-  font-size: 1.05rem;
-  line-height: 1.5;
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(32rem, 100%);
+  margin: auto 0;
+  padding-block: 1rem;
+  text-align: center;
+  animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.actions,
-.sticky-actions {
+.app-icon {
+  width: clamp(3.6rem, 12vh, 5.2rem);
+  height: auto;
+  border-radius: 22%;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 0 60px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 12px 32px rgb(0 0 0 / 0.55);
+}
+
+h1 {
+  margin: 0.2rem 0 0;
+  font-size: clamp(1.5rem, 4.6vh, 2.1rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.lead {
+  margin: 0;
+  max-width: 28rem;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: rgb(243 239 228 / 0.75);
+}
+
+.region {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0.4rem;
+  color: rgb(243 239 228 / 0.85);
+  font-weight: 700;
+}
+
+.region svg {
+  color: var(--accent);
+}
+
+.link-btn {
+  min-height: 2.75rem;
+  padding: 0 0.4rem;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.region-pick {
   display: flex;
-  gap: 0.7rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.region-pick .search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.8rem;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: var(--radius);
+  background: rgb(14 20 17 / 0.6);
+  color: var(--text-muted);
+}
+
+.region-pick input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+}
+
+.region-pick .opts {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 0.5rem;
+  gap: 0.4rem;
 }
 
-.sticky-actions {
-  position: sticky;
-  bottom: 0;
-  justify-content: flex-end;
-  padding: 0.7rem 0;
-  background: linear-gradient(transparent, var(--bg) 35%);
+/* Dos botones secundarios que ocupan el ancho del contenedor a partes iguales. */
+.secondary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  width: 100%;
 }
 
-.big {
-  min-height: 3.4rem;
-  padding: 0 1.4rem;
-  font-size: 1.05rem;
+.glass {
+  justify-content: center;
+  min-height: 3.2rem;
+  border-color: rgb(255 255 255 / 0.14);
+  background: rgb(14 20 17 / 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: #f3efe4;
+}
+
+.ghost {
+  background: transparent;
+}
+
+.foot {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: rgb(243 239 228 / 0.5);
+}
+
+.done-orb {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--ok) 30%, transparent);
+}
+
+.hero-go {
+  gap: 0.6rem;
+  min-height: 3.6rem;
+  padding: 0 2rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------ Elegir contenidos */
+.pick {
+  max-width: 64rem;
+  margin: 0 auto;
 }
 
 .pick-head {
@@ -348,119 +402,64 @@ h1 {
 }
 
 .pick-head h1 {
+  margin: 0;
   font-size: 1.3rem;
 }
 
-.small {
-  font-size: 0.85rem;
-}
-
-/* ------------------------------------------------------------ Bienvenida (una tarjeta, sin desplazar) */
-.wizard.centered {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.welcome {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: 1.1rem 1.6rem;
-  width: 100%;
-  padding: 1.2rem 1.3rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
-  background:
-    radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
-    var(--surface-grad);
-  box-shadow: 0 18px 50px rgb(0 0 0 / 0.35);
-  animation: pop-in 0.18s ease-out;
-}
-
-.col {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  min-width: 0;
-}
-
-.intro-col {
-  justify-content: center;
-}
-
-.action-col {
-  justify-content: center;
-  padding-left: 1.4rem;
-  border-left: 1px solid var(--hairline);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.brand .orb {
-  width: 3.4rem;
-  height: 3.4rem;
-  flex: none;
-}
-
-.brand h1 {
-  font-size: 1.5rem;
-  line-height: 1.15;
-}
-
-.welcome .lead {
-  font-size: 1rem;
-  line-height: 1.45;
-}
-
-.small {
-  font-size: 0.85rem;
-}
-
-.welcome .langs {
-  align-self: flex-start;
-}
-
-.welcome .region {
-  width: 100%;
-}
-
-.welcome .actions {
-  justify-content: flex-start;
-  margin-top: 0;
-}
-
-.region-pick {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.region-pick .opts {
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  padding: 0.7rem 0;
+  background: linear-gradient(transparent, #070a09 35%);
 }
 
-/* Pantallas estrechas (móvil): una columna; aquí sí se desplaza. */
-@media (max-width: 52rem) {
-  .wizard.centered {
-    display: block;
-  }
+.big {
+  min-height: 3.4rem;
+  padding: 0 1.4rem;
+  font-size: 1.05rem;
+}
 
-  .welcome {
-    grid-template-columns: 1fr;
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
   }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 
-  .action-col {
-    padding-left: 0;
-    border-left: 0;
-    border-top: 1px solid var(--hairline);
-    padding-top: 1rem;
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
   }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg,
+  .hero {
+    animation: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .secondary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+:root[data-contrast='high'] .bg,
+:root[data-contrast='high'] .shade {
+  display: none;
 }
 </style>

@@ -495,6 +495,8 @@ export type AdminJob =
   | 'routing'
   | 'mesh'
   | 'games'
+  /** Solo portable (ADR 0019): copiar Survival OS a otra memoria USB e integrarla en el sistema. */
+  | 'usb-prepare'
 
 /** Juegos offline: copia local de Viseni Games (ADR 0012, scripts/games-sync.py). */
 export interface GamesStatus {
@@ -737,6 +739,55 @@ export interface PortableStatus {
   installJob: { state: 'idle' | 'running' | 'done' | 'failed'; message: string | null; dest: string | null; shortcuts: string[] }
   /** «Compartir en la red local»: vista pública de solo lectura en la IP privada del equipo. */
   share: { on: boolean; url: string | null; error: string | null }
+}
+
+/** Memoria USB de Survival OS (versión portable, ADR 0019). */
+export interface PortableUsbStatus {
+  /** Dónde se ejecuta: memoria USB o disco externo (removable) o disco interno. */
+  volume: {
+    removable: boolean
+    /** Punto de montaje (E:\, /Volumes/X, /media/u/X). */
+    mount: string | null
+    label: string | null
+    /** fat32 | exfat | ntfs | apfs | hfs | ext | … */
+    fs: string | null
+    /** Survival OS está en la raíz de la memoria (preparada con «Preparar memoria USB»). */
+    volumeRoot: boolean
+    /** Identificador de la memoria (para «abrir al conectar»); null si aún no tiene. */
+    id: string | null
+  }
+  /** «Abrir al conectar esta memoria» en ESTE equipo. */
+  autoOpen: {
+    supported: boolean
+    reason: string | null
+    /** Hay alguna memoria emparejada en este equipo (vigilante instalado). */
+    enabled: boolean
+    /** Esta memoria está emparejada. */
+    paired: boolean
+    mode: 'ask' | 'open'
+    /** El usuario dijo «No, gracias» en este equipo. */
+    dismissed: boolean
+  }
+  /** Memorias y discos externos conectados donde se puede preparar Survival OS. */
+  media: {
+    media: string
+    label: string
+    fs: string | null
+    freeBytes: number
+    totalBytes: number
+    /** Ya tiene Survival OS (se actualizará conservando sus datos). */
+    hasSurvival: boolean
+  }[]
+  /** Lo que se copiará al preparar una memoria. */
+  prepare: {
+    appBytes: number
+    dataBytes: number
+    /** Ficheros de datos de más de 4 GB (no caben en FAT32). */
+    bigData: { file: string; bytes: number }[]
+    runtimes: string[]
+    allPlatforms: boolean
+  }
+  platform: string
 }
 
 /** Catálogo de descargas (ADR 0015): un elemento tal como lo ve la interfaz. */

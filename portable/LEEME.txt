@@ -6,7 +6,7 @@ desde una memoria USB o un disco, o instalar en el equipo. No modifica el sistem
 
 ABRIR
 -----
-  Windows ........ doble clic en «Abrir Survival OS»
+  Windows ........ doble clic en «Survival OS» (el de la brújula)
   macOS .......... doble clic en «Survival OS»
                    La primera vez macOS puede bloquearla porque no está firmada:
                    clic derecho → Abrir → Abrir.
@@ -18,6 +18,18 @@ ABRIR
 Se abre una ventana propia. Al cerrarla, Survival OS se detiene.
 Funciona mejor con Chrome, Edge, Brave o Chromium instalados. Si no hay ninguno, se abre el
 navegador predeterminado; en ese caso, para salir: Sistema → «Cerrar Survival OS».
+
+EN UNA MEMORIA USB
+------------------
+Para la mejor experiencia, prepárala desde la app: Sistema → Mantenimiento → «Memoria USB» →
+«Preparar una memoria USB» (mejor en formato exFAT). La memoria queda con su icono y su nombre, y al
+abrirla solo se ve «Survival OS» (las carpetas internas quedan ocultas). Funciona en Windows, macOS y Linux.
+
+  Abrir al conectar ... ningún sistema abre programas de una memoria por sí solo. La primera vez que
+                        abras Survival OS desde la memoria en un equipo, te ofrecerá «Abrir al conectar
+                        esta memoria» (sin permisos de administrador; se quita en Mantenimiento).
+  Linux (GNOME) ....... al conectar la memoria pregunta si quieres ejecutar Survival OS.
+  Retirarla ........... Sistema → «Expulsar la memoria USB». Espera al aviso antes de sacarla.
 
 INSTALAR EN ESTE EQUIPO (opcional)
 ----------------------------------
@@ -33,7 +45,8 @@ abre cada carpeta. Ver data/LEEME.txt.
 
 ANTES DE RETIRAR EL USB
 -----------------------
-Cierra la ventana de Survival OS (o «Cerrar Survival OS») y espera unos segundos.
+Usa Sistema → «Expulsar la memoria USB» y espera al aviso. O cierra la ventana de Survival OS
+(«Cerrar Survival OS»), espera unos segundos y expúlsala desde el sistema.
 
 TODO LO DEL EQUIPO SURVIVAL OS, TAMBIÉN AQUÍ
 -------------------------------------------

@@ -7,13 +7,15 @@
  *   release/survival-os-<v>-portable.zip      la misma carpeta comprimida (+ .sha256)
  * El zip guarda permisos Unix (node, .sh, .app ejecutables): se descomprime bien en macOS y Linux.
  * Node se descarga de nodejs.org y se verifica con su SHASUMS256.txt (caché en .data/portable-cache).
+ * En Windows se compila además «Survival OS.exe» (lanzador con icono y vigilante de memorias USB, ADR 0019).
  */
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { chmodSync, closeSync, cpSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync, writeSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { crc32, deflateRawSync, deflateSync } from 'node:zlib'
+import { crc32, deflateRawSync } from 'node:zlib'
+import { makeIcns, makeIco, makeIconPng } from '../portable/icon.mjs'
 import { TARGETS } from '../portable/lib.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -73,107 +75,6 @@ async function fetchNode(key) {
   cpSync(join(tmp, members[0]), join(dest, bin))
   cpSync(join(tmp, `${base}/LICENSE`), join(dest, 'LICENSE-node.txt'))
   rmSync(tmp, { recursive: true, force: true })
-}
-
-// ------------------------------------------------------------------ Icono (brújula) sin dependencias
-
-function pngChunk(type, data) {
-  const len = Buffer.alloc(4)
-  len.writeUInt32BE(data.length)
-  const td = Buffer.concat([Buffer.from(type, 'ascii'), data])
-  const crc = Buffer.alloc(4)
-  crc.writeUInt32BE(crc32(td) >>> 0)
-  return Buffer.concat([len, td, crc])
-}
-
-/** PNG RGBA 256×256: cuadrado redondeado verde oscuro, anillo y aguja de brújula. Supermuestreo 4×. */
-function makeIconPng(size = 256) {
-  const S = 4
-  const px = Buffer.alloc(size * size * 4)
-  const c = size / 2
-  const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
-  const BG = hex('#13241b')
-  const RING = hex('#8fd19e')
-  const NORTH = hex('#f2f7f3')
-  const SOUTH = hex('#5f8f6b')
-  const tri = (x, y, a, b, d) => {
-    const s = (p, q, r) => (p[0] - r[0]) * (q[1] - r[1]) - (q[0] - r[0]) * (p[1] - r[1])
-    const p = [x, y]
-    const d1 = s(p, a, b)
-    const d2 = s(p, b, d)
-    const d3 = s(p, d, a)
-    return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0))
-  }
-  const sample = (x, y) => {
-    const r = 44
-    const qx = Math.max(Math.abs(x - c) - (c - 8 - r), 0)
-    const qy = Math.max(Math.abs(y - c) - (c - 8 - r), 0)
-    if (Math.hypot(qx, qy) > r) return null
-    const d = Math.hypot(x - c, y - c)
-    if (d > 80 && d < 94) return RING
-    if (tri(x, y, [c, c - 70], [c - 20, c], [c + 20, c])) return NORTH
-    if (tri(x, y, [c, c + 70], [c - 20, c], [c + 20, c])) return SOUTH
-    return BG
-  }
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      let r = 0
-      let g = 0
-      let b = 0
-      let a = 0
-      for (let sy = 0; sy < S; sy++) {
-        for (let sx = 0; sx < S; sx++) {
-          const col = sample(x + (sx + 0.5) / S, y + (sy + 0.5) / S)
-          if (col) {
-            r += col[0]
-            g += col[1]
-            b += col[2]
-            a++
-          }
-        }
-      }
-      const i = (y * size + x) * 4
-      if (a) {
-        px[i] = Math.round(r / a)
-        px[i + 1] = Math.round(g / a)
-        px[i + 2] = Math.round(b / a)
-      }
-      px[i + 3] = Math.round((a / (S * S)) * 255)
-    }
-  }
-  const raw = Buffer.alloc(size * (size * 4 + 1))
-  for (let y = 0; y < size; y++) px.copy(raw, y * (size * 4 + 1) + 1, y * size * 4, (y + 1) * size * 4)
-  const ihdr = Buffer.alloc(13)
-  ihdr.writeUInt32BE(size, 0)
-  ihdr.writeUInt32BE(size, 4)
-  ihdr.set([8, 6, 0, 0, 0], 8)
-  return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), pngChunk('IHDR', ihdr), pngChunk('IDAT', deflateSync(raw, { level: 9 })), pngChunk('IEND', Buffer.alloc(0))])
-}
-
-/** ICO (Windows) con un PNG de 256 px embebido. */
-function icoFromPng(png) {
-  const h = Buffer.alloc(22)
-  h.writeUInt16LE(0, 0)
-  h.writeUInt16LE(1, 2)
-  h.writeUInt16LE(1, 4)
-  h.writeUInt8(0, 6) // 0 = 256
-  h.writeUInt8(0, 7)
-  h.writeUInt16LE(1, 10)
-  h.writeUInt16LE(32, 12)
-  h.writeUInt32LE(png.length, 14)
-  h.writeUInt32LE(22, 18)
-  return Buffer.concat([h, png])
-}
-
-/** ICNS (macOS) con la entrada ic08 (PNG 256 px). */
-function icnsFromPng(png) {
-  const entry = Buffer.alloc(8)
-  entry.write('ic08', 0, 'ascii')
-  entry.writeUInt32BE(8 + png.length, 4)
-  const head = Buffer.alloc(8)
-  head.write('icns', 0, 'ascii')
-  head.writeUInt32BE(16 + png.length, 4)
-  return Buffer.concat([head, entry, png])
 }
 
 // ------------------------------------------------------------------ Zip con permisos Unix
@@ -282,23 +183,44 @@ copy('scripts/country-maps.mjs')
 copy('scripts/public-gateway.mjs')
 copy('scripts/games-sync.mjs')
 copy('scripts/portable-admin.mjs')
-for (const f of ['launcher.mjs', 'lib.mjs', 'install.mjs', 'apply-update.mjs', 'win/survival-os.vbs']) copy(`portable/${f}`)
+for (const f of ['launcher.mjs', 'lib.mjs', 'install.mjs', 'apply-update.mjs', 'usb.mjs', 'autoopen.mjs', 'icon.mjs', 'usb-watch.sh', 'data-LEEME.txt', 'win/survival-os.vbs']) copy(`portable/${f}`)
 writeFileSync(join(app, 'VERSION'), `${version}\n`)
 writeFileSync(join(app, 'package.json'), JSON.stringify({ name: 'survival-os-portable', version, private: true, type: 'module' }, null, 2))
 
-const png = makeIconPng()
-writeFileSync(join(app, 'portable', 'icon.png'), png)
-writeFileSync(join(app, 'portable', 'icon.ico'), icoFromPng(png))
+// Iconos (ADR 0019): ventana, accesos directos, unidad USB (Windows: autorun.inf; macOS: .VolumeIcon.icns; Linux: PNG).
+const icns = makeIcns()
+const ico = makeIco()
+writeFileSync(join(app, 'portable', 'icon.png'), makeIconPng(256))
+writeFileSync(join(app, 'portable', 'icon.ico'), ico)
+writeFileSync(join(app, 'portable', 'icon.icns'), icns)
 
 // Lanzadores por sistema.
-cpSync(join(root, 'portable', 'files', 'Abrir Survival OS.cmd'), join(stage, 'Abrir Survival OS.cmd'))
+// Windows: «Survival OS.exe» con icono propio (ADR 0019), compilado con el csc.exe de .NET Framework 4 que trae
+// Windows. Sin él (empaquetado fuera de Windows) se usa «Abrir Survival OS.cmd» y no hay «abrir al conectar».
+const csc = process.platform === 'win32' ? join(process.env.SystemRoot || 'C:\\Windows', 'Microsoft.NET', 'Framework64', 'v4.0.30319', 'csc.exe') : null
+let builtExe = false
+if (targets.includes('win-x64') && csc && existsSync(csc)) {
+  const tmp = join(cache, 'win-launcher')
+  rmSync(tmp, { recursive: true, force: true })
+  mkdirSync(tmp, { recursive: true })
+  // Versión de ensamblado: solo números (0.8.0 → 0.8.0.0).
+  writeFileSync(join(tmp, 'SurvivalOS.cs'), readFileSync(join(root, 'portable', 'win', 'SurvivalOS.cs'), 'utf8').replaceAll('__VERSION__', version.replace(/[^0-9.]/g, '').split('.').slice(0, 3).join('.')))
+  writeFileSync(join(tmp, 'icon.ico'), ico)
+  const r = spawnSync(csc, ['-nologo', '-target:winexe', '-optimize+', '-win32icon:icon.ico', '-r:System.Management.dll', '-r:System.Windows.Forms.dll', '-r:System.Drawing.dll', '-out:Survival OS.exe', 'SurvivalOS.cs'], { cwd: tmp, encoding: 'utf8' })
+  if (r.status !== 0) fail(`No se pudo compilar «Survival OS.exe»:\n${r.stdout}${r.stderr}`)
+  cpSync(join(tmp, 'Survival OS.exe'), join(stage, 'Survival OS.exe'))
+  builtExe = true
+} else if (targets.includes('win-x64')) {
+  console.warn('[portable] AVISO: sin csc.exe (empaquetado fuera de Windows): Windows usará «Abrir Survival OS.cmd», sin icono propio ni «abrir al conectar».')
+}
+if (!builtExe && targets.includes('win-x64')) cpSync(join(root, 'portable', 'files', 'Abrir Survival OS.cmd'), join(stage, 'Abrir Survival OS.cmd'))
 cpSync(join(root, 'portable', 'files', 'abrir-survival-os.sh'), join(stage, 'abrir-survival-os.sh'))
 const macApp = join(stage, 'Survival OS.app', 'Contents')
 mkdirSync(join(macApp, 'MacOS'), { recursive: true })
 mkdirSync(join(macApp, 'Resources'), { recursive: true })
 writeFileSync(join(macApp, 'Info.plist'), readFileSync(join(root, 'portable', 'macos', 'Info.plist'), 'utf8').replaceAll('__VERSION__', version))
 cpSync(join(root, 'portable', 'macos', 'survival-os'), join(macApp, 'MacOS', 'survival-os'))
-writeFileSync(join(macApp, 'Resources', 'icon.icns'), icnsFromPng(png))
+writeFileSync(join(macApp, 'Resources', 'icon.icns'), icns)
 cpSync(join(root, 'portable', 'LEEME.txt'), join(stage, 'LEEME.txt'))
 mkdirSync(join(stage, 'data'), { recursive: true })
 cpSync(join(root, 'portable', 'data-LEEME.txt'), join(stage, 'data', 'LEEME.txt'))
@@ -307,9 +229,9 @@ for (const t of targets) await fetchNode(t)
 
 // Permisos locales (si se monta en macOS/Linux) y en el zip.
 const isExec = (rel) =>
-  /^runtime\/[^/]+\/node$/.test(rel) || rel === 'abrir-survival-os.sh' || rel === 'Survival OS.app/Contents/MacOS/survival-os'
+  /^runtime\/[^/]+\/node$/.test(rel) || ['abrir-survival-os.sh', 'Survival OS.app/Contents/MacOS/survival-os', 'app/portable/usb-watch.sh'].includes(rel)
 if (process.platform !== 'win32') {
-  for (const rel of ['abrir-survival-os.sh', 'Survival OS.app/Contents/MacOS/survival-os', ...targets.filter((t) => !t.startsWith('win')).map((t) => `runtime/${t}/node`)]) {
+  for (const rel of ['abrir-survival-os.sh', 'Survival OS.app/Contents/MacOS/survival-os', 'app/portable/usb-watch.sh', ...targets.filter((t) => !t.startsWith('win')).map((t) => `runtime/${t}/node`)]) {
     chmodSync(join(stage, rel), 0o755)
   }
 }

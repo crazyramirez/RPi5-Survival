@@ -1,8 +1,23 @@
 # Changelog
 
-## Sin publicar
+## 0.9.0 — 2026-11-16 · Portable completa, mapas de cualquier país, cuatro idiomas y memoria USB integrada
 
 ### Añadido
+- **Memoria USB de Survival OS integrada en Windows, macOS y Linux (ADR 0019):**
+  - **Icono y nombre propios** de la unidad. Al abrirla solo se ve «Survival OS»: las carpetas internas quedan ocultas.
+  - **Windows:** `Survival OS.exe` con su icono, en lugar del `.cmd`.
+  - **Linux (GNOME):** ofrece «Ejecutar» al conectarla.
+  - **Ventana de la app** con el icono de Survival OS (favicon y manifest).
+  - **«Abrir al conectar esta memoria»:**
+    - opcional, una vez por equipo, sin administrador y desactivable;
+    - solo reacciona ante tu memoria (identificador aleatorio); pregunta antes de abrir, o abre directamente si lo eliges;
+    - añade «Survival OS (USB)» al menú de aplicaciones;
+    - la primera vez que abres la memoria en un equipo, Survival OS lo ofrece.
+  - **Expulsar la memoria USB** (Mantenimiento y Sistema): cierra todo, la expulsa con seguridad y avisa cuando se puede retirar.
+  - **Preparar una memoria USB:**
+    - copia Survival OS a otra memoria, para todos los sistemas y con tus datos si quieres;
+    - nunca pisa los datos que ya tenga;
+    - avisa de FAT32 (límite de 4 GB) y la deja integrada.
 - **Juegos en «Descargarlo todo»:** los juegos son un contenido más del catálogo (grupo «Juegos») y se descargan también con un clic. En la barra, «Juegos» va antes que «Pantalla» y solo aparece si están descargados.
 - **Mapas de cualquier país (ADR 0018):**
   - buscador en Mapas («Añadir país») y en Mantenimiento, por nombre en cualquier idioma, con tamaño estimado;

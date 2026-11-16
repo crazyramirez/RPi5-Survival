@@ -38,7 +38,7 @@ export function installPlan(root, platform = process.platform, arch = process.ar
 }
 
 function launcherFiles(platform) {
-  if (platform === 'win32') return ['Abrir Survival OS.cmd']
+  if (platform === 'win32') return ['Survival OS.exe', 'Abrir Survival OS.cmd']
   if (platform === 'darwin') return ['Survival OS.app']
   return ['abrir-survival-os.sh']
 }
@@ -85,17 +85,19 @@ function createShortcuts(dest, platform) {
     const target = join(dest, 'runtime', 'win-x64', 'node.exe')
     const script = join(dest, 'app', 'portable', 'win', 'survival-os.vbs')
     const ico = join(dest, 'app', 'portable', 'icon.ico')
+    const exe = join(dest, 'Survival OS.exe')
     const q = (v) => v.replace(/'/g, "''") // literal entre comillas simples de PowerShell
-    // Acceso directo a wscript + .vbs: abre la app sin ventana de consola.
+    // «Survival OS.exe» (ADR 0019) lleva el icono y abre la app sin consola; sin él, wscript + .vbs.
+    const shortcutTarget = existsSync(exe)
+      ? `$l.TargetPath = '${q(exe)}'; $l.IconLocation = '${q(exe)},0'`
+      : `$l.TargetPath = "$env:WINDIR\\System32\\wscript.exe"; $l.Arguments = '"${q(script)}"'; if (Test-Path '${q(ico)}') { $l.IconLocation = '${q(ico)}' } else { $l.IconLocation = '${q(target)},0' }`
     const ps = `
 $s = New-Object -ComObject WScript.Shell
 $targets = ${process.env.SURVIVAL_SHORTCUT_DIR ? `@('${q(process.env.SURVIVAL_SHORTCUT_DIR)}')` : "@([Environment]::GetFolderPath('Programs'), [Environment]::GetFolderPath('Desktop'))"}
 foreach ($dir in $targets) {
   $l = $s.CreateShortcut((Join-Path $dir 'Survival OS.lnk'))
-  $l.TargetPath = "$env:WINDIR\\System32\\wscript.exe"
-  $l.Arguments = '"${q(script)}"'
+  ${shortcutTarget}
   $l.WorkingDirectory = '${q(dest)}'
-  if (Test-Path '${q(ico)}') { $l.IconLocation = '${q(ico)}' } else { $l.IconLocation = '${q(target)},0' }
   $l.Description = 'Survival OS'
   $l.Save()
 }`

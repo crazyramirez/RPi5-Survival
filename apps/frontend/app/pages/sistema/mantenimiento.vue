@@ -227,6 +227,7 @@ const PIN_LEGEND = [
       <!-- Portable: carpetas, instalar en este equipo, cerrar y compartir en la red local. -->
       <div v-if="portable" class="bento">
         <PortableCard />
+        <UsbCard />
         <ShareCard />
       </div>
       <div class="bento">

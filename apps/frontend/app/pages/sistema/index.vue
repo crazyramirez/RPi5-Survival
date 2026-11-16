@@ -287,6 +287,21 @@ async function doQuit(): Promise<void> {
     actionMessage.value = { tone: 'danger', text: actionErrorMessage(err) }
   }
 }
+// Memoria USB (portable, ADR 0019): «Expulsar» solo si se ejecuta desde una.
+const { usb, load: loadUsb, eject } = usePortableUsb()
+const ejectPending = ref(false)
+onMounted(() => {
+  if (portable) void loadUsb()
+})
+async function doEject(): Promise<void> {
+  ejectPending.value = false
+  try {
+    await eject()
+    actionMessage.value = { tone: 'info', text: t('usb.ejecting') }
+  } catch (err) {
+    actionMessage.value = { tone: 'danger', text: actionErrorMessage(err) }
+  }
+}
 const desktopPending = ref(false)
 
 async function exitToDesktop(): Promise<void> {
@@ -566,6 +581,11 @@ async function displayOff(): Promise<void> {
           <Power :size="24" aria-hidden="true" />
           <span><strong>{{ t('portable.quit') }}</strong><small>{{ t('portable.quitHint') }}</small></span>
         </button>
+        <!-- Desde una memoria USB (ADR 0019): cerrar y expulsarla con seguridad. -->
+        <button v-if="usb?.volume.removable" type="button" class="ctl ctl-danger tone-danger" @click="ejectPending = true">
+          <Unplug :size="24" aria-hidden="true" />
+          <span><strong>{{ t('usb.eject') }}</strong><small>{{ t('usb.ejectHint') }}</small></span>
+        </button>
       </div>
       <p v-if="actionMessage" :class="`tone-${actionMessage.tone} action-msg`" role="status">{{ actionMessage.text }}</p>
     </section>
@@ -603,6 +623,15 @@ async function displayOff(): Promise<void> {
       <p v-if="actionMessage" :class="`tone-${actionMessage.tone} action-msg`" role="status">{{ actionMessage.text }}</p>
     </section>
 
+    <ConfirmDialog
+      v-if="ejectPending"
+      :title="t('usb.ejectTitle')"
+      :message="t('usb.ejectBody')"
+      :confirm-label="t('usb.eject')"
+      danger
+      @confirm="doEject"
+      @cancel="ejectPending = false"
+    />
     <ConfirmDialog
       v-if="quitPending"
       :title="t('portable.quitTitle')"

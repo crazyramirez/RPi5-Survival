@@ -1,21 +1,22 @@
 #!/usr/bin/env node
 /**
  * Tareas de mantenimiento de la versión portable que en la Pi hace admin-job.py como root (ADR 0014):
- * memorias USB y discos externos, importar mapas y documentos, copia de seguridad y preparar una
- * actualización. Mismo contrato: registro por stdout (el servidor web lo guarda en <admin>/<tarea>.log) y
+ * memorias USB y discos externos, importar mapas y documentos, copia de seguridad, preparar una
+ * actualización y preparar otra memoria USB con Survival OS (ADR 0019). Mismo contrato: registro por stdout (el servidor web lo guarda en <admin>/<tarea>.log) y
  * resultado en <admin>/<tarea>.result.json. Node sin dependencias; Windows, macOS y Linux.
  *
  *   node portable-admin.mjs <tarea> '<json de parámetros>' --root <carpeta portable> --admin <dir>
  */
-import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import {
   closeSync, copyFileSync, cpSync, createReadStream, existsSync, mkdirSync, openSync, readdirSync, readFileSync, readSync,
-  renameSync, rmSync, statfsSync, statSync, writeFileSync, appendFileSync, chmodSync, lstatSync,
+  renameSync, rmSync, statfsSync, statSync, writeFileSync, appendFileSync, chmodSync,
 } from 'node:fs'
-import { hostname, platform, userInfo } from 'node:os'
-import { basename, delimiter, dirname, extname, join, relative, resolve, sep } from 'node:path'
+import { hostname, platform } from 'node:os'
+import { basename, dirname, extname, join, relative, resolve, sep } from 'node:path'
 import { inflateRawSync } from 'node:zlib'
+// Mismo árbol en el repositorio (scripts/ + portable/) y en la carpeta portable (app/scripts/ + app/portable/).
+import { mountedMedia as listMedia, prepareUsb } from '../portable/usb.mjs'
 
 const [job, rawParams = '{}'] = process.argv.slice(2)
 const arg = (name) => {
@@ -38,74 +39,12 @@ const gib = (b) => `${(b / 1024 ** 3).toFixed(1)} GB`
 
 // ------------------------------------------------------------------ medios
 
-/**
- * Memorias USB y discos montados, con un identificador estable «grupo/etiqueta» (mismo formato que la Pi,
- * validado por el servidor web). Nunca se acepta una ruta del cliente: el id se resuelve contra esta lista.
- */
+/** Memorias USB y discos montados (ver portable/usb.mjs): el id «grupo/etiqueta» se valida contra esta lista. */
 function mountedMedia() {
-  const out = []
-  const add = (id, path) => {
-    try {
-      const st = statfsSync(path)
-      out.push({ media: id.slice(0, 190), path, freeBytes: st.bavail * st.bsize })
-    } catch {
-      // medio retirado o sin permiso
-    }
-  }
-  if (platform() === 'win32') {
-    // Como en la Pi, solo medios externos: unidades extraíbles y discos conectados por USB (no los discos
-    // internos del ordenador, que llenarían la lista). Get-Disk no necesita permisos de administrador.
-    const sys = (process.env.SystemDrive || 'C:').toUpperCase()
-    const ps = [
-      '$usb = @{}',
-      "try { Get-Disk -ErrorAction Stop | Where-Object BusType -eq 'USB' | ForEach-Object { Get-Partition -DiskNumber $_.Number -ErrorAction SilentlyContinue | Where-Object DriveLetter | ForEach-Object { $usb[[string]$_.DriveLetter] = $true } } } catch {}",
-      "@(Get-Volume | Where-Object { $_.DriveLetter -and ($_.DriveType -eq 'Removable' -or $usb.ContainsKey([string]$_.DriveLetter)) } | Select-Object @{n='L';e={[string]$_.DriveLetter}},@{n='Label';e={$_.FileSystemLabel}},@{n='T';e={[string]$_.DriveType}}) | ConvertTo-Json -Compress",
-    ].join('; ')
-    let disks = []
-    try {
-      const json = execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', ps], { encoding: 'utf8', windowsHide: true, timeout: 30_000 })
-      const parsed = json.trim() ? JSON.parse(json) : []
-      disks = Array.isArray(parsed) ? parsed : [parsed]
-    } catch {
-      throw new JobError('no se pudieron listar las unidades de Windows')
-    }
-    for (const d of disks) {
-      const letter = `${String(d.L ?? '').toUpperCase()}:`
-      if (!/^[A-Z]:$/.test(letter) || letter === sys) continue
-      const label = String(d.Label || (d.T === 'Removable' ? 'USB' : 'Disco USB')).replace(/[/\\\0]/g, '_')
-      add(`${letter[0]}/${label}`, `${letter}\\`)
-    }
-  } else if (platform() === 'darwin') {
-    for (const name of safeList('/Volumes')) {
-      const p = join('/Volumes', name)
-      try {
-        if (lstatSync(p).isSymbolicLink()) continue // «Macintosh HD» → /
-      } catch {
-        continue
-      }
-      add(`Volumes/${name}`, p)
-    }
-  } else {
-    const mounts = new Set(readFileSafe('/proc/mounts').split('\n').map((l) => (l.split(' ')[1] ?? '').replace(/\\040/g, ' ')))
-    const user = userInfo().username
-    for (const base of [`/media/${user}`, `/run/media/${user}`, '/media', '/mnt']) {
-      for (const name of safeList(base)) {
-        const p = join(base, name)
-        if (mounts.has(p)) add(`${base === '/mnt' ? 'mnt' : base === '/media' ? 'media' : user}/${name}`, p)
-      }
-    }
-  }
-  // Carpetas tratadas como medios (pruebas automáticas y uso avanzado: copia a un disco de red, etc.).
-  for (const dir of (process.env.SURVIVAL_EXTRA_MEDIA ?? '').split(delimiter).filter(Boolean)) add(`extra/${basename(dir)}`, dir)
-  // El mismo medio puede salir dos veces (/media/<usuario> y /run/media/<usuario>).
-  return out.filter((m, i) => out.findIndex((o) => o.media === m.media) === i)
-}
-
-function safeList(dir) {
   try {
-    return readdirSync(dir)
-  } catch {
-    return []
+    return listMedia()
+  } catch (err) {
+    throw new JobError(err instanceof Error ? err.message : String(err))
   }
 }
 
@@ -385,9 +324,30 @@ async function update() {
   log(`Versión ${version} lista. Survival OS se reiniciará para aplicarla; los datos no se tocan.`)
 }
 
+// ------------------------------------------------------------------ preparar una memoria USB (ADR 0019)
+
+/**
+ * Copia Survival OS (y opcionalmente los datos) a la raíz de otra memoria USB y la integra en Windows, macOS y
+ * Linux: icono y nombre de la unidad, carpetas internas ocultas, identificador para «abrir al conectar».
+ */
+async function usbPrepare() {
+  const m = mountedMedia().find((x) => x.media === params.media)
+  if (!m) throw new JobError('el medio no está conectado')
+  const version = readFileSafe(join(ROOT, 'app', 'VERSION')).trim()
+  log(`Preparando ${m.label || m.media}${m.fs ? ` (${m.fs})` : ''}…`)
+  let r
+  try {
+    r = await prepareUsb({ root: ROOT, data: DATA, target: m.path, fs: m.fs, withData: params.withData === true, rename: params.rename !== false, version, log })
+  } catch (err) {
+    throw new JobError(err instanceof Error ? err.message : String(err))
+  }
+  writeResult({ media: m.media, ...r })
+  log(`==> Memoria lista (${gib(r.copiedBytes)}). Conéctala en cualquier equipo y abre «Survival OS».`)
+}
+
 // ------------------------------------------------------------------ principal
 
-const JOBS = { 'usb-scan': usbScan, 'maps-import': mapsImport, 'docs-import': docsImport, backup, update }
+const JOBS = { 'usb-scan': usbScan, 'maps-import': mapsImport, 'docs-import': docsImport, backup, update, 'usb-prepare': usbPrepare }
 try {
   if (!Object.hasOwn(JOBS, job)) throw new JobError(`tarea desconocida: ${job}`)
   await JOBS[job]()

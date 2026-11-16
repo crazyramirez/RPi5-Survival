@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/versi%C3%B3n-0.8.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.8.0">
+  <img src="https://img.shields.io/badge/versi%C3%B3n-0.9.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.9.0">
   <img src="https://img.shields.io/badge/Raspberry%20Pi%205-quiosco%20t%C3%A1ctil-8cbf96?style=flat-square&labelColor=0f1412" alt="Raspberry Pi 5">
   <img src="https://img.shields.io/badge/portable-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-8cbf96?style=flat-square&labelColor=0f1412" alt="Portable: Windows, macOS y Linux">
   <img src="https://img.shields.io/badge/idiomas-ES%20%C2%B7%20EN%20%C2%B7%20FR%20%C2%B7%20IT-8cbf96?style=flat-square&labelColor=0f1412" alt="Idiomas: español, inglés, francés e italiano">
@@ -12,6 +12,10 @@
 </p>
 
 # Survival OS
+
+> 🤖 **Instálalo con tu asistente de IA:** clona este repositorio, ábrelo con Claude Code, Codex o Gemini y pídele
+> «Instala Survival OS en mi Raspberry Pi» (o «en este ordenador»): él lo instala y configura todo, y solo te
+> pregunta lo necesario. [Cómo hacerlo](#instalación-exprés-pídeselo-a-tu-asistente-de-ia).
 
 **Un centro de conocimiento, mapas y comunicación que funciona sin Internet.** Mapas de cualquier país con rutas,
 la Wikipedia, 41 protocolos de emergencia, cientos de manuales, un asistente de IA local, mensajería por radio LoRa
@@ -124,8 +128,10 @@ Las dos versiones comparten el mismo código y la misma interfaz: lo que aprenda
 La versión portable es una carpeta llamada **«Survival OS»** (unos 590 MB; comprimida, unos 210 MB). Trae todo lo
 necesario para los cinco sistemas, Node incluido: no hay que instalar nada antes.
 
-- **Si tienes el zip** `survival-os-X.Y.Z-portable.zip`: descomprímelo donde quieras (memoria USB, disco externo o
-  tu carpeta de usuario).
+- **Descárgala** de la [última versión publicada](https://github.com/crazyramirez/RPi5-Survival/releases/latest)
+  (`survival-os-X.Y.Z-portable.zip`) y descomprímela donde quieras: memoria USB (mejor en exFAT), disco externo o
+  tu carpeta de usuario. Para una memoria USB perfecta (icono, nombre, «abrir al conectar»), ábrela y usa
+  Sistema → Mantenimiento → **Memoria USB** → «Preparar una memoria USB».
 - **Si partes del código:** sigue [Generar la versión portable](#generar-la-versión-portable) en la sección para
   desarrolladores; el resultado queda en `release/portable/Survival OS/`.
 
@@ -133,7 +139,7 @@ necesario para los cinco sistemas, Node incluido: no hay que instalar nada antes
 
 | Sistema | Cómo abrir |
 |---|---|
-| **Windows 10/11** (x64) | Doble clic en **«Abrir Survival OS»** |
+| **Windows 10/11** (x64) | Doble clic en **«Survival OS»** (el de la brújula) |
 | **macOS 11 o posterior** (Apple Silicon e Intel) | Doble clic en **«Survival OS»**. La primera vez macOS puede bloquearla porque no está firmada: clic derecho → **Abrir** → **Abrir** |
 | **Linux** x64 y arm64 (también Raspberry Pi OS de 64 bits) | Doble clic en **`abrir-survival-os.sh`** (Ejecutar) o, en una terminal, `sh abrir-survival-os.sh` |
 
@@ -559,7 +565,7 @@ Más detalles en el [ADR 0017](docs/adr/0017-idiomas.md).
 
 ## Estado
 
-**v0.8.0.** Funciona en una Raspberry Pi 5 real y en la versión portable para Windows.
+**v0.9.0.** Funciona en una Raspberry Pi 5 real y en la versión portable para Windows.
 
 - **Verificado en la Pi:** quiosco, mapas, rutas, biblioteca, visor de PDF, asistente, bóveda, malla LoRa, hora de
   respaldo e idiomas.

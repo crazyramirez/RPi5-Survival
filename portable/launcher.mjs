@@ -226,6 +226,58 @@ function onMessage(msg) {
     }, 500)
   }
   if (msg.type === 'update') applyUpdate()
+  if (msg.type === 'eject') void eject(msg.messages)
+}
+
+// ------------------------------------------------------------------ Memoria USB (ADR 0019)
+
+/**
+ * Integración con el sistema en segundo plano (nunca bloquea ni impide el uso): icono y nombre de la unidad,
+ * carpetas internas ocultas, icono de la carpeta; y, si esta memoria está emparejada en este equipo, el
+ * vigilante «abrir al conectar» se actualiza con la versión de esta copia.
+ */
+async function integrateVolume() {
+  try {
+    const usb = await import('./usb.mjs')
+    const v = usb.volumeInfo(ROOT, platform)
+    let version = ''
+    try {
+      version = readFileSync(join(APP, 'VERSION'), 'utf8').trim()
+    } catch {
+      // sin versión
+    }
+    const changes = usb.decorate(ROOT, { platform, volumeRoot: v.removable && v.volumeRoot, version })
+    if (changes.length) say(`Integración con el sistema: ${changes.join(', ')}`)
+    if (v.removable && v.id) {
+      const autoopen = await import('./autoopen.mjs')
+      if (autoopen.refresh({ root: ROOT, volumeId: v.id, platform })) say('Abrir al conectar: vigilante al día')
+    }
+  } catch (err) {
+    say(`Integración con el sistema: ${err instanceof Error ? err.message : String(err)}`)
+  }
+}
+
+/**
+ * «Expulsar la memoria USB»: no se puede expulsar mientras Node se ejecuta desde ella. Se lanza un ayudante
+ * fuera de la memoria (PowerShell o sh) que espera a que este proceso termine, la expulsa y avisa; después se
+ * cierra todo, ventana incluida (su perfil está en data/browser, dentro de la memoria).
+ */
+async function eject(messages) {
+  try {
+    const usb = await import('./usb.mjs')
+    const v = usb.volumeInfo(ROOT, platform)
+    if (!v.removable) {
+      say('Expulsar: Survival OS no se ejecuta desde una memoria USB')
+      return
+    }
+    const clean = (s) => (typeof s === 'string' ? s.replace(/[\u0000-\u001f]+/g, ' ').slice(0, 300) : undefined)
+    usb.spawnEject(platform, v.mount, process.pid, { title: clean(messages?.title), ok: clean(messages?.ok), fail: clean(messages?.fail) })
+    say(`Expulsando ${v.mount} en cuanto se cierre Survival OS…`)
+    if (appWindow && appWindow.exitCode === null) appWindow.kill()
+    stop(0)
+  } catch (err) {
+    say(`No se pudo expulsar: ${err instanceof Error ? err.message : String(err)}`)
+  }
 }
 
 /**
@@ -405,3 +457,4 @@ if (!ready) {
 writeFileSync(RUN_FILE, JSON.stringify({ pid: process.pid, url: webUrl, startedAt: new Date().toISOString() }))
 say(`Listo en ${webUrl}`)
 if (!NO_BROWSER) openBrowser(webUrl, { attach: true })
+setTimeout(() => void integrateVolume(), 1500).unref()

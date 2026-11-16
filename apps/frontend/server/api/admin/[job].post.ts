@@ -10,6 +10,8 @@ export default defineEventHandler(async (event) => {
   if (!isAdminJob(job)) throw createError({ statusCode: 404 })
   // Portable: solo las tareas que sabe ejecutar sin systemd (el resto se van añadiendo, ADR 0014/0015).
   if (isPortable() && !portableSupports(job)) throw createError({ statusCode: 409, statusMessage: 'No disponible en la versión portable' })
+  // Preparar otra memoria USB con la versión portable (ADR 0019): solo tiene sentido desde la portable.
+  if (!isPortable() && job === 'usb-prepare') throw createError({ statusCode: 409, statusMessage: 'Solo en la versión portable' })
   if (getQuery(event).stop === '1') {
     await stopJob(job)
     return await jobStatus(job)

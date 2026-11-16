@@ -39,6 +39,13 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#0f1412' },
         { name: 'robots', content: 'noindex' },
       ],
+      // Icono de la ventana y de la barra de tareas (ADR 0019; generado con scripts/build-icons.mjs).
+      link: [
+        { rel: 'icon', href: '/favicon.ico', sizes: '16x16 32x32 48x48 64x64' },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icon-192.png' },
+        { rel: 'apple-touch-icon', href: '/icon-192.png' },
+        { rel: 'manifest', href: '/manifest.webmanifest' },
+      ],
     },
     pageTransition: false,
     layoutTransition: false,

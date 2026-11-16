@@ -115,6 +115,8 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
     if (typeof b.port !== 'string' || !portRe.test(b.port)) bad('Puerto no válido')
     return { action: b.action, port: b.port }
   },
+  /** Portable (ADR 0019): preparar otra memoria USB con Survival OS (y opcionalmente los datos). */
+  'usb-prepare': (b) => ({ media: media(b.media), withData: b.withData === true, rename: b.rename !== false }),
 }
 
 export function isAdminJob(job: string): job is AdminJob {
@@ -188,7 +190,7 @@ export async function jobStatus(job: AdminJob): Promise<AdminJobStatus> {
   let data: unknown = null
   // Tareas que devuelven datos (`ap` incluye la contraseña del AP: /api/admin es solo loopback).
   // gps-uart: solo en la portable (puertos USB para el GPS).
-  if (job === 'usb-scan' || job === 'ap' || job === 'mesh' || job === 'time-sync' || job === 'gps-uart') {
+  if (job === 'usb-scan' || job === 'ap' || job === 'mesh' || job === 'time-sync' || job === 'gps-uart' || job === 'usb-prepare') {
     try {
       data = JSON.parse(await fs.readFile(`${ADMIN_DIR}/${job}.result.json`, 'utf8')) as unknown
     } catch {

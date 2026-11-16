@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { locked } = useScreenLock()
 const { panelOpen } = useDisplaySettings()
+const portable = usePortable()
 </script>
 
 <template>
@@ -11,6 +12,8 @@ const { panelOpen } = useDisplaySettings()
     </main>
     <ActionBar />
     <DisplayPanel v-if="panelOpen" />
+    <!-- Portable desde una memoria USB (ADR 0019): «¿abrir al conectar?» la primera vez en cada equipo. -->
+    <UsbAutoOpenPrompt v-if="portable" />
     <LockOverlay v-if="locked" />
     <OnScreenKeyboard />
     <!-- Atenuación visual: no afecta a la retroiluminación ni al consumo. -->

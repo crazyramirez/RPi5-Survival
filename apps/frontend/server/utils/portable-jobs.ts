@@ -44,6 +44,7 @@ function commandFor(job: AdminJob, params: Record<string, unknown>): { script: s
     case 'docs-import':
     case 'backup':
     case 'update':
+    case 'usb-prepare':
       return { script: join(scripts, 'portable-admin.mjs'), args: [job, JSON.stringify(params), '--root', root, '--admin', join(portablePaths().data, 'admin')] }
     default:
       return null
@@ -52,7 +53,7 @@ function commandFor(job: AdminJob, params: Record<string, unknown>): { script: s
 
 const PORTABLE_JOBS = new Set<AdminJob>([
   'content', 'llm', 'routing', 'content-delete', 'maps-delete', 'mesh', 'games',
-  'usb-scan', 'maps-import', 'docs-import', 'backup', 'update', 'restart-app', 'gps-uart',
+  'usb-scan', 'maps-import', 'docs-import', 'backup', 'update', 'restart-app', 'gps-uart', 'usb-prepare',
 ])
 
 /**

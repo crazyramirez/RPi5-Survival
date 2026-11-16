@@ -76,4 +76,12 @@ export const serverIt: Record<string, string> = {
   'Solo disponible en el equipo Survival OS': 'Disponibile solo sul dispositivo Survival OS',
   'Survival OS no puede arrancar:\n\n{0}': 'Survival OS non può avviarsi:\n\n{0}',
   'Este equipo no está conectado a ninguna red local': 'Questo computer non è connesso a nessuna rete locale',
+  // Memoria USB (ADR 0019)
+  'Survival OS no se ejecuta desde una memoria USB': 'Survival OS non è in esecuzione da una chiavetta USB',
+  'Esta unidad no se puede expulsar desde Survival OS': 'Questa unità non può essere espulsa da Survival OS',
+  'Solo en la versión portable': 'Solo nella versione portable',
+  'Esta copia no incluye «Survival OS.exe»': 'Questa copia non include «Survival OS.exe»',
+  'Esta copia no incluye el vigilante de memorias USB': 'Questa copia non include il controllo delle chiavette USB',
+  'Sistema no soportado': 'Sistema non supportato',
+  'memoria sin identificador': 'chiavetta senza identificatore',
 }

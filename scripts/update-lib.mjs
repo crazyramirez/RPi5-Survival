@@ -9,7 +9,7 @@
  */
 import { createPrivateKey, createPublicKey, generateKeyPairSync, sign, verify } from 'node:crypto'
 
-export const REPO = 'crazyramirez/RPi5-Survival'
+export const REPO = 'crazyramirez/Survivelia-OS'
 export const MANIFEST_NAME = 'survival-os-update.json'
 export const SIG_NAME = `${MANIFEST_NAME}.sig`
 /** Última release publicada (redirección de GitHub, sin API ni límite de peticiones). */

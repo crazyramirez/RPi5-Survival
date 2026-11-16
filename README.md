@@ -75,8 +75,8 @@ Con **[Claude Code](https://claude.com/claude-code)**, **[OpenAI Codex CLI](http
 **[Gemini CLI](https://github.com/google-gemini/gemini-cli)** instalado:
 
 ```sh
-git clone https://github.com/crazyramirez/RPi5-Survival.git
-cd RPi5-Survival
+git clone https://github.com/crazyramirez/Survivelia-OS.git
+cd Survivelia-OS
 claude "Instala Survival OS en mi Raspberry Pi y descárgalo todo en español"
 ```
 
@@ -130,7 +130,7 @@ Las tres versiones comparten el mismo código y la misma interfaz: lo que aprend
 La versión portable es una carpeta llamada **«Survival OS»** (unos 590 MB; comprimida, unos 210 MB). Trae todo lo
 necesario para los cinco sistemas, Node incluido: no hay que instalar nada antes.
 
-- **Descárgala** de la [última versión publicada](https://github.com/crazyramirez/RPi5-Survival/releases/latest)
+- **Descárgala** de la [última versión publicada](https://github.com/crazyramirez/Survivelia-OS/releases/latest)
   (`survival-os-X.Y.Z-portable.zip`) y descomprímela donde quieras: memoria USB (mejor en exFAT), disco externo o
   tu carpeta de usuario. Para una memoria USB perfecta (icono, nombre, «abrir al conectar»), ábrela y usa
   Sistema → Mantenimiento → **Memoria USB** → «Preparar una memoria USB».

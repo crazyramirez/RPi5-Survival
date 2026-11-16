@@ -19,7 +19,7 @@ Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, 
 - `npm run release:android [-- --debug --abi=x86_64]` — APK Android (ADR 0020) en `release/`; necesita JDK 17+, SDK, NDK y Go.
 - Emulador: AVD `survival-tablet` (Android 16, tablet x86_64); APK de depuración = `org.survivalos.app.debug` (`run-as` para leer el token).
 - `npm run set-version -- X.Y.Z` — versión única en todos los package.json y package-lock.json (sin argumento: comprueba).
-- `npm run release:publish [-- --yes] [--android]` — publicar en GitHub Releases para que las instalaciones se actualicen solas (ADR 0021):
+- `npm run release:publish [-- --yes]` — publicar (siempre con los APK de Android; `--no-android` solo para revisar) en GitHub Releases para que las instalaciones se actualicen solas (ADR 0021):
   - sin `--yes` solo comprueba, compila, firma y describe;
   - exige `main` limpio y subido, `## X.Y.Z` en CHANGELOG.md y la clave `~/.survival-os/update-signing-key.pem` (nunca en el repo).
   - **Publicar es una acción externa: solo con autorización explícita del usuario.**

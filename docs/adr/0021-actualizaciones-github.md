@@ -27,7 +27,8 @@
     Después compila y empaqueta:
     - el tarball de la Pi;
     - la portable completa (todos los sistemas) y una por sistema, más pequeña;
-    - el APK, con `--android`.
+    - siempre, los APK de Android (arm64 y x86_64): toda release lleva la versión Android. `--no-android` solo
+      vale para revisar sin `--yes` en un equipo sin el toolchain de Android.
 
     Comprueba que cada fichero lleva **dentro** la versión correcta y genera el **manifiesto**
     `survival-os-update.json`: versión, fecha, commit, `minFrom`, notas por idioma, y nombre, plataformas, tamaño y

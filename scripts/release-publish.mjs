@@ -4,7 +4,8 @@
  *
  *   npm run release:publish                       comprueba, compila, empaqueta, firma y DESCRIBE (no publica)
  *   npm run release:publish -- --yes              además: etiqueta vX.Y.Z, la sube, crea la release y la verifica
- *   opciones: --android (incluye los APK) · --min-from X.Y.Z (versión mínima para actualizar directamente)
+ *   incluye siempre los APK de Android (arm64 y x86_64); --no-android solo para revisar sin el toolchain de Android
+ *   opciones: --min-from X.Y.Z (versión mínima para actualizar directamente)
  *             --skip-build (solo sin --yes: revisar lo ya empaquetado en release/)
  *             --keygen (crea la clave de firma si no existe y muestra la pública para TRUSTED_KEYS)
  *
@@ -72,6 +73,9 @@ if (flag('keygen')) {
 
 const yes = flag('yes')
 const skipBuild = flag('skip-build')
+// Toda versión publicada lleva el APK: Android se actualiza desde las mismas releases (ADR 0020, ADR 0021).
+const withAndroid = !flag('no-android')
+if (yes && !withAndroid) fail('--no-android solo sirve para revisar (sin --yes): toda versión publicada incluye el APK de Android')
 if (yes && skipBuild) fail('--skip-build solo sirve para revisar (sin --yes): lo publicado se compila siempre desde la etiqueta')
 const { version, mismatches } = checkVersions(ROOT)
 const tag = `v${version}`
@@ -142,7 +146,7 @@ if (!skipBuild) {
   run('npm', ['run', 'release'])
   run('npm', ['run', 'release:portable'])
   for (const t of PORTABLE_TARGETS) run('npm', ['run', 'release:portable', '--', `--targets=${t}`])
-  if (flag('android')) run('npm', ['run', 'release:android'])
+  if (withAndroid) run('npm', ['run', 'release:android'])
 }
 
 // ------------------------------------------------------------------ 3. verificar cada fichero por dentro
@@ -237,7 +241,7 @@ const portableCheck = (targets) => (file) => {
 }
 addAsset(names.portableAll, 'portable', PORTABLE_TARGETS, portableCheck(PORTABLE_TARGETS))
 for (const t of PORTABLE_TARGETS) addAsset(names.portable(t), 'portable', [t], portableCheck([t]))
-if (flag('android')) {
+if (withAndroid) {
   addAsset(names.apk('arm64'), 'android', ['android-arm64'])
   addAsset(names.apk('x86_64'), 'android', ['android-x64'])
 }
@@ -268,7 +272,7 @@ const uploads = [...assets.flatMap((a) => [a.file, `${a.file}.sha256`]), manifes
 const total = assets.reduce((n, a) => n + a.size, 0)
 say(`Plan: etiqueta ${tag} en ${head.slice(0, 10)} · ${uploads.length} ficheros · ${(total / 1024 ** 2).toFixed(0)} MB · minFrom ${minFrom}`)
 if (!yes) {
-  console.log('\nTodo listo y verificado. Para publicar: npm run release:publish -- --yes' + (flag('android') ? ' --android' : '') + (opt('min-from') ? ` --min-from ${minFrom}` : ''))
+  console.log('\nTodo listo y verificado. Para publicar: npm run release:publish -- --yes' + (opt('min-from') ? ` --min-from ${minFrom}` : ''))
   process.exit(0)
 }
 

@@ -84,6 +84,8 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'node-server',
-    externals: { traceInclude: [vueCompilerCore] },
+    // scripts/country-maps.mjs vive fuera de la app: en dev Nitro lo dejaba externo con una ruta relativa
+    // equivocada si la carpeta del repositorio tiene espacios («Cannot find module 'D:\DEV\scripts\…'»).
+    externals: { traceInclude: [vueCompilerCore], inline: [/[\\/]scripts[\\/]country-maps\.mjs$/] },
   },
 })

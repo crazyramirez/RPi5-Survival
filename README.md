@@ -3,13 +3,15 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/versi%C3%B3n-0.9.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.9.0">
+  <img src="https://img.shields.io/badge/versi%C3%B3n-0.10.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.10.0">
   <img src="https://img.shields.io/badge/Raspberry%20Pi%205-quiosco%20t%C3%A1ctil-8cbf96?style=flat-square&labelColor=0f1412" alt="Raspberry Pi 5">
   <img src="https://img.shields.io/badge/portable-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-8cbf96?style=flat-square&labelColor=0f1412" alt="Portable: Windows, macOS y Linux">
   <img src="https://img.shields.io/badge/idiomas-ES%20%C2%B7%20EN%20%C2%B7%20FR%20%C2%B7%20IT-8cbf96?style=flat-square&labelColor=0f1412" alt="Idiomas: español, inglés, francés e italiano">
   <img src="https://img.shields.io/badge/100%25-sin%20Internet-e5b85c?style=flat-square&labelColor=0f1412" alt="100 % sin Internet">
   <img src="https://img.shields.io/badge/instalaci%C3%B3n%20con%20IA-Claude%20%C2%B7%20Codex%20%C2%B7%20Gemini-93b8cc?style=flat-square&labelColor=0f1412" alt="Instalación con asistentes de IA: Claude, Codex y Gemini">
 </p>
+
+<p align="center"><b>Español</b> · <a href="README.en.md">English</a></p>
 
 # Survival OS
 
@@ -18,8 +20,9 @@
 > pregunta lo necesario. [Cómo hacerlo](#instalación-exprés-pídeselo-a-tu-asistente-de-ia).
 
 **Un centro de conocimiento, mapas y comunicación que funciona sin Internet.** Mapas de cualquier país con rutas,
-la Wikipedia, 41 protocolos de emergencia, cientos de manuales, un asistente de IA local, mensajería por radio LoRa
-y una bóveda cifrada, en español, inglés, francés o italiano.
+buscador de lugares, la Wikipedia, 41 protocolos de emergencia, cientos de manuales, un asistente de IA local,
+herramientas de campo (Sol y Luna, señales SOS, frecuencias de emergencia, raciones), notas y listas, mensajería por
+radio LoRa y una bóveda cifrada, en español, inglés, francés o italiano. Se actualiza solo con versiones firmadas.
 
 Funciona de tres maneras:
 
@@ -106,6 +109,7 @@ npm run express -- doctor                                         # qué falta e
 npm run express -- portable                                       # versión portable para este ordenador, lista y abierta
 npm run express -- pi --host 192.168.1.50 --user pi --yes --reboot  # instalar en una Raspberry Pi por SSH
 npm run express -- download --host 192.168.1.50 --user pi --yes   # «Descargarlo todo» en la Pi
+npm run express -- update --host 192.168.1.50 --user pi --check   # ¿hay versión nueva?
 ```
 
 Cambia la IP y el usuario por los de tu Pi. Todas las opciones están al principio de
@@ -175,8 +179,10 @@ La primera vez aparece la [bienvenida](#la-primera-vez-configurarlo-todo-con-un-
 Necesitas una tablet o un móvil con **Android 10 o posterior** (64 bits). Con 3–4 GB de RAM funciona todo; el
 asistente usa entonces un modelo ligero.
 
-1. **Instala el APK** `survival-os-X.Y.Z-android-arm64.apk`: ábrelo en la tablet (Android pedirá permitir «instalar
-   apps desconocidas») o, desde un ordenador, `adb install`. Para generarlo desde el código, ver
+1. **Instala el APK** `survival-os-X.Y.Z-android-arm64.apk`, que está en cada
+   [versión publicada](https://github.com/crazyramirez/Survivelia-OS/releases/latest) junto a la portable y la de la
+   Pi: ábrelo en la tablet (Android pedirá permitir «instalar apps desconocidas») o, desde un ordenador,
+   `adb install`. Para generarlo desde el código, ver
    [Para desarrolladores](#para-desarrolladores).
 2. **Elige dónde guardar los datos.** La carpeta **SurvivalOS** de la memoria interna o de la microSD se conserva
    aunque desinstales la app (pide «acceso a todos los archivos»).
@@ -301,6 +307,10 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
   - perfiles a pie, en bici y en coche, con distancia, tiempo y desnivel;
   - exportación a GPX;
   - un paseo de 3 km se calcula en 0,1 s; Madrid → Sevilla (531 km), en 10,5 s, en la Pi.
+- **Buscar un lugar sin conexión:** pueblos, barrios, aldeas y parajes de los mapas instalados, por su nombre y
+  primero los más cercanos. Desde el resultado, **«Ruta hasta aquí»** o **«Guardar como punto»**. El índice se
+  prepara solo a partir de los propios mapas y se rehace al añadir o quitar un país.
+- **Medir distancia y área** tocando el mapa o con la mira del centro.
 - **Nombres de lugares** en el idioma de la interfaz, y modo día y noche.
 - **Puntos guardados** por tipo (agua, refugio, peligro…), grabación de tracks y coordenadas copiables.
 - **Posición:**
@@ -330,6 +340,10 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
 
   Se descargan siempre de su fuente oficial, verificados con SHA-256, y **se busca dentro de ellos**.
 - **Documentos propios** (PDF, Markdown, HTML, texto), importados desde un USB, con búsqueda de texto completo.
+- **Notas, diario y listas** (Biblioteca → Notas): las líneas `- [ ]` son casillas que se marcan con un toque, hay
+  plantillas de **kit de emergencia** (Ready.gov) y de **diario de incidencias**, y las notas aparecen en la búsqueda
+  y como fuente del asistente. Se guardan sin cifrar; para datos sensibles, la bóveda.
+- **Visores a todo el ancho:** documentos con tablas, código y citas, en modo día y noche.
 - **Visor de PDF propio:** con zoom (también pellizcando), modo noche y páginas que se cargan a medida que avanzas.
 - **Nada saca al usuario de la app:** los enlaces a PDF o a ventanas nuevas se abren dentro, siempre con un botón
   para volver.
@@ -341,8 +355,10 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
 
 - Un modelo de lenguaje funcionando **en el propio equipo** (llama.cpp): Qwen3 4B, el recomendado; Gemma 3 4B y
   Llama 3.2 3B como alternativas. Ni la pregunta ni la respuesta salen del equipo.
-- **Responde con fuentes:** busca primero en los protocolos de emergencia, después en la biblioteca y en tus
-  documentos, y **cita lo que ha consultado**. Si no lo encuentra, lo dice en lugar de inventar.
+- **A la medida de la memoria:** en equipos con poca RAM (tablets de 3–4 GB) no se proponen modelos que no caben y
+  queda activo el **asistente ligero** (Qwen2.5 1.5B, 1,1 GB).
+- **Responde con fuentes:** busca primero en los protocolos de emergencia, después en la biblioteca, en tus
+  documentos y en tus notas, y **cita lo que ha consultado**. Si no lo encuentra, lo dice en lugar de inventar.
 - Responde **en el idioma de quien pregunta**.
 - **Rendimiento medido:**
   - en la Pi 5, unos 40–60 s por respuesta (≈ 3,5 tokens/s);
@@ -385,12 +401,24 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
   - tras cada intento fallido, la espera es mayor.
 - Visor de imágenes con zoom táctil, renombrar e importar desde USB.
 
-### Herramientas y juegos
+### Herramientas de campo y juegos
 
-- **Herramientas:**
-  - brújula;
-  - conversor de coordenadas (de decimal a grados, minutos y segundos);
-  - lista de puertos serie USB y dispositivos de entrada.
+![Herramientas de campo: Sol y Luna, señales, unidades, agua y comida](docs/screenshots/herramientas.png)
+
+Todo se calcula en el propio equipo y cada herramienta cita su fuente.
+
+- **Sol y Luna:** alba, salida, puesta y anochecer (crepúsculo civil), horas de luz, mediodía solar y fase de la
+  Luna con las próximas llena y nueva. Usa la posición GNSS, la del nodo LoRa o las coordenadas que escribas
+  (cálculo NOAA).
+- **Señales:** la pantalla como **linterna** o para emitir **SOS** o cualquier mensaje en **Morse** (tiempos de la
+  UIT), con el texto en Morse a la vista. De noche, el SOS se ve a cientos de metros.
+- **Frecuencias de emergencia**, con su fuente y si piden licencia: VHF marina canal 16, aviación, radiobalizas,
+  banda ciudadana (canales 9 y 19), PMR446, radioaficionados (2 m, 70 cm, HF), Meshtastic, FRS y GMRS.
+- **Agua y comida:** cuánta agua (para beber y total) y cuántas kcal necesitáis según personas y días, con los
+  mínimos del **Manual Esfera**.
+- **Conversor de unidades:** longitud, peso, volumen, temperatura, velocidad y presión.
+- **Coordenadas:** de decimal a grados, minutos y segundos.
+- **Equipo:** puertos serie USB y dispositivos de entrada conectados.
 - **Juegos sin conexión:** una colección de juegos que se descarga con «Descargarlo todo» o desde Mantenimiento.
   El botón «Juegos» aparece en la barra (entre Inicio y Pantalla) solo cuando ya están descargados.
 
@@ -464,7 +492,7 @@ Todo se gestiona en **Sistema → Mantenimiento → Contenidos** (o con la bienv
 | Libros y aprendizaje | Proyecto Gutenberg, Wikilibros, Wikiversidad, simulaciones PhET | es · en · fr · it |
 | Manuales en PDF | 66 manuales de salud, protección civil, agricultura y orientación | es · en |
 | Mapas y rutas | Cualquier país, mundo, rutas BRouter | todos |
-| Asistente | Qwen3 4B (recomendado), Gemma 3 4B, Llama 3.2 3B | todos |
+| Asistente | Qwen3 4B (recomendado), Gemma 3 4B, Llama 3.2 3B; Qwen2.5 1.5B para poca RAM | todos |
 | Juegos | Colección de juegos sin conexión (unos 1,6 GB) | todos |
 
 - **Cuánto ocupa:** lo recomendado para un idioma suma unos **40–60 GB**, más los mapas de tu país (España completa:
@@ -479,6 +507,27 @@ Todo se gestiona en **Sistema → Mantenimiento → Contenidos** (o con la bienv
 Las fuentes y sus licencias están en [docs/content-sources.md](docs/content-sources.md).
 
 ## Actualizar, copias de seguridad y USB
+
+### Actualizaciones automáticas
+
+Survival OS se actualiza solo desde las [versiones publicadas](https://github.com/crazyramirez/Survivelia-OS/releases)
+en GitHub, en la Pi, la portable y Android: **Sistema → Mantenimiento → Red → «Actualizaciones»**.
+
+- Muestra la versión instalada y la última, con las **novedades en tu idioma**, y avisa en la barra de estado cuando
+  hay una nueva. «Buscar ahora» e «Instalar» a mano cuando quieras.
+- **Tres modos:**
+  - **Automática** (la de la portable): descarga sola y la aplica **al cerrar** Survival OS, sin interrumpir;
+  - **Solo avisar** (la de la Pi y Android): avisa y se instala con un toque. En la Pi, «Automática» instala de
+    02:00 a 06:00 y solo con la bóveda cerrada;
+  - **Desactivada**.
+- **Seguridad:** solo instala versiones **firmadas** (Ed25519), comprueba tamaño y SHA-256 de lo descargado y nunca
+  baja de versión.
+- **Vuelta atrás sola** (Pi y portable): la versión nueva arranca a prueba; si no responde, vuelve sola a la
+  anterior. Tus datos no se tocan.
+
+Detalles en el [ADR 0021](docs/adr/0021-actualizaciones-github.md).
+
+### USB y copias
 
 Todo desde **Sistema → Mantenimiento → USB y copias**, igual en la Pi y en la portable.
 
@@ -499,12 +548,13 @@ Todo desde **Sistema → Mantenimiento → USB y copias**, igual en la Pi y en l
 
 Al terminar, la copia se verifica fichero a fichero (SHA-256) e incluye instrucciones para restaurarla.
 
-**Actualizar Survival OS.** Copia en un USB la versión nueva junto a su fichero `.sha256`:
+**Actualizar sin Internet.** Copia en un USB la versión nueva junto a su fichero `.sha256`:
 
 | Versión | Fichero |
 |---|---|
 | Pi | `survival-os-X.Y.Z.tar.gz` |
 | Portable | `survival-os-X.Y.Z-portable.zip` |
+| Android | `survival-os-X.Y.Z-android-arm64.apk` |
 
 Busca en el USB y pulsa **Actualizar**. Se verifica antes de instalar y la app se reinicia sola con la versión nueva:
 
@@ -534,7 +584,7 @@ La versión portable funciona con el ordenador que tengas. Para el asistente se 
 ```text
 apps/frontend/           Nuxt 4 (SPA) + servidor Nitro: interfaz, API y proxy a los servicios locales
 services/device-api/     Estado del equipo (sysfs, /proc, vcgencmd, nmcli, systemctl; batería del portátil)
-services/library/        Protocolos por idioma, búsqueda FTS5, pasarela Kiwix, asistente (RAG + llama.cpp)
+services/library/        Protocolos por idioma, búsqueda FTS5, notas, buscador de lugares (PMTiles), pasarela Kiwix, asistente (RAG + llama.cpp)
 services/navigation/     Cliente gpsd, puntos, tracks GPX, posición de respaldo LoRa
 services/vault/          Bóveda: LUKS2 en la Pi; Argon2id + AES-GCM en la portable
 services/serial-hub/     Portable: Meshtastic, GPS (servidor compatible con gpsd) y ESP32 por USB, en Node
@@ -618,7 +668,7 @@ Más detalles en el [ADR 0017](docs/adr/0017-idiomas.md).
 
 ## Estado
 
-**v0.9.0.** Funciona en una Raspberry Pi 5 real y en la versión portable para Windows.
+**v0.10.0.** Funciona en una Raspberry Pi 5 real y en la versión portable para Windows.
 
 - **Verificado en la Pi:** quiosco, mapas, rutas, biblioteca, visor de PDF, asistente, bóveda, malla LoRa, hora de
   respaldo e idiomas.
@@ -627,7 +677,7 @@ Más detalles en el [ADR 0017](docs/adr/0017-idiomas.md).
   - copias de seguridad, importar y actualizar, probados con la portable real.
 - **Verificado en el emulador de Android** (tablet, Android 16): arranque, permisos, descargas, mapas, rutas,
   Wikipedia, asistente, GNSS y la guarda de loopback.
-- **Pruebas automáticas:** 265, más pruebas de pantalla en escritorio y móvil.
+- **Pruebas automáticas:** 357, más pruebas de pantalla en escritorio y móvil.
 
 **Pendiente de prueba:**
 

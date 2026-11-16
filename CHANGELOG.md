@@ -1,8 +1,25 @@
 # Changelog
 
-## Próxima versión (sin publicar)
+## 0.10.0 — 2026-11-16 · App Android, actualizaciones automáticas y herramientas de campo
 
 ### Añadido
+- **Buscar un lugar sin conexión (Mapas → «Buscar lugar»):** pueblos, barrios, aldeas y parajes de los mapas
+  instalados, con los nombres en el idioma de la interfaz y primero los más cercanos al centro del mapa. Desde el
+  resultado, «Ruta hasta aquí» o «Guardar como punto». El servicio de biblioteca indexa la capa de lugares de los
+  PMTiles (lector PMTiles v3 + MVT propio, sin dependencias) en `places.sqlite` con FTS5 y lo rehace al cambiar los
+  mapas. Disponible también para los móviles de la red local (solo datos del mapa).
+- **Medir distancia y área** en el mapa, tocando o con la mira del centro.
+- **Herramientas de campo** (Herramientas → «De campo»), calculadas en el equipo y con su fuente:
+  - **Sol y Luna:** alba, salida, puesta, anochecer, horas de luz, mediodía solar y fase lunar (NOAA), para la
+    posición GNSS, la del nodo LoRa o las coordenadas escritas;
+  - **Señales:** linterna, SOS y mensajes en Morse con la pantalla (tiempos de la UIT);
+  - **Frecuencias de emergencia:** marina, aviación, balizas, CB, PMR446, radioaficionados, Meshtastic, FRS y GMRS,
+    con su fuente y si exigen licencia;
+  - **Agua y comida** por personas y días (mínimos del Manual Esfera);
+  - **Conversor de unidades:** longitud, peso, volumen, temperatura, velocidad y presión.
+- **Notas (Biblioteca → Notas):** notas, diario y listas con casillas (`- [ ]`), plantillas de kit de emergencia
+  (Ready.gov) y diario de incidencias. Entran en la búsqueda de la biblioteca y como fuente del asistente. Se
+  guardan sin cifrar y la pantalla lo dice (para datos sensibles, la bóveda).
 - **App Android (ADR 0020):** un APK para tablets (Android 10+, arm64; y x86_64 para el emulador y los
   Chromebooks) con la misma aplicación que la portable.
   - Instalar el APK y listo: la primera vez se elige dónde guardar los datos (carpeta SurvivalOS en la memoria
@@ -45,6 +62,10 @@
   - `npm run set-version -- X.Y.Z` alinea todos los `package.json` y `package-lock.json`.
 
 ### Cambiado
+- **Visores a todo el ancho:** los documentos (tipografía adaptable, tablas, código y citas con estilo, día y noche)
+  y el PDF ajustado sin el tope de 1100 px. El Markdown admite tablas GFM y bloques de código.
+- Mapas: botones del carril de 48 px para que quepan nueve en la pantalla de la Pi. Las rejillas de Herramientas
+  llenan siempre las filas (2 columnas en la Pi, 4 en pantallas anchas).
 - Versiones del monorepo alineadas: serial-hub, vault y shared-types estaban en 0.8.0/0.1.0.
 - La carpeta `app/` de la portable y la del APK salen del mismo montaje (`scripts/stage-app.mjs`); el zip se
   extrae con `scripts/zip.mjs` (sin programas externos).

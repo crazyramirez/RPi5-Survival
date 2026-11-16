@@ -115,6 +115,7 @@ copy('systemd')
 copy('kiosk')
 copy('.env.example')
 copy('README.md')
+copy('README.en.md')
 writeFileSync(join(stage, 'VERSION'), `${version}\n`)
 
 // Manifiesto de integridad de todos los ficheros.

@@ -29,9 +29,10 @@ if [ -e "$DISABLE_FLAG" ]; then
   exit 0
 fi
 
-# Evitar dos instancias.
+# Evitar dos instancias. Se espera hasta 20 s: al reiniciar la unidad, el Chromium anterior puede
+# tardar en cerrarse y soltar el cerrojo (antes la nueva instancia salía y el kiosco quedaba apagado).
 exec 9>"${XDG_RUNTIME_DIR:-/tmp}/survival-kiosk.lock"
-flock -n 9 || { log "ya en ejecución"; exit 0; }
+flock -w 20 9 || { log "ya en ejecución"; exit 0; }
 
 children=()
 cleanup() { for p in "${children[@]}"; do kill "$p" 2>/dev/null; done; }

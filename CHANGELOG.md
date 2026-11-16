@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.10 — 2026-11-17 · GPS buscando satélites
+
+### Corregido
+- **Con un GPS conectado que aún no tiene posición**, la barra de arriba, el mapa y la pantalla de inicio dicen
+  «GPS conectado, buscando satélites» en vez de «Sin GNSS» o «Última posición nodo LoRa». En el mapa, la posición
+  del nodo LoRa sigue apareciendo como dato secundario mientras tanto.
+
 ## 0.11.9 — 2026-11-17 · GPS por USB en cualquier equipo, y varios a la vez
 
 ### Añadido

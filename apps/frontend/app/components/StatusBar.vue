@@ -25,6 +25,8 @@ const gnss = computed(() => {
   // Sin GNSS propio con fijación: respaldo del nodo LoRa (con su antigüedad), nunca presentado como fijación.
   const fb = n?.fallback
   const noFix = !g || g.state !== 'ok' || g.value.fix === 'none'
+  // Receptor conectado aún sin fijación: se dice que busca satélites (no «sin GNSS» con la posición LoRa antigua).
+  if (noFix && n?.devices.length) return { text: `${t('bar.gnss')}: ${t('bar.gnss.searching')}`, tone: 'warn' }
   if (noFix && fb?.state === 'ok') {
     const age = fb.value.ageSeconds
     return { text: `${t('bar.gnss')}: ${age === null ? t('bar.gnss.loraNoTime') : t('bar.gnss.lora', { age: formatAge(age) })}`, tone: 'warn' }

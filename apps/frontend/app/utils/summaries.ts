@@ -63,11 +63,13 @@ export function moduleSummaries(status: DeviceStatus | null, extras: SummaryExtr
       ? { key: 'summary.navigation.recording', tone: 'warn' }
       : extras.nav?.gnss.state === 'ok' && extras.nav.gnss.value.fix !== 'none'
         ? { key: 'summary.navigation.gnss', tone: 'ok' }
-        : extras.nav?.fallback?.state === 'ok'
-          ? { key: 'summary.navigation.lora', tone: 'warn' }
-          : extras.nav?.gnss.state === 'ok'
-            ? { key: 'summary.navigation.noFix', tone: 'warn' }
-            : { key: 'summary.navigation.noGnss', tone: 'muted' },
+        : extras.nav?.devices.length
+          ? { key: 'summary.navigation.noFix', tone: 'warn' } // receptor conectado buscando satélites
+          : extras.nav?.fallback?.state === 'ok'
+            ? { key: 'summary.navigation.lora', tone: 'warn' }
+            : extras.nav?.gnss.state === 'ok'
+              ? { key: 'summary.navigation.noFix', tone: 'warn' }
+              : { key: 'summary.navigation.noGnss', tone: 'muted' },
     library: kiwix ? { key: 'summary.library.kiwix', tone: 'info' } : { key: 'summary.library.empty', tone: 'muted' },
     emergency: { key: 'summary.emergency', tone: 'info' },
     vault: { key: 'summary.vault', tone: 'muted' },

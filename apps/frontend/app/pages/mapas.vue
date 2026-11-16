@@ -53,6 +53,13 @@ const lora = computed(() => (!fix.value && nav.value?.fallback?.state === 'ok' ?
 const loraAge = computed(() => (lora.value?.ageSeconds != null ? formatAge(lora.value.ageSeconds) : null))
 /** «± 2,9 km» si el canal recorta la posición: nunca se presenta como exacta. */
 const loraPrecision = computed(() => (lora.value?.precisionM ? t('maps.lora.precision', { d: formatDistance(lora.value.precisionM) }) : ''))
+/** Receptor GNSS conectado sin fijación todavía: «buscando satélites» (y, si la hay, la posición LoRa mientras). */
+const searchingHud = computed(() => {
+  if (fix.value || !nav.value?.devices.length) return null
+  const base = t('maps.gnss.searching')
+  if (!lora.value) return base
+  return `${base} · ${loraAge.value ? t('maps.gnss.loraMeanwhile', { age: loraAge.value }) : t('maps.gnss.loraMeanwhileNoTime')}`
+})
 const loraHud = computed(() => {
   const l = lora.value
   if (!l) return ''
@@ -559,9 +566,11 @@ onBeforeUnmount(() => {
               {{
                 fix
                   ? t('maps.gnss.fix', { fix: fix.fix.toUpperCase(), err: fix.horizontalErrorM ?? '?' })
-                  : lora
-                    ? loraHud
-                    : (nav?.gnss.state === 'unavailable' ? translateServer(nav.gnss.reason) : t('maps.gnss.none'))
+                  : searchingHud
+                    ? searchingHud
+                    : lora
+                      ? loraHud
+                      : (nav?.gnss.state === 'unavailable' ? translateServer(nav.gnss.reason) : t('maps.gnss.none'))
               }}
             </span>
           </div>

@@ -138,6 +138,9 @@ describe('moduleSummaries', () => {
     expect(moduleSummaries(baseStatus(), nav(gnss('3d'))).navigation?.key).toBe('summary.navigation.gnss')
     expect(moduleSummaries(baseStatus(), nav(gnss('none'), fb)).navigation).toMatchObject({ key: 'summary.navigation.lora', tone: 'warn' })
     expect(moduleSummaries(baseStatus(), nav(gnss('none'))).navigation?.key).toBe('summary.navigation.noFix')
+    // Receptor conectado sin fijación: «buscando satélites» antes que la posición LoRa antigua.
+    const searching = { nav: { ...nav(gnss('none'), fb).nav, devices: ['/dev/ttyACM1'] } as never, maps: null }
+    expect(moduleSummaries(baseStatus(), searching).navigation?.key).toBe('summary.navigation.noFix')
     expect(moduleSummaries(baseStatus(), nav({ state: 'unavailable', reason: 'x' })).navigation?.key).toBe('summary.navigation.noGnss')
   })
   it('sistema en aviso si hubo undervoltage', () => {

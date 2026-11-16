@@ -156,7 +156,7 @@ const appVersion = String(useRuntimeConfig().public.version ?? '')
   padding: 0 max(0.75rem, calc((100% - var(--content-max)) / 2));
   background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 60%, var(--bg)), var(--surface));
   border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
+  font-size: var(--status-font-size, 0.875rem);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -178,7 +178,7 @@ const appVersion = String(useRuntimeConfig().public.version ?? '')
 }
 
 .strong {
-  font-size: 1.15rem;
+  font-size: var(--status-clock-size, 1.15rem);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -211,6 +211,11 @@ const appVersion = String(useRuntimeConfig().public.version ?? '')
 
 .spacer {
   flex: 1;
+}
+
+.i-temp,
+.i-disk {
+  display: var(--status-detail-display, inline-flex);
 }
 
 /*
@@ -264,6 +269,7 @@ const appVersion = String(useRuntimeConfig().public.version ?? '')
 }
 
 .ver {
+  display: var(--status-version-display, inline);
   font-size: 0.72rem;
   color: var(--text-faint);
   letter-spacing: 0.02em;

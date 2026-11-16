@@ -184,3 +184,47 @@ describe('«Descargarlo todo» cabe en una sola tarea', () => {
     expect(ids.length).toBeLessThanOrEqual(apiMax)
   })
 })
+
+describe('recomendaciones por interés', async () => {
+  const { INTERESTS, recommend } = await import('../app/utils/interests')
+  const items: ContentCatalogItem[] = catalog.items
+  const ids = new Set(items.map((i) => i.id))
+  it('todos los temas destacados existen en el catálogo', () => {
+    for (const list of Object.values(INTERESTS)) for (const id of list) if (!id.startsWith('@')) expect(ids, id).toContain(id)
+  })
+  it('resuelve cada tema al mejor idioma y no repite', () => {
+    const fr = recommend(['saber', 'oficios'], items, [], 'fr').map((i) => i.id)
+    expect(fr).toContain('wikipedia-fr')
+    expect(fr).toContain('ifixit-fr')
+    expect(fr).not.toContain('wikipedia')
+    expect(new Set(fr).size).toBe(fr.length)
+  })
+  it('omite lo instalado y lo que no está en un idioma del usuario', () => {
+    const es = recommend(['salud'], items, [], 'es', new Set(['medlineplus'])).map((i) => i.id)
+    expect(es).not.toContain('medlineplus')
+    expect(es).not.toContain('medlineplus-en')
+    expect(recommend(['emergencias'], items, [], 'it').map((i) => i.id)).not.toContain('pc-guia-autoproteccion')
+  })
+  it('mapas y asistente salen del plan recomendado', () => {
+    const plan = downloadPlan(items, new Set(), 'es', null, 'recommended', 4 * GB)
+    const r = recommend(['asistente', 'orientacion'], items, plan, 'es').map((i) => i.id)
+    expect(r).toContain('asistente-ligero')
+    expect(r).toContain('mapa-mundo')
+  })
+})
+
+describe('fichas «Más información» (content/catalog-details, catalog-kiwix)', () => {
+  const read = (f: string) => JSON.parse(readFileSync(new URL(`../../../content/${f}`, import.meta.url), 'utf8'))
+  const keys = catalog.items.map((i: { id: string }) => (i.id === 'mapa-pais' ? '@country-map' : i.id === 'rutas-pais' ? '@country-routing' : i.id))
+  for (const lang of ['es', 'en', 'fr', 'it']) {
+    it(`todos los contenidos tienen explicación en ${lang} y no sobra ninguna`, () => {
+      const items = read(`catalog-details/${lang}.json`).items as Record<string, string>
+      for (const k of keys) expect(items[k]?.trim(), `${lang}: ${k}`).toBeTruthy()
+      for (const k of Object.keys(items)) expect(keys, `${lang}: ${k} no está en el catálogo`).toContain(k)
+    })
+  }
+  it('cada biblioteca Kiwix tiene sus datos oficiales (node scripts/fetch-kiwix-meta.mjs)', () => {
+    const kiwix = read('catalog-kiwix.json').items as Record<string, { date: string | null }>
+    for (const i of catalog.items.filter((x: { zim?: unknown }) => x.zim)) expect(kiwix[i.id]?.date, i.id).toBeTruthy()
+  })
+})

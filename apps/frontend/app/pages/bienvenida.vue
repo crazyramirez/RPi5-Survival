@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, ArrowRight, Download, Globe2, ListChecks, PartyPopper, Search } from '@lucide/vue'
+import { ArrowLeft, ArrowRight, CloudDownload, Download, Globe2, ListChecks, PartyPopper, Search, Siren } from '@lucide/vue'
 import type { ContentOverview } from '@survival-os/shared-types'
 import { searchCountries } from '~/composables/useRegion'
 import { formatBytes } from '~/utils/format'
@@ -18,6 +18,8 @@ const step = ref<'intro' | 'pick' | 'done'>('intro')
 const ov = ref<ContentOverview | null>(null)
 const catalog = ref<{ start: () => Promise<void>; selectedCount: number; selectedBytes: number; shortfall: number; running: boolean } | null>(null)
 const busy = ref(false)
+/** Guías de emergencia que trae la app (sin descargar nada). Sin dato, el texto no da cifra. */
+const guideCount = ref<number | null>(null)
 
 const region = useRegion()
 const regionQuery = ref('')
@@ -39,6 +41,9 @@ onMounted(async () => {
   } catch {
     // sin almacenamiento: se queda el idioma actual
   }
+  void $fetch<unknown[]>('/api/library/protocols', { timeout: 8000, retry: 0 })
+    .then((list) => (guideCount.value = Array.isArray(list) && list.length ? list.length : null))
+    .catch(() => undefined)
   ov.value = await $fetch<ContentOverview>('/api/content', { timeout: 10_000, retry: 0 }).catch(() => null)
 })
 
@@ -82,9 +87,10 @@ async function onStarted(items: string[]): Promise<void> {
   step.value = 'done'
 }
 
-async function later(): Promise<void> {
+/** Sin descargar: la bienvenida queda como saltada y se abren las guías de emergencia que trae la app. */
+async function openGuides(): Promise<void> {
   await finish('skipped')
-  await navigateTo('/')
+  await navigateTo('/emergencias')
 }
 </script>
 
@@ -105,40 +111,61 @@ async function later(): Promise<void> {
       </div>
 
       <section class="hero">
-        <img src="/icon-192.png" alt="" class="app-icon" width="84" height="84" />
-        <h1>{{ t('setup.title') }}</h1>
-        <p class="lead">{{ t('setup.lead') }}</p>
+        <header class="intro">
+          <img src="/icon-192.png" alt="" class="app-icon" width="84" height="84" />
+          <h1>{{ t('setup.title') }}</h1>
+          <p class="lead">{{ t('setup.lead') }}</p>
+        </header>
 
-        <!-- País (detectado sin Internet; se puede cambiar): mapas y rutas. -->
-        <div v-if="!regionOpen" class="region">
-          <Globe2 :size="18" aria-hidden="true" />
-          <span>{{ region.country.value?.name ?? t('setup.regionNone') }}</span>
-          <button type="button" class="link-btn" @click="regionOpen = true">{{ t('setup.regionChange') }}</button>
-        </div>
-        <div v-else class="region-pick">
-          <label class="search">
-            <Search :size="18" aria-hidden="true" />
-            <input v-model="regionQuery" type="search" class="ui-field" :placeholder="t('maps.country.search')" :aria-label="t('maps.country.search')" autocomplete="off" />
-          </label>
-          <div class="opts">
-            <button v-for="c in regionResults" :key="c.id" type="button" class="btn glass" @click="pickRegion(c.id)">{{ c.name }}</button>
-            <button type="button" class="btn ghost" @click="regionOpen = false">{{ t('common.cancel') }}</button>
-          </div>
-        </div>
+        <!-- Dos caminos: preparar el equipo descargando (verde) o usar ya lo que trae (naranja). -->
+        <div class="paths">
+          <section class="path path-dl" :aria-labelledby="'dl-title'">
+            <p class="eyebrow"><CloudDownload :size="16" aria-hidden="true" />{{ t('setup.dl.eyebrow') }}</p>
+            <h2 id="dl-title">{{ t('setup.dl.title') }}</h2>
+            <p class="path-body">{{ t('setup.dl.body') }}</p>
 
-        <template v-if="!regionOpen">
-          <!-- Un toque: todo lo del idioma y el país, ajustado al espacio (ADR 0018). -->
-          <DownloadAllCard :online="online" hero no-confirm @started="onStarted" />
-          <div class="secondary">
-            <button type="button" class="btn glass" @click="step = 'pick'"><ListChecks :size="18" aria-hidden="true" />{{ t('setup.next') }}</button>
-            <button type="button" class="btn glass" @click="later">{{ t('setup.later') }}<ArrowRight :size="18" aria-hidden="true" /></button>
-          </div>
-          <p class="foot">{{ t('setup.laterHint') }}</p>
-        </template>
+            <!-- País (detectado sin Internet; se puede cambiar): decide los mapas y las rutas. -->
+            <div v-if="!regionOpen" class="region">
+              <Globe2 :size="16" aria-hidden="true" />
+              <span>{{ t('setup.dl.mapsOf') }} <strong>{{ region.country.value?.name ?? t('setup.regionNone') }}</strong></span>
+              <button type="button" class="link-btn" @click="regionOpen = true">{{ t('setup.regionChange') }}</button>
+            </div>
+            <div v-else class="region-pick">
+              <label class="search">
+                <Search :size="18" aria-hidden="true" />
+                <input v-model="regionQuery" type="search" class="ui-field" :placeholder="t('maps.country.search')" :aria-label="t('maps.country.search')" autocomplete="off" />
+              </label>
+              <div class="opts">
+                <button v-for="c in regionResults" :key="c.id" type="button" class="btn glass" @click="pickRegion(c.id)">{{ c.name }}</button>
+                <button type="button" class="btn ghost" @click="regionOpen = false">{{ t('common.cancel') }}</button>
+              </div>
+            </div>
+
+            <template v-if="!regionOpen">
+              <!-- Un toque: todo lo del idioma y el país, ajustado al espacio (ADR 0018). -->
+              <DownloadAllCard :online="online" hero no-confirm @started="onStarted" />
+              <button type="button" class="btn glass choose" @click="step = 'pick'">
+                <ListChecks :size="18" aria-hidden="true" />{{ t('setup.next') }}<ArrowRight :size="16" aria-hidden="true" class="push" />
+              </button>
+            </template>
+          </section>
+
+          <div class="or" aria-hidden="true"><span>{{ t('setup.or') }}</span></div>
+
+          <section class="path path-guides" :aria-labelledby="'guides-title'">
+            <p class="eyebrow"><Siren :size="16" aria-hidden="true" />{{ t('setup.guides.eyebrow') }}</p>
+            <h2 id="guides-title">{{ t('setup.guides.title') }}</h2>
+            <p class="path-body">{{ guideCount ? t('setup.guides.body', { n: guideCount }) : t('setup.guides.bodyNoCount') }}</p>
+            <button type="button" class="btn guides-go" @click="openGuides">
+              {{ t('setup.guides.go') }}<ArrowRight :size="18" aria-hidden="true" />
+            </button>
+            <p class="foot">{{ t('setup.laterHint') }}</p>
+          </section>
+        </div>
       </section>
     </div>
 
-    <!-- 2 · Elegir contenidos (todo marcado por defecto) -->
+    <!-- 2 · Elegir contenidos: nada marcado; «Seleccionar todo» o lo destacado de lo que interesa -->
     <div v-else-if="step === 'pick'" class="page pick">
       <header class="pick-head">
         <button type="button" class="btn glass" @click="step = 'intro'"><ArrowLeft :size="18" aria-hidden="true" />{{ t('setup.back') }}</button>
@@ -147,7 +174,7 @@ async function later(): Promise<void> {
       <p class="muted">{{ t('content.intro') }}</p>
       <ContentCatalog ref="catalog" mode="wizard" :online="online" :country="region.country.value" @started="onStarted" />
       <div class="sticky-actions">
-        <button type="button" class="btn glass" @click="later">{{ t('setup.later') }}</button>
+        <button type="button" class="btn glass" @click="openGuides">{{ t('setup.guides.short') }}</button>
         <button
           type="button" class="btn btn-primary big"
           :disabled="busy || !online || !catalog || catalog.selectedCount === 0 || catalog.shortfall > 0 || catalog.running"
@@ -228,14 +255,14 @@ async function later(): Promise<void> {
 }
 
 .lang {
-  min-height: 2.4rem;
-  padding: 0 0.95rem;
+  min-height: 2.2rem;
+  padding: 0 0.8rem;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: rgb(243 239 228 / 0.7);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
@@ -250,55 +277,204 @@ async function later(): Promise<void> {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  width: min(32rem, 100%);
+  gap: clamp(0.8rem, 3vh, 1.6rem);
+  width: min(58rem, 100%);
   margin: auto 0;
-  padding-block: 1rem;
+  padding-block: 0.8rem;
   text-align: center;
   animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Presentación: icono, título (lo más grande de la pantalla) y una línea de contexto, discreta. */
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .app-icon {
-  width: clamp(3.6rem, 12vh, 5.2rem);
+  width: clamp(3rem, 10vh, 4.4rem);
   height: auto;
   border-radius: 22%;
   box-shadow:
     0 0 0 1px rgb(255 255 255 / 0.06),
-    0 0 60px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 0 50px color-mix(in srgb, var(--accent) 30%, transparent),
     0 12px 32px rgb(0 0 0 / 0.55);
 }
 
 h1 {
   margin: 0.2rem 0 0;
-  font-size: clamp(1.5rem, 4.6vh, 2.1rem);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.6rem, 5.2vh, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
 }
 
 .lead {
   margin: 0;
-  max-width: 28rem;
-  font-size: 1rem;
+  max-width: 34rem;
+  font-size: 0.95rem;
   line-height: 1.45;
-  color: rgb(243 239 228 / 0.75);
+  color: rgb(243 239 228 / 0.62);
+}
+
+/* ---------------------------------------------------- Los dos caminos */
+.paths {
+  --orange: #f0904a;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0.9rem;
+  width: 100%;
+  text-align: left;
+}
+
+.path {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(14 20 17 / 0.62);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.35);
+}
+
+.path-dl {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background:
+    radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 65%),
+    rgb(14 20 17 / 0.62);
+}
+
+.path-guides {
+  border-color: color-mix(in srgb, var(--orange) 45%, transparent);
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--orange) 14%, transparent), transparent 65%),
+    rgb(14 20 17 / 0.62);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.path-guides .eyebrow {
+  color: var(--orange);
+}
+
+.path h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: #f3efe4;
+}
+
+.path-body {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgb(243 239 228 / 0.72);
+}
+
+.path-dl :deep(.hero-cta) {
+  width: 100%;
+}
+
+.choose {
+  justify-content: flex-start;
+  min-height: 2.9rem;
+  gap: 0.55rem;
+}
+
+.choose .push {
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+/* Botón naranja: el contraste con el verde dice «esto es otra cosa», sin competir con «Descargarlo todo». */
+.guides-go {
+  justify-content: space-between;
+  gap: 0.6rem;
+  min-height: 3.4rem;
+  margin-top: auto;
+  padding: 0 1.1rem;
+  border: 1px solid var(--orange);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--orange) 18%, transparent);
+  color: #ffd9bd;
+  font-size: 1.02rem;
+  font-weight: 800;
+}
+
+.guides-go:hover,
+.guides-go:focus-visible {
+  background: var(--orange);
+  color: #1c0f05;
+}
+
+.or {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: rgb(243 239 228 / 0.45);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.or span {
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.4rem;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 999px;
+  background: rgb(14 20 17 / 0.8);
+  color: rgb(243 239 228 / 0.7);
+}
+
+.or::before,
+.or::after {
+  content: '';
+  flex: 1;
+  width: 1px;
+  background: rgb(255 255 255 / 0.14);
 }
 
 .region {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0.2rem 0 0.4rem;
-  color: rgb(243 239 228 / 0.85);
-  font-weight: 700;
+  gap: 0.45rem;
+  color: rgb(243 239 228 / 0.8);
+  font-size: 0.9rem;
+}
+
+.region strong {
+  color: #f3efe4;
 }
 
 .region svg {
+  flex: none;
   color: var(--accent);
 }
 
 .link-btn {
-  min-height: 2.75rem;
-  padding: 0 0.4rem;
+  min-height: 2.4rem;
+  padding: 0 0.3rem;
   border: 0;
   background: transparent;
   color: var(--accent);
@@ -340,14 +516,6 @@ h1 {
   gap: 0.4rem;
 }
 
-/* Dos botones secundarios que ocupan el ancho del contenedor a partes iguales. */
-.secondary {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
-  width: 100%;
-}
-
 .glass {
   justify-content: center;
   min-height: 3.2rem;
@@ -363,8 +531,9 @@ h1 {
 }
 
 .foot {
-  margin: 0.2rem 0 0;
-  font-size: 0.8rem;
+  margin: 0.1rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.35;
   color: rgb(243 239 228 / 0.5);
 }
 
@@ -452,10 +621,25 @@ h1 {
   }
 }
 
-@media (max-width: 420px) {
-  .secondary {
+/* Estrecho (móvil, tablet vertical): un camino debajo del otro, con «o» en horizontal. */
+@media (max-width: 760px) {
+  .paths {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .or {
+    flex-direction: row;
+  }
+
+  .or::before,
+  .or::after {
+    width: auto;
+    height: 1px;
+  }
+}
+
+:root[data-contrast='high'] .paths {
+  --orange: var(--warn);
 }
 
 :root[data-contrast='high'] .bg,

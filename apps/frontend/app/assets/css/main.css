@@ -54,6 +54,19 @@
   font-size: clamp(16px, 0.5vw + 0.55vh + 6.5px, 20px);
 }
 
+/* Paleta de la propuesta del catálogo; el modo de alto contraste conserva sus propios colores. */
+:root:not([data-contrast='high']) .shell-guide {
+  --bg: #0e1813;
+  --surface: #152019;
+  --surface-2: #1d2b23;
+  --surface-3: #24362b;
+  --text: #f3efdf;
+  --text-muted: #b7bead;
+  --accent: #a6cda0;
+  --danger: #ff8c78;
+  --border: #3d5043;
+}
+
 :root[data-contrast='high'] {
   --bg: #000;
   --surface: #000;

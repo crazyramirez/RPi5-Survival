@@ -7,6 +7,8 @@ import { isViewerPath, styleDocScrollbar } from '~/utils/viewer'
  * volver. Nada se abre fuera (en el kiosco no hay barra del navegador: una ventana nueva dejaría al usuario
  * sin salida). Solo rutas locales de lista cerrada: Kiwix y documentos de la biblioteca.
  */
+definePageMeta({ guideCatalog: true })
+
 const t = useT()
 const route = useRoute()
 const router = useRouter()
@@ -89,6 +91,7 @@ function back(): void {
 }
 
 .bar {
+  min-height: 60px;
   display: flex;
   align-items: center;
   gap: 0.5rem;

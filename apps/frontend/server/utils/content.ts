@@ -1,7 +1,7 @@
 import { existsSync, promises as fs } from 'node:fs'
 import { totalmem } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
+import type { ContentCatalogItem, ContentDetails, ContentDetailsResponse, ContentItemStatus, ContentKiwixMeta, ContentOverview } from '@survival-os/shared-types'
 import { jobStatus } from './admin'
 import { isPortable, portablePaths } from './portable'
 // Lógica común con el motor de descargas (mismos zooms y tamaños).
@@ -14,7 +14,7 @@ import { countryLand, countryMaxZoom, countryName, countryZones, estimateMapByte
 interface Catalog {
   updated: string
   groups: { id: string; title: string }[]
-  items: (ContentCatalogItem & { template?: string; zim?: { name: string; flavour: string }; maps?: { region: string }; routing?: { tiles: string[] }; llm?: { model: string }; doc?: { file?: string; parts?: { file: string }[] } })[]
+  items: (ContentCatalogItem & { template?: string; zim?: { name: string; flavour: string }; maps?: { region: string; maxzoom?: number }; routing?: { tiles: string[] }; llm?: { model: string }; doc?: { file?: string; parts?: { file: string; title?: string }[] }; publisher?: string })[]
   models: Record<string, { file: string }>
 }
 
@@ -81,6 +81,35 @@ interface CatalogI18n {
 async function catalogI18n(catalogPath: string, lang: string): Promise<CatalogI18n> {
   if (!/^(en|fr|it)$/.test(lang)) return {}
   return readJson<CatalogI18n>(join(dirname(catalogPath), 'catalog-i18n', `${lang}.json`), {})
+}
+
+/**
+ * Fichas «Más información» (ADR 0018): explicación escrita (content/catalog-details/<idioma>.json, en español si
+ * falta), datos oficiales de Kiwix (content/catalog-kiwix.json), editor, capítulos y zoom, todo sin Internet.
+ * Claves especiales: «@country-map» y «@country-routing» para el mapa y las rutas de cualquier país.
+ */
+export async function contentDetails(lang = 'es'): Promise<ContentDetailsResponse> {
+  const d = dirs()
+  const catalog = await loadCatalog()
+  const base = dirname(d.catalog)
+  type About = { items?: Record<string, string> }
+  const es = await readJson<About>(join(base, 'catalog-details', 'es.json'), {})
+  const tr = /^(en|fr|it)$/.test(lang) ? await readJson<About>(join(base, 'catalog-details', `${lang}.json`), {}) : {}
+  const kiwix = await readJson<{ fetched?: string; items?: Record<string, ContentKiwixMeta> }>(join(base, 'catalog-kiwix.json'), {})
+  const about = (id: string): string | null => tr.items?.[id] ?? es.items?.[id] ?? null
+  const items: Record<string, ContentDetails> = {}
+  for (const it of catalog.items) {
+    const key = it.id === 'mapa-pais' ? '@country-map' : it.id === 'rutas-pais' ? '@country-routing' : it.id
+    const parts = it.doc?.parts?.map((p) => p.title?.trim()).filter((t): t is string => !!t)
+    items[key] = {
+      about: about(key),
+      publisher: it.publisher ?? null,
+      kiwix: kiwix.items?.[it.id] ?? null,
+      chapters: parts && parts.length > 1 ? parts : null,
+      maxZoom: it.maps?.maxzoom ?? null,
+    }
+  }
+  return { items, kiwixFetched: kiwix.fetched ?? null }
 }
 
 /** Estado de cada elemento: lo que hay en disco manda; el registro del motor aporta progreso y errores. */

@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { BookOpen, Bot, Check, CircleAlert, Download, FileText, Gamepad2, HeartPulse, LifeBuoy, LoaderCircle, Map as MapIcon, Trash2, Wrench } from '@lucide/vue'
+import { BookOpen, Bot, Check, CheckCheck, CircleAlert, Download, Info, FileText, Gamepad2, HeartPulse, LifeBuoy, LoaderCircle, Map as MapIcon, Sparkles, Star, Trash2, Wrench } from '@lucide/vue'
 import type { Component } from 'vue'
-import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
+import type { ContentCatalogItem, ContentDetailsResponse, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
 import { formatBytes } from '~/utils/format'
 import { autoFit, contentLangs, countryItems, downloadPlan, inLanguage, orderPlan, topicOf, type CountryChoice } from '~/utils/content'
+import { INTEREST_IDS, recommend, type Interest } from '~/utils/interests'
 
 /**
- * Catálogo de descargas (ADR 0015/0018). Modo «wizard»: lo recomendado en el idioma de la interfaz (si no
- * existe, en inglés) y el mapa del país, ajustado al espacio libre. Modo «manage»: Mantenimiento, con los
+ * Catálogo de descargas (ADR 0015/0018). Modo «wizard» (bienvenida): empieza sin nada marcado; «Seleccionar
+ * todo» marca todo lo del idioma de la interfaz (si no existe, en inglés) y el mapa del país, ajustado al espacio
+ * libre, y las recomendaciones marcan lo más destacado de lo que interesa. Modo «manage»: Mantenimiento, con los
  * contenidos en los idiomas del usuario (los demás, con un interruptor).
  */
 const props = defineProps<{ mode: 'wizard' | 'manage'; online: boolean; country?: CountryChoice | null }>()
@@ -20,8 +22,23 @@ const selected = ref(new Set<string>())
 const variants = reactive<Record<string, string>>({})
 const autofitCount = ref(0)
 const pendingRemove = ref<ContentCatalogItem | null>(null)
+
+// Ficha «Más información»: las fichas se piden una sola vez, al abrir la primera.
+const infoItem = ref<ContentCatalogItem | null>(null)
+const details = ref<ContentDetailsResponse | null>(null)
+const detailsLoading = ref(false)
+async function openInfo(i: ContentCatalogItem): Promise<void> {
+  infoItem.value = i
+  if (details.value || detailsLoading.value) return
+  detailsLoading.value = true
+  details.value = await $fetch<ContentDetailsResponse>('/api/content/details', { timeout: 10_000, retry: 0 }).catch(() => null)
+  detailsLoading.value = false
+}
+/** El mapa y las rutas de un país usan la ficha genérica del país. */
+const detailsOf = (i: ContentCatalogItem) =>
+  details.value?.items[i.id.startsWith('mapa-pais:') ? '@country-map' : i.id.startsWith('rutas-pais:') ? '@country-routing' : i.id] ?? null
 const showOther = ref(false)
-let initialised = false
+const interests = ref(new Set<Interest>())
 
 /** Catálogo + mapa y rutas del país elegido (fuera de España, que tiene los suyos en el catálogo). */
 const allItems = computed<ContentCatalogItem[]>(() => [
@@ -45,16 +62,6 @@ async function load(): Promise<void> {
     loadError.value = true
     return
   }
-  if (!initialised) {
-    initialised = true
-    if (props.mode === 'wizard') {
-      const installed = new Set(ov.value.items.filter((s) => s.state === 'installed').map((s) => s.id))
-      const missing = downloadPlan(ov.value.catalog, installed, locale.value, props.country ?? null, 'recommended', ov.value.ramBytes)
-      const fit = autoFit(missing, ov.value.freeBytes)
-      selected.value = new Set(fit.keep.map((i) => i.id))
-      autofitCount.value = fit.dropped.length
-    }
-  }
 }
 
 let timer: ReturnType<typeof setInterval> | undefined
@@ -65,6 +72,56 @@ onMounted(() => {
 onBeforeUnmount(() => timer && clearInterval(timer))
 
 const statusOf = (id: string): ContentItemStatus | undefined => ov.value?.items.find((s) => s.id === id)
+/** Instalado o en curso: no se puede marcar. */
+const blocked = computed(() => new Set((ov.value?.items ?? []).filter((s) => s.state !== 'missing' && s.state !== 'failed').map((s) => s.id)))
+
+/** Marca `items` (sin lo bloqueado) ajustado al espacio libre y avisa de lo que no cabe. */
+function selectFitted(items: ContentCatalogItem[]): void {
+  const fit = autoFit(items.filter((i) => !blocked.value.has(i.id)), ov.value?.freeBytes ?? null)
+  selected.value = new Set(fit.keep.map((i) => i.id))
+  autofitCount.value = fit.dropped.length
+}
+function clearSelection(): void {
+  selected.value = new Set()
+  autofitCount.value = 0
+}
+
+/** «Seleccionar todo»: lo mismo que «Descargarlo todo» (cada tema en el mejor idioma, mapas del país). */
+const everything = computed(() =>
+  ov.value ? downloadPlan(ov.value.catalog, blocked.value, locale.value, props.country ?? null, 'all', ov.value.ramBytes) : [],
+)
+/** Lo que «Seleccionar todo» puede marcar de verdad (lo que cabe): si ya está todo, el botón pasa a «Quitar todo». */
+const everythingFitted = computed(() => autoFit(everything.value, ov.value?.freeBytes ?? null).keep)
+const allSelected = computed(() => everythingFitted.value.length > 0 && everythingFitted.value.every((i) => selected.value.has(i.id)))
+function toggleEverything(): void {
+  if (allSelected.value) clearSelection()
+  else selectFitted(everything.value)
+}
+
+// Recomendaciones: lo más destacado (por contenido) de cada interés.
+const recommendedPlan = computed(() =>
+  ov.value ? downloadPlan(ov.value.catalog, blocked.value, locale.value, props.country ?? null, 'recommended', ov.value.ramBytes) : [],
+)
+const highlights = computed(() => recommend(interests.value, allItems.value, recommendedPlan.value, locale.value, blocked.value))
+const highlightIds = computed(() => new Set(highlights.value.map((i) => i.id)))
+/**
+ * Tocar un tema marca al momento lo destacado de ese tema (sin quitar lo que ya estaba marcado) y quitarlo
+ * desmarca lo suyo que no sea también destacado de otro tema elegido.
+ */
+/** Temas en los que un contenido sale como destacado (para la ficha). */
+function highlightFor(i: ContentCatalogItem): string[] {
+  return INTEREST_IDS.filter((id) => recommend([id], allItems.value, recommendedPlan.value, locale.value).some((r) => r.id === i.id)).map((id) => t(`content.interest.${id}`))
+}
+function toggleInterest(id: Interest): void {
+  const before = highlightIds.value
+  const s = new Set(interests.value)
+  if (s.has(id)) s.delete(id)
+  else s.add(id)
+  interests.value = s
+  const now = highlightIds.value
+  const keep = allItems.value.filter((i) => (selected.value.has(i.id) && !(before.has(i.id) && !now.has(i.id))) || now.has(i.id))
+  selectFitted(keep)
+}
 const sizeOf = (i: ContentCatalogItem): number => i.variants?.find((v) => v.flavour === variants[i.id])?.approxBytes ?? i.approxBytes
 
 const GROUP_ICONS: Record<string, Component> = { salud: HeartPulse, preparacion: LifeBuoy, saber: BookOpen, oficios: Wrench, libros: BookOpen, manuales: FileText, mapas: MapIcon, asistente: Bot, juegos: Gamepad2 }
@@ -142,6 +199,28 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
   <div class="catalog">
     <p v-if="loadError" class="notice tone-danger">{{ t('content.error') }}</p>
     <p v-if="!online" class="notice tone-warn">{{ t('content.offline') }}</p>
+    <template v-if="mode === 'wizard' && ov">
+      <button type="button" class="btn select-everything" :class="allSelected ? 'glass' : 'btn-primary'" :aria-pressed="allSelected" @click="toggleEverything">
+        <CheckCheck :size="24" aria-hidden="true" />
+        <span>{{ allSelected ? t('content.everythingOff') : t('content.everything') }}</span>
+      </button>
+
+      <section class="recos" :aria-label="t('content.recos.title')">
+        <header class="r-head">
+          <Sparkles :size="18" aria-hidden="true" />
+          <h3>{{ t('content.recos.title') }}</h3>
+        </header>
+        <p class="r-lead">{{ t('content.recos.lead') }}</p>
+        <div class="chips" role="group" :aria-label="t('content.recos.title')">
+          <button
+            v-for="id in INTEREST_IDS" :key="id" type="button" class="chip-btn"
+            :aria-pressed="interests.has(id)" @click="toggleInterest(id)"
+          >
+            <Check v-if="interests.has(id)" :size="14" aria-hidden="true" />{{ t(`content.interest.${id}`) }}
+          </button>
+        </div>
+      </section>
+    </template>
     <p v-if="autofitCount" class="notice tone-info">{{ t('content.autofit', { n: autofitCount }) }}</p>
     <label v-if="mode === 'manage' && hiddenCount" class="ui-row check other">
       <input v-model="showOther" type="checkbox" />
@@ -170,6 +249,7 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
               {{ i.title }}
               <span v-if="i.lang !== locale && ['es', 'en', 'fr', 'it'].includes(i.lang)" class="ui-chip lang" :title="t('content.lang.enHint')">{{ t(`content.lang.${i.lang}` as 'content.lang.en') }}</span>
               <span v-if="coveredBetter(i)" class="ui-chip faint">{{ t('content.equivalent') }}</span>
+              <span v-if="highlightIds.has(i.id)" class="ui-chip star"><Star :size="11" aria-hidden="true" />{{ t('content.recos.badge') }}</span>
             </strong>
             <small>{{ i.description }}</small>
           </span>
@@ -177,6 +257,9 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
         <select v-if="i.variants && statusOf(i.id)?.state !== 'installed'" v-model="variants[i.id]" class="ui-field variant" :aria-label="t('content.variant')">
           <option v-for="v in i.variants" :key="v.flavour" :value="v.flavour">{{ v.label }} · {{ formatBytes(v.approxBytes) }}</option>
         </select>
+        <button type="button" class="btn info-btn" :aria-label="t('content.info.open', { name: i.title })" @click="openInfo(i)">
+          <Info :size="18" aria-hidden="true" /><span>{{ t('content.info.short') }}</span>
+        </button>
         <span class="size mono">{{ formatBytes(statusOf(i.id)?.bytes ?? sizeOf(i)) }}</span>
         <span v-if="stateLabel(statusOf(i.id))" class="ui-chip state" :class="`tone-${stateLabel(statusOf(i.id))!.tone}`" :title="translateServer(statusOf(i.id)?.error ?? '')">
           <component :is="stateLabel(statusOf(i.id))!.icon" :size="14" aria-hidden="true" />{{ stateLabel(statusOf(i.id))!.text }}
@@ -191,7 +274,7 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
     </section>
 
     <!-- El pie solo se queda fijo abajo cuando hay algo que hacer (selección o descarga en curso). -->
-    <footer v-if="ov" class="foot" :class="{ sticky: selected.size > 0 || job.running.value }">
+    <footer v-if="ov" class="foot" :class="{ sticky: mode === 'manage' && (selected.size > 0 || job.running.value) }">
       <span class="tot">
         <strong>{{ t('content.selected', { n: selected.size, size: formatBytes(selectedBytes) }) }}</strong>
         <small>{{ ov.freeBytes != null ? t('content.free', { size: formatBytes(ov.freeBytes) }) : '' }}</small>
@@ -209,6 +292,20 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
       <p v-if="mode === 'wizard' && job.error.value" class="warn">{{ job.error.value }}</p>
     </footer>
     <JobLog v-if="mode === 'manage'" :status="job.status.value" :error="job.error.value" :lines="4" />
+
+    <ContentInfoSheet
+      v-if="infoItem"
+      :item="infoItem"
+      :details="detailsOf(infoItem)"
+      :loading="detailsLoading"
+      :bytes="statusOf(infoItem.id)?.bytes ?? sizeOf(infoItem)"
+      :selected="selected.has(infoItem.id)"
+      :locked="blocked.has(infoItem.id)"
+      :state-text="blocked.has(infoItem.id) ? (stateLabel(statusOf(infoItem.id))?.text ?? null) : null"
+      :highlight-for="highlightFor(infoItem)"
+      @toggle="toggle(infoItem)"
+      @close="infoItem = null"
+    />
 
     <ConfirmDialog
       v-if="pendingRemove"
@@ -253,6 +350,81 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
 .g-actions {
   display: flex;
   gap: 0.3rem;
+}
+
+.select-everything {
+  width: 100%;
+  min-height: 4rem;
+  justify-content: center;
+  gap: 0.7rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.recos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--surface-grad);
+}
+
+.r-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent);
+}
+
+.r-head h3 {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.r-lead {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.6rem;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chip-btn[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  font-weight: 700;
+}
+
+.star {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.3rem;
+  font-size: 0.7rem;
+  vertical-align: middle;
+  color: var(--accent);
 }
 
 .btn.small {
@@ -314,6 +486,14 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
 .variant {
   min-height: 2.4rem;
   font-size: 0.85rem;
+}
+
+.info-btn {
+  gap: 0.35rem;
+  min-height: 2.6rem;
+  padding: 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--accent);
 }
 
 .size {

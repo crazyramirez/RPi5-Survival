@@ -7,6 +7,8 @@ import { isSafeReaderPath } from '~/utils/snippet'
  * Lector Kiwix embebido (mismo origen vía proxy /kiwix). Mantiene la barra de estado
  * y las acciones de Survivelia OS visibles. Modo noche (por defecto) por inversión de color.
  */
+definePageMeta({ guideCatalog: true })
+
 const t = useT()
 const route = useRoute()
 const router = useRouter()
@@ -227,6 +229,7 @@ onMounted(() => {
 }
 
 .bar {
+  min-height: 60px;
   display: flex;
   align-items: center;
   min-width: 0;

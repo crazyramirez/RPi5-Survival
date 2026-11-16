@@ -53,9 +53,9 @@ function back(): void {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  gap: 0.5rem;
+  gap: var(--actions-gap, 0.5rem);
   height: var(--action-h);
-  padding: 0.45rem max(0.75rem, calc((100% - var(--content-max)) / 2));
+  padding: var(--actions-padding, 0.45rem max(0.75rem, calc((100% - var(--content-max)) / 2)));
   background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 60%, var(--bg)));
   border-top: 1px solid var(--border);
 }
@@ -70,7 +70,7 @@ function back(): void {
   border: 1px solid var(--border);
   background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
   color: var(--text);
-  font-size: 1.05rem;
+  font-size: var(--actions-font-size, 1.05rem);
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
@@ -78,6 +78,8 @@ function back(): void {
 }
 
 .action svg {
+  width: var(--actions-icon-size, 26px);
+  height: var(--actions-icon-size, 26px);
   color: var(--text-muted);
 }
 

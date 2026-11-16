@@ -904,6 +904,38 @@ export interface ContentItemStatus {
   active?: boolean
 }
 
+/** Datos oficiales de una biblioteca Kiwix (content/catalog-kiwix.json, generado por scripts/fetch-kiwix-meta.mjs). */
+export interface ContentKiwixMeta {
+  summary: string | null
+  /** Códigos ISO 639-3 separados por comas, tal como los da Kiwix. */
+  language: string | null
+  date: string | null
+  articles: number | null
+  media: number | null
+  pictures: boolean | null
+  videos: boolean | null
+  /** Icono de 48 px como data URI. */
+  icon: string | null
+}
+
+/** Ficha «Más información» de un contenido del catálogo (GET /api/content/details). */
+export interface ContentDetails {
+  /** Explicación escrita a mano (content/catalog-details/<idioma>.json). */
+  about: string | null
+  publisher: string | null
+  kiwix: ContentKiwixMeta | null
+  /** Manuales divididos en partes: título de cada capítulo (tal cual, en el idioma del manual). */
+  chapters: string[] | null
+  /** Mapas: zoom máximo (17 ≈ nivel de calle). */
+  maxZoom: number | null
+}
+
+export interface ContentDetailsResponse {
+  items: Record<string, ContentDetails>
+  /** Fecha en que se leyeron los datos de Kiwix. */
+  kiwixFetched: string | null
+}
+
 export interface ContentOverview {
   platform: string
   portable: boolean

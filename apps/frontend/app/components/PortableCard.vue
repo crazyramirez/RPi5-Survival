@@ -92,12 +92,12 @@ const job = computed(() => st.value?.installJob)
           <button type="button" class="btn btn-primary" :disabled="job?.state === 'running'" @click="confirmInstall = true">
             <HardDriveDownload :size="18" aria-hidden="true" />{{ job?.state === 'running' ? t('portable.installRunning') : t('portable.installButton') }}
           </button>
-          <span v-if="job?.state === 'running' && job.message" class="faint small">{{ job.message }}</span>
+          <span v-if="job?.state === 'running' && job.message" class="faint small">{{ translateServer(job.message) }}</span>
         </div>
         <p v-if="job?.state === 'done'" class="ok small" role="status">
           {{ t('portable.installDone', { dest: job.dest ?? '' }) }} {{ t('portable.installShortcuts', { list: job.shortcuts.join(' · ') }) }}
         </p>
-        <p v-if="job?.state === 'failed'" class="warn small" role="alert">{{ t('portable.installFailed', { error: job.message ?? '' }) }}</p>
+        <p v-if="job?.state === 'failed'" class="warn small" role="alert">{{ t('portable.installFailed', { error: translateServer(job.message ?? '') }) }}</p>
       </template>
     </template>
 

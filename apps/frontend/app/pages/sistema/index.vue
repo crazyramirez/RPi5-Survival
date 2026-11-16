@@ -363,18 +363,18 @@ async function displayOff(): Promise<void> {
         :ratio="cpu?.temperatureC != null ? cpu.temperatureC / TEMP_SCALE_MAX_C : null"
         :value="cpu?.temperatureC != null ? formatNumber(cpu.temperatureC, 1) : null" unit="°C"
         :tone="tempTone" :marks="[TEMP_WARN_C / TEMP_SCALE_MAX_C, TEMP_CRITICAL_C / TEMP_SCALE_MAX_C]"
-        :sub="cpu ? fanSub : (s?.cpu.state !== 'ok' ? s?.cpu.reason : null)"
+        :sub="cpu ? fanSub : (s?.cpu.state !== 'ok' ? translateServer(s?.cpu.reason) : null)"
       />
       <SysGauge
         :label="t('sys.g.load')" :icon="Activity"
         :ratio="loadRatio" :value="cpu ? formatNumber(cpu.load1, 2) : null"
         :unit="cpu ? t('sys.g.loadUnit', { n: cpu.cores }) : undefined" :tone="loadTone"
-        :sub="cpu ? t('sys.g.loadSub', { l5: formatNumber(cpu.load5, 2), l15: formatNumber(cpu.load15, 2) }) : (s?.cpu.state !== 'ok' ? s?.cpu.reason : null)"
+        :sub="cpu ? t('sys.g.loadSub', { l5: formatNumber(cpu.load5, 2), l15: formatNumber(cpu.load15, 2) }) : (s?.cpu.state !== 'ok' ? translateServer(s?.cpu.reason) : null)"
       />
       <SysGauge
         :label="t('sys.memory')" :icon="MemoryStick"
         :ratio="memRatio" :value="pct(memRatio)" :unit="t('sys.g.used')" :tone="memTone"
-        :sub="mem ? t('sys.memory.of', { avail: formatBytes(mem.availableBytes), total: formatBytes(mem.totalBytes) }) : (s?.memory.state !== 'ok' ? s?.memory.reason : null)"
+        :sub="mem ? t('sys.memory.of', { avail: formatBytes(mem.availableBytes), total: formatBytes(mem.totalBytes) }) : (s?.memory.state !== 'ok' ? translateServer(s?.memory.reason) : null)"
       />
       <SysGauge
         :label="rootMount ? t('sys.g.disk', { mount: rootMount.mount }) : t('sys.storage')" :icon="HardDrive"
@@ -382,7 +382,7 @@ async function displayOff(): Promise<void> {
         :value="rootMount ? pct(usageRatio(rootMount.totalBytes, rootMount.availableBytes)) : null"
         :unit="t('sys.g.used')"
         :tone="rootMount ? diskTone(rootMount.totalBytes, rootMount.availableBytes) : undefined"
-        :sub="rootMount ? t('sys.storage.free', { free: formatBytes(rootMount.availableBytes), total: formatBytes(rootMount.totalBytes) }) : (s?.storage.state !== 'ok' ? s?.storage.reason : null)"
+        :sub="rootMount ? t('sys.storage.free', { free: formatBytes(rootMount.availableBytes), total: formatBytes(rootMount.totalBytes) }) : (s?.storage.state !== 'ok' ? translateServer(s?.storage.reason) : null)"
       />
     </div>
 

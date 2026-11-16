@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Contrast, Keyboard, SunDim, Type, X } from '@lucide/vue'
+import { Contrast, Keyboard, Languages, SunDim, Type, X } from '@lucide/vue'
 import type { DimLevel } from '~/composables/useDisplaySettings'
 
 const t = useT()
@@ -16,6 +16,26 @@ const DIM_LEVELS: DimLevel[] = [0, 30, 60]
           <X :size="22" aria-hidden="true" />
         </button>
       </header>
+
+      <!-- Primero el idioma: quien no lee español debe encontrarlo (icono universal y nombres en su idioma). -->
+      <div class="row lang-row">
+        <Languages :size="22" aria-hidden="true" />
+        <span class="label">{{ t('display.language') }}</span>
+      </div>
+      <div class="langs" role="group" :aria-label="t('display.language')">
+        <button
+          v-for="l in LOCALES"
+          :key="l.code"
+          type="button"
+          class="btn"
+          :lang="l.code"
+          :aria-pressed="locale === l.code"
+          @click="setLocale(l.code)"
+        >
+          {{ l.name }}
+        </button>
+      </div>
+      <p class="note">{{ t('display.language.note') }}</p>
 
       <div class="row">
         <Contrast :size="22" aria-hidden="true" />
@@ -138,6 +158,22 @@ const DIM_LEVELS: DimLevel[] = [0, 30, 60]
 .seg {
   display: flex;
   gap: 0.4rem;
+}
+
+.lang-row {
+  min-height: 2.75rem;
+}
+
+.langs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+@media (max-width: 30rem) {
+  .langs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .note {

@@ -3,6 +3,12 @@
 ## Sin publicar
 
 ### Añadido
+- **Idiomas: español, inglés, francés e italiano (ADR 0017).**
+  - **Interfaz completa** en los cuatro idiomas (917 textos): se elige en la bienvenida (lo primero) o en Pantalla, y se recuerda. Fechas, números, etiquetas del mapa y `lang` del HTML siguen al idioma.
+  - **Teclado en pantalla por idioma:** AZERTY con ç en francés, QWERTY con ñ en español, y teclas de acento de cada idioma (´ ` ^ ¨).
+  - **Protocolos de emergencia** (41) en inglés, francés e italiano: traducción fiel de la ficha revisada en español, con las mismas cifras y dosis comprobadas automáticamente. La ficha avisa de que prevalece el original en español.
+  - **Servicios en el idioma de la interfaz:** catálogo de descargas, búsqueda, asistente (responde en el idioma de quien pregunta) y motivos de «no disponible».
+  - Test que impide que una traducción se quede sin una clave o cambie un marcador `{x}`.
 - **Visor integrado de documentos (`/visor`):** los PDF y enlaces de los libros de la biblioteca (ZIM) que antes abrían una ventana sin salida en el kiosco se abren ahora dentro de la app, con barra para volver y cerrar. Ningún enlace (`target="_blank"`, `window.open`, navegación de la ventana principal) puede sacar al usuario de la app; los enlaces externos se ignoran (no hay Internet). El lector de ZIM va en un iframe con `sandbox` sin ventanas emergentes ni navegación superior.
 - **Barras de desplazamiento del tema** en toda la app (listas, modales, textos, paneles) y dentro de los artículos de la biblioteca y del visor: píldora redondeada sin flechas sobre pista transparente, que se ilumina en el acento al usarla; clara u oscura según la página y el modo noche; variante de alto contraste.
 - **Visor de PDF propio** (pdf.js 6.4.299, Apache-2.0, servido por el equipo): sustituye al del navegador, que no admite los estilos de la app. Páginas sobre el fondo del tema con la barra de desplazamiento de la app; barra flotante táctil con página actual y anterior/siguiente, zoom (botones, pellizco y Ctrl+rueda), ajustar al ancho y modo noche. Solo dibuja las páginas cercanas a la vista y libera las lejanas (probado con un manual de 488 páginas en la Pi). La CSP admite `'wasm-unsafe-eval'` (solo compilar WebAssembly, para los decodificadores de imágenes JPEG 2000/JBIG2; sigue sin permitir `eval`).

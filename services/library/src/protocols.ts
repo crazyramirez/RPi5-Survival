@@ -37,6 +37,8 @@ export async function loadProtocols(dir: string): Promise<{ protocols: LoadedPro
       category: meta.category ?? '',
       reviewed: meta.reviewed ?? '',
       sources: meta.sources ?? '',
+      // Traducción: `translatedFrom: es` (la ficha revisada es la española; la interfaz lo avisa).
+      ...(meta.translatedFrom ? { translatedFrom: meta.translatedFrom } : {}),
       html: renderMarkdown(body),
       text: markdownToText(body),
     })
@@ -45,5 +47,22 @@ export async function loadProtocols(dir: string): Promise<{ protocols: LoadedPro
 }
 
 export function summarize(p: LoadedProtocol): ProtocolSummary {
-  return { id: p.id, title: p.title, category: p.category, reviewed: p.reviewed, sources: p.sources }
+  return {
+    id: p.id,
+    title: p.title,
+    category: p.category,
+    reviewed: p.reviewed,
+    sources: p.sources,
+    ...(p.translatedFrom ? { translatedFrom: p.translatedFrom } : {}),
+  }
+}
+
+/**
+ * Protocolos en un idioma: la traducción de cada ficha si existe y, si no, la española (nunca se pierde una
+ * ficha por falta de traducción). Mismo orden e ids que en español.
+ */
+export function localized(base: LoadedProtocol[], translated: LoadedProtocol[] | undefined): LoadedProtocol[] {
+  if (!translated?.length) return base
+  const byId = new Map(translated.map((p) => [p.id, p]))
+  return base.map((p) => byId.get(p.id) ?? p)
 }

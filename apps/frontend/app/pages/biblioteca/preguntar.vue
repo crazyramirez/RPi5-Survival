@@ -144,7 +144,7 @@ async function ask(): Promise<void> {
   try {
     const res = await fetch('/api/library/ask', {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-survival-action': '1' },
+      headers: { 'content-type': 'application/json', 'x-survival-action': '1', 'x-survival-lang': locale.value },
       body: JSON.stringify({ question: q }),
       signal: ctrl.signal,
     })
@@ -154,7 +154,7 @@ async function ask(): Promise<void> {
         otherBusy.value = true
         throw new Error(t('ask.busy', { s: Math.round(j.busySeconds ?? 0) }))
       }
-      throw new Error(j.error ?? j.statusMessage ?? t('ask.error'))
+      throw new Error(translateServer(j.error ?? j.statusMessage) || t('ask.error'))
     }
     const reader = res.body.getReader()
     const dec = new TextDecoder()

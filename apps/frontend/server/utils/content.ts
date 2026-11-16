@@ -1,5 +1,5 @@
 import { existsSync, promises as fs } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
 import { isPortable, portablePaths } from './portable'
 
@@ -61,10 +61,27 @@ export async function loadCatalog(): Promise<Catalog> {
   return JSON.parse(await fs.readFile(d.catalog, 'utf8')) as Catalog
 }
 
+interface CatalogI18n {
+  groups?: Record<string, string>
+  items?: Record<string, { title?: string; description?: string }>
+  /** Etiquetas de variantes («Sin imágenes» → traducción). */
+  variants?: Record<string, string>
+}
+
+/**
+ * Textos del catálogo en otro idioma (content/catalog-i18n/<idioma>.json, junto a catalog.json). El
+ * catálogo base está en español; lo que no esté traducido se queda en español.
+ */
+async function catalogI18n(catalogPath: string, lang: string): Promise<CatalogI18n> {
+  if (!/^(en|fr|it)$/.test(lang)) return {}
+  return readJson<CatalogI18n>(join(dirname(catalogPath), 'catalog-i18n', `${lang}.json`), {})
+}
+
 /** Estado de cada elemento: lo que hay en disco manda; el registro del motor aporta progreso y errores. */
-export async function contentOverview(): Promise<ContentOverview> {
+export async function contentOverview(lang = 'es'): Promise<ContentOverview> {
   const d = dirs()
   const catalog = await loadCatalog()
+  const tr = await catalogI18n(d.catalog, lang)
   const engine = await readJson<{ items: Record<string, Partial<ContentItemStatus> & { state?: string; done?: number; total?: number; error?: string; file?: string; version?: string; bytes?: number }> }>(d.state, { items: {} })
   const zims = (await ls(d.zim)).filter((f) => f.endsWith('.zim'))
   const maps = (await ls(d.maps)).filter((f) => f.endsWith('.pmtiles'))
@@ -119,9 +136,13 @@ export async function contentOverview(): Promise<ContentOverview> {
     platform: `${process.platform}-${process.arch}`,
     portable: isPortable(),
     catalogUpdated: catalog.updated,
-    groups: catalog.groups,
+    groups: catalog.groups.map((g) => ({ ...g, title: tr.groups?.[g.id] ?? g.title })),
     catalog: catalog.items.map(({ id, kind, group, lang, priority, default: def, approxBytes, license, title, description, equivalentOf, variants }) => ({
-      id, kind, group, lang, priority, default: def, approxBytes, license, title, description, equivalentOf: equivalentOf ?? null, variants: variants ?? null,
+      id, kind, group, lang, priority, default: def, approxBytes, license,
+      title: tr.items?.[id]?.title ?? title,
+      description: tr.items?.[id]?.description ?? description,
+      equivalentOf: equivalentOf ?? null,
+      variants: variants?.map((v) => ({ ...v, label: tr.variants?.[v.label] ?? v.label })) ?? null,
     })),
     items,
     freeBytes: s ? s.bavail * s.bsize : null,

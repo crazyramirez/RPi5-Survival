@@ -74,6 +74,7 @@ function print(): void {
               <p><strong>{{ t('ui.print.callTitle') }}</strong>{{ t('ui.print.callBody') }}</p>
             </div>
             <p class="disclaimer">{{ t('em.disclaimer') }}</p>
+            <p v-if="protocols.some((p) => p.translatedFrom)" class="disclaimer">{{ t('em.translated') }}</p>
           </div>
           <dl class="meta">
             <div><dt>{{ t('ui.print.generated') }}</dt><dd>{{ today }}</dd></div>

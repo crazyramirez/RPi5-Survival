@@ -1,3 +1,4 @@
+import { bcp47 } from './i18n'
 import type { WaypointKind } from '@survival-os/shared-types'
 
 export const WAYPOINT_KINDS: WaypointKind[] = ['agua', 'refugio', 'hospital', 'farmacia', 'peligro', 'personal']
@@ -34,5 +35,5 @@ export function cardinal(deg: number): string {
 }
 
 export function formatDistance(m: number): string {
-  return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toLocaleString('es-ES', { maximumFractionDigits: m < 10_000 ? 2 : 1 })} km`
+  return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toLocaleString(bcp47(), { maximumFractionDigits: m < 10_000 ? 2 : 1 })} km`
 }

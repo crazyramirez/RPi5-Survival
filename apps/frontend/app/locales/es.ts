@@ -1,6 +1,7 @@
 /**
- * Catálogo de mensajes en español (idioma principal).
- * Para traducir: crear `en.ts` con las mismas claves y registrarlo en `useT`.
+ * Catálogo de mensajes en español (idioma principal y de referencia).
+ * Traducciones: en.ts, fr.ts, it.ts con las mismas claves (el tipo obliga a que estén todas); se registran en
+ * utils/i18n.ts. Una clave nueva se añade aquí y en las tres traducciones.
  */
 export const es = {
   'app.name': 'Survival OS',
@@ -81,8 +82,8 @@ export const es = {
   'summary.navigation.gnss': 'Posición GNSS disponible',
   'summary.navigation.noFix': 'Receptor GNSS sin fijación',
   'summary.navigation.lora': 'Última posición del nodo LoRa',
-  'summary.library.empty': 'Documentos propios y búsqueda',
-  'summary.library.kiwix': 'Wikipedia offline y documentos',
+  'summary.library.empty': 'Documentos propios búsqueda',
+  'summary.library.kiwix': 'Documentación offline',
   'summary.emergency': 'Protocolos offline · 112',
   'summary.vault': 'Cifrada · solo pantalla local',
   'summary.comms': '{n} interfaz(es) activa(s)',
@@ -194,6 +195,7 @@ export const es = {
   'lib.doc.notFound': 'Documento no encontrado.',
   'em.reviewed': 'Revisado: {date}',
   'em.notFound': 'Protocolo no encontrado.',
+  'em.translated': 'Traducción de la ficha revisada en español. Ante cualquier duda, prevalece el original en español.',
   'em.sources': 'Fuentes',
   'em.aiNotice': 'Resumen redactado con ayuda de IA a partir de las fuentes citadas. Pendiente de revisión por personal sanitario: ante la duda, sigue las indicaciones del 112.',
   'em.call': 'Teléfono de emergencias',
@@ -296,6 +298,7 @@ export const es = {
   'content.selectNone': 'Nada',
   'content.error': 'No se pudo leer el catálogo de contenidos.',
   'setup.title': 'Bienvenido a Survival OS',
+  'setup.language': 'Idioma',
   'setup.lead': 'Vamos a preparar el equipo para que funcione sin Internet: mapas, Wikipedia, guías de reparación, medicina, libros y el asistente.',
   'setup.default': 'Todo viene marcado por defecto, en español siempre que exista. Lo que solo existe en inglés se indica.',
   'setup.where': 'Equipo: {platform} · {free} libres',
@@ -544,6 +547,8 @@ export const es = {
   'display.dim.note':
     'La atenuación es visual: con la pantalla HDMI actual no hay control de retroiluminación por software, así que no reduce el consumo.',
   'display.close': 'Cerrar',
+  'display.language': 'Idioma',
+  'display.language.note': 'Al cambiar de idioma, la app se recarga.',
 
   'lock.title': 'Pantalla bloqueada',
   'lock.hold': 'Mantén pulsado para desbloquear',
@@ -962,6 +967,16 @@ export const es = {
 
   'common.reason': 'Motivo',
   'common.none': '—',
+  'nav.mainLabel': 'Navegación principal',
+  'osk.label': 'Teclado en pantalla',
+  'osk.shift': 'Mayúsculas',
+  'osk.accent': 'Acento {mark}',
+  'osk.delete': 'Borrar',
+  'osk.space': 'Espacio',
+  'osk.enter': 'Intro',
+  'osk.hide': 'Ocultar teclado',
+  'common.unknownError': 'Error desconocido',
+  'nav.wp.hereName': 'Posición {date}',
 } as const
 
 export type MessageKey = keyof typeof es

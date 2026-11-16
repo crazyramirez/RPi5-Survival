@@ -77,7 +77,7 @@ async function toggleRecording(): Promise<void> {
 
 async function saveHere(): Promise<void> {
   try {
-    await postAction('/api/nav/waypoints', { here: true, name: `Posición ${new Date().toLocaleString('es-ES')}`, kind: 'personal' })
+    await postAction('/api/nav/waypoints', { here: true, name: t('nav.wp.hereName', { date: new Date().toLocaleString(bcp47()) }), kind: 'personal' })
     await load()
     message.value = { tone: 'ok', text: t('nav.saved') }
   } catch (err) {

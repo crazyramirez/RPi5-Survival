@@ -194,7 +194,7 @@ const failedSources = computed(() =>
   Object.entries(results.value?.sources ?? {})
     // Historial desactivado por el usuario: es una elección, no un fallo que avisar.
     .filter(([k, p]) => p.state !== 'ok' && k !== 'history')
-    .map(([k, p]) => `${SOURCE_LABEL.value[SOURCE_KEY[k as keyof SearchResults['sources']]]}: ${p.state === 'ok' ? '' : p.reason}`),
+    .map(([k, p]) => `${SOURCE_LABEL.value[SOURCE_KEY[k as keyof SearchResults['sources']]]}: ${p.state === 'ok' ? '' : translateServer(p.reason)}`),
 )
 
 function hitTarget(href: string): string {
@@ -211,7 +211,7 @@ function flavourLabel(f: string): string | null {
 }
 
 /** 4858 → "4,9 mil"; 4232639 → "4,2 M": cabe en la tarjeta a 1024 px. */
-const COMPACT = new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 })
+const COMPACT = new Intl.NumberFormat(bcp47(), { notation: 'compact', maximumFractionDigits: 1 })
 
 function bookMeta(b: ZimBook): string {
   const parts: string[] = []
@@ -357,7 +357,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
             <NuxtLink to="/sistema/mantenimiento#mnt-content" class="btn btn-primary">
               <Download :size="18" aria-hidden="true" />{{ t('lib.shelf.download') }}
             </NuxtLink>
-            <small v-if="books && books.state !== 'ok'" class="faint">{{ books.reason }}</small>
+            <small v-if="books && books.state !== 'ok'" class="faint">{{ translateServer(books.reason) }}</small>
           </div>
           <ProbeNote v-else-if="publicView" :probe="books" />
 

@@ -13,20 +13,72 @@ export interface Source {
   text: string
 }
 
-export const SYSTEM_PROMPT = `Eres el asistente de consulta de Survival OS, un equipo de supervivencia sin Internet.
+/** Idiomas de la interfaz; el asistente responde en el de quien pregunta. */
+export type Lang = 'es' | 'en' | 'fr' | 'it'
+export const LANGS: readonly Lang[] = ['es', 'en', 'fr', 'it']
+
+export function isLang(v: unknown): v is Lang {
+  return typeof v === 'string' && (LANGS as readonly string[]).includes(v)
+}
+
+/** Respuesta cuando no hay fuentes (no se llama al modelo). */
+export const NOT_FOUND: Record<Lang, string> = {
+  es: 'No lo encuentro en la biblioteca. Prueba con otras palabras o consulta Emergencias.',
+  en: "I can't find it in the library. Try other words or check Emergency.",
+  fr: "Je ne le trouve pas dans la bibliothèque. Essayez avec d'autres mots ou consultez Urgences.",
+  it: 'Non lo trovo nella biblioteca. Prova con altre parole o consulta Emergenze.',
+}
+
+export const SYSTEM_PROMPTS: Record<Lang, string> = {
+  es: `Eres el asistente de consulta de Survival OS, un equipo de supervivencia sin Internet.
 Reglas obligatorias:
 - Responde SOLO con la información de las FUENTES numeradas que se te dan. No uses conocimientos propios.
 - Cita las fuentes con su número entre corchetes, por ejemplo [1] o [2].
 - Si las fuentes no contienen la respuesta, responde exactamente: "No lo encuentro en la biblioteca."
 - Ante una emergencia médica, empieza recordando llamar al 112 y remite al protocolo correspondiente.
-- Responde en español, breve (máximo 150 palabras), con pasos numerados cuando proceda.`
+- Responde en español, breve (máximo 150 palabras), con pasos numerados cuando proceda.`,
+  en: `You are the reference assistant of Survival OS, an offline survival device.
+Mandatory rules:
+- Answer ONLY with the information in the numbered SOURCES you are given. Do not use your own knowledge.
+- Cite the sources with their number in square brackets, for example [1] or [2].
+- If the sources do not contain the answer, reply exactly: "I can't find it in the library."
+- In a medical emergency, start by reminding to call 112 and refer to the relevant protocol.
+- Answer in English, briefly (150 words maximum), with numbered steps when appropriate. Sources may be in another language: translate what you use.`,
+  fr: `Vous êtes l'assistant de consultation de Survival OS, un appareil de survie sans Internet.
+Règles obligatoires :
+- Répondez UNIQUEMENT avec les informations des SOURCES numérotées fournies. N'utilisez pas vos propres connaissances.
+- Citez les sources avec leur numéro entre crochets, par exemple [1] ou [2].
+- Si les sources ne contiennent pas la réponse, répondez exactement : "Je ne le trouve pas dans la bibliothèque."
+- En cas d'urgence médicale, commencez par rappeler d'appeler le 112 et renvoyez au protocole correspondant.
+- Répondez en français, brièvement (150 mots maximum), avec des étapes numérotées si nécessaire. Les sources peuvent être dans une autre langue : traduisez ce que vous utilisez.`,
+  it: `Sei l'assistente di consultazione di Survival OS, un dispositivo di sopravvivenza senza Internet.
+Regole obbligatorie:
+- Rispondi SOLO con le informazioni delle FONTI numerate che ti vengono date. Non usare conoscenze tue.
+- Cita le fonti con il loro numero tra parentesi quadre, per esempio [1] o [2].
+- Se le fonti non contengono la risposta, rispondi esattamente: "Non lo trovo nella biblioteca."
+- In un'emergenza medica, inizia ricordando di chiamare il 112 e rimanda al protocollo corrispondente.
+- Rispondi in italiano, in breve (massimo 150 parole), con passaggi numerati quando serve. Le fonti possono essere in un'altra lingua: traduci ciò che usi.`,
+}
+
+/** Compatibilidad: el prompt en español. */
+export const SYSTEM_PROMPT = SYSTEM_PROMPTS.es
+
+const LABELS: Record<Lang, { sources: string; question: string }> = {
+  es: { sources: 'FUENTES', question: 'PREGUNTA' },
+  en: { sources: 'SOURCES', question: 'QUESTION' },
+  fr: { sources: 'SOURCES', question: 'QUESTION' },
+  it: { sources: 'FONTI', question: 'DOMANDA' },
+}
 
 const norm = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 
-/** Palabras vacías y de pregunta en español: no ayudan a recuperar fuentes. */
+/** Palabras vacías y de pregunta (español, más inglés, francés e italiano): no ayudan a recuperar fuentes. */
 const STOPWORDS = new Set(
   (
-    'a al algo alguien algun alguna algunas alguno algunos ante antes aqui asi aun cada como con contra cual cuales cuando cuanto de del desde donde dos el ella ellas ellos en entre era es esa ese eso esta estan este esto estos fue hace hacer hacerlo hago hay he la las le les lo los mas me mi mis mucho muy nada ni no nos o otra otro para pero poco por porque puede pueden puedo pues que quien se sea segun ser si sin sobre solo son su sus tambien tengo tiene tienen todo todos tu un una uno unos usted vez y ya yo debo deberia necesito quiero saber sirve funciona mejor'
+    'a al algo alguien algun alguna algunas alguno algunos ante antes aqui asi aun cada como con contra cual cuales cuando cuanto de del desde donde dos el ella ellas ellos en entre era es esa ese eso esta estan este esto estos fue hace hacer hacerlo hago hay he la las le les lo los mas me mi mis mucho muy nada ni no nos o otra otro para pero poco por porque puede pueden puedo pues que quien se sea segun ser si sin sobre solo son su sus tambien tengo tiene tienen todo todos tu un una uno unos usted vez y ya yo debo deberia necesito quiero saber sirve funciona mejor' +
+    ' the and are for was what when where which who why how can could should would does did has have had not you your with from this that these those into about there their them they will just need want know best' +
+    ' les des une est dans pour par pas plus sur avec mais que qui quoi comment quand faut faire peut peux dois sont etre avoir cette ces mon mes votre vous nous' +
+    ' gli che chi non per con sono come quando dove cosa devo posso fare essere avere questo questa della delle degli dello nel nella sul sulla una uno'
   ).split(' '),
 )
 
@@ -113,11 +165,12 @@ export function excerpt(text: string, query: string, max: number): string {
   return clip((start > 0 ? '…' : '') + t.slice(start), max)
 }
 
-export function buildMessages(question: string, sources: Source[]): { role: string; content: string }[] {
+export function buildMessages(question: string, sources: Source[], lang: Lang = 'es'): { role: string; content: string }[] {
   const ctx = sources.map((s) => `[${s.n}] ${s.title}\n${s.text}`).join('\n\n')
+  const l = LABELS[lang]
   return [
-    { role: 'system', content: SYSTEM_PROMPT },
-    { role: 'user', content: `FUENTES:\n${ctx}\n\nPREGUNTA: ${question}` },
+    { role: 'system', content: SYSTEM_PROMPTS[lang] },
+    { role: 'user', content: `${l.sources}:\n${ctx}\n\n${l.question}: ${question}` },
   ]
 }
 

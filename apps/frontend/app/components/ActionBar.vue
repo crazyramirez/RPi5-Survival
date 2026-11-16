@@ -23,7 +23,7 @@ function back(): void {
 </script>
 
 <template>
-  <nav class="actions" aria-label="Navegación principal">
+  <nav class="actions" :aria-label="t('nav.mainLabel')">
     <button type="button" class="action" :disabled="atHome" @click="back">
       <ArrowLeft :size="26" aria-hidden="true" />
       <span>{{ t('nav.back') }}</span>

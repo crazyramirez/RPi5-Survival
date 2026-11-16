@@ -1,7 +1,10 @@
-const LOCALE = 'es-ES'
+import { bcp47 } from './i18n'
+
+/** Formato de números y fechas del idioma de la interfaz. */
+const LOCALE = (): string => bcp47()
 
 export function formatNumber(n: number, maxFractionDigits = 1): string {
-  return n.toLocaleString(LOCALE, { maximumFractionDigits: maxFractionDigits })
+  return n.toLocaleString(LOCALE(), { maximumFractionDigits: maxFractionDigits })
 }
 
 /** Bytes en unidades SI (1 GB = 10^9 B), como las etiquetas de las tarjetas microSD. */
@@ -32,11 +35,11 @@ export function formatTemp(c: number): string {
 }
 
 export function formatClock(date: Date): string {
-  return date.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString(LOCALE(), { hour: '2-digit', minute: '2-digit' })
 }
 
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString(LOCALE, { weekday: 'short', day: 'numeric', month: 'short' })
+  return date.toLocaleDateString(LOCALE(), { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 /** Antigüedad legible y corta: «45 s», «12 min», «3 h», «2 d». */

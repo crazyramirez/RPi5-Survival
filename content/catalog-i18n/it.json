@@ -1,0 +1,435 @@
+{
+  "groups": {
+    "salud": "Salute e primo soccorso",
+    "preparacion": "Preparazione e sopravvivenza",
+    "saber": "Enciclopedie e consultazione",
+    "oficios": "Riparazioni, mestieri e autosufficienza",
+    "libros": "Libri e apprendimento",
+    "manuales": "Manuali in PDF",
+    "mapas": "Mappe e percorsi",
+    "asistente": "Assistente offline"
+  },
+  "items": {
+    "wikipedia-medicina": {
+      "title": "Wikipedia medica",
+      "description": "Articoli di medicina e salute di Wikipedia, con immagini."
+    },
+    "medlineplus": {
+      "title": "MedlinePlus",
+      "description": "Enciclopedia medica, malattie e farmaci (Biblioteca Nazionale di Medicina degli Stati Uniti)."
+    },
+    "zimgit-medicine": {
+      "title": "Medical Library",
+      "description": "Libri di medicina da campo e di emergenza."
+    },
+    "military-medicine": {
+      "title": "Military Medicine",
+      "description": "Manuali militari di medicina da combattimento e da campo."
+    },
+    "cdc-travel": {
+      "title": "CDC Travelers' Health",
+      "description": "Malattie per regione, vaccini e salute in viaggio."
+    },
+    "mdwiki": {
+      "title": "MDWiki",
+      "description": "Enciclopedia medica in inglese. Già coperta in spagnolo da Wikipedia medica e MedlinePlus."
+    },
+    "ready-gov": {
+      "title": "Ready.gov",
+      "description": "Preparazione ai disastri: piani familiari, kit, clima estremo, incendi, blackout."
+    },
+    "zimgit-post-disaster": {
+      "title": "Post-Disaster Library",
+      "description": "Risorse per il dopo-disastro: riparo, servizi igienico-sanitari, energia, comunicazione."
+    },
+    "zimgit-water": {
+      "title": "Water Treatment Library",
+      "description": "Raccolta e potabilizzazione dell'acqua."
+    },
+    "zimgit-food": {
+      "title": "Food for Preppers",
+      "description": "Conservazione e preparazione degli alimenti."
+    },
+    "zimgit-knots": {
+      "title": "A Library of Knots",
+      "description": "Nodi, legature e suture illustrati."
+    },
+    "scoutwiki": {
+      "title": "WikiRoca (scout)",
+      "description": "Tecniche scout: orientamento, campeggio, nodi."
+    },
+    "outdoors-qa": {
+      "title": "The Great Outdoors Q&A",
+      "description": "Domande e risposte su montagna, campeggio e sopravvivenza."
+    },
+    "armypubs": {
+      "title": "Manuali dell'Esercito degli Stati Uniti",
+      "description": "Army Publishing Directorate: include manuali di sopravvivenza, primo soccorso e orientamento."
+    },
+    "wikipedia": {
+      "title": "Wikipedia in spagnolo",
+      "description": "L'enciclopedia completa."
+    },
+    "wiktionary": {
+      "title": "Wikcionario (Wikizionario in spagnolo)",
+      "description": "Dizionario: definizioni, etimologia e traduzioni."
+    },
+    "wikivoyage": {
+      "title": "Wikiviajes (Wikivoyage in spagnolo)",
+      "description": "Guida di viaggio: destinazioni, trasporti, alloggio."
+    },
+    "wikisource": {
+      "title": "Wikisource",
+      "description": "Testi di pubblico dominio: leggi, documenti storici, letteratura."
+    },
+    "ifixit": {
+      "title": "iFixit",
+      "description": "Guide di riparazione passo passo: elettronica, veicoli, elettrodomestici."
+    },
+    "lowtech": {
+      "title": "Low-Tech Magazine",
+      "description": "Energia e tecniche semplici senza alta tecnologia (articoli anche in spagnolo)."
+    },
+    "appropedia": {
+      "title": "Appropedia",
+      "description": "Tecnologia appropriata: acqua, energia, edilizia, agricoltura."
+    },
+    "energypedia": {
+      "title": "energypedia",
+      "description": "Energia solare, biomassa ed elettrificazione in luoghi isolati."
+    },
+    "diy-qa": {
+      "title": "Home Improvement Q&A",
+      "description": "Idraulica, impianti elettrici, falegnameria e riparazioni domestiche."
+    },
+    "gardening-qa": {
+      "title": "Gardening Q&A",
+      "description": "Orto, piante e parassiti."
+    },
+    "mechanics-qa": {
+      "title": "Motor Vehicle Mechanics Q&A",
+      "description": "Meccanica di auto e moto."
+    },
+    "ham-qa": {
+      "title": "Amateur Radio Q&A",
+      "description": "Radiantismo, antenne e comunicazioni."
+    },
+    "cooking-qa": {
+      "title": "Seasoned Advice",
+      "description": "Cucina e conservazione degli alimenti."
+    },
+    "sustainability-qa": {
+      "title": "Sustainable Living Q&A",
+      "description": "Vita sostenibile e autosufficienza."
+    },
+    "wikibooks": {
+      "title": "Wikilibros (Wikibooks in spagnolo)",
+      "description": "Manuali e libri di testo liberi."
+    },
+    "gutenberg": {
+      "title": "Progetto Gutenberg",
+      "description": "Libri classici in spagnolo di pubblico dominio."
+    },
+    "wikiversity": {
+      "title": "Wikiversidad (Wikiversità in spagnolo)",
+      "description": "Corsi e materiali didattici."
+    },
+    "phet": {
+      "title": "Simulazioni PhET",
+      "description": "Simulazioni interattive di fisica, chimica e matematica."
+    },
+    "mapa-espana": {
+      "title": "Mappa della Spagna peninsulare e delle Baleari",
+      "description": "Strade, sentieri e rilievo fino al livello stradale (zoom 15)."
+    },
+    "mapa-canarias": {
+      "title": "Mappa delle Canarie",
+      "description": "Strade e sentieri fino al livello stradale (zoom 15)."
+    },
+    "mapa-mundo": {
+      "title": "Mappa del mondo (generale)",
+      "description": "Paesi, città e strade principali (zoom 6)."
+    },
+    "rutas-espana": {
+      "title": "Percorsi offline: Spagna",
+      "description": "Calcolo di percorsi a piedi, in bici e in auto (BRouter)."
+    },
+    "rutas-canarias": {
+      "title": "Percorsi offline: Canarie",
+      "description": "Calcolo di percorsi a piedi, in bici e in auto (BRouter)."
+    },
+    "asistente": {
+      "title": "Assistente offline (Qwen3 4B)",
+      "description": "Risponde alle domande citando i protocolli e la biblioteca. Funziona senza Internet."
+    },
+    "hesperian-donde-no-hay-doctor": {
+      "title": "Dove non c'è il dottore (ed. 2017)",
+      "description": "Manuale di riferimento per la salute in zone rurali: diagnosi, primo soccorso (cap. 10), farmaci, infezioni, parti e prevenzione senza medico."
+    },
+    "oms-atencion-basica-emergencia": {
+      "title": "Assistenza di base in emergenza: approccio ai feriti e ai malati acuti (libro del partecipante)",
+      "description": "Approccio ABCDE al trauma e alle urgenze (vie aeree, shock, ustioni, dispnea, incoscienza) per il primo intervento con poche risorse."
+    },
+    "msf-medicamentos-esenciales": {
+      "title": "Farmaci essenziali: guida pratica all'uso (2026)",
+      "description": "Scheda per ogni farmaco: indicazioni, dosi per adulti/bambini, controindicazioni e conservazione; fondamentale per usare una cassetta dei medicinali."
+    },
+    "msf-clinical-guidelines-en": {
+      "title": "Clinical guidelines: diagnosis and treatment manual (MSF, 2026)",
+      "description": "Guida clinica di diagnosi e trattamento per sintomi e malattie in contesti isolati (la versione ufficiale in spagnolo è danneggiata)."
+    },
+    "oms-primera-ayuda-psicologica": {
+      "title": "Primo soccorso psicologico: guida per gli operatori sul campo",
+      "description": "Come assistere le persone in crisi dopo un disastro o un episodio di violenza: osservare, ascoltare e mettere in contatto con l'aiuto."
+    },
+    "cicr-primeros-auxilios-conflictos": {
+      "title": "Primo soccorso nei conflitti armati e in altre situazioni di violenza (2013)",
+      "description": "Manuale del soccorritore per ambienti pericolosi: sicurezza, triage, emorragie, ferite, fratture, ustioni ed evacuazione."
+    },
+    "ifrc-tratamiento-agua-hogar-emergencias": {
+      "title": "Sistemi domestici di trattamento e conservazione dell'acqua in situazioni di emergenza",
+      "description": "Potabilizzare l'acqua in casa: bollitura, cloro, SODIS, filtrazione, flocculazione e conservazione sicura, con volantini illustrati."
+    },
+    "hesperian-salud-ambiental": {
+      "title": "Guida comunitaria per la salute ambientale",
+      "description": "Acqua potabile e protezione delle fonti, costruzione di latrine, zanzare, rifiuti, sostanze tossiche e appendice su sicurezza ed emergenze."
+    },
+    "ops-gestion-cadaveres-desastres": {
+      "title": "La gestione dei cadaveri in situazioni di disastro: guida pratica per le squadre di intervento (2ª ed.)",
+      "description": "Recupero, conservazione, identificazione e consegna dei cadaveri dopo un disastro, e i loro reali rischi sanitari."
+    },
+    "hesperian-libro-parteras": {
+      "title": "Un libro per le ostetriche",
+      "description": "Gravidanza, parto, complicanze, post-parto e neonato per ostetriche e persone senza formazione medica."
+    },
+    "ops-complicaciones-embarazo-parto": {
+      "title": "Gestione delle complicanze della gravidanza e del parto: guida per ostetriche e medici (2ª ed.)",
+      "description": "Protocolli per sintomo delle emergenze ostetriche (emorragia, eclampsia, parto ostruito, sepsi) e procedure."
+    },
+    "hesperian-donde-no-hay-dentista": {
+      "title": "Dove non c'è il dentista",
+      "description": "Igiene dentale, dolore, ascessi, estrazioni e otturazioni semplici con mezzi di base."
+    },
+    "hesperian-donde-no-hay-doctor-mujeres": {
+      "title": "Dove non c'è il dottore per le donne (ed. 2024)",
+      "description": "Salute della donna: gravidanza, IST, violenza, salute mentale, complicanze dell'aborto e problemi medici frequenti."
+    },
+    "cawst-tratamiento-agua-domiciliar": {
+      "title": "Introduzione al trattamento domestico dell'acqua e alla sua conservazione sicura (manuale del formatore, 2011)",
+      "description": "Approccio multibarriera: protezione della fonte, sedimentazione, filtrazione (biosabbia, ceramica), disinfezione e conservazione."
+    },
+    "cawst-saneamiento-ambiental": {
+      "title": "Introduzione ai servizi igienico-sanitari ambientali (manuale del formatore, 2015)",
+      "description": "Latrine, gestione degli escrementi, acque grigie, rifiuti solidi e igiene contro le malattie a trasmissione oro-fecale."
+    },
+    "ops-tratamiento-diarrea": {
+      "title": "Trattamento della diarrea: manuale clinico per i servizi sanitari",
+      "description": "Valutazione della disidratazione e piani A/B/C di reidratazione orale ed endovenosa; dissenteria e colera."
+    },
+    "oms-brote-diarrea-aguda": {
+      "title": "Primi passi per controllare un focolaio di diarrea acuta",
+      "description": "Opuscolo di 8 pagine per i primi giorni di un focolaio di colera o diarrea: confermare, trattare, clorare l'acqua e misure igieniche."
+    },
+    "oms-guia-humanitaria-mhgap": {
+      "title": "Guida di intervento umanitario mhGAP (GIH-mhGAP)",
+      "description": "Gestione clinica di stress acuto, lutto, depressione, psicosi, epilessia, alcol e rischio di suicidio nelle emergenze, da parte di personale non specialista."
+    },
+    "ops-victimas-en-masa": {
+      "title": "Istituzione di un sistema di assistenza alle vittime di massa",
+      "description": "Organizzazione del triage, posto medico avanzato, evacuazione e coordinamento quando ci sono molti feriti contemporaneamente."
+    },
+    "oms-aps-ninos-adolescentes": {
+      "title": "Manuale tascabile di assistenza sanitaria primaria per bambini, bambine e adolescenti (2025)",
+      "description": "Guida tascabile per diagnosticare e trattare i problemi pediatrici frequenti e riconoscere i segni d'allarme."
+    },
+    "cicr-cirugia-guerra-vol1": {
+      "title": "Chirurgia di guerra: lavorare con risorse limitate nei conflitti armati e in altre situazioni di violenza, vol. 1",
+      "description": "Balistica delle ferite, triage, sbrigliamento, gestione di ferite e infezioni, anestesia e cure con risorse minime."
+    },
+    "cicr-cirugia-guerra-vol2": {
+      "title": "Chirurgia di guerra: lavorare con risorse limitate nei conflitti armati e in altre situazioni di violenza, vol. 2",
+      "description": "Chirurgia per regioni (testa, torace, addome, arti, ustioni) con risorse limitate; per personale sanitario."
+    },
+    "oms-guias-calidad-agua": {
+      "title": "Linee guida per la qualità dell'acqua potabile (4ª ed. con il 1º addendum)",
+      "description": "Riferimento tecnico (636 pagg.) su patogeni, sostanze chimiche, disinfezione e piani di sicurezza dell'acqua."
+    },
+    "cawst-analisis-calidad-agua": {
+      "title": "Introduzione all'analisi della qualità dell'acqua potabile (manuale del formatore, 2013)",
+      "description": "Analisi dell'acqua sul campo: torbidità, cloro residuo, pH e semplici test microbiologici."
+    },
+    "ops-wash-coordinacion-emergencias": {
+      "title": "Settore acqua potabile, servizi igienico-sanitari e igiene: guida pratica per il coordinamento delle emergenze di sanità pubblica e dei disastri",
+      "description": "Valutazione e risposta in materia di acqua, servizi igienico-sanitari e igiene nei disastri, con sorveglianza della qualità dell'acqua."
+    },
+    "oms-enfermedades-agua-hogares": {
+      "title": "Lotta contro le malattie trasmesse dall'acqua nelle abitazioni",
+      "description": "Perché e come trattare e conservare l'acqua in casa (cloro, filtri, SODIS, bollitura), con dati di efficacia."
+    },
+    "ops-salud-mental-desastres": {
+      "title": "Guida pratica di salute mentale in situazioni di disastro",
+      "description": "Reazioni psicologiche dopo un disastro, intervento in crisi, gruppi vulnerabili e cura delle squadre di soccorso."
+    },
+    "ops-salud-mental-promotor": {
+      "title": "Salute mentale: guida del promotore comunitario",
+      "description": "Guida semplice per individuare e accompagnare depressione, ansia, violenza, alcol e rischio di suicidio nella comunità."
+    },
+    "oms-mhgap-2": {
+      "title": "Guida di intervento mhGAP 2.0 per i disturbi mentali, neurologici e da uso di sostanze",
+      "description": "Algoritmi di valutazione e trattamento di depressione, psicosi, epilessia, demenza e dipendenze nell'assistenza non specialistica."
+    },
+    "oms-paludismo-grave": {
+      "title": "Trattamento della malaria grave: manuale pratico (3ª ed.)",
+      "description": "Diagnosi e trattamento della malaria grave e delle sue complicanze nei bambini e negli adulti."
+    },
+    "oms-tetanos-emergencias": {
+      "title": "Raccomandazioni attuali per il trattamento del tetano durante le emergenze umanitarie",
+      "description": "Nota tecnica breve: profilassi delle ferite, immunoglobulina, vaccino e gestione clinica del tetano dopo i disastri."
+    },
+    "oms-malnutricion-grave": {
+      "title": "Trattamento della malnutrizione grave: manuale per medici e altri operatori sanitari di livello superiore",
+      "description": "I 10 passi del trattamento della denutrizione grave: ipoglicemia, ipotermia, disidratazione e rialimentazione."
+    },
+    "oms-uso-clinico-sangre-bolsillo": {
+      "title": "L'uso clinico del sangue: manuale tascabile",
+      "description": "Reintegro del volume, indicazioni alla trasfusione e alternative in emorragia, trauma, ostetricia e pediatria."
+    },
+    "oms-higiene-entorno-sanitario": {
+      "title": "Norme di base di igiene ambientale nell'assistenza sanitaria",
+      "description": "Quantità minime di acqua, servizi igienico-sanitari, rifiuti e pulizia per un presidio sanitario improvvisato."
+    },
+    "ops-primera-ayuda-psicologica-comunidad": {
+      "title": "Primo soccorso psicologico. Insieme più forti: guida per aiutare sé stessi e la propria comunità (2ª ed.)",
+      "description": "Versione comunitaria e illustrata del primo soccorso psicologico per vicini e volontari (file di grandi dimensioni: 63 MB)."
+    },
+    "hesperian-aprendiendo-promover-salud": {
+      "title": "Imparare a promuovere la salute",
+      "description": "Metodi per formare promotori di salute comunitari; utile per insegnare ad altri (114 MB suddivisi in 31 PDF)."
+    },
+    "msf-cholera-epidemic-en": {
+      "title": "Management of a cholera epidemic (MSF)",
+      "description": "Allestimento di centri di trattamento del colera, clorazione, isolamento e logistica; non esiste una versione MSF in spagnolo."
+    },
+    "msf-public-health-engineering-en": {
+      "title": "Public health engineering in precarious situations (MSF, 2010)",
+      "description": "Ingegneria sanitaria sul campo: captazione e trattamento dell'acqua, latrine, rifiuti e controllo dei vettori nei campi."
+    },
+    "oms-surgical-care-district-hospital-en": {
+      "title": "Surgical care at the district hospital (OMS, 2003)",
+      "description": "Tecniche chirurgiche, anestesiologiche e di trauma di base, illustrate; non esiste un'edizione in spagnolo."
+    },
+    "pc-guia-autoproteccion": {
+      "title": "Guida informativa per il cittadino sull'autoprotezione",
+      "description": "Guida ufficiale spagnola di autoprotezione: cosa fare prima, durante e dopo un'emergenza in casa e fuori casa."
+    },
+    "guia-familias-autoproteccion-2025": {
+      "title": "Guida per le famiglie: prevenzione e autoprotezione di fronte ai rischi",
+      "description": "Piano familiare di emergenza, kit di base e comportamento in caso di alluvioni, terremoti, vulcani, tempeste, incendi e rischi tecnologici."
+    },
+    "pc-guia-inundaciones": {
+      "title": "Guida per il cittadino di fronte al rischio di alluvioni",
+      "description": "Cosa fare prima, durante e dopo un'alluvione o una DANA (depressione isolata in quota), secondo i criteri ufficiali spagnoli."
+    },
+    "pc-guia-fenomenos-meteorologicos": {
+      "title": "Guida per il cittadino di fronte a fenomeni meteorologici avversi",
+      "description": "Ondate di calore e di freddo, temporali, nevicate, venti forti e mareggiate."
+    },
+    "pc-guia-riesgo-quimico-nuclear": {
+      "title": "Guida per il cittadino in caso di emergenze industriali, chimiche e nucleari",
+      "description": "Riparo al chiuso, evacuazione e comportamento in caso di incidenti industriali, chimici e nucleari."
+    },
+    "ign-terremoto-tsunami": {
+      "title": "Cosa fare prima, durante e dopo un terremoto e in caso di tsunami",
+      "description": "Abbassarsi, coprirsi e reggersi; chiudere le utenze ed evacuare in caso di tsunami."
+    },
+    "sanidad-calor-folleto": {
+      "title": "Prevenzione degli effetti delle alte temperature (opuscolo)",
+      "description": "Raccomandazioni per le ondate di calore, il colpo di calore e le persone vulnerabili."
+    },
+    "ifrc-kit-alojamiento": {
+      "title": "Kit per il riparo della FICR",
+      "description": "Montare un riparo di emergenza con teloni, corda e attrezzi di base (illustrato)."
+    },
+    "ops-wash-tratamiento-agua": {
+      "title": "Trattamento di emergenza dell'acqua potabile nel luogo di consumo (nota tecnica 10)",
+      "description": "Bollire, clorare, filtrare e disinfettare con il sole (SODIS), con le dosi."
+    },
+    "ops-wash-almacenamiento-agua": {
+      "title": "Conservazione domestica dell'acqua nelle emergenze (nota tecnica 8)",
+      "description": "Recipienti, igiene e gestione sicura dell'acqua conservata in casa."
+    },
+    "ops-wash-saneamiento": {
+      "title": "Servizi igienico-sanitari di emergenza: pianificazione e opzioni tecniche (nota tecnica 13)",
+      "description": "Latrine di emergenza e smaltimento sicuro degli escrementi nei primi giorni."
+    },
+    "scouts-manual-orientacion": {
+      "title": "Manuale di base di orientamento",
+      "description": "Mappa e bussola, lettura del terreno e orientamento naturale, con esercizi."
+    },
+    "scouts-manual-cabuyeria": {
+      "title": "Manuale di nodistica (nodi e legature)",
+      "description": "Nodi e legature per ripari, stendibiancheria e costruzioni da campo."
+    },
+    "iaru-guia-telecom-emergencia": {
+      "title": "Guida per le telecomunicazioni di emergenza (IARU, 2016)",
+      "description": "Reti di emergenza, messaggistica, energia e apparati radio; include PMR446 e CB."
+    },
+    "ure-manual-control-red": {
+      "title": "Controllo di rete per radioamatori: manuale di istruzione",
+      "description": "Come dirigere una rete radio di emergenza in Spagna e come parteciparvi."
+    },
+    "ign-actividades-mtn": {
+      "title": "Mapa Topográfico Nacional, ortofotografia e LiDAR: attività di geografia",
+      "description": "Interpretare la carta topografica: scala, curve di livello, profili e rilievo (65 MB)."
+    },
+    "atp-3-50-21-survival": {
+      "title": "ATP 3-50.21 Survival (Esercito degli Stati Uniti, 2018)",
+      "description": "Manuale di sopravvivenza in vigore: acqua, fuoco, riparo, cibo, segnali e medicina di base."
+    },
+    "fm-3-25-26-land-navigation": {
+      "title": "FM 3-25.26 Map Reading and Land Navigation",
+      "description": "Lettura delle carte, coordinate, azimut, bussola e navigazione senza GPS."
+    },
+    "fm-21-76-survival": {
+      "title": "FM 21-76 / MCRP 3-02F Survival",
+      "description": "Manuale di sopravvivenza classico con appendice illustrata di piante commestibili e velenose."
+    },
+    "fao-una-huerta-para-todos": {
+      "title": "Un orto per tutti (3ª ed.)",
+      "description": "Realizzare e curare un orto familiare: suolo, semenzai, compost, parassiti e calendario."
+    },
+    "fao-huertos-familiares-urbanos": {
+      "title": "Pratiche per la produzione di orti familiari urbani",
+      "description": "Coltivazione in contenitori e piccoli spazi: substrato, humus, irrigazione e schede di coltivazione."
+    },
+    "fao-huerto-escolar": {
+      "title": "Creare e gestire un orto scolastico",
+      "description": "Pianificare, seminare e curare un orto comunitario."
+    },
+    "fao-conservacion-frutas-hortalizas": {
+      "title": "Conservazione di frutta e ortaggi mediante tecnologie combinate",
+      "description": "Conservare frutta e verdura senza freddo: zucchero, acidità, conservanti e calore moderato, passo dopo passo."
+    },
+    "fao-silos-metalicos-familiares": {
+      "title": "Costruzione e uso di silos metallici familiari per cereali e legumi",
+      "description": "Conservare il grano senza parassiti per mesi in silos da 0,12 a 4,2 m³."
+    },
+    "fao-captacion-agua-lluvia": {
+      "title": "Raccolta e conservazione dell'acqua piovana",
+      "description": "Tetti, cisterne, serbatoi interrati e piccoli invasi per raccogliere e conservare l'acqua piovana."
+    },
+    "fao-avicultura-familiar": {
+      "title": "Produzione avicola familiare (opuscolo di diversificazione 3)",
+      "description": "Allevamento domestico di galline: razze, gestione, alimentazione e sanità di base."
+    },
+    "fao-conejo-cria": {
+      "title": "Il coniglio: allevamento e patologia",
+      "description": "Coniglicoltura completa: alloggiamento, alimentazione, riproduzione e malattie."
+    }
+  },
+  "models": {},
+  "variants": {
+    "Sin imágenes": "Senza immagini",
+    "Con imágenes": "Con immagini"
+  }
+}

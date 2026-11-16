@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { requestLang } from './lang'
 import { assertTrustedAction } from './system'
 
 /**
@@ -22,8 +23,8 @@ export async function proxyToLocal(event: H3Event, target: string, opts: { allow
       // navegador se quedaría en la URL original y las rutas relativas del contenido
       // (p. ej. /kiwix/content/<libro> → <libro>/Página_principal) se resolverían mal.
       fetchOptions: { signal, redirect: 'manual' },
-      // No reenviar cookies ni cabeceras de origen al servicio interno.
-      headers: { cookie: '', origin: '' },
+      // No reenviar cookies ni cabeceras de origen al servicio interno; el idioma (de la cookie) va en cabecera.
+      headers: { cookie: '', origin: '', 'x-survival-lang': requestLang(event) },
     })
   } catch {
     throw createError({ statusCode: 503, statusMessage: 'Servicio local no disponible' })

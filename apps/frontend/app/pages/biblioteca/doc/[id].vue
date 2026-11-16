@@ -28,7 +28,7 @@ const srcdoc = computed(() => {
   if (!doc.value || doc.value.kind === 'pdf') return ''
   const bg = night.value ? '#0f1412' : '#fbfaf6'
   const fg = night.value ? '#ece6d6' : '#1b1f1d'
-  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><style>
+  return `<!doctype html><html lang="${locale.value}"><head><meta charset="utf-8"><style>
     body{margin:0;padding:18px 22px 40px;background:${bg};color:${fg};font:18px/1.55 system-ui,sans-serif;max-width:860px}
     h2,h3,h4{line-height:1.25} pre{white-space:pre-wrap;font:16px/1.5 ui-monospace,monospace}
     blockquote{margin:0;padding:8px 14px;border-left:4px solid #e5b85c;background:rgba(229,184,92,.12)}

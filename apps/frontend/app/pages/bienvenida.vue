@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Compass, Download, PartyPopper } from '@lucide/vue'
+import { ArrowLeft, Compass, Download, Languages, PartyPopper } from '@lucide/vue'
 import type { ContentOverview } from '@survival-os/shared-types'
 import { formatBytes } from '~/utils/format'
 
@@ -51,6 +51,16 @@ async function later(): Promise<void> {
   <div class="page wizard">
     <!-- 1 · Bienvenida -->
     <section v-if="step === 'intro'" class="hero-card">
+      <!-- Lo primero, el idioma: cada uno con su nombre en su idioma. -->
+      <div class="langs" role="group" :aria-label="t('setup.language')">
+        <Languages :size="18" class="langs-icon" aria-hidden="true" />
+        <button
+          v-for="l in LOCALES" :key="l.code" type="button" class="lang" :lang="l.code"
+          :aria-pressed="locale === l.code" @click="setLocale(l.code)"
+        >
+          {{ l.name }}
+        </button>
+      </div>
       <span class="orb" aria-hidden="true"><Compass :size="40" /></span>
       <h1>{{ t('setup.title') }}</h1>
       <p class="lead">{{ t('setup.lead') }}</p>
@@ -134,6 +144,41 @@ async function later(): Promise<void> {
 
 h1 {
   font-size: 1.6rem;
+}
+
+.langs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.25rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.langs-icon {
+  margin: 0 0.3rem 0 0.5rem;
+  color: var(--accent);
+}
+
+.lang {
+  min-height: 2.5rem;
+  padding: 0 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.lang[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .lead {

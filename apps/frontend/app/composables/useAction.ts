@@ -1,3 +1,5 @@
+import { translate, translateServer } from '../utils/i18n'
+
 /**
  * POST a una acción con efecto del servidor local. Añade la cabecera exigida
  * por la protección CSRF (server/utils/net.ts → isTrustedActionRequest).
@@ -21,5 +23,6 @@ export async function postAction<T = unknown>(url: string, body: Record<string, 
 export function actionErrorMessage(err: unknown): string {
   const e = err as { statusMessage?: string; data?: { statusMessage?: string; error?: unknown; message?: string }; message?: string }
   const fromService = typeof e?.data?.error === 'string' && e.data.error ? e.data.error : undefined
-  return e?.data?.statusMessage ?? fromService ?? e?.data?.message ?? e?.statusMessage ?? e?.message ?? 'Error desconocido'
+  // Los servicios responden en español: se traduce al idioma de la interfaz si el texto es conocido.
+  return translateServer(e?.data?.statusMessage ?? fromService ?? e?.data?.message ?? e?.statusMessage ?? e?.message) || translate('common.unknownError')
 }

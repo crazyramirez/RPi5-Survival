@@ -32,7 +32,7 @@ onMounted(load)
     <div v-else-if="!loading" class="empty">
       <AppCard :title="t('games.title')" :icon="Gamepad2" tone="muted">
         <p>{{ status && !status.installed ? t('games.notInstalled') : t('games.unavailable') }}</p>
-        <p v-if="status?.installed && status.reason" class="faint">{{ status.reason }}</p>
+        <p v-if="status?.installed && status.reason" class="faint">{{ translateServer(status.reason) }}</p>
         <div class="row">
           <NuxtLink to="/sistema/mantenimiento" class="btn btn-primary"><Wrench :size="18" aria-hidden="true" />{{ t('games.goDownload') }}</NuxtLink>
           <button type="button" class="btn" @click="load"><RefreshCw :size="18" aria-hidden="true" />{{ t('games.retry') }}</button>

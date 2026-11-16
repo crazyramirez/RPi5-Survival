@@ -10,7 +10,7 @@ const view = computed(() => {
   const p = props.probe
   if (!p) return { tone: 'muted', text: t('state.loading'), error: false }
   if (p.state === 'ok') return null
-  return { tone: p.state === 'error' ? 'danger' : 'muted', text: p.reason, error: p.state === 'error' }
+  return { tone: p.state === 'error' ? 'danger' : 'muted', text: translateServer(p.reason), error: p.state === 'error' }
 })
 </script>
 

@@ -1,15 +1,15 @@
 import { createReadStream, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
-import { resolve, sep } from 'node:path'
+import { join, resolve, sep } from 'node:path'
 import type { AskHistory, AskSource, AssistantStatus, LibraryStatus, Probe, SearchHit, SearchResults, ZimBook, ZimDownload, ZimInstalled } from '@survival-os/shared-types'
 import { loadConfig } from './config.ts'
 import { LibraryDb, docSummary } from './db.ts'
 import { indexDocs } from './indexer.ts'
 import { KiwixClient } from './kiwix.ts'
 import { escapeHtml, htmlToText, renderMarkdown } from './markdown.ts'
-import { buildMessages, clip, excerpt, keywords, relevance, searchTerms, sse, streamCompletion, type Source } from './assistant.ts'
-import { loadProtocols, summarize, type LoadedProtocol } from './protocols.ts'
+import { buildMessages, clip, excerpt, isLang, keywords, LANGS, NOT_FOUND, relevance, searchTerms, sse, streamCompletion, type Lang, type Source } from './assistant.ts'
+import { loadProtocols, localized, summarize, type LoadedProtocol } from './protocols.ts'
 
 const config = loadConfig()
 mkdirSync(config.docsDir, { recursive: true })
@@ -24,6 +24,18 @@ const VERSION = (() => {
 })()
 
 let protocols: LoadedProtocol[] = []
+/** Traducciones de los protocolos (content/protocols/<idioma>/), por idioma. */
+const translatedProtocols = new Map<Lang, LoadedProtocol[]>()
+
+/** Idioma de la interfaz que hace la petición (cabecera x-survival-lang); español si no viene. */
+function langOf(req: IncomingMessage): Lang {
+  const v = req.headers['x-survival-lang']
+  return isLang(v) ? v : 'es'
+}
+
+function protocolsFor(lang: Lang): LoadedProtocol[] {
+  return lang === 'es' ? protocols : localized(protocols, translatedProtocols.get(lang))
+}
 let indexing: Promise<unknown> | null = null
 let pdftotextAvailable = false
 /** pdftotext del sistema o el de la versión portable (PDFTOTEXT, se descarga con los manuales). */
@@ -98,7 +110,7 @@ async function kiwixBooks(): Promise<Probe<ZimBook[]>> {
   }
 }
 
-async function search(q: string): Promise<SearchResults> {
+async function search(q: string, lang: Lang = 'es'): Promise<SearchResults> {
   const query = q.trim().slice(0, 120)
   const now = new Date().toISOString()
   const hits: SearchHit[] = []
@@ -106,7 +118,7 @@ async function search(q: string): Promise<SearchResults> {
   const nq = norm(query)
 
   const words = nq.split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 1)
-  const protoHits = protocols
+  const protoHits = protocolsFor(lang)
     .filter((p) => {
       const hay = norm(`${p.title} ${p.text}`)
       return words.length > 0 && words.every((w) => hay.includes(w))
@@ -233,7 +245,7 @@ function bookWeight(href: string): number {
  * Recupera fuentes para el asistente a partir de PALABRAS CLAVE (sin palabras vacías):
  * hasta 2 protocolos, 2 documentos y 3 artículos ZIM, puntuados por relevancia y sin duplicados.
  */
-async function retrieve(question: string): Promise<Source[]> {
+async function retrieve(question: string, lang: Lang = 'es'): Promise<Source[]> {
   const kw = keywords(question)
   if (!kw.length) return []
   const out: Source[] = []
@@ -245,7 +257,7 @@ async function retrieve(question: string): Promise<Source[]> {
   // Protocolos: al menos la mitad de las palabras clave (por raíz) y cerca del mejor resultado
   // (evita traer «Quemaduras» solo porque menciona la hipotermia).
   const minScore = Math.max(1, Math.ceil(kw.length / 2))
-  const scored = protocols
+  const scored = protocolsFor(lang)
     .map((p) => ({ p, s: relevance(kw, p.title, p.text) }))
     .filter((x) => x.s >= minScore)
     .sort((a, b) => b.s - a.s)
@@ -290,14 +302,14 @@ async function retrieve(question: string): Promise<Source[]> {
   return out
 }
 
-async function ask(question: string, res: ServerResponse, signal: AbortSignal): Promise<void> {
+async function ask(question: string, res: ServerResponse, signal: AbortSignal, lang: Lang = 'es'): Promise<void> {
   res.writeHead(200, { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', 'x-accel-buffering': 'no' })
   const started = Date.now()
-  const sources = await retrieve(question)
+  const sources = await retrieve(question, lang)
   const publicSources: AskSource[] = sources.map(({ text: _t, ...s }) => s)
   sse(res, 'sources', publicSources)
   if (!sources.length) {
-    const msg = 'No lo encuentro en la biblioteca. Prueba con otras palabras o consulta Emergencias.'
+    const msg = NOT_FOUND[lang]
     sse(res, 'token', msg)
     const ms = Date.now() - started
     sse(res, 'done', { ms, model: false, historyId: saveHistory(question, msg, [], null, ms) })
@@ -305,7 +317,7 @@ async function ask(question: string, res: ServerResponse, signal: AbortSignal): 
     return
   }
   try {
-    const answer = await streamCompletion(config.llmUrl, buildMessages(question, sources), res, signal)
+    const answer = await streamCompletion(config.llmUrl, buildMessages(question, sources, lang), res, signal)
     const ms = Date.now() - started
     // Solo respuestas completas: una pregunta cancelada no se guarda.
     sse(res, 'done', { ms, model: true, historyId: saveHistory(question, answer, publicSources, await activeModel(), ms) })
@@ -412,7 +424,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     askingAbort = ac
     res.on('close', () => ac.abort())
     try {
-      await ask(q, res, ac.signal)
+      await ask(q, res, ac.signal, langOf(req))
     } finally {
       asking = false
       askingAbort = null
@@ -430,16 +442,16 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       send(res, 400, { error: 'empty_query' })
       return
     }
-    send(res, 200, await search(q))
+    send(res, 200, await search(q, langOf(req)))
     return
   }
   if (method === 'GET' && path === '/protocols') {
-    send(res, 200, protocols.map(summarize))
+    send(res, 200, protocolsFor(langOf(req)).map(summarize))
     return
   }
   const proto = /^\/protocols\/([a-z0-9-]+)$/.exec(path)
   if (method === 'GET' && proto) {
-    const p = protocols.find((x) => x.id === proto[1])
+    const p = protocolsFor(langOf(req)).find((x) => x.id === proto[1])
     if (!p) send(res, 404, { error: 'not_found' })
     else send(res, 200, { ...summarize(p), html: p.html })
     return
@@ -528,6 +540,15 @@ async function start(): Promise<void> {
   const loaded = await loadProtocols(config.protocolsDir)
   protocols = loaded.protocols
   for (const e of loaded.errors) log('warn', 'protocol_rejected', { detail: e })
+  for (const lang of LANGS) {
+    if (lang === 'es') continue
+    // Sin carpeta de traducción: ese idioma usa las fichas en español (no es un error).
+    if (!existsSync(join(config.protocolsDir, lang))) continue
+    const tr = await loadProtocols(join(config.protocolsDir, lang))
+    translatedProtocols.set(lang, tr.protocols)
+    for (const e of tr.errors) log('warn', 'protocol_rejected', { lang, detail: e })
+    log('info', 'protocols_translated', { lang, count: tr.protocols.length })
+  }
   pdftotextAvailable = pdftotextPresent()
   indexing = indexDocs(db, config.docsDir, config.maxDocBytes)
     .then((r) => log('info', 'indexed', { ...r, skipped: r.skipped.length }))

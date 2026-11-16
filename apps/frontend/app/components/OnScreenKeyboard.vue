@@ -1,25 +1,50 @@
 <script setup lang="ts">
 import { ArrowBigUp, CornerDownLeft, Delete, KeyboardOff } from '@lucide/vue'
+import type { Locale } from '~/utils/i18n'
 
 /**
  * Teclado en pantalla propio (no depende del compositor ni de squeekboard).
  * Aparece al enfocar un campo de texto; se retira 60 s si se usa un teclado físico.
  * Los botones no roban el foco (pointerdown.prevent): se escribe en el campo activo.
  */
+const t = useT()
 const { settings } = useDisplaySettings()
 const target = ref<HTMLInputElement | HTMLTextAreaElement | null>(null)
 const layer = ref<'letters' | 'symbols'>('letters')
 const shift = ref(false)
-const accent = ref<'´' | '¨' | null>(null)
+type Dead = '´' | '`' | '^' | '¨'
+const accent = ref<Dead | null>(null)
 let physicalUntil = 0
 let hideTimer: ReturnType<typeof setTimeout> | undefined
 
 const TEXT_TYPES = new Set(['text', 'search', 'password', 'email', 'url', 'number', 'tel', ''])
-const LETTERS = ['qwertyuiop', 'asdfghjklñ', 'zxcvbnm']
+/**
+ * Distribución y acentos según el idioma de la interfaz: QWERTY con ñ (español), AZERTY con ç (francés),
+ * QWERTY (inglés, italiano). Los acentos son teclas muertas: acento y luego la vocal.
+ */
+const LAYOUTS: Record<Locale, { letters: string[]; dead: Dead[] }> = {
+  es: { letters: ['qwertyuiop', 'asdfghjklñ', 'zxcvbnm'], dead: ['´', '¨'] },
+  en: { letters: ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], dead: [] },
+  fr: { letters: ['azertyuiop', 'qsdfghjklm', 'wxcvbnç'], dead: ['´', '`', '^', '¨'] },
+  it: { letters: ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], dead: ['`', '´'] },
+}
+const layout = LAYOUTS[locale.value]
 const SYMBOLS = ['1234567890', '@#€&*()-_+', '!?/:;"\',=']
-const ACCENTED: Record<string, Record<string, string>> = {
-  '´': { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú', A: 'Á', E: 'É', I: 'Í', O: 'Ó', U: 'Ú' },
-  '¨': { u: 'ü', U: 'Ü' },
+const ACCENTED: Record<Dead, string> = {
+  '´': 'aáeéiíoóuúyý',
+  '`': 'aàeèiìoòuù',
+  '^': 'aâeêiîoôuû',
+  '¨': 'aäeëiïoöuüyÿ',
+}
+
+/** Letra con acento (en minúscula o mayúscula) o null si esa combinación no existe. */
+function accented(dead: Dead, c: string): string | null {
+  const pairs = ACCENTED[dead]
+  const lower = c.toLowerCase()
+  for (let i = 0; i < pairs.length; i += 2) {
+    if (pairs[i] === lower) return c === lower ? pairs[i + 1]! : pairs[i + 1]!.toUpperCase()
+  }
+  return null
 }
 
 function isTextField(el: EventTarget | null): el is HTMLInputElement | HTMLTextAreaElement {
@@ -69,7 +94,7 @@ function insert(text: string): void {
 function press(ch: string): void {
   let c = shift.value ? ch.toUpperCase() : ch
   if (accent.value) {
-    c = ACCENTED[accent.value]?.[c] ?? `${accent.value}${c}`
+    c = accented(accent.value, c) ?? `${accent.value}${c}`
     accent.value = null
   }
   insert(c)
@@ -116,30 +141,36 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeyDown, true)
 })
 
-const rows = computed(() => (layer.value === 'letters' ? LETTERS : SYMBOLS))
+const rows = computed(() => (layer.value === 'letters' ? layout.letters : SYMBOLS))
 
 // Con el teclado abierto se añade margen inferior a las páginas para que cualquier campo pueda subir por encima.
 watch(target, (t) => document.documentElement.classList.toggle('osk-open', !!t))
 </script>
 
 <template>
-  <div v-if="target" class="osk" role="group" aria-label="Teclado en pantalla" @pointerdown.prevent>
+  <div v-if="target" class="osk" role="group" :aria-label="t('osk.label')" @pointerdown.prevent>
     <div v-for="(row, ri) in rows" :key="ri" class="row">
-      <button v-if="ri === 2 && layer === 'letters'" type="button" class="k wide" :class="{ on: shift }" aria-label="Mayúsculas" @pointerdown.prevent="shift = !shift">
+      <button v-if="ri === 2 && layer === 'letters'" type="button" class="k wide" :class="{ on: shift }" :aria-label="t('osk.shift')" @pointerdown.prevent="shift = !shift">
         <ArrowBigUp :size="22" />
       </button>
       <button v-for="ch in row" :key="ch" type="button" class="k" @pointerdown.prevent="press(ch)">{{ shift ? ch.toUpperCase() : ch }}</button>
-      <button v-if="ri === 2 && layer === 'letters'" type="button" class="k" :class="{ on: accent === '´' }" aria-label="Tilde" @pointerdown.prevent="accent = accent === '´' ? null : '´'">´</button>
-      <button v-if="ri === 2" type="button" class="k wide" aria-label="Borrar" @pointerdown.prevent="backspace"><Delete :size="22" /></button>
+      <button v-if="ri === 2" type="button" class="k wide" :aria-label="t('osk.delete')" @pointerdown.prevent="backspace"><Delete :size="22" /></button>
     </div>
     <div class="row">
       <button type="button" class="k wide" @pointerdown.prevent="layer = layer === 'letters' ? 'symbols' : 'letters'">{{ layer === 'letters' ? '123' : 'abc' }}</button>
-      <button v-if="layer === 'letters'" type="button" class="k" :class="{ on: accent === '¨' }" aria-label="Diéresis" @pointerdown.prevent="accent = accent === '¨' ? null : '¨'">¨</button>
+      <template v-if="layer === 'letters'">
+        <button
+          v-for="d in layout.dead" :key="d" type="button" class="k" :class="{ on: accent === d }"
+          :aria-label="t('osk.accent', { mark: d })" @pointerdown.prevent="accent = accent === d ? null : d"
+        >
+          {{ d }}
+        </button>
+      </template>
       <button type="button" class="k" @pointerdown.prevent="insert(',')">,</button>
-      <button type="button" class="k space" aria-label="Espacio" @pointerdown.prevent="insert(' ')">␣</button>
+      <button type="button" class="k space" :aria-label="t('osk.space')" @pointerdown.prevent="insert(' ')">␣</button>
       <button type="button" class="k" @pointerdown.prevent="insert('.')">.</button>
-      <button type="button" class="k wide enter" aria-label="Intro" @pointerdown.prevent="enter"><CornerDownLeft :size="22" /></button>
-      <button type="button" class="k wide" aria-label="Ocultar teclado" @pointerdown.prevent="hide"><KeyboardOff :size="22" /></button>
+      <button type="button" class="k wide enter" :aria-label="t('osk.enter')" @pointerdown.prevent="enter"><CornerDownLeft :size="22" /></button>
+      <button type="button" class="k wide" :aria-label="t('osk.hide')" @pointerdown.prevent="hide"><KeyboardOff :size="22" /></button>
     </div>
   </div>
 </template>

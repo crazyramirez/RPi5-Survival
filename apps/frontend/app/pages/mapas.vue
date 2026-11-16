@@ -83,7 +83,7 @@ function style(file: string) {
         attribution: '© OpenStreetMap · Protomaps',
       },
     },
-    layers: layers('protomaps', namedFlavor(flavor.value), { lang: 'es' }),
+    layers: layers('protomaps', namedFlavor(flavor.value), { lang: locale.value }),
   }
 }
 
@@ -458,7 +458,7 @@ onBeforeUnmount(() => {
                   ? t('maps.gnss.fix', { fix: fix.fix.toUpperCase(), err: fix.horizontalErrorM ?? '?' })
                   : lora
                     ? loraHud
-                    : (nav?.gnss.state === 'unavailable' ? nav.gnss.reason : t('maps.gnss.none'))
+                    : (nav?.gnss.state === 'unavailable' ? translateServer(nav.gnss.reason) : t('maps.gnss.none'))
               }}
             </span>
           </div>
@@ -551,7 +551,7 @@ onBeforeUnmount(() => {
             </div>
           </header>
           <p v-if="routing && !routing.available" class="notice tone-warn route-off">
-            <TriangleAlert :size="16" aria-hidden="true" /><span>{{ routing.reason }}</span>
+            <TriangleAlert :size="16" aria-hidden="true" /><span>{{ translateServer(routing.reason) }}</span>
             <NuxtLink to="/sistema/mantenimiento" class="btn small">{{ t('mnt.title') }}</NuxtLink>
           </p>
           <div class="route-row">

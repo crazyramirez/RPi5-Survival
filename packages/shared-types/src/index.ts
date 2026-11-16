@@ -222,6 +222,8 @@ export interface ProtocolSummary {
   /** Fecha de la última revisión (ISO). */
   reviewed: string
   sources: string
+  /** Traducción: idioma de la ficha revisada de la que procede (p. ej. 'es'). Ausente en el original. */
+  translatedFrom?: string
 }
 
 export interface ProtocolDetail extends ProtocolSummary {

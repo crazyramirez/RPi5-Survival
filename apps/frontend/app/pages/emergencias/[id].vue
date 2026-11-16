@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, BookMarked, Bot, CalendarCheck, Phone } from '@lucide/vue'
+import { ArrowLeft, BookMarked, Bot, CalendarCheck, Languages, Phone } from '@lucide/vue'
 import type { ProtocolDetail } from '@survival-os/shared-types'
 
 /**
@@ -46,6 +46,8 @@ onMounted(async () => {
         </div>
         <h1>{{ protocol.title }}</h1>
       </header>
+      <!-- Traducción: la ficha revisada es la española (ADR 0003: decir de dónde sale cada dato). -->
+      <p v-if="protocol.translatedFrom" class="notice tone-info translated"><Languages :size="18" aria-hidden="true" /><span>{{ t('em.translated') }}</span></p>
 
       <!-- eslint-disable-next-line vue/no-v-html -->
       <div class="content" v-html="protocol.html" />
@@ -290,5 +292,16 @@ h1 {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-faint);
+}
+
+.translated {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.translated svg {
+  flex: none;
+  margin-top: 0.15rem;
 }
 </style>

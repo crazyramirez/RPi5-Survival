@@ -2,7 +2,7 @@
 import { BellRing, X } from '@lucide/vue'
 
 /**
- * Primera vez que se abre Survival OS desde su memoria USB en un equipo (ADR 0019): ofrece «abrir al conectar»,
+ * Primera vez que se abre Survivelia OS desde su memoria USB en un equipo (ADR 0019): ofrece «abrir al conectar»,
  * instalarlo en el equipo o no volver a preguntar en él. Solo en la versión portable; nunca en la bienvenida.
  */
 const t = useT()

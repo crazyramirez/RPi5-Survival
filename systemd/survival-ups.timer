@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - leer la UPS cada 30 s
+Description=Survivelia OS - leer la UPS cada 30 s
 
 [Timer]
 OnBootSec=20

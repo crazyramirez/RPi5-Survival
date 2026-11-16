@@ -1,7 +1,7 @@
 # Modelo de lenguaje local (llama.cpp) para el asistente de consulta. Solo loopback, sin red.
 # Se instala/activa desde Mantenimiento (tarea llm-install). El modelo activo está en /var/lib/survival-os/llm/active.
 [Unit]
-Description=Survival OS - modelo de lenguaje local (llama-server)
+Description=Survivelia OS - modelo de lenguaje local (llama-server)
 ConditionPathExists=/var/lib/survival-os/llm/active
 After=local-fs.target
 StartLimitIntervalSec=300

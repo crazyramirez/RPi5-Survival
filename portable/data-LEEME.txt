@@ -1,15 +1,15 @@
-CARPETA DE DATOS DE SURVIVAL OS
+CARPETA DE DATOS DE SURVIVELIA OS
 ===============================
 
-Aquí van tus contenidos. Puedes copiarlos desde otro equipo Survival OS o desde una copia de seguridad.
+Aquí van tus contenidos. Puedes copiarlos desde otro equipo Survivelia OS o desde una copia de seguridad.
 
   maps/            Mapas offline en formato .pmtiles (p. ej. espana.pmtiles)
   library/docs/    Documentos propios: PDF, texto, Markdown
   library/zim/     Wikipedia, iFixit, libros y guías en formato .zim (se descargan desde
                    Mantenimiento → Contenidos; si copias uno a mano, vuelve a descargarlo
                    desde la app para registrarlo)
-  games/           Juegos offline (si los copias desde el equipo Survival OS)
+  games/           Juegos offline (si los copias desde el equipo Survivelia OS)
   navigation/      Rutas y puntos guardados (lo gestiona la app)
   logs/            Registros, por si algo falla
 
-No borres ni muevas ficheros mientras Survival OS está abierto.
+No borres ni muevas ficheros mientras Survivelia OS está abierto.

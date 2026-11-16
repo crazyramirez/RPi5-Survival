@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - pasarela ESP32 (USB serie, JSON Lines v1)
+Description=Survivelia OS - pasarela ESP32 (USB serie, JSON Lines v1)
 After=gpsd.socket
 StartLimitIntervalSec=300
 StartLimitBurst=5

@@ -1,4 +1,4 @@
-// Survival OS — permisos del usuario de servicio `survival` (la interfaz web).
+// Survivelia OS — permisos del usuario de servicio `survival` (la interfaz web).
 // Instalado en /etc/polkit-1/rules.d/.
 polkit.addRule(function (action, subject) {
   if (subject.user !== "survival") return polkit.Result.NOT_HANDLED;

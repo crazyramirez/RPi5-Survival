@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Servicio en primer plano de Survival OS (ADR 0020): prepara la aplicación, arranca el lanzador de la portable
+ * Servicio en primer plano de Survivelia OS (ADR 0020): prepara la aplicación, arranca el lanzador de la portable
  * (portable/launcher.mjs) con el Node del APK y atiende el puente nativo. Mientras corre, los servicios siguen vivos
  * con la pantalla apagada (descargas, radio, GPS).
  */
@@ -177,7 +177,7 @@ public final class SurvivalService extends Service {
         super.onDestroy();
     }
 
-    /** «Cerrar Survival OS»: detiene todo y cierra la ventana. */
+    /** «Cerrar Survivelia OS»: detiene todo y cierra la ventana. */
     void quit() {
         quitting = true;
         main.post(() -> {
@@ -338,7 +338,7 @@ public final class SurvivalService extends Service {
         }
         url = null;
         if (quitting) return;
-        // El lanzador se cerró solo («Cerrar Survival OS») o falló: se relanza hasta 5 veces en 10 minutos.
+        // El lanzador se cerró solo («Cerrar Survivelia OS») o falló: se relanza hasta 5 veces en 10 minutos.
         long now = System.currentTimeMillis();
         if (now - firstRestartAt > 600_000) {
             firstRestartAt = now;
@@ -511,7 +511,7 @@ public final class SurvivalService extends Service {
     /** Acciones que necesitan la ventana (permisos, fijar pantalla, cambiar carpeta de datos). */
     private JSONObject activityAction(String action, JSONObject body) throws Exception {
         MainActivity a = MainActivity.current;
-        if (a == null) throw new Bridge.BridgeError(409, "Abre Survival OS para hacerlo");
+        if (a == null) throw new Bridge.BridgeError(409, "Abre Survivelia OS para hacerlo");
         switch (action) {
             case "permission-location":
             case "permission-notifications":

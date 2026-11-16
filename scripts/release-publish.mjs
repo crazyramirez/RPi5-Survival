@@ -79,7 +79,7 @@ if (yes && !withAndroid) fail('--no-android solo sirve para revisar (sin --yes):
 if (yes && skipBuild) fail('--skip-build solo sirve para revisar (sin --yes): lo publicado se compila siempre desde la etiqueta')
 const { version, mismatches } = checkVersions(ROOT)
 const tag = `v${version}`
-say(`Survival OS ${version}`)
+say(`Survivelia OS ${version}`)
 if (!parseVersion(version)) fail(`versión no válida en package.json: ${version}`)
 if (mismatches.length) fail(`versiones desalineadas:\n${mismatches.map((m) => `  ${m.file}: ${m.version}`).join('\n')}\nArreglo: npm run set-version -- ${version}`)
 okMsg('versiones del monorepo alineadas')
@@ -128,7 +128,7 @@ if (!keyId) fail('la clave de firma no está en TRUSTED_KEYS (scripts/update-lib
 okMsg(`clave de firma ${keyId}`)
 
 const csc = WIN ? join(process.env.SystemRoot || 'C:\\Windows', 'Microsoft.NET', 'Framework64', 'v4.0.30319', 'csc.exe') : null
-if (!csc || !existsSync(csc)) fail('hay que publicar desde Windows: «Survival OS.exe» de la portable se compila con el csc.exe de .NET Framework')
+if (!csc || !existsSync(csc)) fail('hay que publicar desde Windows: «Survivelia OS.exe» de la portable se compila con el csc.exe de .NET Framework')
 
 // ------------------------------------------------------------------ 2. tests, compilación y paquetes
 
@@ -226,17 +226,17 @@ addAsset(names.system, 'system', ['linux-arm64', 'linux-x64'], () => {
   return null
 })
 const portableCheck = (targets) => (file) => {
-  const v = zipEntry(file, 'Survival OS/app/VERSION')?.toString('utf8').trim()
+  const v = zipEntry(file, 'Survivelia OS/app/VERSION')?.toString('utf8').trim()
   if (v !== version) return `app/VERSION interna ${v ?? '(no está)'} ≠ ${version}`
   const entries = zipEntry(file, null)
   for (const t of targets) {
-    const bin = `Survival OS/runtime/${t}/${t.startsWith('win') ? 'node.exe' : 'node'}`
+    const bin = `Survivelia OS/runtime/${t}/${t.startsWith('win') ? 'node.exe' : 'node'}`
     if (!entries.includes(bin)) return `no incluye ${bin}`
   }
   for (const f of ['app/scripts/update-engine.mjs', 'app/scripts/update-lib.mjs', 'app/portable/apply-update.mjs']) {
-    if (!entries.includes(`Survival OS/${f}`)) return `no contiene ${f}`
+    if (!entries.includes(`Survivelia OS/${f}`)) return `no contiene ${f}`
   }
-  if (targets.includes('win-x64') && !entries.includes('Survival OS/Survival OS.exe')) return 'no contiene «Survival OS.exe»'
+  if (targets.includes('win-x64') && !entries.includes('Survivelia OS/Survivelia OS.exe')) return 'no contiene «Survivelia OS.exe»'
   return null
 }
 addAsset(names.portableAll, 'portable', PORTABLE_TARGETS, portableCheck(PORTABLE_TARGETS))
@@ -250,7 +250,7 @@ if (withAndroid) {
 
 const manifest = {
   schema: 1,
-  name: 'Survival OS',
+  name: 'Survivelia OS',
   version,
   tag,
   date: new Date().toISOString().slice(0, 10),
@@ -279,11 +279,11 @@ if (!yes) {
 // ------------------------------------------------------------------ 5. publicar y verificar lo publicado
 
 say(`Publicando ${tag}`)
-run('git', ['tag', '-a', tag, '-m', `Survival OS ${version}`])
+run('git', ['tag', '-a', tag, '-m', `Survivelia OS ${version}`])
 run('git', ['push', 'origin', tag])
 const notesFile = join(tmpdir(), `survival-os-notes-${version}.md`)
 writeFileSync(notesFile, `${notes.es}\n`)
-run('gh', ['release', 'create', tag, '--verify-tag', '--title', `Survival OS ${version}${title ? ` · ${title}` : ''}`, '--notes-file', notesFile, ...uploads])
+run('gh', ['release', 'create', tag, '--verify-tag', '--title', `Survivelia OS ${version}${title ? ` · ${title}` : ''}`, '--notes-file', notesFile, ...uploads])
 
 say('Verificando lo publicado (lo mismo que descargarán las instalaciones)')
 let published = null

@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - comprobar la hora sin red cada minuto
+Description=Survivelia OS - comprobar la hora sin red cada minuto
 
 [Timer]
 OnBootSec=45

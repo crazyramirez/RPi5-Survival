@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Restaura una copia hecha con backup.sh sobre una instalación de Survival OS.
+# Restaura una copia hecha con backup.sh sobre una instalación de Survivelia OS.
 #   sudo restore.sh <directorio-copia> [--force]
 # Verifica SHA-256 antes de tocar nada. Los datos actuales se apartan (no se borran).
 set -euo pipefail
@@ -7,7 +7,7 @@ set -euo pipefail
 SRC="${1:?Uso: restore.sh <directorio-copia> [--force]}"
 FORCE="${2:-}"
 (cd "$SRC" && sha256sum -c --quiet SHA256SUMS) || { echo "Copia corrupta (SHA-256)" >&2; exit 1; }
-[ -d /opt/survival-os/current ] || { echo "Instala primero Survival OS (install-system.sh)" >&2; exit 1; }
+[ -d /opt/survival-os/current ] || { echo "Instala primero Survivelia OS (install-system.sh)" >&2; exit 1; }
 if [ "$FORCE" != "--force" ]; then
   echo "Se restaurarán configuración y datos desde $SRC (los actuales se apartan con sufijo .antes-*)."
   echo "Repite con --force para continuar."

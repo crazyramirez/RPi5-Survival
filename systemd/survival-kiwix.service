@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - kiwix-serve (ZIM offline, loopback)
+Description=Survivelia OS - kiwix-serve (ZIM offline, loopback)
 After=local-fs.target
 StartLimitIntervalSec=300
 StartLimitBurst=5

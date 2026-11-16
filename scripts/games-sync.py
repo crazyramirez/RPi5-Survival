@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Survival OS — copia offline de Viseni Games (ADR 0012). La lanza la tarea `games` (admin-job.py, root).
+"""Survivelia OS — copia offline de Viseni Games (ADR 0012). La lanza la tarea `games` (admin-job.py, root).
 
 Uso: games-sync.py sync | remove
 

@@ -1,6 +1,6 @@
 {
-  "name": "Survival OS",
-  "short_name": "Survival OS",
+  "name": "Survivelia OS",
+  "short_name": "Survivelia",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f1412",

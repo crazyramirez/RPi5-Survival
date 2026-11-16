@@ -112,7 +112,7 @@ const ksPass = join(ROOT, '.data', 'android-keystore.pass')
 if (!debug && !existsSync(ksFile)) {
   const pass = randomBytes(18).toString('base64url')
   const keytool = join(javaHome, 'bin', win ? 'keytool.exe' : 'keytool')
-  const r = spawnSync(keytool, ['-genkeypair', '-keystore', ksFile, '-storetype', 'PKCS12', '-alias', 'survival-os', '-keyalg', 'RSA', '-keysize', '4096', '-validity', '10000', '-dname', 'CN=Survival OS', '-storepass:env', 'KS_PASS', '-keypass:env', 'KS_PASS'], { stdio: 'inherit', env: { ...env, KS_PASS: pass } })
+  const r = spawnSync(keytool, ['-genkeypair', '-keystore', ksFile, '-storetype', 'PKCS12', '-alias', 'survival-os', '-keyalg', 'RSA', '-keysize', '4096', '-validity', '10000', '-dname', 'CN=Survivelia OS', '-storepass:env', 'KS_PASS', '-keypass:env', 'KS_PASS'], { stdio: 'inherit', env: { ...env, KS_PASS: pass } })
   if (r.status !== 0) fail('keytool no pudo crear la clave de firma')
   writeFileSync(ksPass, pass, { mode: 0o600 })
   say(`Clave de firma creada en ${ksFile}. CONSÉRVALA (y ${ksPass}): sin ella no se puede actualizar la app instalada.`)

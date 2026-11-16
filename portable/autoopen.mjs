@@ -2,12 +2,12 @@
  * «Abrir al conectar esta memoria» (ADR 0019): ninguna versión actual de Windows, macOS o Linux arranca un
  * programa de una memoria USB por sí sola. Con el permiso del usuario, y una sola vez por equipo, se instala un
  * vigilante mínimo, por usuario y sin administrador:
- *   Windows  «Survival OS.exe --watch» al iniciar sesión (HKCU\…\Run): eventos WMI de llegada de volúmenes.
+ *   Windows  «Survivelia OS.exe --watch» al iniciar sesión (HKCU\…\Run): eventos WMI de llegada de volúmenes.
  *   macOS    LaunchAgent con StartOnMount y WatchPaths=/Volumes → usb-watch.sh check.
  *   Linux    autoarranque de la sesión → usb-watch.sh watch (comprueba los montajes cada 3 s).
  * Solo reacciona ante las memorias EMPAREJADAS (identificador aleatorio en <memoria>/.survival-os/volume-id):
  * nunca ejecuta una memoria cualquiera. Por defecto pregunta; «abrir directamente» es opcional.
- * Además crea el acceso «Survival OS (USB)» (menú Inicio, Aplicaciones o menú de aplicaciones).
+ * Además crea el acceso «Survivelia OS (USB)» (menú Inicio, Aplicaciones o menú de aplicaciones).
  *
  * Variables para pruebas: SURVIVAL_AUTOOPEN_DIR (carpeta del vigilante), SURVIVAL_SHORTCUT_DIR (accesos y
  * registro de autoarranque), SURVIVAL_AUTOOPEN_DRY=1 (no toca el registro, launchctl ni lanza procesos).
@@ -25,20 +25,27 @@ const AGENT_LABEL = 'org.survival-os.usb'
 
 /** Mensajes por defecto (la interfaz manda los del idioma elegido). {name}: nombre o letra de la unidad. */
 export const DEFAULT_MESSAGES = {
-  title: 'Survival OS',
-  ask: 'Se ha conectado la memoria USB de Survival OS ({name}). ¿Abrir Survival OS?',
+  title: 'Survivelia OS',
+  ask: 'Se ha conectado la memoria USB de Survivelia OS ({name}). ¿Abrir Survivelia OS?',
   yes: 'Abrir',
   no: 'Ahora no',
-  connect: 'Conecta la memoria USB de Survival OS y vuelve a intentarlo.',
+  connect: 'Conecta la memoria USB de Survivelia OS y vuelve a intentarlo.',
 }
 
 /** Rutas del vigilante y de sus accesos en cada sistema. */
 export function autoOpenPaths(platform = process.platform, env = process.env, home = homedir()) {
   const shortcuts = env.SURVIVAL_SHORTCUT_DIR || null
   if (platform === 'win32') {
+    // Carpeta y .exe internos con el nombre de antes (Survival OS): así siguen valiendo los ya activados.
     const dir = env.SURVIVAL_AUTOOPEN_DIR || join(env.LOCALAPPDATA || join(home, 'AppData', 'Local'), 'Survival OS USB')
     const programs = shortcuts || join(env.APPDATA || join(home, 'AppData', 'Roaming'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
-    return { dir, conf: join(dir, 'autoopen.conf'), exe: join(dir, 'Survival OS.exe'), shortcut: join(programs, 'Survival OS (USB).lnk') }
+    return {
+      dir,
+      conf: join(dir, 'autoopen.conf'),
+      exe: join(dir, 'Survival OS.exe'),
+      shortcut: join(programs, 'Survivelia OS (USB).lnk'),
+      legacy: [join(programs, 'Survival OS (USB).lnk')],
+    }
   }
   if (platform === 'darwin') {
     const dir = env.SURVIVAL_AUTOOPEN_DIR || join(home, 'Library', 'Application Support', 'Survival OS USB')
@@ -47,7 +54,8 @@ export function autoOpenPaths(platform = process.platform, env = process.env, ho
       conf: join(dir, 'autoopen.conf'),
       script: join(dir, 'usb-watch.sh'),
       agent: join(shortcuts || join(home, 'Library', 'LaunchAgents'), `${AGENT_LABEL}.plist`),
-      app: join(shortcuts || join(home, 'Applications'), 'Survival OS (USB).app'),
+      app: join(shortcuts || join(home, 'Applications'), 'Survivelia OS (USB).app'),
+      legacy: [join(shortcuts || join(home, 'Applications'), 'Survival OS (USB).app')],
     }
   }
   const data = env.XDG_DATA_HOME || join(home, '.local', 'share')
@@ -67,7 +75,7 @@ export function cleanText(v, max = 300) {
   return String(v ?? '').replace(/[\u0000-\u001f\u007f]+/g, ' ').trim().slice(0, max)
 }
 
-/** Ruta relativa de la carpeta de Survival OS dentro de la memoria («.» si está en la raíz). */
+/** Ruta relativa de la carpeta de Survivelia OS dentro de la memoria («.» si está en la raíz). */
 export function cleanRel(v) {
   const s = String(v ?? '.').replace(/\\/g, '/')
   if (!s || s.length > 200 || s.startsWith('/') || /^[A-Za-z]:/.test(s) || s.split('/').includes('..') || /[\u0000-\u001f|]/.test(s)) return null
@@ -79,7 +87,7 @@ export function cleanRel(v) {
  *   mode=ask|open · volume=<id>\t<carpeta> · dismissed=<id> · msg.<clave>=<texto>
  */
 export function serializeConf({ mode = 'ask', volumes = [], dismissed = [], messages = {} }) {
-  const lines = ['# Survival OS: abrir al conectar la memoria USB (ADR 0019). Lo gestiona la aplicación.', `mode=${MODES.includes(mode) ? mode : 'ask'}`]
+  const lines = ['# Survivelia OS: abrir al conectar la memoria USB (ADR 0019). Lo gestiona la aplicación.', `mode=${MODES.includes(mode) ? mode : 'ask'}`]
   for (const v of volumes) if (ID_RE.test(v.id) && cleanRel(v.rel)) lines.push(`volume=${v.id}\t${cleanRel(v.rel)}`)
   for (const id of dismissed) if (ID_RE.test(id)) lines.push(`dismissed=${id}`)
   for (const k of MESSAGE_KEYS) lines.push(`msg.${k}=${cleanText(messages[k] ?? DEFAULT_MESSAGES[k])}`)
@@ -116,9 +124,9 @@ function writeConf(paths, conf) {
   writeFileSync(paths.conf, serializeConf(conf))
 }
 
-/** ¿Se puede activar aquí? Windows necesita «Survival OS.exe» (lanzador compilado) en la carpeta portable. */
+/** ¿Se puede activar aquí? Windows necesita «Survivelia OS.exe» (lanzador compilado) en la carpeta portable. */
 export function support(root, platform = process.platform) {
-  if (platform === 'win32') return existsSync(join(root, 'Survival OS.exe')) ? null : 'Esta copia no incluye «Survival OS.exe»'
+  if (platform === 'win32') return launcherExe(root) ? null : 'Esta copia no incluye «Survivelia OS.exe»'
   if (platform === 'darwin' || platform === 'linux') return existsSync(join(root, 'app', 'portable', 'usb-watch.sh')) ? null : 'Esta copia no incluye el vigilante de memorias USB'
   return 'Sistema no soportado'
 }
@@ -160,7 +168,7 @@ function installFiles(root, paths, platform) {
   if (platform === 'win32') {
     // Si el vigilante está en marcha, Windows no deja sustituir su .exe: se reintenta en el próximo arranque.
     try {
-      copyIfChanged(join(root, 'Survival OS.exe'), paths.exe)
+      copyIfChanged(launcherExe(root), paths.exe)
     } catch {
       // en uso
     }
@@ -171,8 +179,19 @@ function installFiles(root, paths, platform) {
   copyIfChanged(join(icons, platform === 'darwin' ? 'icon.icns' : 'icon.png'), join(paths.dir, platform === 'darwin' ? 'icon.icns' : 'icon.png'))
 }
 
-/** Registra el vigilante y el acceso «Survival OS (USB)». */
+/** Lanzador de Windows de la carpeta portable: el de Survivelia OS o, en copias anteriores, el de Survival OS. */
+function launcherExe(root) {
+  return ['Survivelia OS.exe', 'Survival OS.exe'].map((n) => join(root, n)).find((f) => existsSync(f)) ?? null
+}
+
+/** Accesos con el nombre anterior (Survival OS): fuera, para que no haya dos. */
+function removeLegacy(paths) {
+  for (const f of paths.legacy ?? []) rmSync(f, { recursive: true, force: true })
+}
+
+/** Registra el vigilante y el acceso «Survivelia OS (USB)». */
 function register(root, paths, platform) {
+  removeLegacy(paths)
   if (platform === 'win32') {
     const cmd = `"${paths.exe}" --watch`
     if (!dry()) {
@@ -188,7 +207,7 @@ function register(root, paths, platform) {
       "$l.Arguments = '--open-usb'",
       `$l.WorkingDirectory = '${q(paths.dir)}'`,
       `$l.IconLocation = '${q(paths.exe)},0'`,
-      "$l.Description = 'Survival OS (USB)'",
+      "$l.Description = 'Survivelia OS (USB)'",
       '$l.Save()',
     ].join('; ')
     const r = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', ps], { windowsHide: true, encoding: 'utf8' })
@@ -212,7 +231,7 @@ function register(root, paths, platform) {
       '</plist>',
       '',
     ].join('\n'))
-    // «Survival OS (USB).app»: abre la memoria emparejada que esté conectada.
+    // «Survivelia OS (USB).app»: abre la memoria emparejada que esté conectada.
     const contents = join(paths.app, 'Contents')
     mkdirSync(join(contents, 'MacOS'), { recursive: true })
     mkdirSync(join(contents, 'Resources'), { recursive: true })
@@ -221,7 +240,7 @@ function register(root, paths, platform) {
       '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
       '<plist version="1.0">',
       '<dict>',
-      '  <key>CFBundleName</key><string>Survival OS (USB)</string>',
+      '  <key>CFBundleName</key><string>Survivelia OS (USB)</string>',
       '  <key>CFBundleIdentifier</key><string>org.survival-os.usb-opener</string>',
       '  <key>CFBundlePackageType</key><string>APPL</string>',
       '  <key>CFBundleExecutable</key><string>survival-os-usb</string>',
@@ -247,9 +266,9 @@ function register(root, paths, platform) {
   // Linux
   const entry = (name, arg, extra) => ['[Desktop Entry]', 'Type=Application', `Name=${name}`, `Exec=sh ${desktopArg(paths.script)} ${arg}`, `Icon=${join(paths.dir, 'icon.png')}`, 'Terminal=false', ...extra, ''].join('\n')
   mkdirSync(join(paths.autostart, '..'), { recursive: true })
-  writeFileSync(paths.autostart, entry('Survival OS (USB)', 'watch', ['NoDisplay=true', 'X-GNOME-Autostart-enabled=true', 'Comment=Abre Survival OS al conectar su memoria USB']))
+  writeFileSync(paths.autostart, entry('Survivelia OS (USB)', 'watch', ['NoDisplay=true', 'X-GNOME-Autostart-enabled=true', 'Comment=Abre Survivelia OS al conectar su memoria USB']))
   mkdirSync(join(paths.desktop, '..'), { recursive: true })
-  writeFileSync(paths.desktop, entry('Survival OS (USB)', 'open', ['Categories=Utility;Education;', 'Comment=Abre Survival OS desde su memoria USB']), { mode: 0o755 })
+  writeFileSync(paths.desktop, entry('Survivelia OS (USB)', 'open', ['Categories=Utility;Education;', 'Comment=Abre Survivelia OS desde su memoria USB']), { mode: 0o755 })
   if (!dry()) {
     spawnSync('/bin/sh', [paths.script, 'seed'], { stdio: 'ignore', timeout: 15_000 })
     spawn('/bin/sh', [paths.script, 'watch'], { detached: true, stdio: 'ignore', cwd: paths.dir }).unref()
@@ -257,6 +276,7 @@ function register(root, paths, platform) {
 }
 
 function unregister(paths, platform) {
+  removeLegacy(paths)
   if (platform === 'win32') {
     if (!dry()) spawnSync('reg.exe', ['delete', 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run', '/v', RUN_VALUE, '/f'], { windowsHide: true, stdio: 'ignore' })
     rmSync(paths.shortcut, { force: true })

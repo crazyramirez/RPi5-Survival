@@ -4,7 +4,7 @@ import type { GamesStatus } from '@survival-os/shared-types'
 
 /**
  * Juegos offline (ADR 0012): la copia local de Viseni Games en un iframe. Se sirve desde OTRO origen
- * (127.0.0.1:8790), así que los juegos no pueden tocar Survival OS. Sin pantalla completa ni ventanas
+ * (127.0.0.1:8790), así que los juegos no pueden tocar Survivelia OS. Sin pantalla completa ni ventanas
  * nuevas ni navegación de la página superior: Atrás/Inicio siguen siempre a mano.
  */
 const t = useT()

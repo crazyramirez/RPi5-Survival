@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Motor de descargas de Survival OS (ADR 0015). Node sin dependencias; lo usan la Pi (tarea
+ * Motor de descargas de Survivelia OS (ADR 0015). Node sin dependencias; lo usan la Pi (tarea
  * `content` vía admin-job.py, como root) y la versión portable (proceso hijo del servidor web).
  *
  *   node content-engine.mjs install <id[:variante]>... [--profile pi|portable] [--root <carpeta portable>]

@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - estado de la UPS X120x (red eléctrica por GPIO6, batería por I²C 0x36)
+Description=Survivelia OS - estado de la UPS X120x (red eléctrica por GPIO6, batería por I²C 0x36)
 Documentation=file:/opt/survival-os/current/docs/hardware-inventory.md
 
 [Service]

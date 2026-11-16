@@ -115,14 +115,15 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
     if (typeof b.port !== 'string' || !portRe.test(b.port)) bad('Puerto no válido')
     return { action: b.action, port: b.port }
   },
-  /** Portable (ADR 0019): preparar otra memoria USB con Survival OS (y opcionalmente los datos). */
+  /** Portable (ADR 0019): preparar otra memoria USB con Survivelia OS (y opcionalmente los datos). */
   'usb-prepare': (b) => ({ media: media(b.media), withData: b.withData === true, rename: b.rename !== false }),
   /** Actualizaciones desde GitHub (ADR 0021): buscar ahora o descargar e instalar. El origen es fijo en el motor. */
   'update-online': (b) => {
     if (b.action !== 'check' && b.action !== 'install') bad('Acción no válida')
     return { action: b.action }
   },
-  'update-auto': () => ({}),
+  /** wake: la app se abre o vuelve a primer plano (comprueba si la última fue hace más de 10 min). */
+  'update-auto': (b) => ({ wake: b.wake === true }),
 }
 
 export function isAdminJob(job: string): job is AdminJob {

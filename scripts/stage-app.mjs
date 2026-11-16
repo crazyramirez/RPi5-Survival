@@ -1,5 +1,5 @@
 /**
- * Carpeta `app/` de Survival OS fuera de la Pi: web (Nuxt), servicios Node, contenido y lanzador. La comparten la
+ * Carpeta `app/` de Survivelia OS fuera de la Pi: web (Nuxt), servicios Node, contenido y lanzador. La comparten la
  * versión portable (release-portable.mjs, ADR 0014) y la app Android (android/scripts/build.mjs, ADR 0020), así
  * las dos llevan exactamente lo mismo. Más el zip con permisos Unix que usan ambas.
  */

@@ -1,5 +1,5 @@
 /**
- * Memoria USB de Survival OS (ADR 0019): unidades externas, identidad del volumen, integración visual en
+ * Memoria USB de Survivelia OS (ADR 0019): unidades externas, identidad del volumen, integración visual en
  * Windows/macOS/Linux (icono y nombre de la unidad, carpetas internas ocultas, «Ejecutar» en GNOME),
  * expulsión segura y «Preparar una memoria USB». Node sin dependencias.
  *
@@ -20,13 +20,15 @@ import { DATA_EXCLUDE, TARGETS } from './lib.mjs'
 /** Carpeta oculta en la raíz de la memoria con su identificador (emparejar «abrir al conectar»). */
 export const MARKER_DIR = '.survival-os'
 export const ID_RE = /^[0-9a-f]{32}$/
-/** Nombre de la unidad: 11 caracteres, el máximo de FAT32/exFAT. */
-export const VOLUME_LABEL = 'SURVIVAL OS'
+/** Nombre de la unidad: como mucho 11 caracteres (límite de FAT32). */
+export const VOLUME_LABEL = 'SURVIVELIA'
 /** Límite de tamaño de fichero en FAT32. */
 export const FAT32_MAX = 4 * 1024 ** 3 - 1
 
 /** Lanzadores y ficheros de la raíz de la carpeta portable (lo que se copia además de app/ y runtime/). */
-export const ROOT_FILES = ['Survival OS.exe', 'Abrir Survival OS.cmd', 'abrir-survival-os.sh', 'Survival OS.app', 'LEEME.txt']
+export const ROOT_FILES = ['Survivelia OS.exe', 'Abrir Survivelia OS.cmd', 'abrir-survival-os.sh', 'Survivelia OS.app', 'LEEME.txt']
+/** Lanzadores con el nombre anterior (Survival OS): se quitan al preparar una memoria que ya los tenía. */
+export const LEGACY_ROOT_FILES = ['Survival OS.exe', 'Abrir Survival OS.cmd', 'Survival OS.app']
 
 /** Ficheros de integración en la raíz del volumen. */
 export const VOLUME_FILES = ['autorun.inf', 'autorun.sh', '.VolumeIcon.icns', '.VolumeIcon.png', '.xdg-volume-info', '.hidden']
@@ -239,11 +241,11 @@ export function ensureVolumeId(mount) {
   const id = randomBytes(16).toString('hex')
   mkdirSync(join(mount, MARKER_DIR), { recursive: true })
   writeText(join(mount, MARKER_DIR, 'volume-id'), `${id}\n`)
-  writeText(join(mount, MARKER_DIR, 'LEEME.txt'), 'Identificador de esta memoria USB de Survival OS (para «Abrir al conectar» en cada equipo).\nNo lo borres ni lo copies a otra memoria.\n')
+  writeText(join(mount, MARKER_DIR, 'LEEME.txt'), 'Identificador de esta memoria USB de Survivelia OS (para «Abrir al conectar» en cada equipo).\nNo lo borres ni lo copies a otra memoria.\n')
   return id
 }
 
-/** Dónde se ejecuta Survival OS: { removable, mount, label, fs, volumeRoot, id, rel }. */
+/** Dónde se ejecuta Survivelia OS: { removable, mount, label, fs, volumeRoot, id, rel }. */
 export function volumeInfo(root, platform = process.platform, media = null) {
   let list = media
   if (!list) {
@@ -308,17 +310,17 @@ function writeBin(path, buf) {
 
 /** autorun.inf: Windows solo respeta el icono y el nombre en memorias USB (el arranque automático está bloqueado). */
 export function autorunInf() {
-  return ['[autorun]', 'icon=app\\portable\\icon.ico', 'label=Survival OS', ''].join('\r\n')
+  return ['[autorun]', 'icon=app\\portable\\icon.ico', 'label=Survivelia OS', ''].join('\r\n')
 }
 
 /** autorun.sh: GNOME pregunta «¿Ejecutar?» al conectar la memoria (nunca se ejecuta sin preguntar). */
 export function autorunSh() {
-  return ['#!/bin/sh', '# Survival OS: el escritorio pregunta antes de ejecutarlo al conectar la memoria (ADR 0019).', 'cd "$(dirname "$0")" && exec sh ./abrir-survival-os.sh', ''].join('\n')
+  return ['#!/bin/sh', '# Survivelia OS: el escritorio pregunta antes de ejecutarlo al conectar la memoria (ADR 0019).', 'cd "$(dirname "$0")" && exec sh ./abrir-survival-os.sh', ''].join('\n')
 }
 
 /** .xdg-volume-info: nombre e icono de la unidad en GNOME y otros escritorios basados en GIO. */
 export function xdgVolumeInfo() {
-  return ['[Volume Info]', 'Name=Survival OS', 'Icon=.VolumeIcon.png', ''].join('\n')
+  return ['[Volume Info]', 'Name=Survivelia OS', 'Icon=.VolumeIcon.png', ''].join('\n')
 }
 
 /**
@@ -328,19 +330,19 @@ export function xdgVolumeInfo() {
  */
 export function attrHiddenNames({ volumeRoot, hasExe }) {
   const names = ['app', 'runtime', '.update', '.previous', 'abrir-survival-os.sh', MARKER_DIR, '.hidden']
-  if (hasExe) names.push('Abrir Survival OS.cmd')
+  if (hasExe) names.push('Abrir Survivelia OS.cmd', 'Abrir Survival OS.cmd')
   if (volumeRoot) names.push(...VOLUME_FILES.filter((f) => f !== '.hidden'))
   return names
 }
 
 /** Contenido de .hidden (Nautilus, Dolphin, Thunar…): en Linux se ocultan las cosas de Windows y macOS. */
 export function hiddenFile({ volumeRoot }) {
-  const names = ['app', 'runtime', 'Survival OS.exe', 'Abrir Survival OS.cmd', 'Survival OS.app', 'desktop.ini']
+  const names = ['app', 'runtime', 'Survivelia OS.exe', 'Abrir Survivelia OS.cmd', 'Survivelia OS.app', ...LEGACY_ROOT_FILES, 'desktop.ini']
   if (volumeRoot) names.push('autorun.inf', 'autorun.sh', 'System Volume Information')
   return `${names.join('\n')}\n`
 }
 
-/** desktop.ini: icono de la carpeta «Survival OS» en Windows cuando no está en la raíz de la unidad. */
+/** desktop.ini: icono de la carpeta «Survivelia OS» en Windows cuando no está en la raíz de la unidad. */
 export function desktopIni() {
   return ['[.ShellClassInfo]', 'IconResource=app\\portable\\icon.ico,0', 'IconFile=app\\portable\\icon.ico', 'IconIndex=0', ''].join('\r\n')
 }
@@ -365,11 +367,11 @@ export function finderInfoWithCustomIcon(hexIn = '') {
  */
 export function decorate(root, { platform = process.platform, volumeRoot = false, version = '' } = {}) {
   const done = []
-  const hasExe = existsSync(join(root, 'Survival OS.exe'))
+  const hasExe = existsSync(join(root, 'Survivelia OS.exe')) || existsSync(join(root, 'Survival OS.exe'))
   const stamp = `${version}|${platform}|${volumeRoot ? 'vol' : 'dir'}|${hasExe ? 'exe' : 'cmd'}\n`
   const stampFile = join(root, MARKER_DIR, 'decor')
   const iconDir = join(root, 'app', 'portable')
-  // Copiada a la raíz de un disco interno: no se toca nada de la unidad (no es una memoria de Survival OS).
+  // Copiada a la raíz de un disco interno: no se toca nada de la unidad (no es una memoria de Survivelia OS).
   if (!volumeRoot && resolve(root) === parse(resolve(root)).root) return done
   try {
     if (volumeRoot) {
@@ -429,7 +431,7 @@ export function ejectSpec(platform, mount, pid, messages = {}) {
   const env = {
     SURVIVAL_EJECT_MOUNT: mount,
     SURVIVAL_EJECT_PID: String(pid),
-    SURVIVAL_EJECT_TITLE: messages.title || 'Survival OS',
+    SURVIVAL_EJECT_TITLE: messages.title || 'Survivelia OS',
     SURVIVAL_EJECT_OK: messages.ok || 'Ya puedes retirar la memoria USB.',
     SURVIVAL_EJECT_FAIL: messages.fail || 'No se pudo expulsar la memoria USB. Cierra las ventanas que la estén usando y expúlsala desde el sistema.',
   }
@@ -653,13 +655,13 @@ async function copyTree(src, dst, { skipTop = new Set(), onlyMissing = false, sk
 }
 
 /**
- * «Preparar una memoria USB»: copia Survival OS (todos los sistemas incluidos en esta carpeta) a la raíz de la
+ * «Preparar una memoria USB»: copia Survivelia OS (todos los sistemas incluidos en esta carpeta) a la raíz de la
  * memoria y, opcionalmente, los datos; después la integra (icono, nombre, ocultos) y le da un identificador.
- * Si la memoria ya tenía Survival OS se actualiza la aplicación y se CONSERVAN sus datos (solo se añaden los que faltan).
+ * Si la memoria ya tenía Survivelia OS se actualiza la aplicación y se CONSERVAN sus datos (solo se añaden los que faltan).
  *   { root, data, target, withData, rename, platform, version, log }
  */
 export async function prepareUsb({ root, data, target, fs = null, withData = false, rename = true, platform = process.platform, version = '', log = () => undefined }) {
-  if (isInside(target, root, platform) || isInside(root, target, platform)) throw new Error('no se puede preparar la misma memoria desde la que se ejecuta Survival OS')
+  if (isInside(target, root, platform) || isInside(root, target, platform)) throw new Error('no se puede preparar la misma memoria desde la que se ejecuta Survivelia OS')
   const plan = preparePlan(root, data)
   const fat = fs === 'fat32'
   const existing = existsSync(join(target, 'app', 'portable', 'launcher.mjs'))
@@ -670,7 +672,7 @@ export async function prepareUsb({ root, data, target, fs = null, withData = fal
   if (need > free - 64 * 1024 * 1024) throw new Error(`espacio insuficiente en la memoria (hacen falta ${(need / 1024 ** 3).toFixed(1)} GB)`)
   if (fat) log('AVISO: la memoria está en FAT32: no admite ficheros de más de 4 GB. Para Wikipedia completa o modelos grandes, formatéala en exFAT.')
   if (!plan.allPlatforms) log(`AVISO: esta copia solo incluye ${plan.runtimes.join(', ')}: la memoria funcionará solo en esos sistemas.`)
-  log(existing ? 'La memoria ya tiene Survival OS: se actualiza la aplicación y se conservan sus datos.' : 'Copiando Survival OS a la memoria…')
+  log(existing ? 'La memoria ya tiene Survivelia OS: se actualiza la aplicación y se conservan sus datos.' : 'Copiando Survivelia OS a la memoria…')
 
   let done = 0
   let lastPct = -1
@@ -697,6 +699,12 @@ export async function prepareUsb({ root, data, target, fs = null, withData = fal
       rmSync(dst, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 })
     }
     renameSync(part, dst)
+  }
+  for (const name of LEGACY_ROOT_FILES) {
+    const old = join(target, name)
+    if (!existsSync(old)) continue
+    if (platform === 'win32') spawnSync('attrib', ['-h', '-s', '-r', old], { windowsHide: true })
+    rmSync(old, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 })
   }
   // Datos: los de esta carpeta que falten en la memoria (nunca se sobrescriben los suyos).
   const skipped = []
@@ -729,7 +737,7 @@ export async function prepareUsb({ root, data, target, fs = null, withData = fal
   log('Memoria integrada: icono, nombre y carpetas internas ocultas.')
   let renamed = false
   if (rename) renamed = renameVolume(platform, target)
-  log(renamed ? `Unidad renombrada a «${VOLUME_LABEL}».` : 'El nombre de la unidad no se ha cambiado (se muestra «Survival OS» en el explorador).')
+  log(renamed ? `Unidad renombrada a «${VOLUME_LABEL}».` : 'El nombre de la unidad no se ha cambiado (se muestra «Survivelia OS» en el explorador).')
   return { id, existing, copiedBytes: done, skipped, renamed }
 }
 

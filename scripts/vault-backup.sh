@@ -40,7 +40,7 @@ cryptsetup luksHeaderBackup --batch-mode "$VAULT" --header-backup-file "$DEST/va
 (cd "$DEST" && sha256sum vault.luks vault.luks-header.bak > SHA256SUMS && sha256sum -c --quiet SHA256SUMS)
 sync
 cat > "$DEST/LEEME.txt" <<'TXT'
-Copia CIFRADA de la bóveda de Survival OS (LUKS2). Sin la contraseña es ilegible.
+Copia CIFRADA de la bóveda de Survivelia OS (LUKS2). Sin la contraseña es ilegible.
 - vault.luks: contenedor completo.  vault.luks-header.bak: copia de la cabecera (permite recuperar
   el contenedor si su cabecera se daña; protégela igual que el contenedor).
 - Restaurar: sudo /opt/survival-os/current/scripts/vault-backup.sh --restore <este-directorio>

@@ -3,7 +3,7 @@ import { BellRing, HardDriveUpload, RefreshCw, Unplug, Usb } from '@lucide/vue'
 import { formatBytes } from '~/utils/format'
 
 /**
- * Memoria USB de Survival OS (versión portable, ADR 0019): «abrir al conectar esta memoria» en este equipo,
+ * Memoria USB de Survivelia OS (versión portable, ADR 0019): «abrir al conectar esta memoria» en este equipo,
  * expulsarla con seguridad y preparar otra memoria lista para Windows, macOS y Linux.
  */
 const t = useT()

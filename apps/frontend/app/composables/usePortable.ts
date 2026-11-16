@@ -3,7 +3,7 @@ export function usePortable(): boolean {
   return useRuntimeConfig().public.portable === true
 }
 
-/** «Cerrar Survival OS» (solo portable): el lanzador detiene todos los servicios. */
+/** «Cerrar Survivelia OS» (solo portable): el lanzador detiene todos los servicios. */
 export async function quitPortable(): Promise<void> {
   await postAction('/api/portable/quit')
 }

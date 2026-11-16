@@ -1,4 +1,4 @@
-// App Android de Survival OS (ADR 0020). Construir con: node android/scripts/build.mjs
+// App Android de Survivelia OS (ADR 0020). Construir con: node android/scripts/build.mjs
 pluginManagement {
     repositories {
         google()

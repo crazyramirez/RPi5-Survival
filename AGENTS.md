@@ -1,6 +1,6 @@
 # AGENTS.md — Guía para agentes de IA (Claude, OpenAI Codex, Gemini y otros)
 
-Este fichero es para **agentes LLM que trabajan en nombre de una persona**: instalar Survival OS en una Raspberry Pi
+Este fichero es para **agentes LLM que trabajan en nombre de una persona**: instalar Survivelia OS en una Raspberry Pi
 o en un Linux, preparar la versión portable en Windows, macOS o Linux, y configurarlo todo (idioma, país, descargas)
 **en lenguaje natural**. Claude Code lo lee a través de `CLAUDE.md`, Gemini CLI a través de `GEMINI.md`, y Codex y
 otros directamente.
@@ -10,7 +10,7 @@ antes de hacerlo.** Contesta en su idioma.
 
 ---
 
-## 1. Qué es Survival OS (en una frase)
+## 1. Qué es Survivelia OS (en una frase)
 
 Un centro de conocimiento, mapas y comunicación **sin Internet**:
 
@@ -64,7 +64,7 @@ indica a la persona cómo instalarlo (<https://nodejs.org>, versión LTS 24 o po
   hacer y espera un «sí». `express pi` sin `--yes` solo describe lo que haría.
 - **No reformatees discos** ni toques particiones. Para grabar la tarjeta de la Pi, guía a la persona con Raspberry
   Pi Imager (sección 5.1); no lo hagas tú.
-- **No abras puertos** ni expongas la app a Internet. Survival OS escucha solo en el propio equipo. Para los móviles de
+- **No abras puertos** ni expongas la app a Internet. Survivelia OS escucha solo en el propio equipo. Para los móviles de
   la red local ya existen el punto de acceso de la Pi y «Compartir en la red local» de la portable.
 - **Repositorio público:** no subas IPs, MACs, identificadores de nodos LoRa, contraseñas ni rutas personales.
 - **Desarrollo:** si además vas a modificar el código, lee `CLAUDE.md` (reglas del proyecto) y
@@ -77,8 +77,8 @@ indica a la persona cómo instalarlo (<https://nodejs.org>, versión LTS 24 o po
 Es lo más fácil: no instala nada en el sistema.
 
 ```sh
-npm run express -- portable                       # genera la portable de este sistema, la copia a ~/Survival OS y la abre
-npm run express -- portable --dest "D:\Survival OS"   # otra carpeta, p. ej. una memoria USB
+npm run express -- portable                       # genera la portable de este sistema, la copia a ~/Survivelia OS y la abre
+npm run express -- portable --dest "D:\Survivelia OS"   # otra carpeta, p. ej. una memoria USB
 npm run express -- portable --install             # además la instala en el equipo con acceso directo (sin administrador)
 npm run express -- portable --no-open             # solo prepararla
 ```
@@ -99,7 +99,7 @@ npm run express -- download --url http://127.0.0.1:47800 --yes             # lan
 `47800` es el puerto habitual de la portable. Si estaba ocupado, el puerto real está en `<carpeta>/data/run.json`.
 
 **Actualizaciones:** la portable se actualiza sola desde GitHub (modo «Automática»): descarga la versión nueva, la
-verifica y la aplica **al cerrar** Survival OS. Si no arranca, vuelve sola a la anterior. Para comprobarlo o
+verifica y la aplica **al cerrar** Survivelia OS. Si no arranca, vuelve sola a la anterior. Para comprobarlo o
 instalar ya:
 
 ```sh
@@ -268,7 +268,7 @@ Lo que se necesita:
 
 - **Realme, Xiaomi, Huawei, Oppo…:** activar además «Inicio automático» y «Actividad en segundo plano» en los ajustes
   de la app; si no, el sistema puede cerrarla con la pantalla apagada.
-- **Radio LoRa o GPS USB:** con un cable OTG. Al conectarlo, Android pregunta si abrir Survival OS: marcar «siempre».
+- **Radio LoRa o GPS USB:** con un cable OTG. Al conectarlo, Android pregunta si abrir Survivelia OS: marcar «siempre».
 - **Tablet sin GPS** (muchas versiones solo Wi-Fi): la posición necesita un GPS USB o un nodo LoRa con GPS.
 - **Actualizar:** instalar el APK nuevo encima (los datos se conservan), o desde Mantenimiento con el APK y su
   `.sha256` en una memoria USB.

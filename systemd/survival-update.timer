@@ -2,7 +2,7 @@
 # la interfaz no hace nada (Desactivada), comprueba como mucho cada 20 h (Solo avisar) o además descarga e instala
 # entre las 02:00 y las 06:00 con la bóveda cerrada (Automática). Sin red, solo anota «sin conexión».
 [Unit]
-Description=Survival OS - buscar actualizaciones
+Description=Survivelia OS - buscar actualizaciones
 
 [Timer]
 OnBootSec=15min

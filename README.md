@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="docs/screenshots/cabecera.jpg" alt="Survival OS: tu centro de conocimiento sin Internet" width="100%">
+  <img src="docs/screenshots/cabecera.jpg" alt="Survivelia OS: tu centro de conocimiento sin Internet" width="100%">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/versi%C3%B3n-0.10.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.10.0">
+  <img src="https://img.shields.io/badge/versi%C3%B3n-0.11.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.11.0">
   <img src="https://img.shields.io/badge/Raspberry%20Pi%205-quiosco%20t%C3%A1ctil-8cbf96?style=flat-square&labelColor=0f1412" alt="Raspberry Pi 5">
   <img src="https://img.shields.io/badge/portable-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-8cbf96?style=flat-square&labelColor=0f1412" alt="Portable: Windows, macOS y Linux">
   <img src="https://img.shields.io/badge/idiomas-ES%20%C2%B7%20EN%20%C2%B7%20FR%20%C2%B7%20IT-8cbf96?style=flat-square&labelColor=0f1412" alt="Idiomas: español, inglés, francés e italiano">
@@ -13,10 +13,10 @@
 
 <p align="center"><b>Español</b> · <a href="README.en.md">English</a></p>
 
-# Survival OS
+# Survivelia OS
 
 > 🤖 **Instálalo con tu asistente de IA:** clona este repositorio, ábrelo con Claude Code, Codex o Gemini y pídele
-> «Instala Survival OS en mi Raspberry Pi» (o «en este ordenador»): él lo instala y configura todo, y solo te
+> «Instala Survivelia OS en mi Raspberry Pi» (o «en este ordenador»): él lo instala y configura todo, y solo te
 > pregunta lo necesario. [Cómo hacerlo](#instalación-exprés-pídeselo-a-tu-asistente-de-ia).
 
 **Un centro de conocimiento, mapas y comunicación que funciona sin Internet.** Mapas de cualquier país con rutas,
@@ -30,7 +30,7 @@ Funciona de tres maneras:
 - como **aplicación portable** en Windows, macOS o Linux, desde una memoria USB o instalada en el ordenador;
 - como **app de Android** (APK) en una tablet o un móvil.
 
-![Pantalla de inicio de Survival OS](docs/screenshots/inicio.png)
+![Pantalla de inicio de Survivelia OS](docs/screenshots/inicio.png)
 
 > Capturas reales del equipo (Raspberry Pi 5, 8 GB, pantalla 1024×600) con datos reales. En las capturas el mapa
 > está centrado en Madrid y las direcciones de red aparecen difuminadas.
@@ -55,7 +55,7 @@ Funciona de tres maneras:
 
 ## Qué es
 
-Survival OS es una herramienta de consulta y comunicación para cuando no hay Internet: un apagón largo, una zona sin
+Survivelia OS es una herramienta de consulta y comunicación para cuando no hay Internet: un apagón largo, una zona sin
 cobertura, una salida al monte o una emergencia. Todo lo que necesita se descarga una vez y queda en el propio
 equipo.
 
@@ -80,14 +80,14 @@ Con **[Claude Code](https://claude.com/claude-code)**, **[OpenAI Codex CLI](http
 ```sh
 git clone https://github.com/crazyramirez/Survivelia-OS.git
 cd Survivelia-OS
-claude "Instala Survival OS en mi Raspberry Pi y descárgalo todo en español"
+claude "Instala Survivelia OS en mi Raspberry Pi y descárgalo todo en español"
 ```
 
 Con Codex o Gemini es igual; cambia solo la última línea:
 
 ```sh
-codex "Instálame la versión portable de Survival OS en este ordenador"
-gemini -i "Configura Survival OS en francés para Francia y descarga todo"
+codex "Instálame la versión portable de Survivelia OS en este ordenador"
+gemini -i "Configura Survivelia OS en francés para Francia y descarga todo"
 ```
 
 **Lo que el asistente sabe hacer** (las instrucciones están en [AGENTS.md](AGENTS.md)):
@@ -120,7 +120,7 @@ Cambia la IP y el usuario por los de tu Pi. Todas las opciones están al princip
 | | **Portable** (Windows, macOS, Linux) | **Raspberry Pi 5** (terminal dedicado) | **Android** (tablet o móvil) |
 |---|---|---|---|
 | Para quién | Probarlo en minutos, llevarlo en un USB o usarlo en tu ordenador | Un equipo de supervivencia propio, siempre listo | Una tablet con batería, GPS y pantalla táctil que ya tienes |
-| Instalación | Descomprimir una carpeta y abrirla; nada que instalar | Instalar Survival OS en Raspberry Pi OS (unos minutos) | Instalar el APK y aceptar los permisos |
+| Instalación | Descomprimir una carpeta y abrirla; nada que instalar | Instalar Survivelia OS en Raspberry Pi OS (unos minutos) | Instalar el APK y aceptar los permisos |
 | Pantalla | Una ventana en tu ordenador | Pantalla táctil a pantalla completa (quiosco) | A pantalla completa; se puede fijar (quiosco) |
 | Funciones | Todas: mapas, biblioteca, asistente, LoRa y GPS por USB, bóveda, juegos | Todas, más el punto de acceso Wi-Fi propio, la hora de respaldo por GPS/LoRa y el control de la Wi-Fi | Todas, con el GPS y la batería de la tablet; LoRa y GPS por USB OTG |
 | Dónde viven tus datos | En la carpeta `data/` de la propia app | En `/var/lib/survival-os` | En la carpeta `SurvivalOS` (memoria interna o microSD) |
@@ -131,7 +131,7 @@ Las tres versiones comparten el mismo código y la misma interfaz: lo que aprend
 
 ### 1. Consigue la carpeta
 
-La versión portable es una carpeta llamada **«Survival OS»** (unos 590 MB; comprimida, unos 210 MB). Trae todo lo
+La versión portable es una carpeta llamada **«Survivelia OS»** (unos 590 MB; comprimida, unos 210 MB). Trae todo lo
 necesario para los cinco sistemas, Node incluido: no hay que instalar nada antes.
 
 - **Descárgala** de la [última versión publicada](https://github.com/crazyramirez/Survivelia-OS/releases/latest)
@@ -139,22 +139,22 @@ necesario para los cinco sistemas, Node incluido: no hay que instalar nada antes
   tu carpeta de usuario. Para una memoria USB perfecta (icono, nombre, «abrir al conectar»), ábrela y usa
   Sistema → Mantenimiento → **Memoria USB** → «Preparar una memoria USB».
 - **Si partes del código:** sigue [Generar la versión portable](#generar-la-versión-portable) en la sección para
-  desarrolladores; el resultado queda en `release/portable/Survival OS/`.
+  desarrolladores; el resultado queda en `release/portable/Survivelia OS/`.
 
 ### 2. Ábrela
 
 | Sistema | Cómo abrir |
 |---|---|
-| **Windows 10/11** (x64) | Doble clic en **«Survival OS»** (el de la brújula) |
-| **macOS 11 o posterior** (Apple Silicon e Intel) | Doble clic en **«Survival OS»**. La primera vez macOS puede bloquearla porque no está firmada: clic derecho → **Abrir** → **Abrir** |
+| **Windows 10/11** (x64) | Doble clic en **«Survivelia OS»** (el de la brújula) |
+| **macOS 11 o posterior** (Apple Silicon e Intel) | Doble clic en **«Survivelia OS»**. La primera vez macOS puede bloquearla porque no está firmada: clic derecho → **Abrir** → **Abrir** |
 | **Linux** x64 y arm64 (también Raspberry Pi OS de 64 bits) | Doble clic en **`abrir-survival-os.sh`** (Ejecutar) o, en una terminal, `sh abrir-survival-os.sh` |
 
-Survival OS se abre en **una ventana propia** y al cerrarla se detiene. Funciona mejor si el ordenador tiene Chrome,
+Survivelia OS se abre en **una ventana propia** y al cerrarla se detiene. Funciona mejor si el ordenador tiene Chrome,
 Edge, Brave o Chromium. Si no hay ninguno, se abre en el navegador predeterminado; en ese caso, para salir:
-**Sistema → «Cerrar Survival OS»**.
+**Sistema → «Cerrar Survivelia OS»**.
 
 > **Si macOS dice que la app «está dañada»:** abre Terminal y ejecuta
-> `xattr -dr com.apple.quarantine "/ruta/a/Survival OS"`.
+> `xattr -dr com.apple.quarantine "/ruta/a/Survivelia OS"`.
 > **Si Linux no la ejecuta desde la memoria USB:** algunas distribuciones montan los USB sin permiso de ejecución;
 > copia la carpeta a tu disco.
 
@@ -170,7 +170,7 @@ La primera vez aparece la [bienvenida](#la-primera-vez-configurarlo-todo-con-un-
 - **Instalarla en este ordenador** (opcional): dentro de la app, **Sistema → Mantenimiento → «Instalar en este
   equipo»**. Copia la app y tus datos a la carpeta de aplicaciones del usuario y crea un acceso directo (menú Inicio
   y escritorio en Windows; Aplicaciones en macOS; menú de aplicaciones en Linux). No pide permisos de administrador.
-- **Antes de retirar el USB:** cierra la ventana de Survival OS y espera unos segundos.
+- **Antes de retirar el USB:** cierra la ventana de Survivelia OS y espera unos segundos.
 - **Desinstalar:** cierra la app y borra la carpeta (y el acceso directo, si la instalaste).
 - **Si algo falla:** los registros están en `data/logs/`.
 
@@ -193,9 +193,9 @@ asistente usa entonces un modelo ligero.
 4. **Sigue la bienvenida**, como en las otras versiones.
 
 - **Hardware:** la radio LoRa (Meshtastic), un GPS USB y las placas ESP32 se conectan con un cable OTG; al enchufarlos,
-  Android ofrece abrir Survival OS.
+  Android ofrece abrir Survivelia OS.
 - **Compartir con otros móviles:** activa el punto de acceso de la tablet y «Compartir en la red local».
-- **Fijar la pantalla** (quiosco) y los permisos están en Mantenimiento → «Survival OS para Android».
+- **Fijar la pantalla** (quiosco) y los permisos están en Mantenimiento → «Survivelia OS para Android».
 - **En algunas marcas** (Realme, Xiaomi, Huawei…) activa también «Inicio automático» y «Actividad en segundo plano»
   en los ajustes de la app.
 - **Si algo falla:** los registros están en `SurvivalOS/logs/`.
@@ -234,7 +234,7 @@ Detalles técnicos: [ADR 0020](docs/adr/0020-app-android.md).
    sudo bash /tmp/install-system.sh /tmp/survival-os-X.Y.Z.tar.gz
    ```
 
-4. **Reinicia la Pi.** Arranca directamente en Survival OS, a pantalla completa, con la
+4. **Reinicia la Pi.** Arranca directamente en Survivelia OS, a pantalla completa, con la
    [bienvenida](#la-primera-vez-configurarlo-todo-con-un-clic).
 
 El instalador:
@@ -451,7 +451,7 @@ Todo se calcula en el propio equipo y cada herramienta cita su fuente.
 
 ## Idiomas y país
 
-Survival OS está completo en **español, inglés, francés e italiano**:
+Survivelia OS está completo en **español, inglés, francés e italiano**:
 
 - **Interfaz** (más de 900 textos), fechas, números, nombres del mapa y teclado en pantalla:
   - español: QWERTY con ñ;
@@ -510,13 +510,14 @@ Las fuentes y sus licencias están en [docs/content-sources.md](docs/content-sou
 
 ### Actualizaciones automáticas
 
-Survival OS se actualiza solo desde las [versiones publicadas](https://github.com/crazyramirez/Survivelia-OS/releases)
+Survivelia OS se actualiza solo desde las [versiones publicadas](https://github.com/crazyramirez/Survivelia-OS/releases)
 en GitHub, en la Pi, la portable y Android: **Sistema → Mantenimiento → Red → «Actualizaciones»**.
 
 - Muestra la versión instalada y la última, con las **novedades en tu idioma**, y avisa en la barra de estado cuando
   hay una nueva. «Buscar ahora» e «Instalar» a mano cuando quieras.
+- **Comprueba al abrir la app y al volver a ella**, si hay Internet (como mucho cada 10 minutos).
 - **Tres modos:**
-  - **Automática** (la de la portable): descarga sola y la aplica **al cerrar** Survival OS, sin interrumpir;
+  - **Automática** (la de la portable): descarga sola y la aplica **al cerrar** Survivelia OS, sin interrumpir;
   - **Solo avisar** (la de la Pi y Android): avisa y se instala con un toque. En la Pi, «Automática» instala de
     02:00 a 06:00 y solo con la bóveda cerrada;
   - **Desactivada**.
@@ -533,7 +534,7 @@ Todo desde **Sistema → Mantenimiento → USB y copias**, igual en la Pi y en l
 
 **Buscar en USB.** Detecta las memorias y discos USB conectados y lista lo que se puede usar:
 
-- mapas, documentos y actualizaciones de Survival OS;
+- mapas, documentos y actualizaciones de Survivelia OS;
 - en Windows, también los discos USB externos; nunca los internos del ordenador.
 
 **Importar.**
@@ -625,7 +626,7 @@ npm run release:portable -- --targets=win-x64,darwin-arm64       # solo algunos
 
 El resultado:
 
-- `release/portable/Survival OS/`, la carpeta lista para usar;
+- `release/portable/Survivelia OS/`, la carpeta lista para usar;
 - `release/survival-os-X.Y.Z-portable.zip`, con su `.sha256`.
 
 El zip conserva los permisos de ejecución para macOS y Linux. Más detalles en los ADR
@@ -668,7 +669,7 @@ Más detalles en el [ADR 0017](docs/adr/0017-idiomas.md).
 
 ## Estado
 
-**v0.10.0.** Funciona en una Raspberry Pi 5 real y en la versión portable para Windows.
+**v0.11.0.** Funciona en una Raspberry Pi 5 real y en la versión portable para Windows.
 
 - **Verificado en la Pi:** quiosco, mapas, rutas, biblioteca, visor de PDF, asistente, bóveda, malla LoRa, hora de
   respaldo e idiomas.
@@ -677,7 +678,7 @@ Más detalles en el [ADR 0017](docs/adr/0017-idiomas.md).
   - copias de seguridad, importar y actualizar, probados con la portable real.
 - **Verificado en el emulador de Android** (tablet, Android 16): arranque, permisos, descargas, mapas, rutas,
   Wikipedia, asistente, GNSS y la guarda de loopback.
-- **Pruebas automáticas:** 357, más pruebas de pantalla en escritorio y móvil.
+- **Pruebas automáticas:** 358, más pruebas de pantalla en escritorio y móvil.
 
 **Pendiente de prueba:**
 

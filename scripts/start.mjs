@@ -61,4 +61,4 @@ process.on('SIGTERM', () => stop(0))
 
 launch('device-api', deviceEntry)
 launch('web', webEntry)
-console.log(`[start] Survival OS en http://${env.NITRO_HOST}:${env.NITRO_PORT} (device-api ${env.DEVICE_API_HOST}:${env.DEVICE_API_PORT})`)
+console.log(`[start] Survivelia OS en http://${env.NITRO_HOST}:${env.NITRO_PORT} (device-api ${env.DEVICE_API_HOST}:${env.DEVICE_API_PORT})`)

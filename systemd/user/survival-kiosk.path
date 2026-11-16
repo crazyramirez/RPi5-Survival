@@ -1,8 +1,8 @@
-# Survival OS — arranca el kiosco en cuanto la sesión Wayland está lista,
+# Survivelia OS — arranca el kiosco en cuanto la sesión Wayland está lista,
 # sin esperar al autostart del escritorio (que en este equipo tarda ~35 s más).
 # Instalado en /etc/systemd/user/ y habilitado con --global.
 [Unit]
-Description=Survival OS - espera a la sesión Wayland
+Description=Survivelia OS - espera a la sesión Wayland
 ConditionUser=@KIOSK_USER@
 
 [Path]

@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - malla Meshtastic (nodo LoRa por USB, loopback)
+Description=Survivelia OS - malla Meshtastic (nodo LoRa por USB, loopback)
 # Solo arranca si la tarea «mesh» de Mantenimiento instaló el entorno Python.
 ConditionPathExists=/opt/survival-os/runtime/mesh-venv/bin/python
 StartLimitIntervalSec=300

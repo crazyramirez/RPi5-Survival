@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url'
 import { download, freeBytes, sha256File } from './content-engine.mjs'
 import {
   checkDue, compareVersions, decide, LATEST_BASE, MANIFEST_NAME, normalizeSettings, parseManifest, parseVersion, PORTABLE_TARGETS,
-  SIG_NAME, tagBase, TRUSTED_KEYS, verifyManifest,
+  SIG_NAME, tagBase, TRUSTED_KEYS, verifyManifest, WAKE_EVERY_MS,
 } from './update-lib.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -160,13 +160,14 @@ const noop = () => undefined
 
 /**
  * Comprueba si hay versión nueva y guarda el resultado en el estado. Las automáticas se limitan a una cada 20 h
- * (CHECK_EVERY_MS); `force` (botón «Buscar ahora») siempre. → { state, manifest|null }
+ * (CHECK_EVERY_MS, o `every`); `force` (botón «Buscar ahora») siempre. Con `quietOffline` (al abrir la app), sin
+ * conexión no se anota ningún error: se probará la próxima vez. → { state, manifest|null, offline? }
  */
-export async function check(paths, { force = false, base = defaultBase(), keys = TRUSTED_KEYS, fetchImpl = fetch, now = () => new Date(), log = noop } = {}) {
+export async function check(paths, { force = false, every, quietOffline = false, base = defaultBase(), keys = TRUSTED_KEYS, fetchImpl = fetch, now = () => new Date(), log = noop } = {}) {
   const installed = installedVersion(paths)
   const before = readState(paths)
   // Tras actualizar (versión instalada distinta de la del último estado) se comprueba otra vez enseguida.
-  if (before.installed === installed && !checkDue(before, now().getTime(), force)) {
+  if (before.installed === installed && !checkDue(before, now().getTime(), force, every)) {
     log('Comprobación reciente: no se repite todavía')
     return { state: writeState(paths, (s) => (s.installed = installed)), manifest: null, skipped: true }
   }
@@ -189,7 +190,7 @@ export async function check(paths, { force = false, base = defaultBase(), keys =
     })
     log(
       {
-        'up-to-date': `Survival OS ${installed} está al día`,
+        'up-to-date': `Survivelia OS ${installed} está al día`,
         'newer-installed': `La versión instalada (${installed}) es más nueva que la publicada (${manifest.version})`,
         available: `Nueva versión ${manifest.version} (${fmt(d.asset?.size)})`,
         'no-asset': `Hay versión ${manifest.version}, pero no para este sistema (${paths.platform})`,
@@ -200,6 +201,10 @@ export async function check(paths, { force = false, base = defaultBase(), keys =
   } catch (err) {
     const code = err instanceof UpdateError ? err.code : 'error'
     const message = err instanceof Error ? err.message : String(err)
+    if (quietOffline && code === 'offline') {
+      log('Sin conexión a Internet: se comprobará la próxima vez')
+      return { state: readState(paths), manifest: null, offline: true }
+    }
     log(`No se pudo comprobar: ${message}`)
     const state = writeState(paths, (s) => {
       s.installed = installed
@@ -262,7 +267,9 @@ export async function fetchUpdate(paths, { base = defaultBase(), keys = TRUSTED_
  *   off    → nada (ni se conecta)
  *   notify → comprueba (como mucho cada 20 h) y avisa
  *   auto   → además descarga; aplicar lo decide quien llama (ventana segura en la Pi, al cerrar en la portable)
- * → { action: 'off'|'checked'|'downloaded'|'error', state, file? }
+ * Con `wake` (la app se abre o vuelve a primer plano) comprueba si la última fue hace más de 10 min y, sin
+ * conexión, no anota error ('offline').
+ * → { action: 'off'|'checked'|'offline'|'downloaded'|'error', state, file? }
  */
 export async function autoRun(paths, opts = {}) {
   const log = opts.log ?? noop
@@ -271,7 +278,9 @@ export async function autoRun(paths, opts = {}) {
     log('Actualizaciones automáticas desactivadas')
     return { action: 'off', state: readState(paths) }
   }
-  const r = await check(paths, { ...opts, force: false })
+  const wake = opts.wake === true
+  const r = await check(paths, { ...opts, force: false, ...(wake ? { every: WAKE_EVERY_MS, quietOffline: true } : {}) })
+  if (r.offline) return { action: 'offline', state: r.state }
   const state = r.state
   if (mode !== 'auto' || state.status !== 'available' || state.error) return { action: r.error ? 'error' : 'checked', state }
   if (state.download?.version === state.latest?.version && existsSync(state.download.file)) {
@@ -340,12 +349,12 @@ async function main() {
     return
   }
   if (cmd === 'auto') {
-    const r = await autoRun(paths, { log })
+    const r = await autoRun(paths, { log, wake: args.includes('--wake') })
     process.stdout.write(`RESULT ${JSON.stringify({ action: r.action, file: r.file ?? null })}\n`)
     process.exitCode = r.action === 'error' ? 1 : 0
     return
   }
-  process.stderr.write('Uso: update-engine.mjs check|fetch|auto|status [--force] --profile pi|portable [--root DIR]\n')
+  process.stderr.write('Uso: update-engine.mjs check|fetch|auto|status [--force] [--wake] --profile pi|portable [--root DIR]\n')
   process.exitCode = 2
 }
 

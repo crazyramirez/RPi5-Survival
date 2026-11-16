@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Survival OS portable (ADR 0014): arranca los servicios en loopback, abre la interfaz en una
- * ventana propia del navegador y lo cierra todo al cerrar esa ventana (o con «Cerrar Survival OS»).
+ * Survivelia OS portable (ADR 0014): arranca los servicios en loopback, abre la interfaz en una
+ * ventana propia del navegador y lo cierra todo al cerrar esa ventana (o con «Cerrar Survivelia OS»).
  *
  * Estructura de la carpeta:
  *   <raíz>/app/        web (Nuxt) + servicios + contenido   (solo lectura)
@@ -51,7 +51,7 @@ async function bridge(path, body) {
 // ------------------------------------------------------------------ Mensajes al usuario
 
 function say(msg) {
-  process.stdout.write(`[Survival OS] ${msg}\n`)
+  process.stdout.write(`[Survivelia OS] ${msg}\n`)
   try {
     appendFileSync(join(LOGS, 'launcher.log'), `${new Date().toISOString()} ${msg}\n`)
   } catch {
@@ -63,16 +63,16 @@ function say(msg) {
 function fatal(msg) {
   say(`ERROR: ${msg}`)
   if (SELF_TEST) process.exit(1)
-  const text = `Survival OS no puede arrancar:\n\n${msg}`
+  const text = `Survivelia OS no puede arrancar:\n\n${msg}`
   try {
     if (ANDROID) {
       // La app muestra el error y el registro (data/logs/launcher.log) en su propia pantalla.
     } else if (platform === 'win32') {
-      spawnSync('powershell.exe', ['-NoProfile', '-Command', `Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show(@'\n${text}\n'@, 'Survival OS') | Out-Null`], { stdio: 'ignore', timeout: 600_000 })
+      spawnSync('powershell.exe', ['-NoProfile', '-Command', `Add-Type -AssemblyName PresentationFramework; [System.Windows.MessageBox]::Show(@'\n${text}\n'@, 'Survivelia OS') | Out-Null`], { stdio: 'ignore', timeout: 600_000 })
     } else if (platform === 'darwin') {
-      spawnSync('osascript', ['-e', `display alert "Survival OS" message ${JSON.stringify(text)} as critical`], { stdio: 'ignore', timeout: 600_000 })
+      spawnSync('osascript', ['-e', `display alert "Survivelia OS" message ${JSON.stringify(text)} as critical`], { stdio: 'ignore', timeout: 600_000 })
     } else {
-      for (const [cmd, args] of [['zenity', ['--error', '--title=Survival OS', `--text=${text}`]], ['kdialog', ['--error', text]], ['notify-send', ['Survival OS', text]]]) {
+      for (const [cmd, args] of [['zenity', ['--error', '--title=Survivelia OS', `--text=${text}`]], ['kdialog', ['--error', text]], ['notify-send', ['Survivelia OS', text]]]) {
         if (spawnSync(cmd, args, { stdio: 'ignore', timeout: 600_000 }).status === 0) break
       }
     }
@@ -84,7 +84,7 @@ function fatal(msg) {
 
 // ------------------------------------------------------------------ Comprobaciones
 
-if (!existsSync(join(APP, 'web', 'server', 'index.mjs'))) fatal(`Falta la aplicación en ${APP}. Copia la carpeta completa de Survival OS.`)
+if (!existsSync(join(APP, 'web', 'server', 'index.mjs'))) fatal(`Falta la aplicación en ${APP}. Copia la carpeta completa de Survivelia OS.`)
 try {
   for (const d of DATA_DIRS) mkdirSync(join(DATA, d), { recursive: true })
   writeFileSync(join(DATA, '.write-test'), 'ok')
@@ -240,7 +240,7 @@ function launch(name, cmd, args, env, { ipc = false, cwd = DATA } = {}) {
 function stop(code = 0) {
   if (stopping) return
   stopping = true
-  say('Cerrando Survival OS…')
+  say('Cerrando Survivelia OS…')
   // Actualización automática preparada (ADR 0021): se aplica al cerrar, sin reabrir (la próxima vez ya es la nueva).
   if (!ANDROID && !SELF_TEST && !ejecting && !applyingNow && existsSync(join(ROOT, '.update', 'ready.json'))) spawnApplyHelper(false)
   for (const c of children.values()) if (c.exitCode === null) c.kill()
@@ -254,13 +254,13 @@ function stop(code = 0) {
 }
 
 /**
- * Mensajes del servidor web (IPC): «Cerrar Survival OS», «Compartir en la red local», «Reiniciar la
+ * Mensajes del servidor web (IPC): «Cerrar Survivelia OS», «Compartir en la red local», «Reiniciar la
  * aplicación» (como restart-app en la Pi) y «Aplicar actualización» (preparada por portable-admin.mjs).
  */
 function onMessage(msg) {
   if (!msg || typeof msg !== 'object') return
   if (msg.type === 'quit') {
-    // Android: «Cerrar Survival OS» cierra también la app (servicio en primer plano y ventana).
+    // Android: «Cerrar Survivelia OS» cierra también la app (servicio en primer plano y ventana).
     if (ANDROID) void bridge('/app/quit', {}).catch(() => undefined)
     stop(0)
   }
@@ -286,6 +286,7 @@ function onMessage(msg) {
  */
 async function integrateVolume() {
   if (ANDROID) return // sin unidades de escritorio ni «abrir al conectar»: lo sustituye la propia app
+  refreshLegacyLaunchers()
   try {
     const usb = await import('./usb.mjs')
     const v = usb.volumeInfo(ROOT, platform)
@@ -307,6 +308,28 @@ async function integrateVolume() {
 }
 
 /**
+ * Carpetas actualizadas desde una versión anterior: conservan «Survival OS.exe» / «Survival OS.app» (a los que
+ * apuntan sus accesos directos). Se rehacen con el lanzador nuevo para que la ventana y la barra de tareas digan
+ * «Survivelia OS» sin romper esos accesos. Si está en uso, se reintenta en el próximo arranque.
+ */
+function refreshLegacyLaunchers() {
+  try {
+    const exe = join(ROOT, 'Survivelia OS.exe')
+    const old = join(ROOT, 'Survival OS.exe')
+    if (existsSync(exe) && existsSync(old) && statSync(exe).size !== statSync(old).size) copyFileSync(exe, old)
+  } catch {
+    // en uso (se abrió con él): la próxima vez
+  }
+  try {
+    const plist = join(ROOT, 'Survivelia OS.app', 'Contents', 'Info.plist')
+    const old = join(ROOT, 'Survival OS.app', 'Contents', 'Info.plist')
+    if (existsSync(plist) && existsSync(old) && readFileSync(plist, 'utf8') !== readFileSync(old, 'utf8')) copyFileSync(plist, old)
+  } catch {
+    // sin permiso: no importa
+  }
+}
+
+/**
  * «Expulsar la memoria USB»: no se puede expulsar mientras Node se ejecuta desde ella. Se lanza un ayudante
  * fuera de la memoria (PowerShell o sh) que espera a que este proceso termine, la expulsa y avisa; después se
  * cierra todo, ventana incluida (su perfil está en data/browser, dentro de la memoria).
@@ -317,13 +340,13 @@ async function eject(messages) {
     const usb = await import('./usb.mjs')
     const v = usb.volumeInfo(ROOT, platform)
     if (!v.removable) {
-      say('Expulsar: Survival OS no se ejecuta desde una memoria USB')
+      say('Expulsar: Survivelia OS no se ejecuta desde una memoria USB')
       return
     }
     const clean = (s) => (typeof s === 'string' ? s.replace(/[\u0000-\u001f]+/g, ' ').slice(0, 300) : undefined)
     ejecting = true
     usb.spawnEject(platform, v.mount, process.pid, { title: clean(messages?.title), ok: clean(messages?.ok), fail: clean(messages?.fail) })
-    say(`Expulsando ${v.mount} en cuanto se cierre Survival OS…`)
+    say(`Expulsando ${v.mount} en cuanto se cierre Survivelia OS…`)
     if (appWindow && appWindow.exitCode === null) appWindow.kill()
     stop(0)
   } catch (err) {
@@ -334,13 +357,13 @@ async function eject(messages) {
 /**
  * Aplica la actualización preparada: copia Node y apply-update.mjs a una carpeta temporal (en Windows no se
  * puede sustituir node.exe mientras corre), lanza el ayudante desacoplado y se cierra. El ayudante cambia las
- * carpetas cuando este proceso ha terminado y vuelve a abrir Survival OS sin abrir otra ventana.
+ * carpetas cuando este proceso ha terminado y vuelve a abrir Survivelia OS sin abrir otra ventana.
  */
 function applyUpdate() {
   if (ANDROID) return // en Android se actualiza instalando el APK nuevo (lo hace la app)
   if (!existsSync(join(ROOT, '.update', 'ready.json'))) return
   if (!spawnApplyHelper(true)) return
-  say('Aplicando la actualización: Survival OS se reabrirá en unos segundos…')
+  say('Aplicando la actualización: Survivelia OS se reabrirá en unos segundos…')
   if (appWindow && appWindow.exitCode === null) appWindow.kill()
   stop(0)
 }
@@ -422,7 +445,7 @@ function findBrowser() {
 
 /**
  * Abre la interfaz. Con un navegador Chromium se usa una ventana de aplicación con perfil propio:
- * al cerrarla, el proceso termina y con él Survival OS. Si el navegador se desvincula enseguida
+ * al cerrarla, el proceso termina y con él Survivelia OS. Si el navegador se desvincula enseguida
  * (p. ej. Chromium en snap), o solo hay navegador por defecto, la app sigue hasta pulsar «Cerrar».
  */
 /** Ventana de la app abierta por este lanzador (se cierra al aplicar una actualización: la nueva abre otra). */
@@ -433,7 +456,7 @@ function openBrowser(url, { attach }) {
   if (!browser) {
     const o = openCommand(platform, url)
     spawn(o.cmd, o.args, { stdio: 'ignore', detached: true }).unref()
-    say('Abierto en el navegador predeterminado. Para salir: Sistema → «Cerrar Survival OS».')
+    say('Abierto en el navegador predeterminado. Para salir: Sistema → «Cerrar Survivelia OS».')
     return
   }
   const started = Date.now()
@@ -445,7 +468,7 @@ function openBrowser(url, { attach }) {
   }
   b.on('exit', () => {
     if (Date.now() - started < 8000) {
-      say('El navegador se ha desvinculado; Survival OS sigue en marcha hasta pulsar «Cerrar Survival OS».')
+      say('El navegador se ha desvinculado; Survivelia OS sigue en marcha hasta pulsar «Cerrar Survivelia OS».')
       return
     }
     stop(0)
@@ -504,7 +527,7 @@ launch('navigation', node, [join(APP, 'services', 'navigation', 'dist', 'server.
 launch('web', node, [join(APP, 'web', 'server', 'index.mjs')], env.web, { ipc: true })
 
 // Servicios opcionales: Wikipedia (kiwix-serve), asistente (llama-server) y rutas (BRouter) se
-// arrancan en cuanto se descargan su componente y sus datos, sin reiniciar Survival OS.
+// arrancan en cuanto se descargan su componente y sus datos, sin reiniciar Survivelia OS.
 const optional = new Map()
 const key = platformKey(platform, process.arch)
 const fsprobe = {

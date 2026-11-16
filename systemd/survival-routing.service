@@ -1,7 +1,7 @@
 # Rutas sin conexión (ADR 0010): servidor BRouter solo en loopback (127.0.0.1:17777).
 # Solo arranca si la tarea «routing» de Mantenimiento instaló BRouter y al menos una cuadrícula.
 [Unit]
-Description=Survival OS - rutas sin conexión (BRouter, loopback)
+Description=Survivelia OS - rutas sin conexión (BRouter, loopback)
 After=local-fs.target
 ConditionPathExists=/opt/survival-os/runtime/brouter/brouter.jar
 ConditionDirectoryNotEmpty=/var/lib/survival-os/routing/segments4

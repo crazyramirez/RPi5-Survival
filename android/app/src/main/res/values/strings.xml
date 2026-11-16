@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Textos de la parte nativa de la app Android (ADR 0020); la interfaz está en apps/frontend/app/locales. -->
 <resources>
-    <string name="app_name" translatable="false">Survival OS</string>
-    <string name="notif_channel">Survival OS en marcha</string>
+    <string name="app_name" translatable="false">Survivelia OS</string>
+    <string name="notif_channel">Survivelia OS en marcha</string>
     <string name="notif_running">Mapas, biblioteca, asistente y radio disponibles sin conexión</string>
     <string name="notif_quit">Cerrar</string>
-    <string name="state_preparing">Preparando Survival OS…</string>
+    <string name="state_preparing">Preparando Survivelia OS…</string>
     <string name="state_starting">Iniciando los servicios…</string>
     <string name="err_no_storage">Elige dónde guardar los datos.</string>
     <string name="err_storage">No se puede escribir en %1$s</string>
     <string name="err_timeout">Los servicios no responden. Prueba a reintentar; si sigue igual, revisa los registros en la carpeta de datos (logs).</string>
-    <string name="err_crash">Survival OS se ha detenido varias veces. Registros en %1$s</string>
+    <string name="err_crash">Survivelia OS se ha detenido varias veces. Registros en %1$s</string>
     <string name="gnss_label">GNSS interno de la tablet</string>
     <string name="storage_title">¿Dónde guardar mapas, libros y datos?</string>
     <string name="storage_internal">Memoria interna (carpeta SurvivalOS)</string>
@@ -21,13 +21,13 @@
     <string name="storage_keeps">se conserva si desinstalas la app</string>
     <string name="storage_deleted">Android la borra si desinstalas la app</string>
     <string name="perm_files_title">Acceso a los archivos</string>
-    <string name="perm_files_body">Para guardar los datos en la carpeta SurvivalOS (y que no se pierdan si desinstalas la app), activa «Permitir acceso a todos los archivos» para Survival OS en la pantalla siguiente y vuelve atrás.</string>
+    <string name="perm_files_body">Para guardar los datos en la carpeta SurvivalOS (y que no se pierdan si desinstalas la app), activa «Permitir acceso a todos los archivos» para Survivelia OS en la pantalla siguiente y vuelve atrás.</string>
     <string name="perm_files_denied">Sin ese permiso no se puede usar esa carpeta. Elige otra (la carpeta de la app no necesita permisos, pero Android la borra al desinstalar).</string>
     <string name="perm_location_title">Posición sin Internet</string>
-    <string name="perm_location_body">Survival OS usa el receptor GNSS de la tablet para mostrar tu posición en el mapa y grabar rutas, sin Internet. La ubicación nunca sale del dispositivo.</string>
+    <string name="perm_location_body">Survivelia OS usa el receptor GNSS de la tablet para mostrar tu posición en el mapa y grabar rutas, sin Internet. La ubicación nunca sale del dispositivo.</string>
     <string name="perm_battery_title">Seguir funcionando con la pantalla apagada</string>
-    <string name="perm_battery_body">Para que las descargas, la radio y el GPS no se detengan con la pantalla apagada, permite que Survival OS funcione sin restricciones de batería. En algunas marcas (Realme, Xiaomi, Huawei…) revisa también «Inicio automático» y «Actividad en segundo plano» en los ajustes de la app.</string>
-    <string name="install_permission">Permite a Survival OS instalar aplicaciones para actualizarse y vuelve a intentarlo.</string>
+    <string name="perm_battery_body">Para que las descargas, la radio y el GPS no se detengan con la pantalla apagada, permite que Survivelia OS funcione sin restricciones de batería. En algunas marcas (Realme, Xiaomi, Huawei…) revisa también «Inicio automático» y «Actividad en segundo plano» en los ajustes de la app.</string>
+    <string name="install_permission">Permite a Survivelia OS instalar aplicaciones para actualizarse y vuelve a intentarlo.</string>
     <string name="download_saved">Guardado en Descargas: %1$s</string>
     <string name="download_failed">No se pudo guardar: %1$s</string>
     <string name="btn_continue">Continuar</string>

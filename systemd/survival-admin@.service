@@ -2,7 +2,7 @@
 # El usuario survival solo puede ARRANCAR/PARAR estas unidades (regla polkit). Única unidad con red
 # disponible: la descarga de contenidos la pide el usuario explícitamente.
 [Unit]
-Description=Survival OS - tarea de mantenimiento %i
+Description=Survivelia OS - tarea de mantenimiento %i
 After=local-fs.target
 
 [Service]

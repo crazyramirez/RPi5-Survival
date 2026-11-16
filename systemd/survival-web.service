@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - interfaz web (Nuxt/Nitro, loopback)
+Description=Survivelia OS - interfaz web (Nuxt/Nitro, loopback)
 Documentation=file:///opt/survival-os/current/README.md
 After=survival-device-api.service
 Wants=survival-device-api.service

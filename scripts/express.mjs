@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Survival OS · instalación y configuración EXPRÉS (personas y agentes LLM; ver AGENTS.md).
+ * Survivelia OS · instalación y configuración EXPRÉS (personas y agentes LLM; ver AGENTS.md).
  * Node sin dependencias. Windows, macOS y Linux. Usa el ssh/scp del sistema (OpenSSH).
  *
  *   npm run express -- doctor                                  comprobar requisitos de este ordenador
@@ -86,7 +86,7 @@ function target() {
 function keySetupHelp(t) {
   const pub = `${DEFAULT_KEY}.pub`
   console.log(`
-Survival OS necesita entrar en ${t.dest} por SSH SIN escribir la contraseña cada vez.
+Survivelia OS necesita entrar en ${t.dest} por SSH SIN escribir la contraseña cada vez.
 Hazlo una sola vez:
 
   1. Crea la clave (si no existe):   npm run express -- ssh-setup --host ${t.host} --user ${t.user}
@@ -130,7 +130,7 @@ function doctor() {
   ;(existsSync(join(ROOT, 'node_modules')) ? ok : bad)('dependencias instaladas (npm install)')
   ;(existsSync(join(ROOT, 'apps', 'frontend', 'public', 'map-assets', 'fonts')) ? ok : bad)('recursos del mapa (node scripts/fetch-map-assets.mjs)')
   ;(capture('ssh', ['-V']).code === 0 ? ok : bad)('cliente SSH (solo para instalar en una Pi)')
-  ;(existsSync(DEFAULT_KEY) ? ok : bad)(`clave SSH de Survival OS (${DEFAULT_KEY}; la crea «ssh-setup»)`)
+  ;(existsSync(DEFAULT_KEY) ? ok : bad)(`clave SSH de Survivelia OS (${DEFAULT_KEY}; la crea «ssh-setup»)`)
   ;(platformKey() ? ok : bad)(`versión portable disponible para este sistema (${platformKey() ?? 'no'})`)
 }
 
@@ -176,7 +176,7 @@ function pi() {
   ok('sudo sin contraseña')
 
   if (!flag('yes')) {
-    console.log(`\nSe instalará (o actualizará) Survival OS en ${t.dest}:`)
+    console.log(`\nSe instalará (o actualizará) Survivelia OS en ${t.dest}:`)
     console.log('  /opt/survival-os, usuario de servicio «survival», servicios survival-*, modo quiosco (salvo --no-kiosk).')
     console.log('  Los datos y la configuración existentes se conservan. Vuelve a lanzar con --yes para continuar.')
     process.exit(0)
@@ -199,8 +199,8 @@ function pi() {
     health = t.ssh('curl -s -m 5 http://127.0.0.1:3000/api/health').out
     if (!health.includes('"status"')) spawnSync(process.execPath, ['-e', 'setTimeout(()=>{},2000)'])
   }
-  if (!health.includes('"status"')) fail('Survival OS no responde tras instalar (ver: journalctl -u survival-web)')
-  ok(`Survival OS responde: ${health.slice(0, 120)}`)
+  if (!health.includes('"status"')) fail('Survivelia OS no responde tras instalar (ver: journalctl -u survival-web)')
+  ok(`Survivelia OS responde: ${health.slice(0, 120)}`)
   if (flag('reboot')) {
     say('Reiniciando la Pi para arrancar en modo quiosco…')
     t.ssh('sudo -n systemctl reboot')
@@ -215,8 +215,8 @@ function portable() {
   build()
   say(`Generando la versión portable para ${key}…`)
   if (run(process.execPath, ['scripts/release-portable.mjs', `--targets=${key}`, '--no-zip']) !== 0) fail('release:portable ha fallado')
-  const src = join(ROOT, 'release', 'portable', 'Survival OS')
-  const dest = resolve(opt('dest', join(homedir(), 'Survival OS')))
+  const src = join(ROOT, 'release', 'portable', 'Survivelia OS')
+  const dest = resolve(opt('dest', join(homedir(), 'Survivelia OS')))
   if (existsSync(join(dest, 'data'))) {
     // Actualizar una carpeta existente sin tocar los datos.
     say(`Actualizando ${dest} (tus datos en data/ se conservan)…`)
@@ -228,19 +228,19 @@ function portable() {
     say(`Copiando a ${dest}…`)
     cpSync(src, dest, { recursive: true })
   }
-  ok(`Survival OS portable en: ${dest}`)
+  ok(`Survivelia OS portable en: ${dest}`)
   const node = join(dest, 'runtime', key, WIN ? 'node.exe' : 'node')
   const args = [join(dest, 'app', 'portable', 'launcher.mjs'), ...(flag('install') ? ['--install'] : [])]
   if (flag('no-open') && !flag('install')) {
-    console.log(`\nPara abrirla: ${WIN ? '«Abrir Survival OS»' : osPlatform() === 'darwin' ? '«Survival OS.app»' : 'sh abrir-survival-os.sh'} dentro de esa carpeta.`)
+    console.log(`\nPara abrirla: ${WIN ? '«Abrir Survivelia OS»' : osPlatform() === 'darwin' ? '«Survivelia OS.app»' : 'sh abrir-survival-os.sh'} dentro de esa carpeta.`)
     return
   }
-  say(flag('install') ? 'Instalando en este equipo y abriendo…' : 'Abriendo Survival OS…')
+  say(flag('install') ? 'Instalando en este equipo y abriendo…' : 'Abriendo Survivelia OS…')
   spawn(node, args, { cwd: dest, detached: true, stdio: 'ignore', windowsHide: true }).unref()
   console.log('Se abre en una ventana propia. La primera vez aparece la bienvenida: idioma, país y «Descargarlo todo».')
 }
 
-/** Petición a la API local de un Survival OS: por SSH (Pi) o directamente (portable en este equipo). */
+/** Petición a la API local de un Survivelia OS: por SSH (Pi) o directamente (portable en este equipo). */
 function api(method, path, body = null) {
   const url = opt('url')
   if (url) {
@@ -264,7 +264,7 @@ function api(method, path, body = null) {
 
 async function status() {
   const h = await api('GET', '/api/health')
-  if (!h.ok) fail('Survival OS no responde')
+  if (!h.ok) fail('Survivelia OS no responde')
   say(`Estado: ${h.data.status} · versión ${h.data.version}`)
   for (const [k, v] of Object.entries(h.data.components ?? {})) console.log(`  ${v.state === 'ok' ? '✓' : '·'} ${k}: ${v.state}`)
   const c = await api('GET', '/api/content')
@@ -283,7 +283,7 @@ async function download() {
   if (opt('lang')) q.set('lang', opt('lang'))
   if (opt('country')) q.set('country', opt('country'))
   const p = await api('GET', `/api/content/plan?${q}`)
-  if (!p.ok) fail('no se pudo calcular el plan (¿Survival OS en marcha?)')
+  if (!p.ok) fail('no se pudo calcular el plan (¿Survivelia OS en marcha?)')
   const d = p.data
   if (d.complete || !d.items.length) {
     ok('No falta nada: todo está descargado.')
@@ -354,12 +354,12 @@ async function update() {
     await waitJob('update-online', 120_000, prev.data?.startedAt ?? null)
   }
   const s = await api('GET', '/api/update')
-  if (!s.ok) fail('Survival OS no responde, o es anterior a 0.10.0 (sin actualizaciones desde GitHub: actualiza con «pi» o con la portable nueva)')
+  if (!s.ok) fail('Survivelia OS no responde, o es anterior a 0.10.0 (sin actualizaciones desde GitHub: actualiza con «pi» o con la portable nueva)')
   const d = s.data
   if (!d.supported) fail('instalación de desarrollo: no hay actualizaciones automáticas')
   say(`Instalada ${d.installed} · modo ${d.mode}${d.latest ? ` · última ${d.latest.version} (${d.latest.date})` : ''}`)
   console.log(`  Última comprobación: ${d.okAt ?? d.checkedAt ?? 'nunca'}${d.error ? ` · ${d.error.code}: ${d.error.message}` : ''}`)
-  if (d.prepared) console.log(`  Versión ${d.prepared} preparada: se aplica al cerrar Survival OS.`)
+  if (d.prepared) console.log(`  Versión ${d.prepared} preparada: se aplica al cerrar Survivelia OS.`)
   if (d.deferred) console.log(`  Descargada; instalación aplazada (${d.deferred.reason}).`)
   if (d.lastInstall) console.log(`  Última instalación: ${d.lastInstall.version} ${d.lastInstall.ok ? 'correcta' : `FALLÓ (${d.lastInstall.message})`}`)
   if (d.status !== 'available') {

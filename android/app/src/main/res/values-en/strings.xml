@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="notif_channel">Survival OS running</string>
+    <string name="notif_channel">Survivelia OS running</string>
     <string name="notif_running">Maps, library, assistant and radio available offline</string>
     <string name="notif_quit">Close</string>
-    <string name="state_preparing">Preparing Survival OS…</string>
+    <string name="state_preparing">Preparing Survivelia OS…</string>
     <string name="state_starting">Starting services…</string>
     <string name="err_no_storage">Choose where to store the data.</string>
     <string name="err_storage">Cannot write to %1$s</string>
     <string name="err_timeout">The services are not responding. Try again; if it persists, check the logs in the data folder (logs).</string>
-    <string name="err_crash">Survival OS stopped several times. Logs in %1$s</string>
+    <string name="err_crash">Survivelia OS stopped several times. Logs in %1$s</string>
     <string name="gnss_label">Tablet built-in GNSS</string>
     <string name="storage_title">Where should maps, books and data be stored?</string>
     <string name="storage_internal">Internal storage (SurvivalOS folder)</string>
@@ -19,13 +19,13 @@
     <string name="storage_keeps">kept if you uninstall the app</string>
     <string name="storage_deleted">Android deletes it if you uninstall the app</string>
     <string name="perm_files_title">File access</string>
-    <string name="perm_files_body">To store the data in the SurvivalOS folder (so it is not lost if you uninstall the app), turn on «Allow access to all files» for Survival OS on the next screen and go back.</string>
+    <string name="perm_files_body">To store the data in the SurvivalOS folder (so it is not lost if you uninstall the app), turn on «Allow access to all files» for Survivelia OS on the next screen and go back.</string>
     <string name="perm_files_denied">Without that permission this folder cannot be used. Choose another one (the app folder needs no permission, but Android deletes it on uninstall).</string>
     <string name="perm_location_title">Position without Internet</string>
-    <string name="perm_location_body">Survival OS uses the tablet\'s GNSS receiver to show your position on the map and record tracks, without Internet. Your location never leaves the device.</string>
+    <string name="perm_location_body">Survivelia OS uses the tablet\'s GNSS receiver to show your position on the map and record tracks, without Internet. Your location never leaves the device.</string>
     <string name="perm_battery_title">Keep working with the screen off</string>
-    <string name="perm_battery_body">So that downloads, radio and GPS do not stop with the screen off, let Survival OS run without battery restrictions. On some brands (Realme, Xiaomi, Huawei…) also check «Auto-launch» and «Background activity» in the app settings.</string>
-    <string name="install_permission">Allow Survival OS to install apps so it can update itself, then try again.</string>
+    <string name="perm_battery_body">So that downloads, radio and GPS do not stop with the screen off, let Survivelia OS run without battery restrictions. On some brands (Realme, Xiaomi, Huawei…) also check «Auto-launch» and «Background activity» in the app settings.</string>
+    <string name="install_permission">Allow Survivelia OS to install apps so it can update itself, then try again.</string>
     <string name="download_saved">Saved to Downloads: %1$s</string>
     <string name="download_failed">Could not save: %1$s</string>
     <string name="btn_continue">Continue</string>

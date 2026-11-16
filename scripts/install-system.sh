@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instalación/actualización de Survival OS como servicio del sistema (Fase 2+).
+# Instalación/actualización de Survivelia OS como servicio del sistema (Fase 2+).
 #
 #   sudo bash install-system.sh <survival-os-X.Y.Z.tar.gz> [--no-kiosk] [--keep-services] [--disable-vnc]
 #
@@ -105,7 +105,7 @@ info "Release activa: $DEST"
 # --- Configuración (nunca se sobrescribe) ---
 [ -f "$ETC/survival-os.env" ] || install -o root -g survival -m 0640 "$DEST/.env.example" "$ETC/survival-os.env"
 if [ ! -f "$ETC/kiosk.env" ]; then
-  printf '# Kiosco Survival OS\n# Segundos de inactividad antes de apagar la pantalla (0 = nunca)\nSCREEN_OFF_SECONDS=600\n' > "$ETC/kiosk.env"
+  printf '# Kiosco Survivelia OS\n# Segundos de inactividad antes de apagar la pantalla (0 = nunca)\nSCREEN_OFF_SECONDS=600\n' > "$ETC/kiosk.env"
   chmod 0644 "$ETC/kiosk.env"
 fi
 chmod 0755 "$ETC"   # kiosk.env lo lee el usuario de escritorio; survival-os.env sigue siendo 0640
@@ -159,7 +159,7 @@ if [ "$INSTALL_KIOSK" -eq 1 ]; then
     chmod 0644 "/etc/systemd/user/$(basename "$f")"
   done
   systemctl --global enable survival-kiosk.path >/dev/null 2>&1
-  # Lanzador «Survival OS»: menú de aplicaciones + escritorio del usuario.
+  # Lanzador «Survivelia OS»: menú de aplicaciones + escritorio del usuario.
   install -m 0644 "$DEST/kiosk/survival-os.desktop" /usr/share/applications/survival-os.desktop
   install -d -o "$KIOSK_USER" -g "$KIOSK_USER" "$KIOSK_HOME/Desktop"
   install -m 0755 -o "$KIOSK_USER" -g "$KIOSK_USER" "$DEST/kiosk/survival-os.desktop" "$KIOSK_HOME/Desktop/survival-os.desktop"

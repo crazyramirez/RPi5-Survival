@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - navegación (cliente gpsd, waypoints, tracks GPX)
+Description=Survivelia OS - navegación (cliente gpsd, waypoints, tracks GPX)
 After=gpsd.socket
 StartLimitIntervalSec=300
 StartLimitBurst=5

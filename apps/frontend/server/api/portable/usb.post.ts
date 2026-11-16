@@ -20,7 +20,7 @@ export default defineEventHandler(async (event): Promise<PortableUsbStatus> => {
   const mode = body.mode === 'open' ? 'open' : 'ask'
   const messages = cleanMessages(body.messages, MESSAGE_KEYS)
   const v = await currentVolume(true)
-  if (!v.removable || !v.mount) throw createError({ statusCode: 409, statusMessage: 'Survival OS no se ejecuta desde una memoria USB' })
+  if (!v.removable || !v.mount) throw createError({ statusCode: 409, statusMessage: 'Survivelia OS no se ejecuta desde una memoria USB' })
   const { root } = portablePaths()
   const autoopen = await loadAutoOpen()
   try {

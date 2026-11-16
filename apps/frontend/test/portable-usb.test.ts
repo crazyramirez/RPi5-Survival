@@ -51,8 +51,8 @@ describe('portable usb: unidades', () => {
   })
   it('encuentra la memoria que contiene la carpeta (Windows sin distinguir mayúsculas)', () => {
     const media = [{ media: 'E/USB', path: 'E:\\', label: 'USB', fs: 'exfat' }]
-    expect(isInside('e:\\Survival OS', 'E:\\', 'win32')).toBe(true)
-    expect(findVolume('E:\\Survival OS', media, 'win32')?.media).toBe('E/USB')
+    expect(isInside('e:\\Survivelia OS', 'E:\\', 'win32')).toBe(true)
+    expect(findVolume('E:\\Survivelia OS', media, 'win32')?.media).toBe('E/USB')
     expect(findVolume('C:\\Users\\u', media, 'win32')).toBeNull()
   })
   it('volumeInfo: raíz de la memoria, carpeta relativa e identificador', () => {
@@ -62,30 +62,30 @@ describe('portable usb: unidades', () => {
     const media = [{ media: 'extra/vol', path: mount, label: 'vol', fs: 'exfat' }]
     const atRoot = volumeInfo(mount, process.platform, media)
     expect(atRoot).toMatchObject({ removable: true, volumeRoot: true, id: ID, rel: '.' })
-    const sub = volumeInfo(join(mount, 'Survival OS'), process.platform, media)
-    expect(sub).toMatchObject({ removable: true, volumeRoot: false, rel: 'Survival OS' })
+    const sub = volumeInfo(join(mount, 'Survivelia OS'), process.platform, media)
+    expect(sub).toMatchObject({ removable: true, volumeRoot: false, rel: 'Survivelia OS' })
     expect(volumeInfo(join(tmp, 'otro'), process.platform, media).removable).toBe(false)
   })
 })
 
 describe('portable usb: integración visual', () => {
   it('autorun.inf solo con icono y nombre (CRLF)', () => {
-    expect(autorunInf()).toBe('[autorun]\r\nicon=app\\portable\\icon.ico\r\nlabel=Survival OS\r\n')
+    expect(autorunInf()).toBe('[autorun]\r\nicon=app\\portable\\icon.ico\r\nlabel=Survivelia OS\r\n')
   })
   it('nunca oculta los lanzadores de Windows ni de macOS (el atributo es común en FAT/exFAT)', () => {
     const names = attrHiddenNames({ volumeRoot: true, hasExe: true })
     expect(names).toContain('app')
     expect(names).toContain('abrir-survival-os.sh')
     expect(names).toContain('autorun.inf')
-    expect(names).not.toContain('Survival OS.exe')
-    expect(names).not.toContain('Survival OS.app')
+    expect(names).not.toContain('Survivelia OS.exe')
+    expect(names).not.toContain('Survivelia OS.app')
     expect(names).not.toContain('data')
-    expect(attrHiddenNames({ volumeRoot: false, hasExe: false })).not.toContain('Abrir Survival OS.cmd')
+    expect(attrHiddenNames({ volumeRoot: false, hasExe: false })).not.toContain('Abrir Survivelia OS.cmd')
   })
   it('.hidden: en Linux se ocultan las cosas de Windows y macOS, no su lanzador', () => {
     const h = hiddenFile({ volumeRoot: true }).split('\n')
-    expect(h).toContain('Survival OS.exe')
-    expect(h).toContain('Survival OS.app')
+    expect(h).toContain('Survivelia OS.exe')
+    expect(h).toContain('Survivelia OS.app')
     expect(h).not.toContain('abrir-survival-os.sh')
   })
   it('FinderInfo: marca de icono personalizado conservando el resto', () => {
@@ -125,14 +125,18 @@ describe('portable usb: abrir al conectar', () => {
     expect(c.volumes).toEqual([{ id: ID, rel: '.' }])
     expect(c.dismissed).toEqual([ID])
     expect(c.messages.ask).toBe('Línea mala {name}')
-    expect(cleanRel('Survival OS')).toBe('Survival OS')
+    expect(cleanRel('Survivelia OS')).toBe('Survivelia OS')
     expect(cleanRel('C:\\x')).toBeNull()
   })
   it('Exec= de un .desktop escapado', () => {
     expect(desktopArg('/home/a b/$x"')).toBe('"/home/a b/\\$x\\""')
   })
   it('rutas por usuario, sin administrador', () => {
-    expect(autoOpenPaths('win32', { LOCALAPPDATA: 'C:\\L', APPDATA: 'C:\\R' }, 'C:\\u').dir).toBe(join('C:\\L', 'Survival OS USB'))
+    // Carpeta interna con el nombre de antes (siguen valiendo los ya activados); acceso visible con el nuevo.
+    const win = autoOpenPaths('win32', { LOCALAPPDATA: 'C:\\L', APPDATA: 'C:\\R' }, 'C:\\u')
+    expect(win.dir).toBe(join('C:\\L', 'Survival OS USB'))
+    expect(win.shortcut).toMatch(/Survivelia OS \(USB\)\.lnk$/)
+    expect(win.legacy?.[0]).toMatch(/Survival OS \(USB\)\.lnk$/)
     expect(autoOpenPaths('darwin', {}, '/Users/u').agent).toMatch(/LaunchAgents[\\/]org\.survival-os\.usb\.plist$/)
     expect(autoOpenPaths('linux', {}, '/home/u').autostart).toMatch(/\.config[\\/]autostart[\\/]survival-os-usb\.desktop$/)
   })
@@ -151,7 +155,7 @@ describe('portable usb: abrir al conectar', () => {
       expect(on).toMatchObject({ enabled: true, paired: true, mode: 'ask' })
       const paths = autoOpenPaths('linux')
       expect(readFileSync(paths.autostart, 'utf8')).toContain('usb-watch.sh" watch')
-      expect(readFileSync(paths.desktop, 'utf8')).toContain('Name=Survival OS (USB)')
+      expect(readFileSync(paths.desktop, 'utf8')).toContain('Name=Survivelia OS (USB)')
       expect(parseConf(readFileSync(paths.conf, 'utf8')).messages.yes).toBe('Open')
       expect(disable({ root, volumeId: ID, platform: 'linux' })).toMatchObject({ enabled: false, paired: false })
       expect(existsSync(paths.autostart) || existsSync(paths.desktop) || existsSync(paths.conf)).toBe(false)
@@ -197,7 +201,7 @@ describe('portable usb: preparar una memoria', () => {
     const root = join(tmp, 'src')
     const data = join(root, 'data')
     const target = join(tmp, 'usb')
-    for (const d of ['app/portable', 'runtime/win-x64', 'runtime/linux-x64', 'Survival OS.app/Contents/MacOS', 'data/maps', 'data/logs', 'data/browser']) mkdirSync(join(root, d), { recursive: true })
+    for (const d of ['app/portable', 'runtime/win-x64', 'runtime/linux-x64', 'Survivelia OS.app/Contents/MacOS', 'data/maps', 'data/logs', 'data/browser']) mkdirSync(join(root, d), { recursive: true })
     mkdirSync(target, { recursive: true })
     writeFileSync(join(root, 'app', 'portable', 'launcher.mjs'), '// lanzador')
     writeFileSync(join(root, 'app', 'portable', 'icon.png'), makeIconPng(16))
@@ -205,7 +209,7 @@ describe('portable usb: preparar una memoria', () => {
     writeFileSync(join(root, 'app', 'portable', 'data-LEEME.txt'), 'datos')
     writeFileSync(join(root, 'runtime', 'win-x64', 'node.exe'), 'x')
     writeFileSync(join(root, 'runtime', 'linux-x64', 'node'), 'x')
-    writeFileSync(join(root, 'Survival OS.exe'), 'exe')
+    writeFileSync(join(root, 'Survivelia OS.exe'), 'exe')
     writeFileSync(join(root, 'abrir-survival-os.sh'), '#!/bin/sh')
     writeFileSync(join(root, 'LEEME.txt'), 'leeme')
     writeFileSync(join(data, 'maps', 'zona.pmtiles'), 'mapa-origen')
@@ -216,7 +220,7 @@ describe('portable usb: preparar una memoria', () => {
     const r = await prepareUsb({ root, data, target, fs: 'exfat', withData: true, rename: false, platform: 'linux', version: '9.9.9', log: (l: string) => lines.push(l) })
     expect(r.existing).toBe(false)
     expect(readVolumeId(target)).toBe(r.id)
-    for (const f of ['app/portable/launcher.mjs', 'runtime/win-x64/node.exe', 'Survival OS.exe', 'Survival OS.app', 'LEEME.txt', 'autorun.inf', 'autorun.sh', '.xdg-volume-info', '.hidden', '.VolumeIcon.icns', '.VolumeIcon.png', 'data/maps/zona.pmtiles', 'data/LEEME.txt']) {
+    for (const f of ['app/portable/launcher.mjs', 'runtime/win-x64/node.exe', 'Survivelia OS.exe', 'Survivelia OS.app', 'LEEME.txt', 'autorun.inf', 'autorun.sh', '.xdg-volume-info', '.hidden', '.VolumeIcon.icns', '.VolumeIcon.png', 'data/maps/zona.pmtiles', 'data/LEEME.txt']) {
       expect(existsSync(join(target, f)), f).toBe(true)
     }
     expect(existsSync(join(target, 'data', 'logs'))).toBe(false)

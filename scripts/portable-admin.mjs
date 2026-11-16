@@ -2,7 +2,7 @@
 /**
  * Tareas de mantenimiento de la versión portable que en la Pi hace admin-job.py como root (ADR 0014):
  * memorias USB y discos externos, importar mapas y documentos, copia de seguridad, preparar una
- * actualización y preparar otra memoria USB con Survival OS (ADR 0019). Mismo contrato: registro por stdout (el servidor web lo guarda en <admin>/<tarea>.log) y
+ * actualización y preparar otra memoria USB con Survivelia OS (ADR 0019). Mismo contrato: registro por stdout (el servidor web lo guarda en <admin>/<tarea>.log) y
  * resultado en <admin>/<tarea>.result.json. Node sin dependencias; Windows, macOS y Linux.
  *
  *   node portable-admin.mjs <tarea> '<json de parámetros>' --root <carpeta portable> --admin <dir>
@@ -213,10 +213,10 @@ async function backup() {
   }
   writeFileSync(join(dest, 'VERSION'), readFileSafe(join(ROOT, 'app', 'VERSION')) || 'desconocida\n')
   writeFileSync(join(dest, 'RESTAURAR.txt'), [
-    'Copia de seguridad de Survival OS (versión portable).',
+    'Copia de seguridad de Survivelia OS (versión portable).',
     '',
-    'Para restaurarla: cierra Survival OS y copia el contenido de la carpeta «data» de esta copia',
-    'dentro de la carpeta «data» de Survival OS (sustituyendo los ficheros). La bóveda va cifrada:',
+    'Para restaurarla: cierra Survivelia OS y copia el contenido de la carpeta «data» de esta copia',
+    'dentro de la carpeta «data» de Survivelia OS (sustituyendo los ficheros). La bóveda va cifrada:',
     'se abre con la misma contraseña o clave de recuperación de siempre.',
     '',
   ].join('\n'))
@@ -256,7 +256,7 @@ async function update() {
   if (ANDROID) return updateAndroid()
   const src = mediaPath(params.media, params.path)
   const name = basename(src)
-  if (!RELEASE_RE.test(name) || !existsSync(src)) throw new JobError('no es una versión portable de Survival OS')
+  if (!RELEASE_RE.test(name) || !existsSync(src)) throw new JobError('no es una versión portable de Survivelia OS')
   if (!existsSync(`${src}.sha256`)) throw new JobError('falta el fichero .sha256 junto al zip')
   const expected = readFileSafe(`${src}.sha256`).trim().split(/\s+/)[0]?.toLowerCase()
   log(`Comprobando ${name}…`)
@@ -264,13 +264,13 @@ async function update() {
   if (!expected || expected !== actual) throw new JobError('el SHA-256 no coincide: zip dañado o incompleto')
   log('SHA-256 correcto')
   await prepareZip(src)
-  log('Survival OS se reiniciará para aplicarla; los datos no se tocan.')
+  log('Survivelia OS se reiniciará para aplicarla; los datos no se tocan.')
 }
 
 /**
  * Extrae un zip YA VERIFICADO en <raíz>/.update/staging y deja .update/ready.json para apply-update.mjs.
  * `expectVersion`: la del manifiesto firmado (actualización desde GitHub); `auto`: preparada sola (se aplica al
- * cerrar Survival OS en lugar de al momento).
+ * cerrar Survivelia OS en lugar de al momento).
  */
 async function prepareZip(src, { expectVersion = null, auto = false } = {}) {
   const updDir = join(ROOT, '.update')
@@ -281,7 +281,7 @@ async function prepareZip(src, { expectVersion = null, auto = false } = {}) {
   mkdirSync(staging, { recursive: true })
   log('Extrayendo…')
   extractZip(src, staging, (n, total) => log(`  ${Math.round((n / total) * 100)} %`))
-  // El zip trae una carpeta «Survival OS/»: su contenido sustituye a la instalación actual.
+  // El zip trae una carpeta «Survivelia OS/»: su contenido sustituye a la instalación actual.
   const top = readdirSync(staging)
   const base = top.length === 1 && statSync(join(staging, top[0])).isDirectory() ? join(staging, top[0]) : staging
   const key = platformKey()
@@ -315,7 +315,7 @@ async function prepareZip(src, { expectVersion = null, auto = false } = {}) {
 async function updateAndroid() {
   const src = mediaPath(params.media, params.path)
   const name = basename(src)
-  if (!APK_RE.test(name) || !existsSync(src)) throw new JobError('no es un APK de Survival OS')
+  if (!APK_RE.test(name) || !existsSync(src)) throw new JobError('no es un APK de Survivelia OS')
   if (!existsSync(`${src}.sha256`)) throw new JobError('falta el fichero .sha256 junto al APK')
   const expected = readFileSafe(`${src}.sha256`).trim().split(/\s+/)[0]?.toLowerCase()
   log(`Comprobando ${name}…`)
@@ -375,12 +375,12 @@ async function updateOnline() {
     throw new JobError(err instanceof Error ? err.message : String(err))
   }
   await stageDownloaded(e, paths, { file: f.file, version: f.version, name: f.asset.name, sha256: f.asset.sha256 }, false)
-  log(ANDROID ? 'Android pedirá confirmación para instalarla.' : 'Survival OS se reiniciará para aplicarla; los datos no se tocan.')
+  log(ANDROID ? 'Android pedirá confirmación para instalarla.' : 'Survivelia OS se reiniciará para aplicarla; los datos no se tocan.')
 }
 
 /**
  * Planificador de la web (cada hora): según el modo, comprueba (máx. cada 20 h) y, en «Automática», descarga y deja
- * la versión preparada para aplicarse AL CERRAR Survival OS (nunca interrumpe). En Android solo descarga: instalar
+ * la versión preparada para aplicarse AL CERRAR Survivelia OS (nunca interrumpe). En Android solo descarga: instalar
  * siempre pide un toque.
  */
 async function updateAuto() {
@@ -393,21 +393,22 @@ async function updateAuto() {
     } catch {
       // ilegible: apply-update lo descartará
     }
-    log(`Versión ${v} preparada: se aplicará al cerrar Survival OS`)
+    log(`Versión ${v} preparada: se aplicará al cerrar Survivelia OS`)
     return
   }
-  const r = await e.autoRun(paths, { log })
+  // wake: la app se acaba de abrir o volvió a primer plano (comprobación rápida; sin red, sin error).
+  const r = await e.autoRun(paths, { log, wake: params.wake === true })
   if (r.action === 'error') throw new JobError(r.state.error?.message ?? 'error')
   if (r.action !== 'downloaded' || ANDROID) return
   const d = r.state.download
   await stageDownloaded(e, paths, { file: d.file, version: d.version, name: d.name, sha256: d.sha256 }, true)
-  log('Se aplicará al cerrar Survival OS.')
+  log('Se aplicará al cerrar Survivelia OS.')
 }
 
 // ------------------------------------------------------------------ preparar una memoria USB (ADR 0019)
 
 /**
- * Copia Survival OS (y opcionalmente los datos) a la raíz de otra memoria USB y la integra en Windows, macOS y
+ * Copia Survivelia OS (y opcionalmente los datos) a la raíz de otra memoria USB y la integra en Windows, macOS y
  * Linux: icono y nombre de la unidad, carpetas internas ocultas, identificador para «abrir al conectar».
  */
 async function usbPrepare() {
@@ -422,7 +423,7 @@ async function usbPrepare() {
     throw new JobError(err instanceof Error ? err.message : String(err))
   }
   writeResult({ media: m.media, ...r })
-  log(`==> Memoria lista (${gib(r.copiedBytes)}). Conéctala en cualquier equipo y abre «Survival OS».`)
+  log(`==> Memoria lista (${gib(r.copiedBytes)}). Conéctala en cualquier equipo y abre «Survivelia OS».`)
 }
 
 // ------------------------------------------------------------------ principal

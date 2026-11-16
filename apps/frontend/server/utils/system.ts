@@ -16,11 +16,11 @@ export function assertTrustedAction(event: H3Event): void {
 export function assertLinux(): void {
   // En la versión portable el anfitrión puede ser Linux, pero nunca se apaga ni se toca su escritorio.
   if (process.platform !== 'linux' || isPortable()) {
-    throw createError({ statusCode: 501, statusMessage: 'Solo disponible en el equipo Survival OS' })
+    throw createError({ statusCode: 501, statusMessage: 'Solo disponible en el equipo Survivelia OS' })
   }
 }
 
-/** systemctl poweroff/reboot como usuario de servicio (permitido por la regla polkit de Survival OS). */
+/** systemctl poweroff/reboot como usuario de servicio (permitido por la regla polkit de Survivelia OS). */
 export function systemctlPower(action: 'poweroff' | 'reboot'): Promise<void> {
   return new Promise((resolve, reject) => {
     execFile('systemctl', [action, '--no-wall'], { timeout: 10_000 }, (err) => (err ? reject(err) : resolve()))

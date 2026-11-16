@@ -1,4 +1,4 @@
-' Survival OS portable (Windows): arranca el lanzador Node sin ventana de consola.
+' Survivelia OS portable (Windows): arranca el lanzador Node sin ventana de consola.
 ' Ubicacion: <raiz>\app\portable\win\survival-os.vbs
 Dim fso, sh, root
 Set fso = CreateObject("Scripting.FileSystemObject")

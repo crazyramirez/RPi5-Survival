@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.11.0 — 2026-11-16 · Survivelia OS, icono de Android y actualizaciones al abrir
+
+### Cambiado
+- **La app se llama Survivelia OS** en toda la interfaz (cuatro idiomas), la app Android, la portable (ventana,
+  «Survivelia OS.exe», «Survivelia OS.app», accesos directos, memoria USB) y la Pi (quiosco y servicios).
+  - Las instalaciones existentes siguen funcionando: se conservan la carpeta de datos `SurvivalOS` de Android, el
+    paquete de la app, `/opt/survival-os` y los nombres de los ficheros de las versiones.
+  - Si ya estaba instalada en el equipo como «Survival OS», se sigue usando esa carpeta; sus lanzadores y accesos
+    antiguos se sustituyen o se actualizan solos. «Abrir al conectar» ya activado sigue valiendo.
+  - Las memorias USB nuevas se llaman «SURVIVELIA».
+
+### Añadido
+- **Buscar actualizaciones al abrir la app y al volver a primer plano** (también al recuperar la conexión), si hay
+  Internet: como mucho una comprobación cada 10 minutos. Sin conexión no se anota ningún error. Con
+  «Automática» además se descarga; «Desactivada» no se conecta nunca.
+
+### Corregido
+- **Icono de Android** con marco blanco: ahora es un icono adaptativo (fondo y brújula a sangre, y versión
+  monocroma para los iconos temáticos de Android 13).
+- `npm run dev` funcionaba mal si la carpeta del repositorio tenía espacios.
+
 ## 0.10.0 — 2026-11-16 · App Android, actualizaciones automáticas y herramientas de campo
 
 ### Añadido

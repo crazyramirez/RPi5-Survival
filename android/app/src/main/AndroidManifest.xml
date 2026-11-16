@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Survival OS para Android (ADR 0020). -->
+<!-- Survivelia OS para Android (ADR 0020). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Servidor local (127.0.0.1), descargas con red y «Compartir en la red local». -->
@@ -49,7 +49,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Al conectar un nodo LoRa o un GPS por USB: abre Survival OS y concede el permiso del dispositivo. -->
+            <!-- Al conectar un nodo LoRa o un GPS por USB: abre Survivelia OS y concede el permiso del dispositivo. -->
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>

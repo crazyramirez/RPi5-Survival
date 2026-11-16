@@ -1,5 +1,5 @@
 /**
- * Icono de Survival OS (brújula) generado sin dependencias (ADR 0014/0019): PNG a cualquier tamaño, ICO de
+ * Icono de Survivelia OS (brújula) generado sin dependencias (ADR 0014/0019): PNG a cualquier tamaño, ICO de
  * Windows con varios tamaños (lanzador .exe, unidad USB, carpeta) e ICNS de macOS (.app e icono del volumen).
  * Lo usan el empaquetado (release-portable.mjs) y scripts/build-icons.mjs (favicon de la web).
  */
@@ -15,7 +15,7 @@ function pngChunk(type, data) {
 }
 
 const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]
-const BG = hex('#13241b')
+const BG = hex('#13241b') // = ICON_BG
 const RING = hex('#8fd19e')
 const NORTH = hex('#f2f7f3')
 const SOUTH = hex('#5f8f6b')
@@ -29,26 +29,36 @@ function inTri(x, y, a, b, d) {
   return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0))
 }
 
+/** Color de fondo del icono (también el fondo del icono adaptativo de Android). */
+export const ICON_BG = '#13241b'
+
 /**
  * PNG RGBA cuadrado: fondo verde oscuro redondeado, anillo y aguja de brújula. El dibujo está definido
  * sobre 256 unidades y se escala; supermuestreo 4×4 para bordes suaves también a 16 px.
+ * `layer: 'foreground'`: solo la brújula sobre transparente, reducida a la zona segura del icono adaptativo de
+ * Android (108 dp con 66 dp visibles), sin fondo: Android pone el fondo y la máscara (círculo, gota…).
  */
-export function makeIconPng(size = 256) {
+export function makeIconPng(size = 256, { layer = 'full' } = {}) {
   const S = 4
   const k = size / 256
+  const fg = layer === 'foreground'
+  // Primer plano: anillo de 188/256 → 52 % del lienzo, dentro del círculo seguro de 66/108 (61 %).
+  const zoom = fg ? 0.71 : 1
   const px = Buffer.alloc(size * size * 4)
-  const sample = (ux, uy) => {
+  const sample = (vx, vy) => {
     // (ux, uy) en unidades de 256
     const c = 128
+    const ux = c + (vx - c) / zoom
+    const uy = c + (vy - c) / zoom
     const r = 44
     const qx = Math.max(Math.abs(ux - c) - (c - 8 - r), 0)
     const qy = Math.max(Math.abs(uy - c) - (c - 8 - r), 0)
-    if (Math.hypot(qx, qy) > r) return null
+    if (!fg && Math.hypot(qx, qy) > r) return null
     const d = Math.hypot(ux - c, uy - c)
     if (d > 80 && d < 94) return RING
     if (inTri(ux, uy, [c, c - 70], [c - 20, c], [c + 20, c])) return NORTH
     if (inTri(ux, uy, [c, c + 70], [c - 20, c], [c + 20, c])) return SOUTH
-    return BG
+    return fg ? null : BG
   }
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {

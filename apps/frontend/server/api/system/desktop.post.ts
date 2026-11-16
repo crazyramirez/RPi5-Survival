@@ -1,6 +1,6 @@
 import { assertLinux, assertTrustedAction, sendKioskCommand } from '../../utils/system'
 
-/** Cierra el kiosco y deja el escritorio. Se vuelve con el icono «Survival OS» del escritorio. */
+/** Cierra el kiosco y deja el escritorio. Se vuelve con el icono «Survivelia OS» del escritorio. */
 export default defineEventHandler(async (event) => {
   assertTrustedAction(event)
   assertLinux()

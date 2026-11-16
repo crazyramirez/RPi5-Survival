@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - hora de respaldo sin red (GNSS / LoRa del canal privado)
+Description=Survivelia OS - hora de respaldo sin red (GNSS / LoRa del canal privado)
 Documentation=file:/opt/survival-os/current/docs/adr/0011-hora-de-respaldo.md
 After=survival-mesh.service gpsd.service
 

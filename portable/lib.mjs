@@ -1,5 +1,5 @@
 /**
- * Survival OS portable (ADR 0014): funciones puras compartidas por el lanzador, el instalador y
+ * Survivelia OS portable (ADR 0014): funciones puras compartidas por el lanzador, el instalador y
  * el empaquetado. Sin efectos secundarios: se prueban en apps/frontend/test/portable.test.ts.
  */
 import { tmpdir } from 'node:os'
@@ -78,10 +78,14 @@ export function openCommand(platform, target) {
   return { cmd: 'xdg-open', args: [target] }
 }
 
-/** Carpeta de instalación por usuario (sin permisos de administrador). */
-export function defaultInstallDir(platform, env = {}, home = '') {
-  if (platform === 'win32') return join(env.LOCALAPPDATA || join(home, 'AppData', 'Local'), 'Programs', 'Survival OS')
-  if (platform === 'darwin') return join(home, 'Applications', 'Survival OS')
+/**
+ * Carpeta de instalación por usuario (sin permisos de administrador). Si ya hay una instalación con el nombre
+ * anterior (Survival OS), se sigue usando esa: actualizar no debe dejar dos copias. `exists` se inyecta en pruebas.
+ */
+export function defaultInstallDir(platform, env = {}, home = '', exists = () => false) {
+  const pick = (base) => (exists(join(base, 'Survival OS')) ? join(base, 'Survival OS') : join(base, 'Survivelia OS'))
+  if (platform === 'win32') return pick(join(env.LOCALAPPDATA || join(home, 'AppData', 'Local'), 'Programs'))
+  if (platform === 'darwin') return pick(join(home, 'Applications'))
   return join(env.XDG_DATA_HOME || join(home, '.local', 'share'), 'survival-os')
 }
 

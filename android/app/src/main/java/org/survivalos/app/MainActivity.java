@@ -45,7 +45,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Ventana de Survival OS (ADR 0020): la interfaz web a pantalla completa en una WebView, más lo que solo una
+ * Ventana de Survivelia OS (ADR 0020): la interfaz web a pantalla completa en una WebView, más lo que solo una
  * Activity puede hacer (elegir carpeta de datos, pedir permisos, fijar la pantalla, abrir el instalador).
  */
 public final class MainActivity extends Activity implements SurvivalService.Listener {
@@ -88,6 +88,8 @@ public final class MainActivity extends Activity implements SurvivalService.List
         super.onResume();
         current = this;
         immersive();
+        // Vuelta a primer plano: la pantalla comprueba si hay versión nueva (ADR 0021; plugin update-wake).
+        if (web != null) web.evaluateJavascript("window.dispatchEvent(new Event('app-resume'))", null);
         // Vuelta de Ajustes tras conceder (o no) «Acceso a todos los archivos».
         if (pendingDir != null) {
             String dir = pendingDir;
@@ -459,7 +461,7 @@ public final class MainActivity extends Activity implements SurvivalService.List
         }
     }
 
-    /** «Fijar la pantalla» (modo quiosco de Android): Survival OS queda delante hasta que se desfije. */
+    /** «Fijar la pantalla» (modo quiosco de Android): Survivelia OS queda delante hasta que se desfije. */
     void setKiosk(boolean on) {
         try {
             if (on) startLockTask();

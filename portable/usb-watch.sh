@@ -1,10 +1,10 @@
 #!/bin/sh
-# Survival OS · «Abrir al conectar la memoria USB» en macOS y Linux (ADR 0019). Lo instala la aplicación
+# Survivelia OS · «Abrir al conectar la memoria USB» en macOS y Linux (ADR 0019). Lo instala la aplicación
 # (Mantenimiento → Memoria USB) en la carpeta del usuario; no necesita administrador.
 #   usb-watch.sh check   macOS: launchd lo ejecuta en cada montaje (StartOnMount + WatchPaths=/Volumes)
 #   usb-watch.sh watch   Linux: comprueba los montajes cada 3 s (autoarranque de la sesión)
 #   usb-watch.sh seed    marca como vistas las memorias ya conectadas (no pregunta por ellas)
-#   usb-watch.sh open    acceso «Survival OS (USB)»: abre la memoria emparejada que esté conectada
+#   usb-watch.sh open    acceso «Survivelia OS (USB)»: abre la memoria emparejada que esté conectada
 # Solo reacciona ante memorias EMPAREJADAS (identificador en <memoria>/.survival-os/volume-id).
 DIR="$(cd "$(dirname "$0")" && pwd)"
 CONF="$DIR/autoopen.conf"
@@ -40,7 +40,7 @@ paired() {
 
 ask() { # ask "texto" → 0 si el usuario acepta
   title="$(conf msg.title)"; yes="$(conf msg.yes)"; no="$(conf msg.no)"
-  [ -n "$title" ] || title="Survival OS"; [ -n "$yes" ] || yes="Abrir"; [ -n "$no" ] || no="Ahora no"
+  [ -n "$title" ] || title="Survivelia OS"; [ -n "$yes" ] || yes="Abrir"; [ -n "$no" ] || no="Ahora no"
   if [ "$OS" = Darwin ]; then
     r="$(osascript -e 'on run argv' \
       -e 'set d to display dialog (item 1 of argv) with title (item 2 of argv) buttons {item 3 of argv, item 4 of argv} default button 2 giving up after 120 with icon (POSIX file (item 5 of argv))' \
@@ -66,7 +66,7 @@ ask() { # ask "texto" → 0 si el usuario acepta
 }
 
 info() { # info "texto"
-  title="$(conf msg.title)"; [ -n "$title" ] || title="Survival OS"
+  title="$(conf msg.title)"; [ -n "$title" ] || title="Survivelia OS"
   if [ "$OS" = Darwin ]; then
     osascript -e 'on run argv' -e 'display alert (item 1 of argv) message (item 2 of argv)' -e 'end run' "$title" "$1" >/dev/null 2>&1
   else
@@ -78,7 +78,8 @@ launch() { # launch montaje carpeta
   t="$1/$2"
   if [ "$SURVIVAL_WATCH_DRY" = 1 ]; then printf '%s\n' "$t" >> "$DIR/launched"; return; fi # pruebas
   if [ "$OS" = Darwin ]; then
-    open "$t/Survival OS.app"
+    # Memorias preparadas con una versión anterior: «Survival OS.app».
+    if [ -d "$t/Survivelia OS.app" ]; then open "$t/Survivelia OS.app"; else open "$t/Survival OS.app"; fi
   else
     ( cd "$t" && nohup sh ./abrir-survival-os.sh >/dev/null 2>&1 & )
   fi
@@ -87,7 +88,7 @@ launch() { # launch montaje carpeta
 act() { # act id montaje carpeta
   if [ "$(conf mode)" != open ]; then
     name="$(basename "$2")"
-    text="$(conf msg.ask)"; [ -n "$text" ] || text="¿Abrir Survival OS?"
+    text="$(conf msg.ask)"; [ -n "$text" ] || text="¿Abrir Survivelia OS?"
     # {name} → nombre de la unidad (sin interpretar nada del nombre como orden).
     text="$(printf '%s' "$text" | awk -v n="$name" '{ i = index($0, "{name}"); if (i) $0 = substr($0, 1, i - 1) n substr($0, i + 6); print }')"
     ask "$text" || return 0
@@ -128,7 +129,7 @@ case "$1" in
       m="$(printf '%s' "$first" | cut -f 2)"; rel="$(printf '%s' "$first" | cut -f 3)"
       launch "$m" "$rel"
     else
-      text="$(conf msg.connect)"; [ -n "$text" ] || text="Conecta la memoria USB de Survival OS."
+      text="$(conf msg.connect)"; [ -n "$text" ] || text="Conecta la memoria USB de Survivelia OS."
       info "$text"
     fi
     ;;

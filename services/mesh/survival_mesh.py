@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Survival OS — pasarela Meshtastic (malla LoRa) por USB serie.
+"""Survivelia OS — pasarela Meshtastic (malla LoRa) por USB serie.
 
 API solo en loopback (127.0.0.1:8787, JSON):
   GET  /status            conexión, nodo propio, nº de nodos

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Survival OS — estado de la UPS Geekworm X120x (X1200/X1201/X1202) (survival-ups.timer, cada 30 s).
+"""Survivelia OS — estado de la UPS Geekworm X120x (X1200/X1201/X1202) (survival-ups.timer, cada 30 s).
 
 Solo LEE: nunca escribe en el medidor ni toca el control de carga (GPIO16).
   - Red eléctrica: GPIO6 (BCM, pin 31). La UPS lo conduce activamente: alto = hay red, bajo = sin red o

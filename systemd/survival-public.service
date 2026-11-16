@@ -2,7 +2,7 @@
 # NO se habilita al arranque: la arranca/para la tarea `ap` (survival-admin@ap) junto con el AP.
 # Escucha solo en la IP del AP (10.42.0.1:80) y reenvía una lista blanca de GET a la web local.
 [Unit]
-Description=Survival OS - vista pública del punto de acceso (solo lectura)
+Description=Survivelia OS - vista pública del punto de acceso (solo lectura)
 After=survival-web.service NetworkManager.service
 Requires=survival-web.service
 

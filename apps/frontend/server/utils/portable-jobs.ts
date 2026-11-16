@@ -139,7 +139,7 @@ export async function startPortableJob(job: AdminJob, params: Record<string, unk
     run.code = code ?? 1
     run.finishedAt = new Date().toISOString()
     log.end(`${new Date().toTimeString().slice(0, 8)} ${run.code === 0 ? 'Terminado correctamente' : `ERROR: código ${run.code}`}\n`)
-    // Actualización preparada y verificada: el lanzador la aplica y reabre Survival OS (como la Pi tras update).
+    // Actualización preparada y verificada: el lanzador la aplica y reabre Survivelia OS (como la Pi tras update).
     // Android: la app abre el instalador del sistema con el APK verificado (ADR 0020).
     // Desde GitHub (ADR 0021): igual tras «Instalar»; la automática se aplica al cerrar (Android: pide un toque).
     if ((job === 'update' || (job === 'update-online' && params.action === 'install')) && run.code === 0) {

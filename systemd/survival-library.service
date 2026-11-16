@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - biblioteca (protocolos, documentos FTS, pasarela Kiwix)
+Description=Survivelia OS - biblioteca (protocolos, documentos FTS, pasarela Kiwix)
 After=survival-kiwix.service
 StartLimitIntervalSec=300
 StartLimitBurst=5

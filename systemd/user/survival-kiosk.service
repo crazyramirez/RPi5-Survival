@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - kiosco Chromium
+Description=Survivelia OS - kiosco Chromium
 ConditionUser=@KIOSK_USER@
 
 [Service]

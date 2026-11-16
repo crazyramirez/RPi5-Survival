@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Survival OS — hora de respaldo sin red (survival-timesync.timer, cada minuto, como root).
+"""Survivelia OS — hora de respaldo sin red (survival-timesync.timer, cada minuto, como root).
 
 La Pi no tiene pila de reloj: sin Internet arranca con la hora guardada al apagarse (fake-hwclock). Orden de fuentes:
   1. NTP (systemd-timesyncd) sincronizado → no se toca nada.

@@ -3,7 +3,7 @@
  * Juegos offline (ADR 0012): sirve la copia local de Viseni Games en 127.0.0.1:8790.
  *
  * Es OTRO origen que la web (127.0.0.1:3000) a propósito: los juegos son código de terceros y así no
- * pueden leer ni lanzar acciones de Survival OS (la web exige su mismo origen, ver server/utils/net.ts).
+ * pueden leer ni lanzar acciones de Survivelia OS (la web exige su mismo origen, ver server/utils/net.ts).
  * Solo GET/HEAD de archivos dentro de la copia (sin listados, sin enlaces fuera), con CSP que bloquea
  * cualquier red externa y que solo deja embeber la página en la propia web del kiosco.
  * El service worker del portal se sustituye por uno que se da de baja: la copia ya es local y así no
@@ -48,7 +48,7 @@ export const CSP = [
   `frame-ancestors 'self' ${APP_ORIGINS}`,
 ].join('; ')
 
-const NEUTRAL_SW = `// Survival OS: la copia ya es local; este service worker solo se da de baja.
+const NEUTRAL_SW = `// Survivelia OS: la copia ya es local; este service worker solo se da de baja.
 self.addEventListener('install', () => self.skipWaiting())
 self.addEventListener('activate', (e) => e.waitUntil(self.registration.unregister()))
 `

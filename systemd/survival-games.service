@@ -1,7 +1,7 @@
 # Juegos offline (ADR 0012): copia local de Viseni Games en 127.0.0.1:8790, otro origen que la web.
 # Solo lectura de /var/lib/survival-os/games/current (la escribe la tarea `games`, survival-admin@games).
 [Unit]
-Description=Survival OS - juegos offline (Viseni Games, loopback, solo lectura)
+Description=Survivelia OS - juegos offline (Viseni Games, loopback, solo lectura)
 After=local-fs.target
 
 [Service]

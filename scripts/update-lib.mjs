@@ -33,6 +33,8 @@ export const KINDS = ['system', 'portable', 'android']
 export const PORTABLE_TARGETS = ['win-x64', 'darwin-arm64', 'darwin-x64', 'linux-x64', 'linux-arm64']
 /** Intervalo mínimo entre comprobaciones automáticas (las manuales, siempre). */
 export const CHECK_EVERY_MS = 20 * 3600 * 1000
+/** Al abrir la app o volver a primer plano: como mucho una comprobación cada 10 min (sin red, ni se anota). */
+export const WAKE_EVERY_MS = 10 * 60 * 1000
 
 // ------------------------------------------------------------------ versiones
 
@@ -208,9 +210,12 @@ export function inInstallWindow(date = new Date()) {
   return h >= 2 && h < 6
 }
 
-/** ¿Toca comprobar sola? Manual siempre; automática si nunca se comprobó bien o hace más de CHECK_EVERY_MS. */
-export function checkDue(state, now = Date.now(), force = false) {
+/**
+ * ¿Toca comprobar sola? Manual siempre; automática si nunca se comprobó bien o hace más de `every`
+ * (CHECK_EVERY_MS para el temporizador, WAKE_EVERY_MS al abrir la app o volver a primer plano).
+ */
+export function checkDue(state, now = Date.now(), force = false, every = CHECK_EVERY_MS) {
   if (force) return true
   const last = Date.parse(state?.okAt ?? '')
-  return !Number.isFinite(last) || now - last >= CHECK_EVERY_MS || last > now + 3600_000
+  return !Number.isFinite(last) || now - last >= every || last > now + 3600_000
 }

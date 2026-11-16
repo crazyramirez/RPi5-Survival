@@ -1,7 +1,7 @@
 import { assertPortable } from '../../utils/portable'
 import { assertTrustedAction } from '../../utils/system'
 
-/** «Cerrar Survival OS»: pide al lanzador (canal IPC) que detenga todos los servicios. */
+/** «Cerrar Survivelia OS»: pide al lanzador (canal IPC) que detenga todos los servicios. */
 export default defineEventHandler((event) => {
   assertTrustedAction(event)
   assertPortable()

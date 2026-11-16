@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Kiosco Survival OS. Lo lanza la unidad de usuario survival-kiosk.service (activada por survival-kiosk.path).
+# Kiosco Survivelia OS. Lo lanza la unidad de usuario survival-kiosk.service (activada por survival-kiosk.path).
 #
 #  - Abre una página local de arranque (file://) que espera a /api/health y redirige a la app.
 #  - Reinicia Chromium si se cierra (con espera creciente, sin bucles agresivos).

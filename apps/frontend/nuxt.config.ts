@@ -29,7 +29,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Survival OS',
+      title: 'Survivelia OS',
       // translate="no": evita la burbuja de Google Translate de Chromium (intentaría usar la red).
       htmlAttrs: { lang: 'es', translate: 'no' },
       meta: [

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copia de seguridad de Survival OS a un directorio (normalmente una memoria USB).
+# Copia de seguridad de Survivelia OS a un directorio (normalmente una memoria USB).
 #   sudo backup.sh <destino> [--with-maps] [--with-zim]
 # Incluye: configuración (/etc/survival-os), waypoints y tracks, documentos propios de la
 # biblioteca, manifiesto de contenidos y la bóveda CIFRADA (si está bloqueada).

@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - vigilante de salud de la aplicación
+Description=Survivelia OS - vigilante de salud de la aplicación
 After=survival-web.service
 
 [Service]

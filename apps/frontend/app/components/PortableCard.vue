@@ -6,7 +6,7 @@ import { formatBytes } from '~/utils/format'
 
 /**
  * Versión portable (ADR 0014) en Mantenimiento: dónde se ejecuta, carpetas para añadir contenido,
- * «Instalar en este equipo» y «Cerrar Survival OS».
+ * «Instalar en este equipo» y «Cerrar Survivelia OS».
  */
 const t = useT()
 const st = ref<PortableStatus | null>(null)

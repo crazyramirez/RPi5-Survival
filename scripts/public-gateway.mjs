@@ -8,7 +8,7 @@
  *   - siempre con X-Forwarded-For → el guardián privado de Nitro rechaza cualquier ruta privada
  *     aunque algo se colara (doble barrera).
  * Cualquier otro host (comprobaciones de conectividad de los móviles) recibe 302 a la portada:
- * el móvil muestra el aviso «Iniciar sesión en la red» y abre Survival OS (portal cautivo).
+ * el móvil muestra el aviso «Iniciar sesión en la red» y abre Survivelia OS (portal cautivo).
  * Sin dependencias: Node estándar.
  */
 import { createServer, request } from 'node:http'
@@ -61,7 +61,7 @@ function deny(res, code, text) {
 
 export const server = createServer((req, res) => {
   const host = String(req.headers.host || '').toLowerCase()
-  // Portal cautivo: cualquier dominio ajeno → portada de Survival OS.
+  // Portal cautivo: cualquier dominio ajeno → portada de Survivelia OS.
   if (!PUBLIC_NAMES.has(host)) {
     // Con puerto distinto de 80 (versión portable, «Compartir en la red local») hay que incluirlo.
     res.writeHead(302, { location: `http://${HOST}${PORT === 80 ? '' : `:${PORT}`}/`, 'cache-control': 'no-store' })
@@ -92,7 +92,7 @@ export const server = createServer((req, res) => {
   })
   up.on('timeout', () => up.destroy(new Error('timeout')))
   up.on('error', () => {
-    if (!res.headersSent) deny(res, 502, 'Survival OS no responde')
+    if (!res.headersSent) deny(res, 502, 'Survivelia OS no responde')
     else res.end()
   })
   req.on('aborted', () => up.destroy())

@@ -1,7 +1,7 @@
 import type { PortableUsbStatus } from '@survival-os/shared-types'
 
 /**
- * Memoria USB de Survival OS (versión portable, ADR 0019): estado compartido por la tarjeta de Mantenimiento,
+ * Memoria USB de Survivelia OS (versión portable, ADR 0019): estado compartido por la tarjeta de Mantenimiento,
  * el aviso «¿Abrir al conectar?» y Sistema (Expulsar). Los textos de los avisos del sistema (vigilante y
  * expulsión) se mandan en el idioma de la interfaz.
  */
@@ -26,7 +26,7 @@ export function usePortableUsb() {
 
   /** Textos del vigilante: {name} lo sustituye el propio vigilante por la unidad conectada. */
   const watcherMessages = (): Record<string, string> => ({
-    title: 'Survival OS',
+    title: 'Survivelia OS',
     ask: t('usb.msg.ask'),
     yes: t('usb.msg.yes'),
     no: t('usb.msg.no'),
@@ -38,7 +38,7 @@ export function usePortableUsb() {
   }
 
   async function eject(): Promise<void> {
-    await postAction('/api/portable/eject', { messages: { title: 'Survival OS', ok: t('usb.eject.ok'), fail: t('usb.eject.fail') } })
+    await postAction('/api/portable/eject', { messages: { title: 'Survivelia OS', ok: t('usb.eject.ok'), fail: t('usb.eject.fail') } })
   }
 
   return { usb: state, load, autoOpen, eject }

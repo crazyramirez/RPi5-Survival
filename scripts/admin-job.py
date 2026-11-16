@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Survival OS — tareas de administración lanzadas desde la interfaz.
+"""Survivelia OS — tareas de administración lanzadas desde la interfaz.
 
 Lo ejecuta systemd como root: `survival-admin@<tarea>.service` → admin-job.py <tarea>.
 El usuario de servicio `survival` solo puede ARRANCAR estas unidades (regla polkit); los parámetros
@@ -270,7 +270,7 @@ def job_backup(p):
 def job_update(p):
     src = media_path(p.get("media"), p.get("path"))
     if not RELEASE_RE.match(os.path.basename(src)) or not os.path.isfile(src):
-        raise JobError("no es una release de Survival OS")
+        raise JobError("no es una release de Survivelia OS")
     if not os.path.isfile(src + ".sha256"):
         raise JobError("falta el fichero .sha256 junto a la release")
     run(["bash", f"{SCRIPTS}/install-system.sh", src])
@@ -369,7 +369,7 @@ def install_release(tarball):
 
 def install_downloaded(st):
     path, version = verified_download(st)
-    log(f"Instalando Survival OS {version} (la versión anterior se conserva; vuelve atrás sola si falla)")
+    log(f"Instalando Survivelia OS {version} (la versión anterior se conserva; vuelve atrás sola si falla)")
     now = time.strftime("%Y-%m-%dT%H:%M:%S%z")
     try:
         install_release(path)
@@ -385,7 +385,7 @@ def install_downloaded(st):
     for f in os.listdir(os.path.join(UPDATE_DIR, "downloads")):
         with contextlib.suppress(OSError):
             os.remove(os.path.join(UPDATE_DIR, "downloads", f))
-    log(f"Survival OS {version} instalado")
+    log(f"Survivelia OS {version} instalado")
 
 
 def job_update_online(p):
@@ -417,9 +417,10 @@ def defer_reason(now=None):
 
 
 def job_update_auto(p):
-    """Temporizador survival-update.timer (cada hora): según el modo, comprueba (máx. cada 20 h), descarga e
-    instala en un momento seguro. Nunca reintenta sola una versión que ya falló al instalarse."""
-    rc = update_engine("auto", check=False)
+    """Temporizador survival-update.timer (cada hora) o la pantalla al abrirse: según el modo, comprueba (máx. cada
+    20 h; al abrirse, cada 10 min), descarga e instala en un momento seguro. Nunca reintenta sola una versión que ya falló al instalarse."""
+    # wake: la pantalla se abrió o volvió a primer plano (comprueba si la última fue hace más de 10 min).
+    rc = update_engine("auto", *(["--wake"] if p.get("wake") is True else []), check=False)
     if update_mode() != "auto":
         return
     st = update_state()
@@ -706,7 +707,7 @@ def job_ap(p):
         run(["nmcli", "radio", "wifi", "on"])
         os.makedirs(os.path.dirname(AP_DNS), exist_ok=True)
         with open(AP_DNS, "w", encoding="utf-8") as f:
-            # Portal cautivo: cualquier nombre resuelve al equipo → la pasarela muestra Survival OS.
+            # Portal cautivo: cualquier nombre resuelve al equipo → la pasarela muestra Survivelia OS.
             f.write(f"address=/#/{AP_IP}\n")
         ap_keyfile(cfg)
         ap_firewall_up()  # antes de levantar la red: nunca hay AP sin cortafuegos

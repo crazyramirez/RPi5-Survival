@@ -1,5 +1,5 @@
 [Unit]
-Description=Survival OS - device-api (estado del equipo, solo lectura, loopback)
+Description=Survivelia OS - device-api (estado del equipo, solo lectura, loopback)
 Documentation=file:///opt/survival-os/current/README.md
 After=local-fs.target
 StartLimitIntervalSec=300

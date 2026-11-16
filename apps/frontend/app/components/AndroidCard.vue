@@ -6,7 +6,7 @@ import { formatBytes } from '~/utils/format'
 
 /**
  * App Android (ADR 0020) en Mantenimiento: dispositivo, carpeta de datos, permisos de Android, «Fijar la pantalla»
- * y «Cerrar Survival OS». Lo nativo lo hace la app (puente); aquí solo se muestra y se pide.
+ * y «Cerrar Survivelia OS». Lo nativo lo hace la app (puente); aquí solo se muestra y se pide.
  */
 const t = useT()
 const st = ref<AndroidStatus | null>(null)

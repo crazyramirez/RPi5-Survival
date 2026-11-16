@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Survival OS — instala/quita la pasarela Meshtastic (survival-mesh). Lo ejecuta admin-job.py como root.
+# Survivelia OS — instala/quita la pasarela Meshtastic (survival-mesh). Lo ejecuta admin-job.py como root.
 #   mesh-install.sh install <ruta /dev/serial/by-id/…>   venv con dependencias fijadas por hash + puerto + servicio
 #   mesh-install.sh port <ruta /dev/serial/by-id/…>      solo cambia el puerto
 #   mesh-install.sh remove                               para el servicio y borra el venv (conserva mensajes)

@@ -3,7 +3,7 @@
 #  - el volumen descifrado se monta en el espacio de montaje PRIVADO del servicio: ningún otro
 #    proceso (ni la web, ni el escritorio) ve los ficheros; solo se sirven por el socket.
 [Unit]
-Description=Survival OS - bóveda cifrada (LUKS2, sin red)
+Description=Survivelia OS - bóveda cifrada (LUKS2, sin red)
 After=local-fs.target
 StartLimitIntervalSec=300
 StartLimitBurst=5

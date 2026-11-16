@@ -3,11 +3,11 @@
  * Versión portable (ADR 0014): carpeta autocontenida para Windows, macOS y Linux.
  *   npm run build && npm run release:portable [-- --targets=win-x64,darwin-arm64] [--no-zip]
  * Resultado:
- *   release/portable/Survival OS/             carpeta lista para copiar a un USB o a un disco
+ *   release/portable/Survivelia OS/             carpeta lista para copiar a un USB o a un disco
  *   release/survival-os-<v>-portable.zip      la misma carpeta comprimida (+ .sha256)
  * El zip guarda permisos Unix (node, .sh, .app ejecutables): se descomprime bien en macOS y Linux.
  * Node se descarga de nodejs.org y se verifica con su SHASUMS256.txt (caché en .data/portable-cache).
- * En Windows se compila además «Survival OS.exe» (lanzador con icono y vigilante de memorias USB, ADR 0019).
+ * En Windows se compila además «Survivelia OS.exe» (lanzador con icono y vigilante de memorias USB, ADR 0019).
  */
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
@@ -25,7 +25,7 @@ const argTargets = process.argv.find((a) => a.startsWith('--targets='))
 const targets = argTargets ? argTargets.slice(10).split(',').filter(Boolean) : TARGETS
 const makeZip = !process.argv.includes('--no-zip')
 const outDir = join(root, 'release')
-const stage = join(outDir, 'portable', 'Survival OS')
+const stage = join(outDir, 'portable', 'Survivelia OS')
 const cache = join(root, '.data', 'portable-cache')
 
 const fail = (m) => {
@@ -90,8 +90,8 @@ const icns = makeIcns()
 const ico = makeIco()
 
 // Lanzadores por sistema.
-// Windows: «Survival OS.exe» con icono propio (ADR 0019), compilado con el csc.exe de .NET Framework 4 que trae
-// Windows. Sin él (empaquetado fuera de Windows) se usa «Abrir Survival OS.cmd» y no hay «abrir al conectar».
+// Windows: «Survivelia OS.exe» con icono propio (ADR 0019), compilado con el csc.exe de .NET Framework 4 que trae
+// Windows. Sin él (empaquetado fuera de Windows) se usa «Abrir Survivelia OS.cmd» y no hay «abrir al conectar».
 const csc = process.platform === 'win32' ? join(process.env.SystemRoot || 'C:\\Windows', 'Microsoft.NET', 'Framework64', 'v4.0.30319', 'csc.exe') : null
 let builtExe = false
 if (targets.includes('win-x64') && csc && existsSync(csc)) {
@@ -101,16 +101,16 @@ if (targets.includes('win-x64') && csc && existsSync(csc)) {
   // Versión de ensamblado: solo números (0.8.0 → 0.8.0.0).
   writeFileSync(join(tmp, 'SurvivalOS.cs'), readFileSync(join(root, 'portable', 'win', 'SurvivalOS.cs'), 'utf8').replaceAll('__VERSION__', version.replace(/[^0-9.]/g, '').split('.').slice(0, 3).join('.')))
   writeFileSync(join(tmp, 'icon.ico'), ico)
-  const r = spawnSync(csc, ['-nologo', '-target:winexe', '-optimize+', '-win32icon:icon.ico', '-r:System.Management.dll', '-r:System.Windows.Forms.dll', '-r:System.Drawing.dll', '-out:Survival OS.exe', 'SurvivalOS.cs'], { cwd: tmp, encoding: 'utf8' })
-  if (r.status !== 0) fail(`No se pudo compilar «Survival OS.exe»:\n${r.stdout}${r.stderr}`)
-  cpSync(join(tmp, 'Survival OS.exe'), join(stage, 'Survival OS.exe'))
+  const r = spawnSync(csc, ['-nologo', '-target:winexe', '-optimize+', '-win32icon:icon.ico', '-r:System.Management.dll', '-r:System.Windows.Forms.dll', '-r:System.Drawing.dll', '-out:Survivelia OS.exe', 'SurvivalOS.cs'], { cwd: tmp, encoding: 'utf8' })
+  if (r.status !== 0) fail(`No se pudo compilar «Survivelia OS.exe»:\n${r.stdout}${r.stderr}`)
+  cpSync(join(tmp, 'Survivelia OS.exe'), join(stage, 'Survivelia OS.exe'))
   builtExe = true
 } else if (targets.includes('win-x64')) {
-  console.warn('[portable] AVISO: sin csc.exe (empaquetado fuera de Windows): Windows usará «Abrir Survival OS.cmd», sin icono propio ni «abrir al conectar».')
+  console.warn('[portable] AVISO: sin csc.exe (empaquetado fuera de Windows): Windows usará «Abrir Survivelia OS.cmd», sin icono propio ni «abrir al conectar».')
 }
-if (!builtExe && targets.includes('win-x64')) cpSync(join(root, 'portable', 'files', 'Abrir Survival OS.cmd'), join(stage, 'Abrir Survival OS.cmd'))
+if (!builtExe && targets.includes('win-x64')) cpSync(join(root, 'portable', 'files', 'Abrir Survivelia OS.cmd'), join(stage, 'Abrir Survivelia OS.cmd'))
 cpSync(join(root, 'portable', 'files', 'abrir-survival-os.sh'), join(stage, 'abrir-survival-os.sh'))
-const macApp = join(stage, 'Survival OS.app', 'Contents')
+const macApp = join(stage, 'Survivelia OS.app', 'Contents')
 mkdirSync(join(macApp, 'MacOS'), { recursive: true })
 mkdirSync(join(macApp, 'Resources'), { recursive: true })
 writeFileSync(join(macApp, 'Info.plist'), readFileSync(join(root, 'portable', 'macos', 'Info.plist'), 'utf8').replaceAll('__VERSION__', version))
@@ -124,9 +124,9 @@ for (const t of targets) await fetchNode(t)
 
 // Permisos locales (si se monta en macOS/Linux) y en el zip.
 const isExec = (rel) =>
-  /^runtime\/[^/]+\/node$/.test(rel) || ['abrir-survival-os.sh', 'Survival OS.app/Contents/MacOS/survival-os', 'app/portable/usb-watch.sh'].includes(rel)
+  /^runtime\/[^/]+\/node$/.test(rel) || ['abrir-survival-os.sh', 'Survivelia OS.app/Contents/MacOS/survival-os', 'app/portable/usb-watch.sh'].includes(rel)
 if (process.platform !== 'win32') {
-  for (const rel of ['abrir-survival-os.sh', 'Survival OS.app/Contents/MacOS/survival-os', 'app/portable/usb-watch.sh', ...targets.filter((t) => !t.startsWith('win')).map((t) => `runtime/${t}/node`)]) {
+  for (const rel of ['abrir-survival-os.sh', 'Survivelia OS.app/Contents/MacOS/survival-os', 'app/portable/usb-watch.sh', ...targets.filter((t) => !t.startsWith('win')).map((t) => `runtime/${t}/node`)]) {
     chmodSync(join(stage, rel), 0o755)
   }
 }
@@ -137,7 +137,7 @@ console.log(`[portable] Carpeta: ${stage} (${(size(stage) / 1024 ** 2).toFixed(0
 if (makeZip) {
   const suffix = argTargets ? `-${targets.join('+')}` : ''
   const zip = join(outDir, `survival-os-${version}-portable${suffix}.zip`)
-  writeZip(stage, zip, 'Survival OS', isExec)
+  writeZip(stage, zip, 'Survivelia OS', isExec)
   const sum = sha256(zip)
   writeFileSync(`${zip}.sha256`, `${sum}  ${zip.split(sep).pop()}\n`)
   console.log(`[portable] ${relative(root, zip)} (${(statSync(zip).size / 1024 ** 2).toFixed(0)} MB) sha256=${sum}`)

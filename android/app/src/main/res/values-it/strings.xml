@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="notif_channel">Survival OS in esecuzione</string>
+    <string name="notif_channel">Survivelia OS in esecuzione</string>
     <string name="notif_running">Mappe, biblioteca, assistente e radio disponibili offline</string>
     <string name="notif_quit">Chiudi</string>
-    <string name="state_preparing">Preparazione di Survival OS…</string>
+    <string name="state_preparing">Preparazione di Survivelia OS…</string>
     <string name="state_starting">Avvio dei servizi…</string>
     <string name="err_no_storage">Scegli dove salvare i dati.</string>
     <string name="err_storage">Impossibile scrivere in %1$s</string>
     <string name="err_timeout">I servizi non rispondono. Riprova; se continua, controlla i registri nella cartella dei dati (logs).</string>
-    <string name="err_crash">Survival OS si è fermato più volte. Registri in %1$s</string>
+    <string name="err_crash">Survivelia OS si è fermato più volte. Registri in %1$s</string>
     <string name="gnss_label">GNSS integrato del tablet</string>
     <string name="storage_title">Dove salvare mappe, libri e dati?</string>
     <string name="storage_internal">Memoria interna (cartella SurvivalOS)</string>
@@ -19,13 +19,13 @@
     <string name="storage_keeps">si conserva se disinstalli l\'app</string>
     <string name="storage_deleted">Android la cancella se disinstalli l\'app</string>
     <string name="perm_files_title">Accesso ai file</string>
-    <string name="perm_files_body">Per salvare i dati nella cartella SurvivalOS (e non perderli se disinstalli l\'app), attiva «Consenti l\'accesso a tutti i file» per Survival OS nella schermata successiva e torna indietro.</string>
+    <string name="perm_files_body">Per salvare i dati nella cartella SurvivalOS (e non perderli se disinstalli l\'app), attiva «Consenti l\'accesso a tutti i file» per Survivelia OS nella schermata successiva e torna indietro.</string>
     <string name="perm_files_denied">Senza questa autorizzazione non si può usare quella cartella. Scegline un\'altra (la cartella dell\'app non richiede autorizzazioni, ma Android la cancella alla disinstallazione).</string>
     <string name="perm_location_title">Posizione senza Internet</string>
-    <string name="perm_location_body">Survival OS usa il ricevitore GNSS del tablet per mostrare la tua posizione sulla mappa e registrare percorsi, senza Internet. La posizione non lascia mai il dispositivo.</string>
+    <string name="perm_location_body">Survivelia OS usa il ricevitore GNSS del tablet per mostrare la tua posizione sulla mappa e registrare percorsi, senza Internet. La posizione non lascia mai il dispositivo.</string>
     <string name="perm_battery_title">Continuare a schermo spento</string>
-    <string name="perm_battery_body">Perché download, radio e GPS non si fermino a schermo spento, consenti a Survival OS di funzionare senza limitazioni della batteria. Su alcune marche (Realme, Xiaomi, Huawei…) controlla anche «Avvio automatico» e «Attività in background» nelle impostazioni dell\'app.</string>
-    <string name="install_permission">Consenti a Survival OS di installare app per aggiornarsi, poi riprova.</string>
+    <string name="perm_battery_body">Perché download, radio e GPS non si fermino a schermo spento, consenti a Survivelia OS di funzionare senza limitazioni della batteria. Su alcune marche (Realme, Xiaomi, Huawei…) controlla anche «Avvio automatico» e «Attività in background» nelle impostazioni dell\'app.</string>
+    <string name="install_permission">Consenti a Survivelia OS di installare app per aggiornarsi, poi riprova.</string>
     <string name="download_saved">Salvato in Download: %1$s</string>
     <string name="download_failed">Impossibile salvare: %1$s</string>
     <string name="btn_continue">Continua</string>

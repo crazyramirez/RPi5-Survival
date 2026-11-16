@@ -30,8 +30,10 @@ describe('portable: navegador e instalación', () => {
     expect(a).toContain('--password-store=basic')
   })
   it('instalación por usuario, sin administrador', () => {
-    expect(defaultInstallDir('win32', { LOCALAPPDATA: 'C:\\Users\\u\\AppData\\Local' }, '')).toMatch(/AppData[\\/]Local[\\/]Programs[\\/]Survival OS$/)
-    expect(defaultInstallDir('darwin', {}, '/Users/u')).toMatch(/Users[\\/]u[\\/]Applications[\\/]Survival OS$/)
+    expect(defaultInstallDir('win32', { LOCALAPPDATA: 'C:\\Users\\u\\AppData\\Local' }, '')).toMatch(/AppData[\\/]Local[\\/]Programs[\\/]Survivelia OS$/)
+    expect(defaultInstallDir('darwin', {}, '/Users/u')).toMatch(/Users[\\/]u[\\/]Applications[\\/]Survivelia OS$/)
+    // Instalación anterior con el nombre de antes: se sigue usando (no dos copias).
+    expect(defaultInstallDir('darwin', {}, '/Users/u', (p: string) => /Survival OS$/.test(p))).toMatch(/Applications[\\/]Survival OS$/)
     expect(defaultInstallDir('linux', {}, '/home/u')).toMatch(/home[\\/]u[\\/]\.local[\\/]share[\\/]survival-os$/)
     expect(DATA_EXCLUDE.has('browser') && DATA_EXCLUDE.has('logs')).toBe(true)
   })

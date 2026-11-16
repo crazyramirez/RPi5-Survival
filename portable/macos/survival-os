@@ -1,5 +1,5 @@
 #!/bin/sh
-# Survival OS portable (macOS): ejecutable de «Survival OS.app». La .app vive en la raíz de la carpeta.
+# Survivelia OS portable (macOS): ejecutable de «Survivelia OS.app». La .app vive en la raíz de la carpeta.
 APP_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 ROOT="$(dirname "$APP_DIR")"
 case "$(uname -m)" in
@@ -9,7 +9,7 @@ esac
 NODE="$ROOT/runtime/$KEY/node"
 [ -x "$NODE" ] || chmod +x "$NODE" 2>/dev/null
 if [ ! -x "$NODE" ]; then
-  osascript -e "display alert \"Survival OS\" message \"No se puede ejecutar runtime/$KEY/node. Copia la carpeta completa de Survival OS.\" as critical"
+  osascript -e "display alert \"Survivelia OS\" message \"No se puede ejecutar runtime/$KEY/node. Copia la carpeta completa de Survivelia OS.\" as critical"
   exit 1
 fi
 exec "$NODE" "$ROOT/app/portable/launcher.mjs"

@@ -1,4 +1,4 @@
-SURVIVAL OS · VERSIÓN PORTABLE
+SURVIVELIA OS · VERSIÓN PORTABLE
 ==============================
 
 Centro de conocimiento y mapas que funciona SIN INTERNET. Esta carpeta se puede usar directamente
@@ -6,29 +6,29 @@ desde una memoria USB o un disco, o instalar en el equipo. No modifica el sistem
 
 ABRIR
 -----
-  Windows ........ doble clic en «Survival OS» (el de la brújula)
-  macOS .......... doble clic en «Survival OS»
+  Windows ........ doble clic en «Survivelia OS» (el de la brújula)
+  macOS .......... doble clic en «Survivelia OS»
                    La primera vez macOS puede bloquearla porque no está firmada:
                    clic derecho → Abrir → Abrir.
                    Si dice que «está dañada»: abre Terminal y ejecuta
-                     xattr -dr com.apple.quarantine "/ruta/a/Survival OS"
+                     xattr -dr com.apple.quarantine "/ruta/a/Survivelia OS"
   Linux .......... doble clic en «abrir-survival-os.sh» (Ejecutar), o en una terminal:
                      sh abrir-survival-os.sh
 
-Se abre una ventana propia. Al cerrarla, Survival OS se detiene.
+Se abre una ventana propia. Al cerrarla, Survivelia OS se detiene.
 Funciona mejor con Chrome, Edge, Brave o Chromium instalados. Si no hay ninguno, se abre el
-navegador predeterminado; en ese caso, para salir: Sistema → «Cerrar Survival OS».
+navegador predeterminado; en ese caso, para salir: Sistema → «Cerrar Survivelia OS».
 
 EN UNA MEMORIA USB
 ------------------
 Para la mejor experiencia, prepárala desde la app: Sistema → Mantenimiento → «Memoria USB» →
 «Preparar una memoria USB» (mejor en formato exFAT). La memoria queda con su icono y su nombre, y al
-abrirla solo se ve «Survival OS» (las carpetas internas quedan ocultas). Funciona en Windows, macOS y Linux.
+abrirla solo se ve «Survivelia OS» (las carpetas internas quedan ocultas). Funciona en Windows, macOS y Linux.
 
   Abrir al conectar ... ningún sistema abre programas de una memoria por sí solo. La primera vez que
-                        abras Survival OS desde la memoria en un equipo, te ofrecerá «Abrir al conectar
+                        abras Survivelia OS desde la memoria en un equipo, te ofrecerá «Abrir al conectar
                         esta memoria» (sin permisos de administrador; se quita en Mantenimiento).
-  Linux (GNOME) ....... al conectar la memoria pregunta si quieres ejecutar Survival OS.
+  Linux (GNOME) ....... al conectar la memoria pregunta si quieres ejecutar Survivelia OS.
   Retirarla ........... Sistema → «Expulsar la memoria USB». Espera al aviso antes de sacarla.
 
 INSTALAR EN ESTE EQUIPO (opcional)
@@ -45,10 +45,10 @@ abre cada carpeta. Ver data/LEEME.txt.
 
 ANTES DE RETIRAR EL USB
 -----------------------
-Usa Sistema → «Expulsar la memoria USB» y espera al aviso. O cierra la ventana de Survival OS
-(«Cerrar Survival OS»), espera unos segundos y expúlsala desde el sistema.
+Usa Sistema → «Expulsar la memoria USB» y espera al aviso. O cierra la ventana de Survivelia OS
+(«Cerrar Survivelia OS»), espera unos segundos y expúlsala desde el sistema.
 
-TODO LO DEL EQUIPO SURVIVAL OS, TAMBIÉN AQUÍ
+TODO LO DEL EQUIPO SURVIVELIA OS, TAMBIÉN AQUÍ
 -------------------------------------------
 - Descargas: la primera vez se ofrece descargar mapas, Wikipedia, guías, libros y el asistente.
   Se detecta el sistema y se baja la versión adecuada de cada componente.

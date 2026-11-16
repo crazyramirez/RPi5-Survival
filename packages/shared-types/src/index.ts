@@ -495,7 +495,7 @@ export type AdminJob =
   | 'routing'
   | 'mesh'
   | 'games'
-  /** Solo portable (ADR 0019): copiar Survival OS a otra memoria USB e integrarla en el sistema. */
+  /** Solo portable (ADR 0019): copiar Survivelia OS a otra memoria USB e integrarla en el sistema. */
   | 'usb-prepare'
   /** Actualizaciones desde GitHub (ADR 0021): «Buscar ahora» / «Instalar» (action: check | install). */
   | 'update-online'
@@ -822,7 +822,7 @@ export type AndroidAction =
   | 'storage'
   | 'kiosk'
 
-/** Memoria USB de Survival OS (versión portable, ADR 0019). */
+/** Memoria USB de Survivelia OS (versión portable, ADR 0019). */
 export interface PortableUsbStatus {
   /** Dónde se ejecuta: memoria USB o disco externo (removable) o disco interno. */
   volume: {
@@ -832,7 +832,7 @@ export interface PortableUsbStatus {
     label: string | null
     /** fat32 | exfat | ntfs | apfs | hfs | ext | … */
     fs: string | null
-    /** Survival OS está en la raíz de la memoria (preparada con «Preparar memoria USB»). */
+    /** Survivelia OS está en la raíz de la memoria (preparada con «Preparar memoria USB»). */
     volumeRoot: boolean
     /** Identificador de la memoria (para «abrir al conectar»); null si aún no tiene. */
     id: string | null
@@ -849,14 +849,14 @@ export interface PortableUsbStatus {
     /** El usuario dijo «No, gracias» en este equipo. */
     dismissed: boolean
   }
-  /** Memorias y discos externos conectados donde se puede preparar Survival OS. */
+  /** Memorias y discos externos conectados donde se puede preparar Survivelia OS. */
   media: {
     media: string
     label: string
     fs: string | null
     freeBytes: number
     totalBytes: number
-    /** Ya tiene Survival OS (se actualizará conservando sus datos). */
+    /** Ya tiene Survivelia OS (se actualizará conservando sus datos). */
     hasSurvival: boolean
   }[]
   /** Lo que se copiará al preparar una memoria. */

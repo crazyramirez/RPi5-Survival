@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instalación NO invasiva de Survival OS (Fase 1).
+# Instalación NO invasiva de Survivelia OS (Fase 1).
 #
 #  - Todo queda dentro de $SURVIVAL_OS_HOME (por defecto ~/survival-os).
 #  - No usa sudo, no instala paquetes del sistema, no toca systemd, arranque ni escritorio.

@@ -1,10 +1,10 @@
-// Survival OS (Windows) — ADR 0019. Se compila al empaquetar con el csc.exe de .NET Framework 4 (incluido en
+// Survivelia OS (Windows) — ADR 0019. Se compila al empaquetar con el csc.exe de .NET Framework 4 (incluido en
 // Windows 10/11), sin dependencias:
 //   csc /target:winexe /win32icon:icon.ico /r:System.Management.dll /r:System.Windows.Forms.dll SurvivalOS.cs
 //
-//   «Survival OS.exe»               en la raíz de la carpeta portable: abre Survival OS sin ventana de consola.
-//   «Survival OS.exe» --watch       vigilante «abrir al conectar la memoria USB» (copia en %LOCALAPPDATA%).
-//   «Survival OS.exe» --open-usb    acceso «Survival OS (USB)»: abre la memoria emparejada que esté conectada.
+//   «Survivelia OS.exe»               en la raíz de la carpeta portable: abre Survivelia OS sin ventana de consola.
+//   «Survivelia OS.exe» --watch       vigilante «abrir al conectar la memoria USB» (copia en %LOCALAPPDATA%).
+//   «Survivelia OS.exe» --open-usb    acceso «Survivelia OS (USB)»: abre la memoria emparejada que esté conectada.
 //
 // Solo actúa con memorias EMPAREJADAS (identificador en <unidad>\.survival-os\volume-id, apuntado en
 // autoopen.conf por la aplicación con permiso del usuario). Nunca ejecuta una memoria cualquiera.
@@ -20,11 +20,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
-[assembly: AssemblyTitle("Survival OS")]
-[assembly: AssemblyProduct("Survival OS")]
-[assembly: AssemblyDescription("Survival OS")]
-[assembly: AssemblyCompany("Survival OS")]
-[assembly: AssemblyCopyright("Survival OS")]
+[assembly: AssemblyTitle("Survivelia OS")]
+[assembly: AssemblyProduct("Survivelia OS")]
+[assembly: AssemblyDescription("Survivelia OS")]
+[assembly: AssemblyCompany("Survivelia OS")]
+[assembly: AssemblyCopyright("Survivelia OS")]
 [assembly: AssemblyVersion("__VERSION__.0")]
 [assembly: AssemblyFileVersion("__VERSION__.0")]
 
@@ -47,7 +47,7 @@ static class SurvivalOS
         return false;
     }
 
-    // ------------------------------------------------------------------ abrir Survival OS
+    // ------------------------------------------------------------------ abrir Survivelia OS
 
     /** Comillas para CommandLineToArgvW (las barras antes de una comilla se duplican). */
     static string Quote(string s)
@@ -72,7 +72,7 @@ static class SurvivalOS
         string launcher = Path.Combine(root, @"app\portable\launcher.mjs");
         if (!File.Exists(launcher))
         {
-            Error("Falta la aplicación (app\\portable\\launcher.mjs). Copia la carpeta completa de Survival OS y vuelve a intentarlo.");
+            Error("Falta la aplicación (app\\portable\\launcher.mjs). Copia la carpeta completa de Survivelia OS y vuelve a intentarlo.");
             return 1;
         }
         var cmd = new StringBuilder(Quote(launcher));
@@ -84,16 +84,18 @@ static class SurvivalOS
         try { Process.Start(psi); }
         catch (Exception e)
         {
-            Error("No se pudo iniciar Survival OS:\n\n" + e.Message);
+            Error("No se pudo iniciar Survivelia OS:\n\n" + e.Message);
             return 1;
         }
         return 0;
     }
 
-    /** Abre la copia de Survival OS de una memoria (su propio «Survival OS.exe», o el lanzador .vbs si no lo tiene). */
+    /** Abre la copia de Survivelia OS de una memoria (su propio «Survivelia OS.exe», o el lanzador .vbs si no lo tiene). */
     static void LaunchTarget(string target)
     {
-        string exe = Path.Combine(target, "Survival OS.exe");
+        string exe = Path.Combine(target, "Survivelia OS.exe");
+        // Memorias preparadas con una versión anterior: «Survival OS.exe».
+        if (!File.Exists(exe)) exe = Path.Combine(target, "Survival OS.exe");
         string vbs = Path.Combine(target, @"app\portable\win\survival-os.vbs");
         try
         {
@@ -113,12 +115,12 @@ static class SurvivalOS
                 Process.Start(psi);
             }
         }
-        catch (Exception e) { Error("No se pudo iniciar Survival OS:\n\n" + e.Message); }
+        catch (Exception e) { Error("No se pudo iniciar Survivelia OS:\n\n" + e.Message); }
     }
 
     static void Error(string text)
     {
-        MessageBox.Show(text, "Survival OS", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(text, "Survivelia OS", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
     // ------------------------------------------------------------------ configuración (autoopen.conf)
@@ -236,7 +238,7 @@ static class SurvivalOS
     /** Pregunta en primer plano (los diálogos de un proceso en segundo plano quedarían detrás de otras ventanas). */
     static bool Ask(Conf c, string drive)
     {
-        string text = c.M("ask", "¿Abrir Survival OS?").Replace("{name}", drive);
+        string text = c.M("ask", "¿Abrir Survivelia OS?").Replace("{name}", drive);
         using (var owner = new Form())
         {
             owner.TopMost = true;
@@ -247,19 +249,19 @@ static class SurvivalOS
             owner.Opacity = 0;
             owner.Show();
             owner.Activate();
-            var r = MessageBox.Show(owner, text, c.M("title", "Survival OS"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+            var r = MessageBox.Show(owner, text, c.M("title", "Survivelia OS"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
             return r == DialogResult.Yes;
         }
     }
 
-    // ------------------------------------------------------------------ acceso «Survival OS (USB)»
+    // ------------------------------------------------------------------ acceso «Survivelia OS (USB)»
 
     static int OpenUsb(string dir)
     {
         Conf c = ReadConf(dir);
         if (c == null)
         {
-            Error("No se encuentra runtime\\win-x64\\node.exe. Copia la carpeta completa de Survival OS y vuelve a intentarlo.");
+            Error("No se encuentra runtime\\win-x64\\node.exe. Copia la carpeta completa de Survivelia OS y vuelve a intentarlo.");
             return 1;
         }
         foreach (DriveInfo d in DriveInfo.GetDrives())
@@ -272,7 +274,7 @@ static class SurvivalOS
             LaunchTarget(target);
             return 0;
         }
-        MessageBox.Show(c.M("connect", "Conecta la memoria USB de Survival OS y vuelve a intentarlo."), c.M("title", "Survival OS"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show(c.M("connect", "Conecta la memoria USB de Survivelia OS y vuelve a intentarlo."), c.M("title", "Survivelia OS"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         return 0;
     }
 }

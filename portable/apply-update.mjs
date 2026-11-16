@@ -2,8 +2,8 @@
 /**
  * Aplica una actualización preparada por portable-admin.mjs (<raíz>/.update/ready.json + staging). Lo lanza el
  * lanzador con una COPIA TEMPORAL de Node (en Windows no se puede sustituir node.exe mientras se ejecuta):
- *   - al pulsar «Actualizar» / «Instalar»: cambia las carpetas y vuelve a abrir Survival OS;
- *   - al cerrar Survival OS con una actualización automática preparada (ADR 0021): la aplica sin reabrir.
+ *   - al pulsar «Actualizar» / «Instalar»: cambia las carpetas y vuelve a abrir Survivelia OS;
+ *   - al cerrar Survivelia OS con una actualización automática preparada (ADR 0021): la aplica sin reabrir.
  *
  *   node apply-update.mjs <raíz> <pid del lanzador> [--no-relaunch]
  *
@@ -201,7 +201,7 @@ async function applyLocked(root, upd, dataDir, { selfTestImpl, log }) {
   rmSync(prev, { recursive: true, force: true, maxRetries: 5, retryDelay: 500 })
   try {
     await move(old, prev, 5)
-    writeFileSync(join(prev, 'VERSION-ANTERIOR.txt'), `${ready.from}\nPara volver a ella: cierra Survival OS y sustituye app/ y runtime/ por los de esta carpeta.\n`)
+    writeFileSync(join(prev, 'VERSION-ANTERIOR.txt'), `${ready.from}\nPara volver a ella: cierra Survivelia OS y sustituye app/ y runtime/ por los de esta carpeta.\n`)
   } catch {
     // sin copia de la anterior: no impide nada
   }

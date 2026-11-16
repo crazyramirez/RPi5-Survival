@@ -1,4 +1,4 @@
-# Survival OS — puertos serie USB.
+# Survivelia OS — puertos serie USB.
 # ESP32-S3 con USB nativo (Espressif 303a:*): grupo dialout, nombre estable y fuera de ModemManager y gpsd.
 SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", GROUP="dialout", MODE="0660", ENV{ID_MM_DEVICE_IGNORE}="1", SYMLINK+="survival-esp32-%n"
 # Puentes USB-serie usados por placas ESP32 y también por receptores GPS: solo se excluyen de ModemManager.

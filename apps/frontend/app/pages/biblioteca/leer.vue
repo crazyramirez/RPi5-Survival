@@ -5,7 +5,7 @@ import { isSafeReaderPath } from '~/utils/snippet'
 
 /**
  * Lector Kiwix embebido (mismo origen vía proxy /kiwix). Mantiene la barra de estado
- * y las acciones de Survival OS visibles. Modo noche (por defecto) por inversión de color.
+ * y las acciones de Survivelia OS visibles. Modo noche (por defecto) por inversión de color.
  */
 const t = useT()
 const route = useRoute()
@@ -47,8 +47,8 @@ const TOUCH_CSS =
   'pre,code{white-space:pre-wrap;overflow-wrap:anywhere}' +
   'body{overflow-wrap:break-word}' +
   '}' +
-  // Sin botón «Go to welcome page» (🏠) del visor: la navegación es la de Survival OS.
-  // Sin «Go to welcome page» (🏠): la biblioteca de Survival OS ya es la portada. Solo ese botón:
+  // Sin botón «Go to welcome page» (🏠) del visor: la navegación es la de Survivelia OS.
+  // Sin «Go to welcome page» (🏠): la biblioteca de Survivelia OS ya es la portada. Solo ese botón:
   // su contenedor .kiwix_button_cont también incluye el título del libro y el aleatorio (🎲).
   '#kiwix_serve_taskbar_library_button{display:none!important}' +
   // Modo noche inteligente. Visor de Kiwix: se invierte su barra (clara), no el artículo.

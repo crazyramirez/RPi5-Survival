@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Survival OS — copia offline de Viseni Games (ADR 0012), versión Node sin dependencias de games-sync.py.
+ * Survivelia OS — copia offline de Viseni Games (ADR 0012), versión Node sin dependencias de games-sync.py.
  * Misma semántica y mismo state.json; sirve en la Pi y en la versión portable (Windows sin administrador,
  * memorias USB en exFAT/FAT).
  *

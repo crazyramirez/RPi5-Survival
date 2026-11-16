@@ -1,6 +1,6 @@
-# CLAUDE.md — Survival OS
+# CLAUDE.md — Survivelia OS
 
-**Si te piden INSTALAR o CONFIGURAR Survival OS** (en una Raspberry Pi, en un Linux o la versión portable) por
+**Si te piden INSTALAR o CONFIGURAR Survivelia OS** (en una Raspberry Pi, en un Linux o la versión portable) por
 encargo de una persona, sigue la guía para agentes:
 
 @AGENTS.md
@@ -22,7 +22,12 @@ Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, 
 - `npm run release:publish [-- --yes]` — publicar (siempre con los APK de Android; `--no-android` solo para revisar) en GitHub Releases para que las instalaciones se actualicen solas (ADR 0021):
   - sin `--yes` solo comprueba, compila, firma y describe;
   - exige `main` limpio y subido, `## X.Y.Z` en CHANGELOG.md y la clave `~/.survival-os/update-signing-key.pem` (nunca en el repo).
-  - **Publicar es una acción externa: solo con autorización explícita del usuario.**
+  - **Autorización permanente del usuario (2026-11-16): tras cada cambio en la app, generar las apps nuevas y
+    publicar una release nueva** (`npm run set-version -- X.Y.Z`, sección `## X.Y.Z` en CHANGELOG, commit y push de
+    `main`, `npm run release:publish -- --yes` **desde Bash, no PowerShell**: PowerShell se come el `--` y solo hace
+    un ensayo). Siempre con los APK de Android.
+  - **Después, borrar las releases antiguas** (`gh release delete vX.Y.Z --yes`): en GitHub queda solo la última.
+  - **Nunca mencionar NOMAD** (competencia) en la app, la documentación, los commits ni la landing.
 - En la Pi: `bash install.sh <tarball>`, `~/survival-os/current/scripts/test-offline.sh`, `run.sh`.
 
 ## Dispositivo

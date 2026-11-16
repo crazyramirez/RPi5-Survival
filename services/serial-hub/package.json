@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/serial-hub",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "type": "module",
   "description": "Dispositivos serie sin módulos nativos (ADR 0016): nodo Meshtastic (misma API que survival-mesh) y receptor GPS NMEA (servidor compatible con gpsd). Windows, macOS y Linux. Solo loopback.",
@@ -13,6 +13,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@survival-os/shared-types": "0.10.0"
+    "@survival-os/shared-types": "0.11.0"
   }
 }

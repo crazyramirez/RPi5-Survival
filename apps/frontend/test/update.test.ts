@@ -27,7 +27,8 @@ type Lib = {
   pickNotes: (n: Record<string, string>, l: string) => string | null
   normalizeSettings: (raw: unknown, kind: string) => { mode: string }
   inInstallWindow: (d: Date) => boolean
-  checkDue: (st: unknown, now: number, force?: boolean) => boolean
+  checkDue: (st: unknown, now: number, force?: boolean, every?: number) => boolean
+  WAKE_EVERY_MS: number
 }
 type Paths = { kind: string; platform: string; runtimes: string[]; dir: string; downloads: string; state: string; settings: string }
 type Engine = {
@@ -57,7 +58,7 @@ beforeAll(async () => {
 afterAll(() => rmSync(tmp, { recursive: true, force: true }))
 
 function manifestFor(version: string, assets: Asset[], extra: Record<string, unknown> = {}): Record<string, unknown> {
-  return { schema: 1, name: 'Survival OS', version, tag: `v${version}`, date: '2026-11-20', minFrom: '0.0.0', notes: { es: 'Novedades', en: "What's new" }, assets, ...extra }
+  return { schema: 1, name: 'Survivelia OS', version, tag: `v${version}`, date: '2026-11-20', minFrom: '0.0.0', notes: { es: 'Novedades', en: "What's new" }, assets, ...extra }
 }
 const asset = (name: string, kind: string, platforms: string[], size = 10, sum = 'a'.repeat(64)): Asset => ({ name, kind, platforms, size, sha256: sum })
 
@@ -154,6 +155,9 @@ describe('update-lib: versiones, firma y manifiesto', () => {
     expect(lib.checkDue({ okAt: '2026-11-15T10:00:00Z' }, now)).toBe(true)
     expect(lib.checkDue({ okAt: '2026-11-16T11:00:00Z' }, now, true)).toBe(true)
     expect(lib.checkDue({}, now)).toBe(true)
+    // Al abrir la app: si la última fue hace más de 10 min.
+    expect(lib.checkDue({ okAt: '2026-11-16T11:55:00Z' }, now, false, lib.WAKE_EVERY_MS)).toBe(false)
+    expect(lib.checkDue({ okAt: '2026-11-16T11:45:00Z' }, now, false, lib.WAKE_EVERY_MS)).toBe(true)
   })
 })
 
@@ -280,6 +284,31 @@ describe('update-engine: contra un GitHub falso local', () => {
     expect(r.file && existsSync(r.file)).toBe(true)
   })
 
+  it('al abrir la app (wake): comprueba aunque la última fuera hace horas; sin red, ni error ni cambios', async () => {
+    publish(good())
+    const p = pathsOf(portableRoot('wake'))
+    mkdirSync(p.dir, { recursive: true })
+    writeFileSync(p.settings, JSON.stringify({ mode: 'notify' }))
+    let t = Date.parse('2026-11-16T08:00:00Z')
+    const at = (): Date => new Date(t)
+    expect((await engine.autoRun(p, { ...opts(), now: at })).action).toBe('checked')
+    t += 3600_000
+    requests = []
+    expect((await engine.autoRun(p, { ...opts(), now: at })).action).toBe('checked')
+    expect(requests).toEqual([])
+    expect((await engine.autoRun(p, { ...opts(), now: at, wake: true })).action).toBe('checked')
+    expect(requests).toContain('survival-os-update.json')
+    t += 5 * 60_000
+    requests = []
+    await engine.autoRun(p, { ...opts(), now: at, wake: true })
+    expect(requests).toEqual([])
+    t += 3600_000
+    const before = engine.readState(p)
+    const off = await engine.autoRun(p, { base: 'http://127.0.0.1:9', keys: { test: key.x }, now: at, wake: true })
+    expect(off.action).toBe('offline')
+    expect(engine.readState(p)).toEqual(before)
+  })
+
   it('al día y minFrom: no hay nada que instalar', async () => {
     const p = pathsOf(portableRoot('aldia', '1.0.0'))
     publish(good())
@@ -298,12 +327,12 @@ describe('apply-update: autoprueba y vuelta atrás (portable)', () => {
       mkdirSync(path.dirname(path.join(root, rel)), { recursive: true })
       writeFileSync(path.join(root, rel), text)
     }
-    const base = path.join(root, '.update', 'staging', 'Survival OS')
+    const base = path.join(root, '.update', 'staging', 'Survivelia OS')
     for (const [rel, text] of [['app/VERSION', '1.0.0\n'], ['runtime/win-x64/node.exe', 'node nuevo'], ['LEEME.txt', 'nuevo'], ['data/LEEME.txt', 'del zip']]) {
       mkdirSync(path.dirname(path.join(base, rel)), { recursive: true })
       writeFileSync(path.join(base, rel), text)
     }
-    writeFileSync(path.join(root, '.update', 'ready.json'), JSON.stringify({ version: '1.0.0', from: '0.9.0', base: '.update/staging/Survival OS' }))
+    writeFileSync(path.join(root, '.update', 'ready.json'), JSON.stringify({ version: '1.0.0', from: '0.9.0', base: '.update/staging/Survivelia OS' }))
     return root
   }
   const read = (root: string, rel: string): string => readFileSync(path.join(root, rel), 'utf8')
@@ -330,7 +359,7 @@ describe('apply-update: autoprueba y vuelta atrás (portable)', () => {
     expect(read(root, 'runtime/win-x64/node.exe')).toBe('node viejo')
     expect(read(root, 'LEEME.txt')).toBe('viejo')
     expect(read(root, 'data/maps/es.pmtiles')).toBe('MIS DATOS')
-    expect(read(root, '.update-failed/Survival OS/app/VERSION')).toBe('1.0.0\n')
+    expect(read(root, '.update-failed/Survivelia OS/app/VERSION')).toBe('1.0.0\n')
     expect(existsSync(path.join(root, '.update'))).toBe(false)
     expect(JSON.parse(read(root, 'data/update/last-apply.json'))).toMatchObject({ ok: false, version: '1.0.0' })
   })

@@ -156,3 +156,13 @@ describe('plan de descarga por idioma y país (ADR 0018)', () => {
     expect(p).not.toContain('mapa-espana')
   })
 })
+
+describe('ajuste al espacio', () => {
+  const item = (id: string, priority: 1 | 2 | 3, gb: number) => ({ id, priority, approxBytes: gb * 1e9 }) as ContentCatalogItem
+  it('quitar algo enorme no se lleva lo pequeño que sí cabe', () => {
+    const items = [item('base', 1, 5), item('enorme', 3, 20), item('mediano', 3, 4), item('pequeno', 3, 0.1)]
+    const { keep, dropped } = autoFit(items, 5e9 + 4.5e9 + FREE_MARGIN)
+    expect(dropped.map((i) => i.id)).toEqual(['enorme'])
+    expect(keep.map((i) => i.id).sort()).toEqual(['base', 'mediano', 'pequeno'])
+  })
+})

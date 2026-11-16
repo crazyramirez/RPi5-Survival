@@ -19,6 +19,14 @@ export function autoFit(items: ContentCatalogItem[], freeBytes: number | null): 
     keep.splice(keep.indexOf(c), 1)
     dropped.push(c)
   }
+  // Segunda pasada: lo descartado que aún cabe (de pequeño a grande) vuelve. Así quitar un contenido enorme
+  // no se lleva por delante otros diminutos de menor prioridad que sí caben.
+  for (const c of [...dropped].sort((a, b) => a.approxBytes - b.approxBytes)) {
+    if (total() + c.approxBytes + FREE_MARGIN <= freeBytes) {
+      keep.push(c)
+      dropped.splice(dropped.indexOf(c), 1)
+    }
+  }
   return { keep, dropped }
 }
 

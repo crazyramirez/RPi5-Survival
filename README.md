@@ -1,5 +1,7 @@
 # Survival OS
 
+![Survival OS: mapas, biblioteca, emergencias e IA sin Internet](docs/screenshots/portada.jpg)
+
 **Un centro de conocimiento, mapas y comunicación que funciona sin Internet.** Mapas de cualquier país con rutas,
 la Wikipedia, 41 protocolos de emergencia, cientos de manuales, un asistente de IA local, mensajería por radio LoRa
 y una bóveda cifrada, en español, inglés, francés o italiano.
@@ -17,6 +19,7 @@ Funciona de dos maneras:
 ## Contenido
 
 - [Qué es](#qué-es)
+- [Instalación exprés: pídeselo a tu asistente de IA](#instalación-exprés-pídeselo-a-tu-asistente-de-ia)
 - [Elige cómo usarlo](#elige-cómo-usarlo)
 - [Empezar con la versión portable](#empezar-con-la-versión-portable)
 - [Empezar en una Raspberry Pi](#empezar-en-una-raspberry-pi)
@@ -45,6 +48,51 @@ equipo.
   propio. En la Pi arranca directamente en modo quiosco.
 - **Privado.** La interfaz solo escucha en el propio equipo. La bóveda y el asistente nunca son accesibles desde la
   red.
+
+## Instalación exprés: pídeselo a tu asistente de IA
+
+Este repositorio está preparado para que **un asistente de IA lo instale y configure por ti, en lenguaje natural**.
+Tú solo contestas a sus preguntas: dónde lo quieres, la IP y el usuario de tu Raspberry Pi, el idioma y el país.
+
+Con **[Claude Code](https://claude.com/claude-code)**, **[OpenAI Codex CLI](https://github.com/openai/codex)** o
+**[Gemini CLI](https://github.com/google-gemini/gemini-cli)** instalado:
+
+```sh
+git clone https://github.com/crazyramirez/RPi5-Survival.git
+cd RPi5-Survival
+claude "Instala Survival OS en mi Raspberry Pi y descárgalo todo en español"
+```
+
+Con Codex o Gemini es igual; cambia solo la última línea:
+
+```sh
+codex "Instálame la versión portable de Survival OS en este ordenador"
+gemini -i "Configura Survival OS en francés para Francia y descarga todo"
+```
+
+**Lo que el asistente sabe hacer** (las instrucciones están en [AGENTS.md](AGENTS.md)):
+
+- **Raspberry Pi o Linux:**
+  - te guía para preparar la tarjeta con Raspberry Pi Imager y encontrar la IP;
+  - configura el acceso SSH; la contraseña solo la escribes tú y una vez;
+  - compila, instala, verifica y reinicia en modo quiosco.
+- **Versión portable:** la genera para tu sistema (Windows, macOS o Linux), la copia donde digas (también a un USB) y
+  la abre o la instala con acceso directo.
+- **Configuración:** idioma, país, «Descargarlo todo», estado del equipo y actualizaciones.
+- **Seguridad:** antes de instalar o de lanzar descargas grandes te dice qué va a hacer y espera tu confirmación.
+  Nunca guarda contraseñas.
+
+**¿Sin asistente de IA?** Los mismos pasos, con un solo comando (requiere [Node 24](https://nodejs.org) o posterior):
+
+```sh
+npm run express -- doctor                                         # qué falta en este ordenador
+npm run express -- portable                                       # versión portable para este ordenador, lista y abierta
+npm run express -- pi --host 192.168.1.50 --user pi --yes --reboot  # instalar en una Raspberry Pi por SSH
+npm run express -- download --host 192.168.1.50 --user pi --yes   # «Descargarlo todo» en la Pi
+```
+
+Cambia la IP y el usuario por los de tu Pi. Todas las opciones están al principio de
+[scripts/express.mjs](scripts/express.mjs).
 
 ## Elige cómo usarlo
 

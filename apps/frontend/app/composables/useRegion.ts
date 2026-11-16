@@ -41,6 +41,11 @@ export function useRegion() {
     } catch {
       // sin almacenamiento
     }
+    // País por defecto del EQUIPO (npm run express -- defaults): cuenta como elección si nadie eligió otro.
+    if (!chosen.value) {
+      const d = await $fetch<{ country: string | null }>('/api/settings/defaults', { timeout: 5000, retry: 0 }).catch(() => null)
+      if (d?.country) chosen.value = d.country
+    }
     if (countries.value?.length) return
     try {
       const r = await $fetch<{ countries: CountryOption[]; timezones: Record<string, string> }>('/api/content/countries', { timeout: 10_000, retry: 0 })

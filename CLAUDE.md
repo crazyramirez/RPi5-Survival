@@ -1,5 +1,12 @@
 # CLAUDE.md — Survival OS
 
+**Si te piden INSTALAR o CONFIGURAR Survival OS** (en una Raspberry Pi, en un Linux o la versión portable) por
+encargo de una persona, sigue la guía para agentes:
+
+@AGENTS.md
+
+Lo que sigue son las reglas para **desarrollar** en este repositorio.
+
 Especificación maestra: `SURVIVAL_OS_RPI5_CLAUDE.md` (leer §13 fases y §15 prohibiciones antes de cambiar nada).
 Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, GPS exterior, ESP32 real, energía).
 

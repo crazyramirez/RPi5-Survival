@@ -19,6 +19,7 @@
     "packages/*"
   ],
   "scripts": {
+    "express": "node scripts/express.mjs",
     "dev": "node scripts/dev.mjs",
     "build": "npm run build -w @survival-os/device-api && npm run build -w @survival-os/library && npm run build -w @survival-os/navigation && npm run build -w @survival-os/vault && npm run build -w @survival-os/esp32-gateway && npm run build -w @survival-os/serial-hub && npm run build -w @survival-os/frontend",
     "start": "node scripts/start.mjs",

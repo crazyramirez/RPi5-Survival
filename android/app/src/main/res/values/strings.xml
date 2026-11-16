@@ -34,4 +34,5 @@
     <string name="btn_later">Más tarde</string>
     <string name="btn_retry">Reintentar</string>
     <string name="btn_other_storage">Elegir otra carpeta</string>
+    <string name="splash_tagline">Conocimiento, mapas y comunicación sin Internet</string>
 </resources>

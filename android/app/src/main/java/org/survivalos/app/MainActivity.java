@@ -1,6 +1,8 @@
 package org.survivalos.app;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -9,7 +11,10 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,7 +36,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -59,6 +66,8 @@ public final class MainActivity extends Activity implements SurvivalService.List
 
     private WebView web;
     private View splash;
+    /** Halo del icono en la pantalla de arranque: se para al mostrarse la interfaz. */
+    private ObjectAnimator glowAnim;
     private TextView status;
     private ProgressBar bar;
     private LinearLayout actions;
@@ -198,32 +207,118 @@ public final class MainActivity extends Activity implements SurvivalService.List
         web.setDownloadListener((url, ua, disposition, mime, length) -> download(url, disposition, mime));
         root.addView(web, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        LinearLayout sp = new LinearLayout(this);
-        sp.setOrientation(LinearLayout.VERTICAL);
-        sp.setGravity(Gravity.CENTER);
-        sp.setPadding(dp(32), dp(32), dp(32), dp(32));
+        root.addView(buildSplash(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setContentView(root);
+    }
+
+    /**
+     * Pantalla de arranque: fondo topográfico (res/drawable-nodpi/splash_bg.webp, generado para la app), el icono
+     * en un halo del color de acento que «respira» mientras carga, nombre, lema, estado, barra fina y versión.
+     */
+    private View buildSplash() {
+        final int accent = Color.rgb(140, 191, 150);
+        final int ink = Color.rgb(243, 239, 228);
+        FrameLayout sp = new FrameLayout(this);
+        sp.setBackgroundColor(Color.rgb(9, 13, 11));
+
+        ImageView bg = new ImageView(this);
+        bg.setImageResource(R.drawable.splash_bg);
+        bg.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        bg.setAlpha(0f);
+        sp.addView(bg, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        bg.animate().alpha(1f).setDuration(900).start();
+
+        View shade = new View(this);
+        shade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+            new int[] { Color.argb(150, 5, 8, 7), Color.argb(60, 5, 8, 7), Color.argb(225, 5, 8, 7) }));
+        sp.addView(shade, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setGravity(Gravity.CENTER);
+        col.setPadding(dp(32), dp(32), dp(32), dp(32));
+
+        // Icono con halo.
+        FrameLayout badge = new FrameLayout(this);
+        View glow = new View(this);
+        GradientDrawable halo = new GradientDrawable();
+        halo.setShape(GradientDrawable.OVAL);
+        halo.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+        halo.setGradientRadius(dp(110));
+        halo.setColors(new int[] { Color.argb(110, 140, 191, 150), Color.argb(0, 140, 191, 150) });
+        glow.setBackground(halo);
+        badge.addView(glow, new FrameLayout.LayoutParams(dp(220), dp(220), Gravity.CENTER));
+        ImageView icon = new ImageView(this);
+        icon.setImageResource(R.mipmap.ic_launcher);
+        icon.setElevation(dp(12));
+        badge.addView(icon, new FrameLayout.LayoutParams(dp(112), dp(112), Gravity.CENTER));
+        col.addView(badge, new LinearLayout.LayoutParams(dp(220), dp(220)));
+        icon.setScaleX(0.82f);
+        icon.setScaleY(0.82f);
+        icon.setAlpha(0f);
+        icon.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(700).setInterpolator(new DecelerateInterpolator(2f)).start();
+        ObjectAnimator breathe = ObjectAnimator.ofFloat(glow, View.ALPHA, 0.45f, 1f);
+        breathe.setDuration(1800);
+        breathe.setRepeatMode(ValueAnimator.REVERSE);
+        breathe.setRepeatCount(ValueAnimator.INFINITE);
+        breathe.start();
+        glowAnim = breathe;
+
         TextView title = new TextView(this);
         title.setText(R.string.app_name);
-        title.setTextColor(Color.rgb(230, 236, 232));
+        title.setTextColor(ink);
         title.setTextSize(30);
+        title.setLetterSpacing(0.08f);
+        title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         title.setGravity(Gravity.CENTER);
-        sp.addView(title);
+        title.setShadowLayer(dp(12), 0, dp(2), Color.argb(160, 0, 0, 0));
+        col.addView(title);
+
+        TextView tagline = new TextView(this);
+        tagline.setText(R.string.splash_tagline);
+        tagline.setTextColor(Color.argb(190, 243, 239, 228));
+        tagline.setTextSize(15);
+        tagline.setGravity(Gravity.CENTER);
+        tagline.setPadding(0, dp(6), 0, 0);
+        col.addView(tagline);
+
         status = new TextView(this);
-        status.setTextColor(Color.rgb(170, 184, 176));
-        status.setTextSize(16);
+        status.setTextColor(Color.argb(200, 243, 239, 228));
+        status.setTextSize(15);
         status.setGravity(Gravity.CENTER);
-        status.setPadding(0, dp(16), 0, dp(16));
-        sp.addView(status);
+        status.setPadding(0, dp(36), 0, dp(14));
+        col.addView(status);
+
         bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         bar.setMax(100);
-        sp.addView(bar, new LinearLayout.LayoutParams(dp(320), ViewGroup.LayoutParams.WRAP_CONTENT));
+        bar.setProgressTintList(ColorStateList.valueOf(accent));
+        bar.setIndeterminateTintList(ColorStateList.valueOf(accent));
+        bar.setProgressBackgroundTintList(ColorStateList.valueOf(Color.argb(60, 255, 255, 255)));
+        bar.setMinHeight(dp(4));
+        bar.setMaxHeight(dp(4));
+        col.addView(bar, new LinearLayout.LayoutParams(dp(260), dp(4)));
+
         actions = new LinearLayout(this);
         actions.setGravity(Gravity.CENTER);
-        actions.setPadding(0, dp(16), 0, 0);
-        sp.addView(actions);
+        actions.setPadding(0, dp(20), 0, 0);
+        col.addView(actions);
+        sp.addView(col, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        TextView ver = new TextView(this);
+        try {
+            ver.setText("v" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+        } catch (PackageManager.NameNotFoundException ignored) {
+            // sin versión
+        }
+        ver.setTextColor(Color.argb(120, 243, 239, 228));
+        ver.setTextSize(12);
+        ver.setLetterSpacing(0.1f);
+        FrameLayout.LayoutParams vp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        vp.bottomMargin = dp(28);
+        sp.addView(ver, vp);
+
         splash = sp;
-        root.addView(sp, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        setContentView(root);
+        return sp;
     }
 
     private int dp(int v) {
@@ -269,6 +364,7 @@ public final class MainActivity extends Activity implements SurvivalService.List
             case FAILED:
                 web.setVisibility(View.INVISIBLE);
                 splash.setVisibility(View.VISIBLE);
+                if (glowAnim != null) glowAnim.resume();
                 status.setText(detail);
                 bar.setVisibility(View.GONE);
                 actions.removeAllViews();
@@ -297,6 +393,7 @@ public final class MainActivity extends Activity implements SurvivalService.List
             }
             web.setVisibility(View.VISIBLE);
             splash.setVisibility(View.GONE);
+            if (glowAnim != null) glowAnim.pause();
         });
     }
 

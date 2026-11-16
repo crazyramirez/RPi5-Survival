@@ -100,7 +100,8 @@ export interface RtcInfo {
   hasBattery: boolean | null
 }
 
-export type TimeSource = 'ntp' | 'gnss' | 'lora' | 'rtc' | 'unverified'
+/** `device`: reloj del propio dispositivo (Android: lo mantiene el sistema con su batería y la hora de red/operador). */
+export type TimeSource = 'ntp' | 'gnss' | 'lora' | 'rtc' | 'device' | 'unverified'
 
 export interface TimeInfo {
   source: TimeSource

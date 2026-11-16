@@ -550,6 +550,7 @@ export const es = {
   'sys.time.check.noPrivate': 'Sin hora de Internet ni GPS, y la malla no tiene canal privado: no se usa la hora LoRa.',
   'sys.time.check.none': 'Sin hora de Internet, GPS ni malla LoRa disponibles: el reloj no se ha podido comprobar.',
   'sys.time.source.rtc': 'RTC con pila',
+  'sys.time.source.device': 'Hora del dispositivo',
   'sys.time.source.unverified': 'No verificada',
   'sys.display': 'Pantalla',
   'sys.display.output': 'Salida',

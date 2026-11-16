@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.11.5 — 2026-11-16 · Pantalla de bloqueo y arranque de Android renovados
+
+### Cambiado
+- **Pantalla de bloqueo nueva:** foto a pantalla completa (montaña, bosque o costa, una cada día), reloj grande,
+  fecha y botón de cristal para mantener pulsado. En alto contraste, fondo negro liso. Las imágenes van dentro
+  de la app (nada se descarga de Internet).
+- **Arranque de Android:** fondo topográfico, el icono de la app con halo, lema, barra de progreso fina y versión.
+- **Mantenimiento:** Actualizaciones, Red Wi-Fi, Compartir y Fecha y hora, y Rutas sin conexión y Juegos, en dos
+  columnas con el mismo alto.
+
+### Corregido
+- **Android ya no avisa de «Hora del sistema no verificada»:** usa la hora del dispositivo, que Android mantiene
+  con su reloj y su batería (fuente «Hora del dispositivo»).
+
 ## 0.11.4 — 2026-11-16 · Más fácil de usar
 
 ### Cambiado

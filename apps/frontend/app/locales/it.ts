@@ -547,6 +547,7 @@ export const it: Record<MessageKey, string> = {
   'sys.time.check.noPrivate': "Nessuna ora da Internet né GPS, e la rete mesh non ha un canale privato: l'ora LoRa non viene usata.",
   'sys.time.check.none': "Nessuna ora da Internet, GPS né rete mesh LoRa disponibile: non è stato possibile verificare l'orologio.",
   'sys.time.source.rtc': 'RTC con batteria',
+  'sys.time.source.device': 'Orologio del dispositivo',
   'sys.time.source.unverified': 'Non verificata',
   'sys.display': 'Schermo',
   'sys.display.output': 'Uscita',

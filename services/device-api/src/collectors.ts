@@ -268,10 +268,12 @@ export async function collectTime(rtc: Probe<RtcInfo>): Promise<Probe<TimeInfo>>
   if (isAndroid()) {
     // Android: hora de red del sistema (13+) y comprobación con el GNSS de la tablet, que la app deja en
     // <privado>/timesync.json con el formato de survival-timesync (ADR 0011). Una app no puede ajustar el reloj.
+    // Sin nada de eso, la hora es la del dispositivo: Android la mantiene con su reloj y su batería (y la hora de
+    // red u operador cuando la hay), así que no se avisa de «hora no verificada» (fuente `device`).
     const a = await androidDevice()
     const ntp = a?.networkTimeOk ?? null
     const sync = await readText(join(process.env.SURVIVAL_ANDROID_PRIVATE ?? '', 'timesync.json'))
-    return ok({ ...timeSourceFrom(ntp, false, sync, Date.now()), ntpSynchronized: ntp, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null })
+    return ok({ ...timeSourceFrom(ntp, false, sync, Date.now(), true), ntpSynchronized: ntp, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null })
   }
   if (process.platform === 'darwin') {
     // macOS no expone el estado de sincronización sin administrador: no se afirma (fuente «sin verificar»).

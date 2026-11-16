@@ -231,14 +231,16 @@ export const TIME_VERIFIED_MAX_MS = 12 * 3600 * 1000
 
 /**
  * Fuente de la hora con el estado de survival-timesync (/run/survival-os/timesync.json, se borra al reiniciar).
- * NTP manda; si no, GNSS o LoRa solo si comprobaron la hora hace menos de 12 h; si no, RTC con pila o «no verificada».
+ * NTP manda; si no, GNSS o LoRa solo si comprobaron la hora hace menos de 12 h; si no, RTC con pila; si no, el reloj
+ * del dispositivo cuando el sistema lo mantiene (Android, `deviceClock`); si no, «no verificada».
  */
 export function timeSourceFrom(
   ntp: boolean | null,
   rtcWithBattery: boolean,
   timesyncJson: string | null,
   nowMs: number,
-): { source: 'ntp' | 'gnss' | 'lora' | 'rtc' | 'unverified'; verifiedAt: string | null; node: string | null; lastStep: { at: string; source: 'gnss' | 'lora'; deltaS: number } | null } {
+  deviceClock = false,
+): { source: 'ntp' | 'gnss' | 'lora' | 'rtc' | 'device' | 'unverified'; verifiedAt: string | null; node: string | null; lastStep: { at: string; source: 'gnss' | 'lora'; deltaS: number } | null } {
   let st: Record<string, unknown> = {}
   try {
     const j: unknown = timesyncJson ? JSON.parse(timesyncJson) : {}
@@ -254,7 +256,7 @@ export function timeSourceFrom(
     ls && typeof ls.at === 'string' && (ls.source === 'gnss' || ls.source === 'lora') && typeof ls.deltaS === 'number'
       ? { at: ls.at, source: ls.source as 'gnss' | 'lora', deltaS: ls.deltaS }
       : null
-  const source = ntp ? 'ntp' : fresh ? by : rtcWithBattery ? 'rtc' : 'unverified'
+  const source = ntp ? 'ntp' : fresh ? by : rtcWithBattery ? 'rtc' : deviceClock ? 'device' : 'unverified'
   return {
     source,
     verifiedAt: fresh ? at : null,

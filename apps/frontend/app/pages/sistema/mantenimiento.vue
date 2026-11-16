@@ -309,11 +309,11 @@ const PIN_LEGEND = [
           <JobLog :status="llmJob.status.value" :error="llmJob.error.value" :lines="4" />
         </AppCard>
 
-        <!-- Rutas sin conexión (ADR 0010) -->
-        <RoutingCard :online="online" />
-
-        <!-- Juegos offline (ADR 0012) -->
-        <GamesCard :online="online" />
+        <!-- Rutas sin conexión (ADR 0010) y juegos offline (ADR 0012): dos columnas del mismo alto. -->
+        <div class="pairs span-all">
+          <RoutingCard :online="online" />
+          <GamesCard :online="online" />
+        </div>
 
         <AppCard class="span-all" :title="t('mnt.maps')" :icon="MapIcon" :tone="maps.length ? 'ok' : 'muted'" :pill="t('summary.maps.count', { n: maps.length })">
           <div v-for="m in maps" :key="m.file" class="ui-row">
@@ -339,14 +339,14 @@ const PIN_LEGEND = [
     <section id="mnt-net" data-sec="net" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.net') }}</h2>
       <!-- Portable: carpetas, instalar en este equipo, cerrar y compartir en la red local. -->
-      <div v-if="portable" class="bento">
+      <div v-if="portable" class="pairs">
         <!-- App Android (ADR 0020): dispositivo, carpeta de datos y permisos en lugar de carpetas e instalación. -->
         <AndroidCard v-if="android" />
         <PortableCard v-else />
         <UsbCard v-if="!android" />
-        <ShareCard />
       </div>
-      <div class="bento">
+      <!-- Dos columnas con filas del mismo alto: Actualizaciones | Red Wi-Fi · Compartir | Fecha y hora. -->
+      <div class="pairs">
         <!-- Actualizaciones desde GitHub (ADR 0021): Pi, portable y Android. -->
         <UpdateCard id="mnt-update" />
         <AppCard
@@ -373,6 +373,8 @@ const PIN_LEGEND = [
           </button>
           <JobLog v-if="!portable" :status="wifiJob.status.value" :error="wifiJob.error.value" :lines="2" />
         </AppCard>
+
+        <ShareCard v-if="portable" />
 
         <AppCard :title="t('mnt.time')" :icon="Clock" :tone="timeSource === 'unverified' ? 'warn' : 'ok'">
           <div class="ui-figure">
@@ -655,6 +657,28 @@ const PIN_LEGEND = [
 
 .span-all {
   grid-column: 1 / -1;
+}
+
+/* Parejas de tarjetas: dos columnas y cada fila con el mismo alto; si sobra una, ocupa todo el ancho. */
+.pairs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  align-items: stretch;
+}
+
+.pairs + .pairs {
+  margin-top: var(--gap);
+}
+
+.pairs > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 760px) {
+  .pairs {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .row2 {

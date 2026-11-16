@@ -32,4 +32,5 @@
     <string name="btn_later">Later</string>
     <string name="btn_retry">Retry</string>
     <string name="btn_other_storage">Choose another folder</string>
+    <string name="splash_tagline">Knowledge, maps and communication without Internet</string>
 </resources>

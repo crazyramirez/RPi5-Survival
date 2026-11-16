@@ -539,6 +539,7 @@ export const en: Record<MessageKey, string> = {
   'sys.time.check.noPrivate': 'No Internet time or GPS, and the mesh has no private channel: LoRa time is not used.',
   'sys.time.check.none': "No Internet time, GPS or LoRa mesh available: the clock couldn't be checked.",
   'sys.time.source.rtc': 'Battery-backed RTC',
+  'sys.time.source.device': 'Device clock',
   'sys.time.source.unverified': 'Not verified',
   'sys.display': 'Display',
   'sys.display.output': 'Output',

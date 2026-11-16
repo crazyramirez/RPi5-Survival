@@ -164,6 +164,11 @@ describe('timeSourceFrom (hora de respaldo, ADR 0011)', () => {
     expect(timeSourceFrom(false, true, '{roto', now).source).toBe('rtc')
     expect(timeSourceFrom(null, false, null, now)).toEqual({ source: 'unverified', verifiedAt: null, node: null, lastStep: null })
   })
+  it('Android sin red ni GNSS: hora del dispositivo, nunca «no verificada»', () => {
+    expect(timeSourceFrom(null, false, null, now, true).source).toBe('device')
+    expect(timeSourceFrom(true, false, null, now, true).source).toBe('ntp')
+    expect(timeSourceFrom(false, false, st({ verifiedBy: 'gnss', verifiedAt: '2026-11-09T13:59:00Z' }), now, true).source).toBe('gnss')
+  })
   it('fuente desconocida o nodo mal formado: se ignoran', () => {
     expect(timeSourceFrom(false, false, st({ verifiedBy: 'iphone', verifiedAt: '2026-11-09T13:59:00Z' }), now).source).toBe('unverified')
     expect(timeSourceFrom(false, false, st({ verifiedBy: 'lora', verifiedAt: '2026-11-09T13:59:00Z', node: '<b>x' }), now).node).toBeNull()

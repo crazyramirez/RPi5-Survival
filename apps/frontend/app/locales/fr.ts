@@ -547,6 +547,7 @@ export const fr: Record<MessageKey, string> = {
   'sys.time.check.noPrivate': "Ni heure Internet ni GPS, et le maillage n'a pas de canal privé : l'heure LoRa n'est pas utilisée.",
   'sys.time.check.none': "Ni heure Internet, ni GPS, ni maillage LoRa disponibles : l'horloge n'a pas pu être vérifiée.",
   'sys.time.source.rtc': 'RTC avec pile',
+  'sys.time.source.device': 'Horloge de l’appareil',
   'sys.time.source.unverified': 'Non vérifiée',
   'sys.display': 'Affichage',
   'sys.display.output': 'Sortie',

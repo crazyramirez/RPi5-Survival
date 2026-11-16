@@ -53,31 +53,31 @@ describe('tramas serie', () => {
     expect(t.msg(4)?.uint(1)).toBe(1)
     expect(t.msg(4)?.string(2)).toBe('hola')
     expect(t.fixed32(6)).toBe(7)
-    const r = new Msg(positionRequest({ to: 0xad04cd50, channel: 1, id: 9 })).msg(1)!
+    const r = new Msg(positionRequest({ to: 0x5e5e0002, channel: 1, id: 9 })).msg(1)!
     expect(r.msg(4)?.uint(1)).toBe(3)
     expect(r.msg(4)?.bool(3)).toBe(true)
   })
 })
 
 describe('FromRadio y sesión', () => {
-  const user = new Writer().string(1, '!a35a6e00').string(2, 'Survival Base').string(3, 'SB').uint(5, hwNum('HELTEC_V4'))
+  const user = new Writer().string(1, '!5e5e0001').string(2, 'Survival Base').string(3, 'SB').uint(5, hwNum('HELTEC_V4'))
   const pos = new Writer().sfixed32(1, 283456789).sfixed32(2, -164567890).uint(3, 120).fixed32(4, 1770000000).uint(23, 13)
   const metrics = new Writer().uint(1, 101).float(2, 4.2)
-  const nodeInfo = new Writer().uint(1, 0xa35a6e00).msg(2, user).msg(3, pos).float(4, 6.5).fixed32(5, 1770000100).msg(6, metrics).uint(9, 0)
+  const nodeInfo = new Writer().uint(1, 0x5e5e0001).msg(2, user).msg(3, pos).float(4, 6.5).fixed32(5, 1770000100).msg(6, metrics).uint(9, 0)
 
   it('decodifica my_info, node_info, canal y fin de configuración', () => {
     const s = new Session()
-    s.apply(decodeFromRadio(new Writer().msg(3, new Writer().uint(1, 0xa35a6e00)).finish()))
+    s.apply(decodeFromRadio(new Writer().msg(3, new Writer().uint(1, 0x5e5e0001)).finish()))
     s.apply(decodeFromRadio(new Writer().msg(4, nodeInfo).finish()))
     s.apply(decodeFromRadio(new Writer().msg(10, new Writer().uint(1, 1).msg(2, new Writer().bytes(2, new Uint8Array(32)).string(3, 'Survival')).uint(3, 1)).finish()))
     s.apply(decodeFromRadio(new Writer().msg(13, new Writer().string(1, '2.7.26')).finish()))
     s.apply(decodeFromRadio(new Writer().uint(7, 42).finish()))
-    expect(s.myNodeNum).toBe(0xa35a6e00)
+    expect(s.myNodeNum).toBe(0x5e5e0001)
     expect(s.configComplete).toBe(true)
     expect(s.firmware).toBe('2.7.26')
     expect(s.channels.get(1)).toMatchObject({ name: 'Survival', role: 1, pskLength: 32 })
-    const sum = nodeSummary(s.nodes.get(0xa35a6e00)!, s.myNodeNum)
-    expect(sum).toMatchObject({ id: '!a35a6e00', longName: 'Survival Base', hwModel: 'HELTEC_V4', role: 'CLIENT', isMe: true, snr: 6.5, hopsAway: 0 })
+    const sum = nodeSummary(s.nodes.get(0x5e5e0001)!, s.myNodeNum)
+    expect(sum).toMatchObject({ id: '!5e5e0001', longName: 'Survival Base', hwModel: 'HELTEC_V4', role: 'CLIENT', isMe: true, snr: 6.5, hopsAway: 0 })
     expect(sum.position).toMatchObject({ lat: 28.3456789, lon: -16.456789, alt: 120, at: '2026-02-02T02:40:00Z', precisionM: precisionM(13) })
     // 101 = alimentación externa: no es un porcentaje real.
     expect(sum.battery).toMatchObject({ level: null, powered: true, voltage: 4.2 })
@@ -86,11 +86,11 @@ describe('FromRadio y sesión', () => {
   it('un mensaje de texto recibido actualiza el nodo y se convierte en mensaje', () => {
     const s = new Session()
     const data = new Writer().uint(1, 1).string(2, '¿Todo bien?')
-    const raw = new Writer().fixed32(1, 0xad04cd50).fixed32(2, 0xffffffff).uint(3, 1).msg(4, data).fixed32(6, 99).fixed32(7, 1770000200).float(8, -3.5).uint(9, 1).uint(15, 3)
+    const raw = new Writer().fixed32(1, 0x5e5e0002).fixed32(2, 0xffffffff).uint(3, 1).msg(4, data).fixed32(6, 99).fixed32(7, 1770000200).float(8, -3.5).uint(9, 1).uint(15, 3)
     const p = s.apply(decodeFromRadio(new Writer().msg(2, raw).finish()))!
     const m = textMessage(p)!
-    expect(m).toMatchObject({ packetId: 99, from: '!ad04cd50', to: '^all', channel: 1, text: '¿Todo bien?', snr: -3.5, hops: 2 })
-    expect(s.nodes.get(0xad04cd50)).toMatchObject({ lastHeard: 1770000200, snr: -3.5, hopsAway: 2 })
+    expect(m).toMatchObject({ packetId: 99, from: '!5e5e0002', to: '^all', channel: 1, text: '¿Todo bien?', snr: -3.5, hops: 2 })
+    expect(s.nodes.get(0x5e5e0002)).toMatchObject({ lastHeard: 1770000200, snr: -3.5, hopsAway: 2 })
   })
 })
 
@@ -105,11 +105,11 @@ describe('reglas portadas de survival_mesh.py', () => {
     expect(() => validateSend({ text: 'x'.repeat(201) }, [0])).toThrow(/largo/)
     expect(() => validateSend({ text: 'hola', channel: 5 }, [0, 1])).toThrow(/Canal/)
     expect(() => validateSend({ text: 'hola', to: 'pepe' }, [0])).toThrow(/Destino/)
-    expect(validateSend({ text: ' hola ', channel: 1, to: '!ad04cd50' }, [0, 1])).toEqual({ text: 'hola', channel: 1, to: '!ad04cd50' })
+    expect(validateSend({ text: ' hola ', channel: 1, to: '!5e5e0002' }, [0, 1])).toEqual({ text: 'hola', channel: 1, to: '!5e5e0002' })
   })
   it('hora solo del canal privado y con dos muestras que coinciden', () => {
     const pkt = (ch: number, t: number) =>
-      ({ fromId: '!ad04cd50', channel: ch, decoded: { portnum: 'POSITION_APP', position: { time: t } } }) as Parameters<typeof timeSample>[0]
+      ({ fromId: '!5e5e0002', channel: ch, decoded: { portnum: 'POSITION_APP', position: { time: t } } }) as Parameters<typeof timeSample>[0]
     expect(timeSample(pkt(0, 1780000000), new Set([1]), 10)).toBeNull() // canal público
     expect(timeSample(pkt(1, 1600000000), new Set([1]), 10)).toBeNull() // hora imposible
     const a = timeSample(pkt(1, 1780000000), new Set([1]), 100)!

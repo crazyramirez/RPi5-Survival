@@ -27,8 +27,13 @@
   /* Superficie de tarjeta: degradado estático (no se anima; coste nulo tras el primer pintado). */
   --surface-grad: linear-gradient(180deg, var(--surface-2), var(--surface) 70%);
   --hairline: color-mix(in srgb, var(--border) 70%, transparent);
-  --gap: 10px;
+  /* Espaciado fluido: 10 px en el panel de la Pi, hasta 16 px en monitores grandes. */
+  --gap: clamp(10px, 0.45vw + 0.35vh + 2px, 16px);
   --touch: 48px;
+  /* Ancho máximo de lectura en monitores muy anchos (el contenido se centra). */
+  --content-max: 1880px;
+  /* Margen lateral que alinea barras y contenido en pantallas ultrapanorámicas. */
+  --gutter-x: max(0.875rem, calc((100% - var(--content-max)) / 2));
 
   --bar-h: 2.75rem;
   --action-h: 4.25rem;
@@ -39,7 +44,11 @@
   --dim: 0;
 
   color-scheme: dark;
-  font-size: 16px;
+  /*
+   * Tipografía fluida (ADR 0016, portable): 16 px en el panel 1024×600 y en móviles; crece con el
+   * área de la pantalla hasta 20 px (1920×1200). Todo lo medido en rem (barras, tarjetas) escala con ella.
+   */
+  font-size: clamp(16px, 0.5vw + 0.55vh + 6.5px, 20px);
 }
 
 :root[data-contrast='high'] {
@@ -59,7 +68,7 @@
 }
 
 :root[data-text='large'] {
-  font-size: 19px;
+  font-size: clamp(19px, (0.5vw + 0.55vh + 6.5px) * 1.19, 24px);
 }
 
 /* Con texto grande la barra no cabe en 1024 px: se sacrifica la fecha (visible en Bloqueo).
@@ -326,7 +335,8 @@ button {
   touch-action: pan-y;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  padding: 0.75rem 0.875rem 1rem;
+  /* En monitores muy anchos el contenido no se estira: se centra con un ancho máximo. */
+  padding: 0.75rem max(0.875rem, calc((100% - var(--content-max)) / 2)) 1rem;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }

@@ -289,6 +289,8 @@ const heroStats = computed<{ key: string; label: string; value: string; tone?: T
   if (!s) return []
   const none = t('common.none')
   if (!s.configured) {
+    // Portable: no hay cryptsetup; el motor es node:crypto (siempre disponible).
+    if (portable) return [{ key: 'cs', label: t('ui.vault.engine'), value: 'AES-256-GCM', tone: 'ok' }]
     return [{ key: 'cs', label: t('ui.vault.cryptsetup'), value: s.cryptsetup ? t('state.yes') : t('state.no'), tone: s.cryptsetup ? 'ok' : 'danger' }]
   }
   const container = { key: 'size', label: t('ui.vault.container'), value: s.containerBytes != null ? formatBytes(s.containerBytes) : none }
@@ -371,12 +373,13 @@ onBeforeUnmount(() => {
       <!-- Sin configurar -->
       <div v-if="st && !st.configured" class="bento">
         <AppCard :title="t('vault.setup')" :icon="KeyRound" tone="info">
-          <p>{{ t('vault.design') }}</p>
+          <p>{{ portable ? t('vault.designPortable') : t('vault.design') }}</p>
           <input v-model="pass" type="password" class="ui-field pass" autocomplete="new-password" :placeholder="t('vault.pass')" />
           <input v-model="pass2" type="password" class="ui-field pass" autocomplete="new-password" :placeholder="t('vault.pass2')" />
           <span v-if="weak" class="weak-line"><TriangleAlert :size="16" aria-hidden="true" />{{ t('vault.weak') }}</span>
-          <span class="cap">{{ t('ui.vault.size') }}</span>
-          <div class="seg" role="group" :aria-label="t('ui.vault.size')">
+          <!-- Portable: los documentos se cifran uno a uno y la bóveda crece sola (sin contenedor de tamaño fijo). -->
+          <span v-if="!portable" class="cap">{{ t('ui.vault.size') }}</span>
+          <div v-if="!portable" class="seg" role="group" :aria-label="t('ui.vault.size')">
             <button v-for="s in [512, 1024, 4096]" :key="s" type="button" class="seg-btn mono" :aria-pressed="sizeMiB === s" @click="sizeMiB = s">
               {{ formatBytes(s * 1024 * 1024) }}
             </button>
@@ -1194,5 +1197,39 @@ button.ui-row.item:last-child {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
+}
+
+/* Móvil y ventanas estrechas: la cabecera de estado se apila (los datos bajan a su propia fila). */
+@media (max-width: 640px) {
+  .hero {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .hero-text {
+    flex: 1 1 12rem;
+  }
+
+  .hero-text p {
+    white-space: normal;
+  }
+
+  .hero-stats {
+    flex: 1 1 100%;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .hero-stats div:first-child {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .ctl-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

@@ -54,7 +54,7 @@ function back(): void {
   grid-auto-columns: minmax(0, 1fr);
   gap: 0.5rem;
   height: var(--action-h);
-  padding: 0.45rem 0.75rem;
+  padding: 0.45rem max(0.75rem, calc((100% - var(--content-max)) / 2));
   background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 60%, var(--bg)));
   border-top: 1px solid var(--border);
 }
@@ -98,5 +98,22 @@ function back(): void {
 
 .action.current svg {
   color: var(--accent);
+}
+
+/* Móvil y ventanas estrechas: solo iconos (la etiqueta sigue ahí para lectores de pantalla). */
+@media (max-width: 560px) {
+  .actions {
+    gap: 0.35rem;
+    padding: 0.45rem 0.5rem;
+  }
+
+  .action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 </style>

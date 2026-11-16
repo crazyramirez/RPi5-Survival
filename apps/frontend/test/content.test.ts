@@ -56,14 +56,30 @@ describe('catálogo de descargas (content/catalog.json)', () => {
     }
   })
   it('componentes fijados con SHA-256 para los cinco sistemas', () => {
-    for (const [name, c] of Object.entries<{ assets: Record<string, { url: string; sha256: string }> }>(catalog.components)) {
+    for (const [name, c] of Object.entries<{ assets: Record<string, { url: string; sha256: string }>; optional?: boolean }>(catalog.components)) {
       const keys = Object.keys(c.assets)
       if (keys.includes('any')) expect(keys, name).toEqual(['any'])
+      // Los opcionales (p. ej. pdftotext de Xpdf) pueden no existir para algún sistema: se usa el del sistema.
+      else if (c.optional) expect(keys.length, name).toBeGreaterThan(0)
       else expect(keys.sort(), name).toEqual(['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64', 'win-x64'])
       for (const a of Object.values(c.assets)) {
         expect(a.url, name).toMatch(/^https:\/\//)
         expect(a.sha256, name).toMatch(/^[0-9a-f]{64}$/)
       }
+    }
+  })
+  it('manuales PDF con URL https, SHA-256 fijado, tamaño y nombre de fichero seguro', () => {
+    for (const i of catalog.items.filter((x: { kind: string }) => x.kind === 'doc')) {
+      // Un PDF o un libro por capítulos: cada fichero con URL https, SHA-256, tamaño y nombre seguro.
+      const files = i.doc.parts ?? [i.doc]
+      expect(files.length, i.id).toBeGreaterThan(0)
+      for (const f of files) {
+        expect(f.url, i.id).toMatch(/^https:\/\//)
+        expect(f.sha256, i.id).toMatch(/^[0-9a-f]{64}$/)
+        expect(f.bytes, i.id).toBeGreaterThan(0)
+        expect(f.file, i.id).toMatch(/^[a-z0-9-]{1,90}\.pdf$/)
+      }
+      expect(i.group, i.id).toBe('manuales')
     }
   })
   it('modelos del asistente con SHA-256 y el elemento llm apunta a uno existente', () => {

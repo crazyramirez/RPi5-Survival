@@ -69,7 +69,8 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 0.75rem;
+  max-width: 52rem;
+  margin: 0 auto 0.75rem;
 }
 
 /* Recordatorio pasivo del 112 (no es un botón: el equipo no llama). */
@@ -87,7 +88,9 @@ onMounted(async () => {
 }
 
 .protocol {
+  /* Ancho de lectura cómodo, centrado (en monitores grandes no queda pegado a la izquierda). */
   max-width: 52rem;
+  margin-inline: auto;
   animation: fade-in 0.18s ease-out;
 }
 

@@ -307,6 +307,25 @@ export async function collectInput(): Promise<Probe<InputDeviceInfo[]>> {
 }
 
 export async function collectSerial(): Promise<Probe<SerialInfo>> {
+  // Portable (ADR 0016): puertos COM de Windows y /dev/cu.* de macOS, como los lista serial-hub.
+  if (process.platform === 'win32') {
+    const res = await run(
+      'powershell.exe',
+      ['-NoProfile', '-NonInteractive', '-Command', String.raw`Get-CimInstance Win32_PnPEntity | Where-Object { $_.Name -match '\(COM\d+\)' } | ForEach-Object { $_.Name }`],
+      8000,
+    )
+    if (!res.ok) return unavailable('No se pudieron listar los puertos COM')
+    const ports = res.stdout
+      .split(/\r?\n/)
+      .map((l) => /\((COM\d+)\)/.exec(l)?.[1])
+      .filter((p): p is string => !!p)
+      .sort()
+    return ok({ usbPorts: ports })
+  }
+  if (process.platform === 'darwin') {
+    const ports = (await listDir('/dev')).filter((n) => /^cu\.(usbmodem|usbserial|SLAB_USBtoUART|wchusbserial)/.test(n)).sort().map((n) => `/dev/${n}`)
+    return ok({ usbPorts: ports })
+  }
   if (!isLinux()) return notLinux()
   const ports = (await listDir('/dev'))
     .filter((n) => /^tty(USB|ACM)\d+$/.test(n))

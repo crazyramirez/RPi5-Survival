@@ -20,6 +20,7 @@ const radioLabel = computed(() =>
   !net.value || net.value.wifiRadio === null ? '—' : net.value.wifiRadio === 'enabled' ? t('ui.comms.radioOn') : t('ui.comms.radioOff'),
 )
 // Malla LoRa: estado del servicio survival-mesh (null si no está instalado o no responde).
+const portable = usePortable()
 const mesh = ref<MeshStatus | null>(null)
 // Se refresca cada 10 s y tolera fallos aislados (reinicio del servicio al actualizar): solo tras 3 fallos
 // seguidos se muestra «no disponible».
@@ -90,7 +91,9 @@ const ifaceIcon = (kind: string) => (kind === 'wifi' ? Wifi : kind === 'ethernet
     <!-- Radio -->
     <h2 class="ui-sec">{{ t('ui.comms.secRadio') }}</h2>
     <div class="bento">
-      <ApCard />
+      <!-- Portable: «Compartir en la red local» es el equivalente del punto de acceso de la Pi. -->
+      <ShareCard v-if="portable" />
+      <ApCard v-else />
 
       <!-- Malla LoRa Meshtastic (servicio survival-mesh): estado real o «no disponible». -->
       <AppCard
@@ -247,5 +250,33 @@ const ifaceIcon = (kind: string) => (kind === 'wifi' ? Wifi : kind === 'ethernet
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: var(--gap);
   align-items: stretch;
+}
+
+/* Móvil y ventanas estrechas: la cabecera de estado se apila (los datos bajan a su propia fila). */
+@media (max-width: 640px) {
+  .hero {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .hero-text {
+    flex: 1 1 12rem;
+  }
+
+  .hero-text p {
+    white-space: normal;
+  }
+
+  .hero-stats {
+    flex: 1 1 100%;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .hero-stats div:first-child {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
 }
 </style>

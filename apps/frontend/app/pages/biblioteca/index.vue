@@ -345,14 +345,21 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
               :tone="bookList.length ? 'ok' : 'muted'"
               :label="books?.state === 'ok' ? t('lib.books.count', { n: bookList.length }) : t('state.unavailable')"
             />
-            <NuxtLink v-if="!publicView" to="/sistema/mantenimiento" class="btn btn-ghost" :title="t('lib.manage')">
+            <NuxtLink v-if="!publicView" to="/sistema/mantenimiento#mnt-content" class="btn btn-ghost" :title="t('lib.manage')">
               <Settings2 :size="18" aria-hidden="true" />
-              {{ t('lib.shelf.manage') }}
+              <span class="lbl">{{ t('lib.shelf.manage') }}</span>
             </NuxtLink>
           </header>
 
-          <ProbeNote :probe="books" />
-          <p v-if="books?.state === 'ok' && !bookList.length && !downloads.length" class="muted small">{{ t('lib.books.none') }}</p>
+          <!-- Sin libros: qué hacer (descargar) en lugar de un mensaje técnico; el motivo real queda en pequeño. -->
+          <div v-if="!publicView && !bookList.length && !downloads.length" class="shelf-empty">
+            <p>{{ t('lib.shelf.empty') }}</p>
+            <NuxtLink to="/sistema/mantenimiento#mnt-content" class="btn btn-primary">
+              <Download :size="18" aria-hidden="true" />{{ t('lib.shelf.download') }}
+            </NuxtLink>
+            <small v-if="books && books.state !== 'ok'" class="faint">{{ books.reason }}</small>
+          </div>
+          <ProbeNote v-else-if="publicView" :probe="books" />
 
           <div class="shelf">
             <NuxtLink
@@ -437,8 +444,9 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
 <style scoped>
 /* ---------- Cabecera: buscador y asistente en la misma fila ---------- */
 .search {
-  flex: 1;
-  min-width: 0;
+  /* Comparte fila con el título si cabe (≥ 18 rem); si no, baja a su propia fila a ancho completo. */
+  flex: 1 1 18rem;
+  min-width: min(100%, 18rem);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -668,6 +676,38 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   align-items: center;
   gap: 0.5rem;
   min-height: 2.5rem;
+}
+
+.shelf-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+.shelf-empty p {
+  flex: 1 1 16rem;
+  color: var(--text);
+}
+
+.shelf-empty small {
+  flex-basis: 100%;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 640px) {
+  .search {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .panel-head .lbl {
+    display: none;
+  }
 }
 
 .panel-head h2 {

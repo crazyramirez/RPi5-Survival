@@ -41,6 +41,7 @@ export function profilePaths(profile, root) {
       zimDir: `${v}/library/zim`,
       libraryXml: `${v}/library/zim/library.xml`,
       manifest: `${v}/library/manifest.json`,
+      docsDir: `${v}/library/docs`,
       llmDir: `${v}/llm`,
       mapsDir: `${v}/maps`,
       routingDir: `${v}/routing`,
@@ -59,6 +60,7 @@ export function profilePaths(profile, root) {
     zimDir: join(data, 'library', 'zim'),
     libraryXml: join(data, 'library', 'zim', 'library.xml'),
     manifest: join(data, 'library', 'manifest.json'),
+    docsDir: join(data, 'library', 'docs'),
     llmDir: join(data, 'llm'),
     mapsDir: join(data, 'maps'),
     routingDir: join(data, 'routing'),
@@ -77,6 +79,8 @@ export function loadCatalog(file = resolve(HERE, '..', 'content', 'catalog.json'
 
 // ------------------------------------------------------------------ Utilidades
 
+/** Algunos servidores (FAO, archive.org…) rechazan peticiones sin User-Agent. */
+const UA = { 'user-agent': 'Mozilla/5.0 (compatible; SurvivalOS/0.8; biblioteca offline)' }
 const MiB = 1024 * 1024
 const GiB = 1024 * MiB
 const fmt = (b) => (b == null ? '?' : b >= GiB ? `${(b / GiB).toFixed(2)} GiB` : `${(b / MiB).toFixed(0)} MiB`)
@@ -156,7 +160,7 @@ export async function download(urls, dest, { total = null, onBytes = () => undef
       const ctrl = new AbortController()
       let res
       try {
-        res = await fetch(url, { headers: have ? { Range: `bytes=${have}-` } : {}, signal: ctrl.signal, redirect: 'follow' })
+        res = await fetch(url, { headers: { ...UA, ...(have ? { Range: `bytes=${have}-` } : {}) }, signal: ctrl.signal, redirect: 'follow' })
       } catch (err) {
         lastErr = err
         continue
@@ -563,6 +567,70 @@ function runScript(paths, script, args, item) {
   })
 }
 
+// ------------------------------------------------------------------ Manuales PDF
+
+/** Carpeta de los manuales del catálogo dentro de los documentos de la biblioteca. */
+const MANUALS = 'manuales'
+
+/** Pide a la biblioteca que vuelva a indexar los documentos (búsqueda de texto completo). */
+async function reindexLibrary() {
+  const base = process.env.NUXT_LIBRARY_URL || process.env.LIBRARY_URL_INTERNAL || 'http://127.0.0.1:8782'
+  await fetch(`${base.replace(/\/$/, '')}/reindex`, { method: 'POST', signal: AbortSignal.timeout(10_000) }).catch(() => undefined)
+}
+
+async function installDoc(catalog, paths, item) {
+  const d = item.doc
+  // Portable: pdftotext para que el manual salga en las búsquedas (opcional: sin él se puede leer igual).
+  if (paths.profile === 'portable' && catalog.components.xpdf) {
+    await ensureComponent(catalog, paths, 'xpdf').catch((err) => warn(`pdftotext no disponible: ${err instanceof Error ? err.message : err}`))
+  }
+  const base = join(paths.docsDir, MANUALS)
+  mkdirSync(base, { recursive: true })
+  const free = await freeBytes(base)
+  if ((d.bytes ?? 0) + 512 * MiB > free) throw new Error(`sin espacio para ${item.title}: libres ${fmt(free)}`)
+  // Libros publicados por capítulos (p. ej. Hesperian): una carpeta con los capítulos numerados.
+  const files = d.parts ? d.parts.map((p) => ({ ...p, dest: join(base, item.id, p.file) })) : [{ ...d, dest: join(base, d.file) }]
+  const total = files.reduce((a, f) => a + (f.bytes ?? 0), 0)
+  let done = 0
+  setItem(paths, item.id, { state: 'downloading', file: d.parts ? item.id : d.file, total, done: 0, error: null })
+  say(`${item.title}: ${files.length > 1 ? `${files.length} capítulos` : d.file} (${fmt(total)})`)
+  for (const f of files) {
+    mkdirSync(dirname(f.dest), { recursive: true })
+    await downloadVerified([f.url], f.dest, f.sha256, { total: f.bytes ?? null, label: files.length > 1 ? `${item.title} · ${f.file}` : item.title })
+    done += f.bytes ?? 0
+    setItem(paths, item.id, { done })
+  }
+  // Títulos legibles para la búsqueda de la biblioteca (el indexador los usa en vez del nombre de fichero).
+  const titlesFile = join(base, 'titles.json')
+  let titles = {}
+  try {
+    titles = JSON.parse(readFileSync(titlesFile, 'utf8'))
+  } catch {
+    // primera vez
+  }
+  for (const f of files) {
+    const rel = d.parts ? `${MANUALS}/${item.id}/${f.file}` : `${MANUALS}/${d.file}`
+    titles[rel] = d.parts && f.title ? `${item.title} · ${f.title}` : item.title
+  }
+  writeFileSync(titlesFile, JSON.stringify(titles, null, 1))
+  own(paths, base)
+  writeManifest(paths, {
+    id: `doc-${item.id}`,
+    kind: 'doc',
+    title: item.title,
+    language: item.lang,
+    version: d.edition ?? null,
+    source: d.url,
+    retrievedAt: new Date().toISOString().slice(0, 10),
+    license: item.license,
+    sizeBytes: total,
+    sha256: d.sha256 ?? null,
+    path: d.parts ? `docs/${MANUALS}/${item.id}/` : `docs/${MANUALS}/${d.file}`,
+  })
+  setItem(paths, item.id, { state: 'installed', file: d.parts ? item.id : d.file, bytes: total, sha256: d.sha256 ?? null })
+  say(`OK ${item.title} (SHA-256 verificado)`)
+}
+
 // ------------------------------------------------------------------ Orquestación
 
 export function findItem(catalog, id) {
@@ -585,6 +653,7 @@ export async function install(catalog, paths, specs) {
       else if (item.kind === 'maps') await installMaps(catalog, paths, item)
       else if (item.kind === 'routing') await installRouting(catalog, paths, item)
       else if (item.kind === 'llm') await installLlm(catalog, paths, item)
+      else if (item.kind === 'doc') await installDoc(catalog, paths, item)
       else throw new Error(`tipo desconocido ${item.kind}`)
     } catch (err) {
       failed++
@@ -593,6 +662,8 @@ export async function install(catalog, paths, specs) {
       setItem(paths, item.id, { state: 'failed', error: msg.slice(0, 300) })
     }
   }
+  // Manuales nuevos o quitados: la biblioteca vuelve a indexar para que aparezcan en la búsqueda.
+  if (specs.some((s) => findItem(catalog, s.split(':')[0])?.kind === 'doc')) await reindexLibrary()
   return failed
 }
 
@@ -603,6 +674,7 @@ export async function remove(catalog, paths, ids) {
     if (!item || !st) continue
     if (item.kind === 'zim' && st.file) removeZimFile(paths, st.file)
     if (item.kind === 'maps' && st.file) rmSync(join(paths.mapsDir, st.file), { force: true })
+    if (item.kind === 'doc' && st.file) rmSync(join(paths.docsDir, MANUALS, item.doc.parts ? item.id : item.doc.file), { recursive: true, force: true })
     if (item.kind === 'llm' && st.file) {
       if (paths.profile === 'pi') spawnSync('bash', [join(paths.scripts, 'llm-install.sh'), '--remove', item.llm.model], { stdio: 'inherit' })
       else {

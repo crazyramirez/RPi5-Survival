@@ -4,13 +4,14 @@ import * as maplibregl from 'maplibre-gl'
 import type { GeoJSONSource, Map as MlMap, Marker } from 'maplibre-gl'
 import { PMTiles, Protocol } from 'pmtiles'
 import { layers, namedFlavor } from '@protomaps/basemaps'
-import { Bike, Car, Circle, Copy, Crosshair, Download, Footprints, Info, LocateFixed, Map as MapIcon, MapPinPlus, Minus, Moon, Plus, Route, Sun, TriangleAlert, X } from '@lucide/vue'
+import { Bike, Car, Circle, Copy, Crosshair, Download, Footprints, Info, LocateFixed, Map as MapIcon, MapPinPlus, Minus, Moon, Plus, Route, Sun, TriangleAlert, Usb, X } from '@lucide/vue'
 import type { MapPackage, RouteMode, RouteResult, RoutingStatus, TrackPoint, Waypoint, WaypointKind } from '@survival-os/shared-types'
 import { parseMapQuery } from '~/utils/coords'
 import { formatAge, formatBytes, formatDuration } from '~/utils/format'
 import { formatDistance, WAYPOINT_COLORS, WAYPOINT_KINDS } from '~/utils/waypoints'
 
 const t = useT()
+const portable = usePortable()
 /** `?lat=&lon=&z=`: abrir el mapa en un punto concreto (enlaces). */
 const initialView = parseMapQuery(useRoute().query as Record<string, unknown>)
 const { nav, refreshNav } = useNav()
@@ -429,13 +430,10 @@ onBeforeUnmount(() => {
     <h1 v-if="!(maps && maps.length === 0)" class="sr-only">{{ t('module.maps') }}</h1>
     <div v-if="maps && maps.length === 0" class="page">
       <PageHeader :title="t('module.maps')" :icon="MapIcon" />
-      <div class="grid-cards">
-        <AppCard :title="t('maps.cartography')" :icon="MapIcon" tone="muted" :pill="t('state.unavailable')">
-          <strong>{{ t('maps.cartography.none') }}</strong>
-          <p>{{ t('maps.install.howto') }}</p>
-          <NuxtLink to="/sistema/mantenimiento" class="btn btn-primary">{{ t('mnt.usb.scan') }}</NuxtLink>
-        </AppCard>
-      </div>
+      <EmptyState :icon="MapIcon" :title="t('maps.cartography.none')" :text="t('maps.empty.text')">
+        <NuxtLink to="/sistema/mantenimiento#mnt-content" class="btn btn-primary"><Download :size="18" aria-hidden="true" />{{ t('maps.empty.download') }}</NuxtLink>
+        <NuxtLink v-if="!portable" to="/sistema/mantenimiento#mnt-usb" class="btn"><Usb :size="18" aria-hidden="true" />{{ t('mnt.usb.scan') }}</NuxtLink>
+      </EmptyState>
     </div>
 
     <template v-else>

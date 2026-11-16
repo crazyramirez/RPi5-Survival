@@ -19,6 +19,11 @@ onMounted(async () => {
 const summaries = computed(() => moduleSummaries(status.value, { nav: nav.value, maps: mapsCount.value }))
 
 const publicView = isPublicView()
+/** Columnas en horizontal según el número de módulos: 8 → 4×2, 6 → 3×2, 4 → 2×2 (sin filas cojas). */
+const cols = computed(() => {
+  const n = tiles.value.length
+  return n <= 2 ? n : n <= 4 ? 2 : n <= 6 ? 3 : 4
+})
 
 // Primera puesta en marcha (ADR 0015): si aún no se ha hecho ni omitido, se abre la bienvenida.
 onMounted(async () => {
@@ -47,7 +52,7 @@ const loading = computed(() => status.value === null && alerts.value.length === 
 <template>
   <div class="home">
     <ContentProgress v-if="!publicView" />
-    <div class="tiles">
+    <div class="tiles" :style="{ '--cols': cols }">
       <ModuleTile
         v-for="tile in tiles"
         :key="tile.id"
@@ -85,18 +90,47 @@ const loading = computed(() => status.value === null && alerts.value.length === 
 <style scoped>
 .home {
   height: 100%;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
   gap: var(--gap);
-  padding: 0.75rem 0.875rem 0.75rem;
+  padding: 0.75rem max(0.875rem, calc((100% - var(--content-max)) / 2)) 0.75rem;
 }
 
+/*
+ * Horizontal (portátil 16:10/16:9, panel de la Pi, monitor): cuadrícula fija que llena la pantalla
+ * sin filas cojas. Vertical o estrecho (móvil, tablet en vertical): 2 columnas y desplazamiento.
+ */
 .tiles {
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
   grid-auto-rows: minmax(0, 1fr);
   gap: var(--gap);
   min-height: 0;
+}
+
+.home > :not(.tiles) {
+  flex: none;
+}
+
+@media (max-aspect-ratio: 1/1), (max-width: 640px) {
+  .home {
+    overflow-y: auto;
+  }
+
+  /* Llenan el alto disponible (tablet en vertical) y, si no cabe, la página se desplaza. */
+  .tiles {
+    flex: 1 0 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(9rem, 1fr);
+  }
+}
+
+@media (max-width: 340px) {
+  .tiles {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: minmax(7rem, auto);
+  }
 }
 
 .alerts {

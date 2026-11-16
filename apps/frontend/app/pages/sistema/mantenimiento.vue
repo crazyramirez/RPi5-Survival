@@ -105,6 +105,12 @@ function goTo(id: SectionId): void {
   document.getElementById(`mnt-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 let sectionObserver: IntersectionObserver | undefined
+// Enlaces con ancla (p. ej. «Descargar mapas» → /sistema/mantenimiento#mnt-content): el desplazamiento
+// es interno (.page), así que el navegador no lo hace solo.
+onMounted(() => {
+  const hash = useRoute().hash
+  if (/^#mnt-[a-z]+$/.test(hash)) setTimeout(() => document.querySelector(hash)?.scrollIntoView({ block: 'start' }), 350)
+})
 onMounted(() => {
   sectionObserver = new IntersectionObserver(
     (entries) => {
@@ -163,6 +169,7 @@ const PIN_LEGEND = [
     <!-- Versión portable (ADR 0014): sin tareas de la Pi; carpetas, instalar y cerrar. -->
     <div v-if="portable" class="bento">
       <PortableCard />
+      <ShareCard />
     </div>
 
     <template v-else>

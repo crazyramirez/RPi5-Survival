@@ -71,61 +71,68 @@ const power = computed(() => {
 </script>
 
 <template>
-  <header class="bar" role="status" aria-live="polite">
-    <div class="item clock">
-      <Clock :size="18" aria-hidden="true" />
-      <span class="mono strong">{{ formatClock(now) }}</span>
-      <span class="date statusbar-date">{{ formatDate(now) }}</span>
-      <span v-if="!publicView" class="tag" :class="`tone-${timeSource.tone}`">{{ t(timeSource.key) }}</span>
-    </div>
-
-    <template v-if="publicView">
-      <div class="spacer" />
-      <span class="tag tone-info">{{ t('ui.public.tag') }}</span>
-    </template>
-    <template v-else>
-      <div v-if="apiDown" class="item tone-danger api-down">
-        <TriangleAlert :size="18" aria-hidden="true" />
-        <span>{{ t('bar.api.down') }}</span>
+  <div class="wrap">
+    <header class="bar" role="status" aria-live="polite">
+      <div class="item clock">
+        <Clock :size="18" aria-hidden="true" />
+        <span class="mono strong">{{ formatClock(now) }}</span>
+        <span class="date statusbar-date">{{ formatDate(now) }}</span>
+        <span v-if="!publicView" class="tag" :class="`tone-${timeSource.tone}`">{{ t(timeSource.key) }}</span>
       </div>
 
-      <div class="spacer" />
+      <template v-if="publicView">
+        <div class="spacer" />
+        <span class="tag tone-info">{{ t('ui.public.tag') }}</span>
+      </template>
+      <template v-else>
+        <div v-if="apiDown" class="item tone-danger api-down">
+          <TriangleAlert :size="18" aria-hidden="true" />
+          <span>{{ t('bar.api.down') }}</span>
+        </div>
 
-      <div class="item" :class="`tone-${gnss.tone}`">
-        <Satellite :size="18" aria-hidden="true" />
-        <span>{{ gnss.text }}</span>
-      </div>
+        <div class="spacer" />
 
-      <div class="item" :class="network.online ? 'tone-info' : 'tone-muted'">
-        <component :is="network.online ? Wifi : WifiOff" :size="18" aria-hidden="true" />
-        <span>{{ network.text }}</span>
-      </div>
+        <div class="item i-gnss" :class="`tone-${gnss.tone}`" :title="gnss.text">
+          <Satellite :size="18" aria-hidden="true" />
+          <span>{{ gnss.text }}</span>
+        </div>
 
-      <div class="item" :class="temp ? `tone-${temp.tone}` : 'tone-muted'">
-        <Thermometer :size="18" aria-hidden="true" />
-        <span class="mono">{{ temp?.text ?? '—' }}</span>
-      </div>
+        <div class="item i-net" :class="network.online ? 'tone-info' : 'tone-muted'" :title="network.text">
+          <component :is="network.online ? Wifi : WifiOff" :size="18" aria-hidden="true" />
+          <span>{{ network.text }}</span>
+        </div>
 
-      <div class="item tone-muted">
-        <HardDrive :size="18" aria-hidden="true" />
-        <span>{{ disk ?? '—' }}</span>
-      </div>
+        <div class="item i-temp" :class="temp ? `tone-${temp.tone}` : 'tone-muted'">
+          <Thermometer :size="18" aria-hidden="true" />
+          <span class="mono">{{ temp?.text ?? '—' }}</span>
+        </div>
 
-      <div class="item" :class="`tone-${power.tone}`">
-        <component :is="power.icon" :size="18" aria-hidden="true" />
-        <span>{{ power.text }}</span>
-      </div>
-    </template>
-  </header>
+        <div class="item i-disk tone-muted" :title="disk ?? ''">
+          <HardDrive :size="18" aria-hidden="true" />
+          <span>{{ disk ?? '—' }}</span>
+        </div>
+
+        <div class="item i-power" :class="`tone-${power.tone}`" :title="power.text">
+          <component :is="power.icon" :size="18" aria-hidden="true" />
+          <span>{{ power.text }}</span>
+        </div>
+      </template>
+    </header>
+  </div>
 </template>
 
 <style scoped>
+/* La barra se adapta a su propio ancho (container query), no al de la ventana. */
+.wrap {
+  container-type: inline-size;
+}
+
 .bar {
   display: flex;
   align-items: center;
   gap: 0.9rem;
   height: var(--bar-h);
-  padding: 0 0.75rem;
+  padding: 0 max(0.75rem, calc((100% - var(--content-max)) / 2));
   background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 60%, var(--bg)), var(--surface));
   border-bottom: 1px solid var(--border);
   font-size: 0.875rem;
@@ -177,5 +184,55 @@ const power = computed(() => {
 
 .spacer {
   flex: 1;
+}
+
+/*
+ * Prioridad cuando falta ancho: primero la fecha, luego los textos secundarios (queda el icono con su
+ * color de estado y el texto en el título), y en móvil el disco y la temperatura. La hora, su
+ * verificación y la alimentación se ven siempre.
+ */
+@container (max-width: 1000px) {
+  .date {
+    display: none;
+  }
+}
+
+@container (max-width: 860px) {
+  .i-disk span,
+  .i-temp span,
+  .i-net span {
+    display: none;
+  }
+}
+
+@container (max-width: 640px) {
+  .bar {
+    gap: 0.65rem;
+    padding: 0 0.6rem;
+  }
+
+  .i-gnss span,
+  .i-disk,
+  .i-temp {
+    display: none;
+  }
+
+  .i-power span {
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@container (max-width: 400px) {
+  .i-power span {
+    display: none;
+  }
+}
+
+@container (max-width: 350px) {
+  .tag {
+    display: none;
+  }
 }
 </style>

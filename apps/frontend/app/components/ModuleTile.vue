@@ -23,13 +23,15 @@ const t = useT()
 
 <style scoped>
 .tile {
+  /* Container query: icono, título y resumen crecen con el tamaño real de la tarjeta. */
+  container-type: size;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 0.35rem;
   min-height: 0;
-  padding: 0.8rem 0.85rem 0.75rem;
+  padding: clamp(0.8rem, 5cqmin, 1.6rem) clamp(0.85rem, 5.5cqmin, 1.75rem) clamp(0.75rem, 4.5cqmin, 1.4rem);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   /* Halo del tono en la esquina inferior: indica el estado sin leer. */
@@ -56,12 +58,17 @@ const t = useT()
 .badge {
   display: grid;
   place-items: center;
-  width: 3.2rem;
-  height: 3.2rem;
-  border-radius: 0.8rem;
+  width: clamp(3rem, 24cqmin, 5.5rem);
+  height: clamp(3rem, 24cqmin, 5.5rem);
+  border-radius: clamp(0.8rem, 6cqmin, 1.4rem);
   color: var(--accent);
   background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 20%, transparent), color-mix(in srgb, var(--accent) 6%, transparent));
   border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.badge svg {
+  width: 56%;
+  height: 56%;
 }
 
 .chev {
@@ -69,7 +76,9 @@ const t = useT()
 }
 
 .title {
-  font-size: 1.2rem;
+  /* Título y resumen juntos abajo; el icono arriba (aire en tarjetas grandes). */
+  margin-top: auto;
+  font-size: clamp(1.15rem, 9cqmin, 2.1rem);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -80,7 +89,7 @@ const t = useT()
   align-items: baseline;
   gap: 0.45rem;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: clamp(0.82rem, 4.6cqmin, 1.1rem);
   line-height: 1.25;
 }
 
@@ -89,6 +98,20 @@ const t = useT()
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* En vertical las tarjetas crecen con su contenido: contención solo horizontal (con «size» el texto
+   largo se recortaría porque la altura no podría depender del contenido). */
+@media (max-aspect-ratio: 1/1), (max-width: 640px) {
+  .tile {
+    container-type: inline-size;
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  .summary {
+    margin-top: auto;
+  }
 }
 
 .dot {

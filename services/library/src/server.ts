@@ -26,6 +26,11 @@ const VERSION = (() => {
 let protocols: LoadedProtocol[] = []
 let indexing: Promise<unknown> | null = null
 let pdftotextAvailable = false
+/** pdftotext del sistema o el de la versión portable (PDFTOTEXT, se descarga con los manuales). */
+function pdftotextPresent(): boolean {
+  const list = [process.env.PDFTOTEXT, '/usr/bin/pdftotext', '/usr/local/bin/pdftotext', '/opt/homebrew/bin/pdftotext'].filter((p): p is string => !!p)
+  return list.some((p) => existsSync(p))
+}
 
 function log(level: 'info' | 'warn' | 'error', msg: string, extra: Record<string, unknown> = {}): void {
   process.stdout.write(`${JSON.stringify({ t: new Date().toISOString(), level, svc: 'library', msg, ...extra })}\n`)
@@ -473,6 +478,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return
   }
   if (method === 'POST' && path === '/reindex') {
+    pdftotextAvailable = pdftotextPresent() // puede haberse descargado después de arrancar
     if (!indexing) {
       indexing = indexDocs(db, config.docsDir, config.maxDocBytes).finally(() => {
         indexing = null
@@ -522,7 +528,7 @@ async function start(): Promise<void> {
   const loaded = await loadProtocols(config.protocolsDir)
   protocols = loaded.protocols
   for (const e of loaded.errors) log('warn', 'protocol_rejected', { detail: e })
-  pdftotextAvailable = ['/usr/bin/pdftotext', '/usr/local/bin/pdftotext'].some((p) => existsSync(p))
+  pdftotextAvailable = pdftotextPresent()
   indexing = indexDocs(db, config.docsDir, config.maxDocBytes)
     .then((r) => log('info', 'indexed', { ...r, skipped: r.skipped.length }))
     .catch((err: unknown) => log('error', 'index_failed', { error: String(err) }))

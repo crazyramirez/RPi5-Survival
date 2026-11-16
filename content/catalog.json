@@ -3,121 +3,3485 @@
   "updated": "2026-11-16",
   "notes": "Catálogo de descargas (ADR 0015). Español por defecto; inglés solo si no hay equivalente en español. approxBytes es orientativo (catálogo Kiwix 2026-11); el motor resuelve el tamaño real y la última versión al descargar. priority: 1 imprescindible, 2 recomendado, 3 extra (si falta espacio se desmarca primero lo de prioridad más alta).",
   "groups": [
-    { "id": "salud", "title": "Salud y primeros auxilios" },
-    { "id": "preparacion", "title": "Preparación y supervivencia" },
-    { "id": "saber", "title": "Enciclopedias y referencia" },
-    { "id": "oficios", "title": "Reparación, oficios y autosuficiencia" },
-    { "id": "libros", "title": "Libros y aprendizaje" },
-    { "id": "mapas", "title": "Mapas y rutas" },
-    { "id": "asistente", "title": "Asistente sin conexión" }
+    {
+      "id": "salud",
+      "title": "Salud y primeros auxilios"
+    },
+    {
+      "id": "preparacion",
+      "title": "Preparación y supervivencia"
+    },
+    {
+      "id": "saber",
+      "title": "Enciclopedias y referencia"
+    },
+    {
+      "id": "oficios",
+      "title": "Reparación, oficios y autosuficiencia"
+    },
+    {
+      "id": "libros",
+      "title": "Libros y aprendizaje"
+    },
+    {
+      "id": "manuales",
+      "title": "Manuales en PDF"
+    },
+    {
+      "id": "mapas",
+      "title": "Mapas y rutas"
+    },
+    {
+      "id": "asistente",
+      "title": "Asistente sin conexión"
+    }
   ],
   "items": [
-    { "id": "wikipedia-medicina", "kind": "zim", "group": "salud", "lang": "es", "priority": 1, "default": true, "zim": { "name": "wikipedia_es_medicine", "flavour": "maxi" }, "approxBytes": 470000000, "license": "CC-BY-SA-4.0", "title": "Wikipedia médica", "description": "Artículos de medicina y salud de Wikipedia, con imágenes." },
-    { "id": "medlineplus", "kind": "zim", "group": "salud", "lang": "es", "priority": 1, "default": true, "zim": { "name": "medlineplus.gov_es_all", "flavour": "" }, "approxBytes": 1770000000, "license": "Public-Domain-US-Gov", "title": "MedlinePlus", "description": "Enciclopedia médica, enfermedades y medicamentos (Biblioteca Nacional de Medicina de EE. UU.)." },
-    { "id": "zimgit-medicine", "kind": "zim", "group": "salud", "lang": "en", "priority": 1, "default": true, "zim": { "name": "zimgit-medicine_en", "flavour": "" }, "approxBytes": 70000000, "license": "Various", "title": "Medical Library", "description": "Libros de medicina de campo y de emergencia." },
-    { "id": "military-medicine", "kind": "zim", "group": "salud", "lang": "en", "priority": 2, "default": true, "zim": { "name": "irp.fas.org_en_military-medicine", "flavour": "" }, "approxBytes": 60000000, "license": "Public-Domain-US-Gov", "title": "Military Medicine", "description": "Manuales militares de medicina de combate y de campo." },
-    { "id": "cdc-travel", "kind": "zim", "group": "salud", "lang": "en", "priority": 3, "default": true, "zim": { "name": "wwwnc.cdc.gov_en_all", "flavour": "" }, "approxBytes": 180000000, "license": "Public-Domain-US-Gov", "title": "CDC Travelers' Health", "description": "Enfermedades por región, vacunas y salud en viaje." },
-    { "id": "mdwiki", "kind": "zim", "group": "salud", "lang": "en", "priority": 3, "default": false, "equivalentOf": "wikipedia-medicina", "zim": { "name": "mdwiki_en_all", "flavour": "maxi" }, "approxBytes": 2300000000, "license": "CC-BY-SA-4.0", "title": "MDWiki", "description": "Enciclopedia médica en inglés. Ya cubierta en español por Wikipedia médica y MedlinePlus." },
-
-    { "id": "ready-gov", "kind": "zim", "group": "preparacion", "lang": "es", "priority": 1, "default": true, "zim": { "name": "ready.gov_es_all", "flavour": "" }, "approxBytes": 2070000000, "license": "Public-Domain-US-Gov", "title": "Ready.gov", "description": "Preparación ante desastres: planes familiares, kits, clima extremo, incendios, apagones." },
-    { "id": "zimgit-post-disaster", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 1, "default": true, "zim": { "name": "zimgit-post-disaster_en", "flavour": "" }, "approxBytes": 640000000, "license": "Various", "title": "Post-Disaster Library", "description": "Recursos para después de un desastre: refugio, saneamiento, energía, comunicación." },
-    { "id": "zimgit-water", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 1, "default": true, "zim": { "name": "zimgit-water_en", "flavour": "" }, "approxBytes": 20000000, "license": "Various", "title": "Water Treatment Library", "description": "Captación y potabilización de agua." },
-    { "id": "zimgit-food", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 2, "default": true, "zim": { "name": "zimgit-food-preparation_en", "flavour": "" }, "approxBytes": 100000000, "license": "Various", "title": "Food for Preppers", "description": "Conservación y preparación de alimentos." },
-    { "id": "zimgit-knots", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 2, "default": true, "zim": { "name": "zimgit-knots_en", "flavour": "" }, "approxBytes": 30000000, "license": "Various", "title": "A Library of Knots", "description": "Nudos, amarres y suturas ilustrados." },
-    { "id": "scoutwiki", "kind": "zim", "group": "preparacion", "lang": "es", "priority": 2, "default": true, "zim": { "name": "scoutwiki.org_es_all", "flavour": "maxi" }, "approxBytes": 20000000, "license": "CC-BY-SA", "title": "WikiRoca (scouts)", "description": "Técnicas scout: orientación, campamento, nudos." },
-    { "id": "outdoors-qa", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 2, "default": true, "zim": { "name": "outdoors.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 140000000, "license": "CC-BY-SA-4.0", "title": "The Great Outdoors Q&A", "description": "Preguntas y respuestas sobre montaña, acampada y supervivencia." },
-    { "id": "armypubs", "kind": "zim", "group": "preparacion", "lang": "en", "priority": 3, "default": true, "zim": { "name": "armypubs_en_all", "flavour": "" }, "approxBytes": 8230000000, "license": "Public-Domain-US-Gov", "title": "Manuales del Ejército de EE. UU.", "description": "Army Publishing Directorate: incluye manuales de supervivencia, primeros auxilios y orientación." },
-
-    { "id": "wikipedia", "kind": "zim", "group": "saber", "lang": "es", "priority": 1, "default": true, "zim": { "name": "wikipedia_es_all", "flavour": "nopic" }, "variants": [ { "flavour": "nopic", "approxBytes": 13300000000, "label": "Sin imágenes" }, { "flavour": "maxi", "approxBytes": 36520000000, "label": "Con imágenes" } ], "approxBytes": 13300000000, "license": "CC-BY-SA-4.0", "title": "Wikipedia en español", "description": "La enciclopedia completa." },
-    { "id": "wiktionary", "kind": "zim", "group": "saber", "lang": "es", "priority": 2, "default": true, "zim": { "name": "wiktionary_es_all", "flavour": "nopic" }, "approxBytes": 660000000, "license": "CC-BY-SA-4.0", "title": "Wikcionario", "description": "Diccionario: definiciones, etimología y traducciones." },
-    { "id": "wikivoyage", "kind": "zim", "group": "saber", "lang": "es", "priority": 2, "default": true, "zim": { "name": "wikivoyage_es_all", "flavour": "maxi" }, "approxBytes": 140000000, "license": "CC-BY-SA-4.0", "title": "Wikiviajes", "description": "Guía de viaje: destinos, transporte, alojamiento." },
-    { "id": "wikisource", "kind": "zim", "group": "saber", "lang": "es", "priority": 3, "default": true, "zim": { "name": "wikisource_es_all", "flavour": "nopic" }, "approxBytes": 400000000, "license": "CC-BY-SA-4.0", "title": "Wikisource", "description": "Textos de dominio público: leyes, documentos históricos, literatura." },
-
-    { "id": "ifixit", "kind": "zim", "group": "oficios", "lang": "es", "priority": 1, "default": true, "zim": { "name": "ifixit_es_all", "flavour": "" }, "approxBytes": 3680000000, "license": "CC-BY-NC-SA-3.0", "title": "iFixit", "description": "Guías de reparación paso a paso: electrónica, vehículos, electrodomésticos." },
-    { "id": "lowtech", "kind": "zim", "group": "oficios", "lang": "es", "priority": 2, "default": true, "zim": { "name": "solar.lowtechmagazine.com_mul_all", "flavour": "" }, "approxBytes": 700000000, "license": "CC-BY-NC-SA", "title": "Low-Tech Magazine", "description": "Energía y técnicas sencillas sin alta tecnología (artículos también en español)." },
-    { "id": "appropedia", "kind": "zim", "group": "oficios", "lang": "en", "priority": 2, "default": true, "zim": { "name": "appropedia_en_all", "flavour": "maxi" }, "approxBytes": 580000000, "license": "CC-BY-SA", "title": "Appropedia", "description": "Tecnología apropiada: agua, energía, construcción, agricultura." },
-    { "id": "energypedia", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "energypedia_en_all", "flavour": "nopic" }, "approxBytes": 720000000, "license": "CC-BY-SA", "title": "energypedia", "description": "Energía solar, biomasa y electrificación en lugares aislados." },
-    { "id": "diy-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "diy.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 2090000000, "license": "CC-BY-SA-4.0", "title": "Home Improvement Q&A", "description": "Fontanería, electricidad, carpintería y reparaciones de casa." },
-    { "id": "gardening-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "gardening.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 930000000, "license": "CC-BY-SA-4.0", "title": "Gardening Q&A", "description": "Huerto, plantas y plagas." },
-    { "id": "mechanics-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "mechanics.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 340000000, "license": "CC-BY-SA-4.0", "title": "Motor Vehicle Mechanics Q&A", "description": "Mecánica de coches y motos." },
-    { "id": "ham-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "ham.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 80000000, "license": "CC-BY-SA-4.0", "title": "Amateur Radio Q&A", "description": "Radioafición, antenas y comunicaciones." },
-    { "id": "cooking-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "cooking.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 240000000, "license": "CC-BY-SA-4.0", "title": "Seasoned Advice", "description": "Cocina y conservación de alimentos." },
-    { "id": "sustainability-qa", "kind": "zim", "group": "oficios", "lang": "en", "priority": 3, "default": true, "zim": { "name": "sustainability.stackexchange.com_en_all", "flavour": "" }, "approxBytes": 30000000, "license": "CC-BY-SA-4.0", "title": "Sustainable Living Q&A", "description": "Vida sostenible y autosuficiencia." },
-
-    { "id": "wikibooks", "kind": "zim", "group": "libros", "lang": "es", "priority": 2, "default": true, "zim": { "name": "wikibooks_es_all", "flavour": "maxi" }, "approxBytes": 280000000, "license": "CC-BY-SA-4.0", "title": "Wikilibros", "description": "Manuales y libros de texto libres." },
-    { "id": "gutenberg", "kind": "zim", "group": "libros", "lang": "es", "priority": 2, "default": true, "zim": { "name": "gutenberg_es_all", "flavour": "" }, "approxBytes": 1860000000, "license": "Public-Domain", "title": "Proyecto Gutenberg", "description": "Libros clásicos en español de dominio público." },
-    { "id": "wikiversity", "kind": "zim", "group": "libros", "lang": "es", "priority": 3, "default": true, "zim": { "name": "wikiversity_es_all", "flavour": "maxi" }, "approxBytes": 40000000, "license": "CC-BY-SA-4.0", "title": "Wikiversidad", "description": "Cursos y materiales de aprendizaje." },
-    { "id": "phet", "kind": "zim", "group": "libros", "lang": "es", "priority": 3, "default": true, "zim": { "name": "phet_es_all", "flavour": "" }, "approxBytes": 110000000, "license": "CC-BY-4.0", "title": "Simulaciones PhET", "description": "Simulaciones interactivas de física, química y matemáticas." },
-
-    { "id": "mapa-espana", "kind": "maps", "group": "mapas", "lang": "es", "priority": 1, "default": true, "maps": { "region": "espana", "bbox": [-9.5, 35.9, 4.4, 43.9], "maxzoom": 15 }, "approxBytes": 3400000000, "license": "ODbL-1.0", "title": "Mapa de España peninsular y Baleares", "description": "Calles, caminos y relieve hasta nivel de calle (zoom 15)." },
-    { "id": "mapa-canarias", "kind": "maps", "group": "mapas", "lang": "es", "priority": 1, "default": true, "maps": { "region": "canarias", "bbox": [-18.3, 27.5, -13.3, 29.5], "maxzoom": 15 }, "approxBytes": 63000000, "license": "ODbL-1.0", "title": "Mapa de Canarias", "description": "Calles y caminos hasta nivel de calle (zoom 15)." },
-    { "id": "mapa-mundo", "kind": "maps", "group": "mapas", "lang": "es", "priority": 2, "default": true, "maps": { "region": "mundo", "bbox": [-180, -85, 180, 85], "maxzoom": 6 }, "approxBytes": 120000000, "license": "ODbL-1.0", "title": "Mapa del mundo (general)", "description": "Países, ciudades y carreteras principales (zoom 6)." },
-    { "id": "rutas-espana", "kind": "routing", "group": "mapas", "lang": "es", "priority": 2, "default": true, "routing": { "region": "espana", "tiles": ["W10_N35", "W10_N40", "W5_N35", "W5_N40", "E0_N35", "E0_N40"] }, "approxBytes": 1100000000, "license": "ODbL-1.0", "title": "Rutas sin conexión: España", "description": "Cálculo de rutas a pie, en bici y en coche (BRouter)." },
-    { "id": "rutas-canarias", "kind": "routing", "group": "mapas", "lang": "es", "priority": 2, "default": true, "routing": { "region": "canarias", "tiles": ["W20_N25", "W15_N25"] }, "approxBytes": 40000000, "license": "ODbL-1.0", "title": "Rutas sin conexión: Canarias", "description": "Cálculo de rutas a pie, en bici y en coche (BRouter)." },
-
-    { "id": "asistente", "kind": "llm", "group": "asistente", "lang": "es", "priority": 2, "default": true, "llm": { "model": "qwen3-4b" }, "approxBytes": 2400000000, "license": "Apache-2.0", "title": "Asistente sin conexión (Qwen3 4B)", "description": "Responde preguntas citando los protocolos y la biblioteca. Funciona sin Internet." }
+    {
+      "id": "wikipedia-medicina",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_es_medicine",
+        "flavour": "maxi"
+      },
+      "approxBytes": 470000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia médica",
+      "description": "Artículos de medicina y salud de Wikipedia, con imágenes."
+    },
+    {
+      "id": "medlineplus",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "medlineplus.gov_es_all",
+        "flavour": ""
+      },
+      "approxBytes": 1770000000,
+      "license": "Public-Domain-US-Gov",
+      "title": "MedlinePlus",
+      "description": "Enciclopedia médica, enfermedades y medicamentos (Biblioteca Nacional de Medicina de EE. UU.)."
+    },
+    {
+      "id": "zimgit-medicine",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "zimgit-medicine_en",
+        "flavour": ""
+      },
+      "approxBytes": 70000000,
+      "license": "Various",
+      "title": "Medical Library",
+      "description": "Libros de medicina de campo y de emergencia."
+    },
+    {
+      "id": "military-medicine",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "irp.fas.org_en_military-medicine",
+        "flavour": ""
+      },
+      "approxBytes": 60000000,
+      "license": "Public-Domain-US-Gov",
+      "title": "Military Medicine",
+      "description": "Manuales militares de medicina de combate y de campo."
+    },
+    {
+      "id": "cdc-travel",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wwwnc.cdc.gov_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 180000000,
+      "license": "Public-Domain-US-Gov",
+      "title": "CDC Travelers' Health",
+      "description": "Enfermedades por región, vacunas y salud en viaje."
+    },
+    {
+      "id": "mdwiki",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "en",
+      "priority": 3,
+      "default": false,
+      "equivalentOf": "wikipedia-medicina",
+      "zim": {
+        "name": "mdwiki_en_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 2300000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "MDWiki",
+      "description": "Enciclopedia médica en inglés. Ya cubierta en español por Wikipedia médica y MedlinePlus."
+    },
+    {
+      "id": "ready-gov",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ready.gov_es_all",
+        "flavour": ""
+      },
+      "approxBytes": 2070000000,
+      "license": "Public-Domain-US-Gov",
+      "title": "Ready.gov",
+      "description": "Preparación ante desastres: planes familiares, kits, clima extremo, incendios, apagones."
+    },
+    {
+      "id": "zimgit-post-disaster",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "zimgit-post-disaster_en",
+        "flavour": ""
+      },
+      "approxBytes": 640000000,
+      "license": "Various",
+      "title": "Post-Disaster Library",
+      "description": "Recursos para después de un desastre: refugio, saneamiento, energía, comunicación."
+    },
+    {
+      "id": "zimgit-water",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "zimgit-water_en",
+        "flavour": ""
+      },
+      "approxBytes": 20000000,
+      "license": "Various",
+      "title": "Water Treatment Library",
+      "description": "Captación y potabilización de agua."
+    },
+    {
+      "id": "zimgit-food",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "zimgit-food-preparation_en",
+        "flavour": ""
+      },
+      "approxBytes": 100000000,
+      "license": "Various",
+      "title": "Food for Preppers",
+      "description": "Conservación y preparación de alimentos."
+    },
+    {
+      "id": "zimgit-knots",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "zimgit-knots_en",
+        "flavour": ""
+      },
+      "approxBytes": 30000000,
+      "license": "Various",
+      "title": "A Library of Knots",
+      "description": "Nudos, amarres y suturas ilustrados."
+    },
+    {
+      "id": "scoutwiki",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "scoutwiki.org_es_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 20000000,
+      "license": "CC-BY-SA",
+      "title": "WikiRoca (scouts)",
+      "description": "Técnicas scout: orientación, campamento, nudos."
+    },
+    {
+      "id": "outdoors-qa",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "outdoors.stackexchange.com_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 140000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "The Great Outdoors Q&A",
+      "description": "Preguntas y respuestas sobre montaña, acampada y supervivencia."
+    },
+    {
+      "id": "armypubs",
+      "kind": "zim",
+      "group": "preparacion",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "armypubs_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 8230000000,
+      "license": "Public-Domain-US-Gov",
+      "title": "Manuales del Ejército de EE. UU.",
+      "description": "Army Publishing Directorate: incluye manuales de supervivencia, primeros auxilios y orientación."
+    },
+    {
+      "id": "wikipedia",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_es_all",
+        "flavour": "nopic"
+      },
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 13300000000,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 36520000000,
+          "label": "Con imágenes"
+        }
+      ],
+      "approxBytes": 13300000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia en español",
+      "description": "La enciclopedia completa."
+    },
+    {
+      "id": "wiktionary",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wiktionary_es_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 660000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikcionario",
+      "description": "Diccionario: definiciones, etimología y traducciones."
+    },
+    {
+      "id": "wikivoyage",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikivoyage_es_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 140000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikiviajes",
+      "description": "Guía de viaje: destinos, transporte, alojamiento."
+    },
+    {
+      "id": "wikisource",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikisource_es_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 400000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikisource",
+      "description": "Textos de dominio público: leyes, documentos históricos, literatura."
+    },
+    {
+      "id": "ifixit",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ifixit_es_all",
+        "flavour": ""
+      },
+      "approxBytes": 3680000000,
+      "license": "CC-BY-NC-SA-3.0",
+      "title": "iFixit",
+      "description": "Guías de reparación paso a paso: electrónica, vehículos, electrodomésticos."
+    },
+    {
+      "id": "lowtech",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "solar.lowtechmagazine.com_mul_all",
+        "flavour": ""
+      },
+      "approxBytes": 700000000,
+      "license": "CC-BY-NC-SA",
+      "title": "Low-Tech Magazine",
+      "description": "Energía y técnicas sencillas sin alta tecnología (artículos también en español)."
+    },
+    {
+      "id": "appropedia",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "appropedia_en_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 580000000,
+      "license": "CC-BY-SA",
+      "title": "Appropedia",
+      "description": "Tecnología apropiada: agua, energía, construcción, agricultura."
+    },
+    {
+      "id": "energypedia",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "energypedia_en_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 720000000,
+      "license": "CC-BY-SA",
+      "title": "energypedia",
+      "description": "Energía solar, biomasa y electrificación en lugares aislados."
+    },
+    {
+      "id": "diy-qa",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "diy.stackexchange.com_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 2090000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Home Improvement Q&A",
+      "description": "Fontanería, electricidad, carpintería y reparaciones de casa."
+    },
+    {
+      "id": "gardening-qa",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "gardening.stackexchange.com_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 930000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Gardening Q&A",
+      "description": "Huerto, plantas y plagas."
+    },
+    {
+      "id": "mechanics-qa",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "mechanics.stackexchange.com_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 340000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Motor Vehicle Mechanics Q&A",
+      "description": "Mecánica de coches y motos."
+    },
+    {
+      "id": "ham-qa",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "ham.stackexchange.com_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 80000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Amateur Radio Q&A",
+      "description": "Radioafición, antenas y comunicaciones."
+    },
+    {
+      "id": "cooking-qa",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "cooking.stackexchange.com_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 240000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Seasoned Advice",
+      "description": "Cocina y conservación de alimentos."
+    },
+    {
+      "id": "sustainability-qa",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "sustainability.stackexchange.com_en_all",
+        "flavour": ""
+      },
+      "approxBytes": 30000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Sustainable Living Q&A",
+      "description": "Vida sostenible y autosuficiencia."
+    },
+    {
+      "id": "wikibooks",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikibooks_es_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 280000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikilibros",
+      "description": "Manuales y libros de texto libres."
+    },
+    {
+      "id": "gutenberg",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "gutenberg_es_all",
+        "flavour": ""
+      },
+      "approxBytes": 1860000000,
+      "license": "Public-Domain",
+      "title": "Proyecto Gutenberg",
+      "description": "Libros clásicos en español de dominio público."
+    },
+    {
+      "id": "wikiversity",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikiversity_es_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 40000000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikiversidad",
+      "description": "Cursos y materiales de aprendizaje."
+    },
+    {
+      "id": "phet",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "phet_es_all",
+        "flavour": ""
+      },
+      "approxBytes": 110000000,
+      "license": "CC-BY-4.0",
+      "title": "Simulaciones PhET",
+      "description": "Simulaciones interactivas de física, química y matemáticas."
+    },
+    {
+      "id": "mapa-espana",
+      "kind": "maps",
+      "group": "mapas",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "maps": {
+        "region": "espana",
+        "bbox": [
+          -9.5,
+          35.9,
+          4.4,
+          43.9
+        ],
+        "maxzoom": 15
+      },
+      "approxBytes": 3400000000,
+      "license": "ODbL-1.0",
+      "title": "Mapa de España peninsular y Baleares",
+      "description": "Calles, caminos y relieve hasta nivel de calle (zoom 15)."
+    },
+    {
+      "id": "mapa-canarias",
+      "kind": "maps",
+      "group": "mapas",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "maps": {
+        "region": "canarias",
+        "bbox": [
+          -18.3,
+          27.5,
+          -13.3,
+          29.5
+        ],
+        "maxzoom": 15
+      },
+      "approxBytes": 63000000,
+      "license": "ODbL-1.0",
+      "title": "Mapa de Canarias",
+      "description": "Calles y caminos hasta nivel de calle (zoom 15)."
+    },
+    {
+      "id": "mapa-mundo",
+      "kind": "maps",
+      "group": "mapas",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "maps": {
+        "region": "mundo",
+        "bbox": [
+          -180,
+          -85,
+          180,
+          85
+        ],
+        "maxzoom": 6
+      },
+      "approxBytes": 120000000,
+      "license": "ODbL-1.0",
+      "title": "Mapa del mundo (general)",
+      "description": "Países, ciudades y carreteras principales (zoom 6)."
+    },
+    {
+      "id": "rutas-espana",
+      "kind": "routing",
+      "group": "mapas",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "routing": {
+        "region": "espana",
+        "tiles": [
+          "W10_N35",
+          "W10_N40",
+          "W5_N35",
+          "W5_N40",
+          "E0_N35",
+          "E0_N40"
+        ]
+      },
+      "approxBytes": 1100000000,
+      "license": "ODbL-1.0",
+      "title": "Rutas sin conexión: España",
+      "description": "Cálculo de rutas a pie, en bici y en coche (BRouter)."
+    },
+    {
+      "id": "rutas-canarias",
+      "kind": "routing",
+      "group": "mapas",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "routing": {
+        "region": "canarias",
+        "tiles": [
+          "W20_N25",
+          "W15_N25"
+        ]
+      },
+      "approxBytes": 40000000,
+      "license": "ODbL-1.0",
+      "title": "Rutas sin conexión: Canarias",
+      "description": "Cálculo de rutas a pie, en bici y en coche (BRouter)."
+    },
+    {
+      "id": "asistente",
+      "kind": "llm",
+      "group": "asistente",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "llm": {
+        "model": "qwen3-4b"
+      },
+      "approxBytes": 2400000000,
+      "license": "Apache-2.0",
+      "title": "Asistente sin conexión (Qwen3 4B)",
+      "description": "Responde preguntas citando los protocolos y la biblioteca. Funciona sin Internet."
+    },
+    {
+      "id": "hesperian-donde-no-hay-doctor",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "parts": [
+          {
+            "file": "01-inicio-libro-portada-como-usar-este-libro-agradecimientos-co.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_fm.pdf",
+            "sha256": "4924ebbf8dea1933927acc94663e1fff3de18982e34c653e35ba0927031b1d5c",
+            "bytes": 586756,
+            "title": "Inicio Libro: Portada, Cómo usar este libro, Agradecimientos, Contenido, Introducción, Notas sobre e"
+          },
+          {
+            "file": "02-palabras-a-los-trabajadores-de-salud-rural.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_brp.pdf",
+            "sha256": "9e157c5c3d87a9d51a7c73d295c461f7b6d438bea65158899c668c5e52a802fc",
+            "bytes": 1137877,
+            "title": "Palabras a los trabajadores de salud rural"
+          },
+          {
+            "file": "03-1-curaciones-caseras-y-creencias-populares.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_01.pdf",
+            "sha256": "0d87581f62e27d13329353616035263613415d084ea24260fab9af2b246a05ba",
+            "bytes": 820882,
+            "title": "1 Curaciones caseras y creencias populares"
+          },
+          {
+            "file": "04-2-enfermedades-que-se-confunden-con-frecuencia.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_02.pdf",
+            "sha256": "48f064a46de9ee6ca7596e65bf888cad768724be770f19bc22305e26c6b67d4d",
+            "bytes": 626470,
+            "title": "2 Enfermedades que se confunden con frecuencia"
+          },
+          {
+            "file": "05-3-como-examinar-a-un-enfermo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_03.pdf",
+            "sha256": "c679383dd21af524241da968a66369ca633a7382787994808a5568756f338d33",
+            "bytes": 622625,
+            "title": "3 Cómo examinar a un enfermo"
+          },
+          {
+            "file": "06-4-como-cuidar-a-un-enfermo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_04.pdf",
+            "sha256": "f195d1883976778b1b34adfdc46dc237930b487f2c1c62dcc2f6ef56c048f245",
+            "bytes": 440550,
+            "title": "4 Cómo cuidar a un enfermo"
+          },
+          {
+            "file": "07-5-curando-sin-medicinas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_05.pdf",
+            "sha256": "36671c9298d0b121d47f09004789eb9f0f79836726e0b5a22e75007dce94516c",
+            "bytes": 419944,
+            "title": "5 Curando sin medicinas"
+          },
+          {
+            "file": "08-6-el-buen-uso-y-el-mal-uso-de-las-medicinas-modernas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_06.pdf",
+            "sha256": "4293ce09c80b8a620220bfa0694aebdb3bfff11acef276f09bc8d1f409736b10",
+            "bytes": 450241,
+            "title": "6 El buen uso y el mal uso de las medicinas modernas"
+          },
+          {
+            "file": "09-7-los-antibioticos-que-son-y-como-usarlos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_07.pdf",
+            "sha256": "97a065524908a8823c3a7cc11a29f30ba4befaf3bb0989c0d4d267026b6c9a1f",
+            "bytes": 425134,
+            "title": "7 Los antibióticos: Qué son y cómo usarlos"
+          },
+          {
+            "file": "10-8-como-medir-y-dar-las-medicinas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_08.pdf",
+            "sha256": "552b83f818aefd34538c4db14b025234a04ea008688aa742a1d3c2d778eb2a96",
+            "bytes": 528486,
+            "title": "8 Cómo medir y dar las medicinas"
+          },
+          {
+            "file": "11-9-instrucciones-y-precauciones-para-inyectar.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_09.pdf",
+            "sha256": "2b99bbccc6dbfcc3504b9d996698b6eca0354bc9193a2e9bb5780ef856d38950",
+            "bytes": 846104,
+            "title": "9 Instrucciones y precauciones para inyectar"
+          },
+          {
+            "file": "12-10-primeros-auxilios.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_10.pdf",
+            "sha256": "7f7ac99958695d5f7facfb339d54532faf1c270d9b4885f422e81e6230e77e1e",
+            "bytes": 1211104,
+            "title": "10 Primeros auxilios"
+          },
+          {
+            "file": "13-11-nutricion-lo-que-se-debe-comer-para-tener-buena-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_11.pdf",
+            "sha256": "24be10b7ad6c79b54c488d2008fa5f8a6e73fb3d2872a6d4d0eacb9418d2dfa5",
+            "bytes": 1363615,
+            "title": "11 Nutrición: Lo que se debe comer para tener buena salud"
+          },
+          {
+            "file": "14-12-medicina-preventiva-como-evitar-muchas-enfermedades.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_12.pdf",
+            "sha256": "73559c4c9eed16cd8c0ef309dffdc2e8defc0990f4b036858bc3b35890caab8d",
+            "bytes": 972218,
+            "title": "12 Medicina preventiva: Cómo evitar muchas enfermedades"
+          },
+          {
+            "file": "15-13-algunas-enfermedades-muy-comunes.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_13.pdf",
+            "sha256": "097e2d783c5807af205e4a753560f96197c7f86ae17c76321cc1f962b7ede697",
+            "bytes": 1063227,
+            "title": "13 Algunas enfermedades muy comunes"
+          },
+          {
+            "file": "16-14-enfermedades-graves-que-necesitan-atencion-medica-especia.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_14.pdf",
+            "sha256": "b182cb8c4dc07626770920a573ff5ba56e62dd33716ea94801010cbaa4955b41",
+            "bytes": 729939,
+            "title": "14 Enfermedades graves que necesitan atención médica especial"
+          },
+          {
+            "file": "17-15-enfermedades-de-la-piel.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_15.pdf",
+            "sha256": "c9b69805704e59f6c99c596a757fc11e2f669b92e060bb6aad69d80b8de13bd5",
+            "bytes": 1498086,
+            "title": "15 Enfermedades de la piel"
+          },
+          {
+            "file": "18-16-los-ojos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_16.pdf",
+            "sha256": "d65b5c080a63521d557cf677bb546a70006afe9c3da707835c0d512c6a39f0b6",
+            "bytes": 724930,
+            "title": "16 Los ojos"
+          },
+          {
+            "file": "19-17-los-dientes-las-encias-y-la-boca.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_17.pdf",
+            "sha256": "b8f1a9863649248d6b77fbb8b4ec5879be4c5db757514d5c6a4b2e99efece965",
+            "bytes": 488075,
+            "title": "17 Los dientes, las encías y la boca"
+          },
+          {
+            "file": "20-18-las-vias-urinarias-y-las-partes-ocultas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_18.pdf",
+            "sha256": "e4bf102ed71ee1350a98ebbffc1dd46fdd06cafc2d90b4a9792d37e7b78c6d2e",
+            "bytes": 616408,
+            "title": "18 Las vías urinarias y las 'partes ocultas'"
+          },
+          {
+            "file": "21-19-informacion-para-madres-y-parteras.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_19.pdf",
+            "sha256": "761bf628c67d0bc00bc521c08bab9b143732c2ba1a081ce431e03379066af203",
+            "bytes": 1124001,
+            "title": "19 Información para madres y parteras"
+          },
+          {
+            "file": "22-20-planificacion-familiar-tener-el-numero-de-hijos-que-desea.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_20.pdf",
+            "sha256": "01a6714dedbc77259cda673fa3703b681355e2f86a453c30de4c7dd9fb336096",
+            "bytes": 679079,
+            "title": "20 Planificación familiar—Tener el número de hijos que desea"
+          },
+          {
+            "file": "23-21-salud-y-enfermedades-de-los-ninos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_21.pdf",
+            "sha256": "ad24ad23c9632204a32eba10c1596370ace45db505beb6f730726a09d56d76da",
+            "bytes": 1165112,
+            "title": "21 Salud y enfermedades de los niños"
+          },
+          {
+            "file": "24-22-salud-y-enfermedades-de-la-gente-mayor.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_22.pdf",
+            "sha256": "4b886eab59e277c7aa6afd4203ba6981ee3458c951a0a6d99d062df63ed2e92c",
+            "bytes": 479917,
+            "title": "22 Salud y enfermedades de la gente mayor"
+          },
+          {
+            "file": "25-23-el-botiquin.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_23.pdf",
+            "sha256": "5690227e6ee9fff1138d3b65ce15c6457ca1bf245318aa4092b23148b3ef719a",
+            "bytes": 473108,
+            "title": "23 El botiquín"
+          },
+          {
+            "file": "26-las-medicinas-paginas-verdes.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_gp.pdf",
+            "sha256": "c26d2ca6fd6a496b15bf2ee21ef48c155c3774bb888885ca6e38e26ee5094137",
+            "bytes": 747428,
+            "title": "Las medicinas (páginas verdes)"
+          },
+          {
+            "file": "27-informacion-adicional.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_info.pdf",
+            "sha256": "990a907a1f3e325a4a93354469f5504db97508be2333316a7209b1d30fadeb89",
+            "bytes": 815699,
+            "title": "Información adicional"
+          },
+          {
+            "file": "28-digito-presion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_dp.pdf",
+            "sha256": "0069134bc5df5168bf8d6ab2e9c9fe1c62896e196277259ad9d9db3902b7b1c3",
+            "bytes": 488942,
+            "title": "Dígito-Presión"
+          },
+          {
+            "file": "29-vocabulario-explicacion-de-palabras-dificiles.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_gloss.pdf",
+            "sha256": "c6689f805cc5946f8d69c5a8084c191577fcf8d56586ff59aaf8ca7a3486d2b8",
+            "bytes": 373203,
+            "title": "Vocabulario: Explicación de palabras difíciles"
+          },
+          {
+            "file": "30-donde-conseguir-materiales-educativos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_resc.pdf",
+            "sha256": "a44747c54c81b2d727496183eba6618155bb7ed46e79593f906b85d3740fbe84",
+            "bytes": 334223,
+            "title": "Dónde conseguir materiales educativos"
+          },
+          {
+            "file": "31-indice-paginas-amarillas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_indx.pdf",
+            "sha256": "e381a1c94607a12ee97b4571e5efa1346aaf0d34999a0774dc2d41e36c6e394b",
+            "bytes": 399278,
+            "title": "Índice (páginas amarillas)"
+          },
+          {
+            "file": "32-fichas-informes-otros-libros-informacion-sobre-las-senas-vit.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wtnd_2017/es_wtnd_2017_bm.pdf",
+            "sha256": "7b975668213d99a087b63893d9b570147e3519a0843e44437747d5cdffdff64c",
+            "bytes": 859232,
+            "title": "Fichas, informes, Otros libros, Información sobre las señas vitales"
+          }
+        ],
+        "bytes": 23511893
+      },
+      "approxBytes": 23511893,
+      "license": "Hesperian invita a copiar, reproducir o adaptar cualquier parte sin fines de lucro y citando a Hesperian (Licencia de derechos de autor compartidos de Hesperian",
+      "publisher": "Hesperian",
+      "title": "Donde no hay doctor (ed. 2017)",
+      "description": "Manual de salud rural de referencia: diagnóstico, primeros auxilios (cap. 10), medicamentos, infecciones, partos y prevención sin médico."
+    },
+    {
+      "id": "oms-atencion-basica-emergencia",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/f34df79f-c036-4255-9f7f-86df9dad9985/content",
+        "file": "oms-atencion-basica-emergencia.pdf",
+        "sha256": "fcaaf68708729d417b2cdd27cdff78a13cebfef08ebcf15792e5f616b4b1025f",
+        "bytes": 3983929
+      },
+      "approxBytes": 3983929,
+      "license": "CC BY-NC-SA 3.0 IGO (copiar, redistribuir y adaptar con fines no comerciales, citando la fuente)",
+      "publisher": "OMS / CICR",
+      "title": "Atención básica de emergencia: abordaje de lesionados y enfermos agudos (libro del participante)",
+      "description": "Enfoque ABCDE de trauma y urgencias (vía aérea, shock, quemaduras, disnea, inconsciencia) para primera respuesta con pocos recursos."
+    },
+    {
+      "id": "msf-medicamentos-esenciales",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://medicalguidelines.msf.org/sites/default/files/pdf/guideline-339-es.pdf",
+        "file": "msf-medicamentos-esenciales.pdf",
+        "sha256": "c72bed09dc617dfa5c6b85097d53f61a2d60a1d387b74616bc7b0f6eb0012bee",
+        "bytes": 2922550
+      },
+      "approxBytes": 2922550,
+      "license": "© MSF, derechos de reproducción, traducción y adaptación reservados. MSF ofrece el PDF de descarga gratuita (uso personal; no redistribuir).",
+      "publisher": "Médicos Sin Fronteras",
+      "title": "Medicamentos esenciales: guía práctica de utilización (2026)",
+      "description": "Ficha por medicamento: indicaciones, dosis adulto/niño, contraindicaciones y conservación; clave para usar un botiquín."
+    },
+    {
+      "id": "msf-clinical-guidelines-en",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "en",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://medicalguidelines.msf.org/sites/default/files/2026-05/guideline-170-en.pdf",
+        "file": "msf-clinical-guidelines-en.pdf",
+        "sha256": "2064d79c7491079091caf6018fa957eabc5ef087e382081a65cde23aebf8a988",
+        "bytes": 6751876
+      },
+      "approxBytes": 6751876,
+      "license": "© MSF, todos los derechos reservados. Descarga gratuita ofrecida por MSF en su web oficial (uso personal; no redistribuir).",
+      "publisher": "Médicos Sin Fronteras",
+      "title": "Clinical guidelines: diagnosis and treatment manual (MSF, 2026)",
+      "description": "Guía clínica de diagnóstico y tratamiento por síntomas y enfermedades en contextos aislados (la versión española oficial está rota)."
+    },
+    {
+      "id": "oms-primera-ayuda-psicologica",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/8af49662-0dc0-419b-bec3-fc7d1bcf7096/content",
+        "file": "oms-primera-ayuda-psicologica.pdf",
+        "sha256": "c1655b8359c4620c08e6ab98c41c9f1c32959a3f80df90cd2ce7e255620380da",
+        "bytes": 5174939
+      },
+      "approxBytes": 5174939,
+      "license": "© OMS 2012, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS / War Trauma Foundation / Visión Mundial",
+      "title": "Primera ayuda psicológica: guía para trabajadores de campo",
+      "description": "Cómo atender a personas en crisis tras un desastre o violencia: observar, escuchar y conectar con ayuda."
+    },
+    {
+      "id": "cicr-primeros-auxilios-conflictos",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://www.icrc.org/sites/default/files/external/doc/es/assets/files/other/icrc-003-0870.pdf",
+        "file": "cicr-primeros-auxilios-conflictos.pdf",
+        "sha256": "625435af1d9843f461dd3593da6ec91cc69d1f9838ed527689d30f0d6d307d99",
+        "bytes": 3096164
+      },
+      "approxBytes": 3096164,
+      "license": "© CICR. Uso personal/no comercial: se permite copiar el documento íntegro, sin modificaciones y manteniendo copyright y fuente. Descarga gratuita oficial.",
+      "publisher": "CICR",
+      "title": "Primeros auxilios en conflictos armados y otras situaciones de violencia (2013)",
+      "description": "Manual de socorrista para entornos peligrosos: seguridad, triaje, hemorragias, heridas, fracturas, quemaduras y evacuación."
+    },
+    {
+      "id": "ifrc-tratamiento-agua-hogar-emergencias",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://wash.ifrc.org/wp-content/uploads/2025/06/ifrc-hwts-manual-spanish.pdf",
+        "file": "ifrc-tratamiento-agua-hogar-emergencias.pdf",
+        "sha256": "90e326f988c16b3e7d7302a6e0b348c48d6e8cdecb35ccdc128a31abe1f224ab",
+        "bytes": 3768167
+      },
+      "approxBytes": 3768167,
+      "license": "© FICR 2008. Autorizado citar, copiar, traducir o adaptar cualquier parte sin aprobación previa, indicando la fuente (créditos del propio PDF).",
+      "publisher": "FICR (Cruz Roja / Media Luna Roja)",
+      "title": "Sistemas domésticos de tratamiento y almacenamiento de agua en situaciones de emergencia",
+      "description": "Potabilizar agua en casa: hervido, cloro, SODIS, filtrado, floculación y almacenamiento seguro, con volantes ilustrados."
+    },
+    {
+      "id": "hesperian-salud-ambiental",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "parts": [
+          {
+            "file": "01-inicio-libro-agradecimientos-contenido.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_frente.pdf",
+            "sha256": "9a994c91550d6c4138b42e4d2a86f0ecf87b4c9a020fbc743780c26b4e04edd1",
+            "bytes": 381201,
+            "title": "Inicio libro: Agradecimientos, Contenido"
+          },
+          {
+            "file": "02-1-la-promocion-de-la-salud-ambiental-comunitaria.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap01.pdf",
+            "sha256": "bdf09fe07589f86094c4eb10a9910297387e90e7fae0e7c54c663c88f1e333d2",
+            "bytes": 448794,
+            "title": "1 La promoción de la salud ambiental comunitaria"
+          },
+          {
+            "file": "03-2-actividades-para-fomentar-la-organizacion-comunitaria.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap02.pdf",
+            "sha256": "780ade50bfbcb7306f1a9c3d60b7dd5b2a4243ac2f8c47e521a535c092187c38",
+            "bytes": 612947,
+            "title": "2 Actividades para fomentar la organización comunitaria"
+          },
+          {
+            "file": "04-3-la-salud-ambiental-desde-una-perspectiva-comunitaria.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap03.pdf",
+            "sha256": "45d7380647be8f14beee7749dfdf89b8a5861737628d7ef7a4942e17101624e0",
+            "bytes": 629301,
+            "title": "3 La salud ambiental desde una perspectiva comunitaria"
+          },
+          {
+            "file": "05-4-derechos-y-justicia-ambiental.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap04.pdf",
+            "sha256": "391db4f8079eb2f6f4d81586f2de3dc81d586fc3e43ee284776c5025dedd825b",
+            "bytes": 560277,
+            "title": "4 Derechos y justicia ambiental"
+          },
+          {
+            "file": "06-5-problemas-de-salud-por-el-consumo-de-agua-no-potable.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap05.pdf",
+            "sha256": "4fa61ac94411c204cd2e1b1b47f4464432f89f8cbb3826eaeee8c4ad921e2262",
+            "bytes": 828761,
+            "title": "5 Problemas de salud por el consumo de agua no potable"
+          },
+          {
+            "file": "07-6-la-proteccion-del-agua-comunitaria.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap06.pdf",
+            "sha256": "84cad8bfd3c36ed0498597868aac5e0688993a26e1b6ac209c811686fda08384",
+            "bytes": 1089945,
+            "title": "6 La protección del agua comunitaria"
+          },
+          {
+            "file": "08-7-construccion-de-sanitarios.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap07.pdf",
+            "sha256": "33df66a5f226f8f1b4b2ee7f42e61e5de4b1f7a005c798317426c07b7d4ad290",
+            "bytes": 1563999,
+            "title": "7 Construcción de sanitarios"
+          },
+          {
+            "file": "09-8-problemas-de-salud-causados-por-zancudos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap08.pdf",
+            "sha256": "48b347fd2217942584b87446c1e81451df2f548e2f6983409f3cb2b7eeb74f97",
+            "bytes": 532101,
+            "title": "8 Problemas de salud causados por zancudos"
+          },
+          {
+            "file": "10-9-proteccion-de-las-cuencas-hidrograficas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap09.pdf",
+            "sha256": "deb2a7ce564f5511926962787c36692607c4774b0e56cf94c0bb07bc9cfaca4e",
+            "bytes": 803825,
+            "title": "9 Protección de las cuencas hidrográficas"
+          },
+          {
+            "file": "11-10-bosques.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap10.pdf",
+            "sha256": "d98408a96ed220cf68b041559691a4097f71431a7ef2aa82216729f63c43a8b2",
+            "bytes": 928076,
+            "title": "10 Bosques"
+          },
+          {
+            "file": "12-11-rehabilitacion-de-tierras-y-siembra-de-arboles.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap11.pdf",
+            "sha256": "dc7c8b0eb259dade35da3cfa74f6a69ab451655a882524a1c44079dd739b1155",
+            "bytes": 810331,
+            "title": "11 Rehabilitación de tierras y siembra de árboles"
+          },
+          {
+            "file": "13-12-seguridad-alimentaria-de-la-comunidad.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap12.pdf",
+            "sha256": "f201ea6349f1a14faa2f5dc48459a62c74a5aec6886e56b9307375cc86bf7ef2",
+            "bytes": 637032,
+            "title": "12 Seguridad alimentaria de la comunidad"
+          },
+          {
+            "file": "14-13-la-falsa-promesa-de-los-alimentos-transgenicos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap13.pdf",
+            "sha256": "9f837a68dc1fbc7dea131fbfae147a547940a4d3bf29a3ee8d1a33cc288e2418",
+            "bytes": 373176,
+            "title": "13 La falsa promesa de los alimentos transgénicos"
+          },
+          {
+            "file": "15-14-los-plaguicidas-son-veneno.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap14.pdf",
+            "sha256": "7416d1d1fc0d6acffdcf9c5e1825621f275998a8c1d5df854d41dcbc1dcf5696",
+            "bytes": 1039482,
+            "title": "14 Los plaguicidas son veneno"
+          },
+          {
+            "file": "16-15-la-agricultura-sostenible.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap15.pdf",
+            "sha256": "6bc9c6b8dcbb703a9af66e431e4d709d986d99bab1f01a4dd6ce4f2fd68bc449",
+            "bytes": 1167521,
+            "title": "15 La agricultura sostenible"
+          },
+          {
+            "file": "17-16-el-dano-de-los-productos-toxicos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap16.pdf",
+            "sha256": "853686f8bff16451d37f32ab6b1eb2f3eb97cd5de80fc7f362c441e42adec5c7",
+            "bytes": 825323,
+            "title": "16 El daño de los productos tóxicos"
+          },
+          {
+            "file": "18-17-un-hogar-saludable.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap17.pdf",
+            "sha256": "b30b4a0f064a0b15e39b1dba834d14518e443848cacb80610e567f08b9a37f27",
+            "bytes": 1346354,
+            "title": "17 Un hogar saludable"
+          },
+          {
+            "file": "19-18-desechos-solidoscomo-convertir-un-riesgo-para-la-salud-en.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap18.pdf",
+            "sha256": "1746ce184c8885e13a25868c97636c9a8dc6eec9e8d95cfcc46a16064b5c5f11",
+            "bytes": 930356,
+            "title": "18 Desechos sólidoscómo convertir un riesgo para la salud en un recurso"
+          },
+          {
+            "file": "20-19-desechos-medicos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap19.pdf",
+            "sha256": "44f60394f7b10a99d9606b9febd2144a8867b837b152b2c8d572da3b92cc2c32",
+            "bytes": 923517,
+            "title": "19 Desechos médicos"
+          },
+          {
+            "file": "21-20-como-prevenir-y-reducir-el-dano-causado-por-los-productos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap20.pdf",
+            "sha256": "7595a40cc42d9e628fbaad4df161443ae95f9a2abf9d09b53e4eeb1912b1b8e8",
+            "bytes": 778622,
+            "title": "20 Cómo prevenir y reducir el daño causado por los productos tóxicos"
+          },
+          {
+            "file": "22-21-la-mineria-y-la-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap21.pdf",
+            "sha256": "76c86878ca9c0bae5b2ba9299067d012dad9ade20413a8f89ef748b118d45926",
+            "bytes": 941583,
+            "title": "21 La minería y la salud"
+          },
+          {
+            "file": "23-22-petroleo-enfermedad-y-derechos-humanos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap22.pdf",
+            "sha256": "f2987d2879c1c56005c52bfb307105c640b0e20cb7d9e51071c5f396295bb929",
+            "bytes": 869912,
+            "title": "22 Petróleo, enfermedad y derechos humanos"
+          },
+          {
+            "file": "24-23-energia-limpia.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_cap23.pdf",
+            "sha256": "7f910b7a9feae29d1eed718831d79e4b43f546ebaa1076c7778c98a39870879f",
+            "bytes": 760025,
+            "title": "23 Energía limpia"
+          },
+          {
+            "file": "25-anexo-a-seguridad-y-emergencias.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_anxA.pdf",
+            "sha256": "0e88804de27e7720d3323464c32ed679a311614028babbae87699f55c7eca2ba",
+            "bytes": 483257,
+            "title": "Anexo A Seguridad y emergencias"
+          },
+          {
+            "file": "26-anexo-b-el-derecho-a-un-medio-ambiente-sano-y-el-sistema-leg.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_anxB.pdf",
+            "sha256": "6f3d40ce447667d109a0e6bac970cc4fc52e49d9649e4ae1a07846469f0947ec",
+            "bytes": 455009,
+            "title": "Anexo B El derecho a un medio ambiente sano y el sistema legal"
+          },
+          {
+            "file": "27-vocabulario-una-lista-de-palabras-nuevas-o-dificiles-de-ente.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_vocab.pdf",
+            "sha256": "48d387cfe91e9344109554e6896f540515f2906d60278221bd2091673adf64e1",
+            "bytes": 253799,
+            "title": "Vocabulario: Una lista de palabras nuevas o difíciles de entender"
+          },
+          {
+            "file": "28-recursos-organizaciones-materiales-impresos-y-recursos-en-li.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_recursos.pdf",
+            "sha256": "92c6a43ef4e9a84b103a8780da1a4b66d958ded0b7dfe858c263f68c6f44432d",
+            "bytes": 217067,
+            "title": "Recursos: Organizaciones, materiales impresos y recursos en línea que ofrecen información adicional"
+          },
+          {
+            "file": "29-indice-paginas-amarillas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_indice.pdf",
+            "sha256": "242f7188727a4203f5066b7dbc63e58032cd8bad23d61a163a0a15e69a3bc29a",
+            "bytes": 375824,
+            "title": "Índice (páginas amarillas)"
+          },
+          {
+            "file": "30-otros-libros-de-hesperian.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_cgeh_2011/es_cgeh_2011_bm.pdf",
+            "sha256": "a3912c37b36c7117487fb9fdf4efe6a469e730d831e73abe81d9414c2f0a4057",
+            "bytes": 189516,
+            "title": "Otros libros de Hesperian"
+          }
+        ],
+        "bytes": 21756933
+      },
+      "approxBytes": 21756933,
+      "license": "Hesperian invita a copiar, reproducir o adaptar cualquier parte sin fines de lucro y citando a Hesperian (Licencia de derechos de autor compartidos de Hesperian",
+      "publisher": "Hesperian",
+      "title": "Guía comunitaria para la salud ambiental",
+      "description": "Agua potable y protección de fuentes, construcción de letrinas, mosquitos, residuos, tóxicos y anexo de seguridad y emergencias."
+    },
+    {
+      "id": "ops-gestion-cadaveres-desastres",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/901e2e89-ee66-477e-9c1c-ab3804d9c645/content",
+        "file": "ops-gestion-cadaveres-desastres.pdf",
+        "sha256": "865895bebb6cf620a1510753c258d7d0a77eaa777ec380a887de84d400c9a0e0",
+        "bytes": 1301968
+      },
+      "approxBytes": 1301968,
+      "license": "© OPS 2016, todos los derechos reservados; difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras anteriores a 2019.",
+      "publisher": "OPS / OMS / CICR / FICR",
+      "title": "La gestión de cadáveres en situaciones de desastre: guía práctica para equipos de respuesta (2.ª ed.)",
+      "description": "Recuperación, almacenamiento, identificación y entrega de cadáveres tras un desastre, y sus riesgos sanitarios reales."
+    },
+    {
+      "id": "hesperian-libro-parteras",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "parts": [
+          {
+            "file": "01-agradacimientos-como-usar-este-libro-contenidos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_fmb.pdf",
+            "sha256": "1e8ed77401474003cc7f635b3e160a7ac2928880af7460b89d9e2febdd5318e8",
+            "bytes": 448927,
+            "title": "Agradacimientos, cómo usar este libro, contenidos"
+          },
+          {
+            "file": "02-introduccion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_int.pdf",
+            "sha256": "c3a61ad5520e7e498894adab4c9b54415a2d8ab85ad58049a1bf0a7f95b9f894",
+            "bytes": 228355,
+            "title": "Introducción"
+          },
+          {
+            "file": "03-1-palabras-a-las-parteras.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_01.pdf",
+            "sha256": "bba17755b7a26db6e5f2bbefeb9f5e8d196fb50a74a8c562e3bdd6d1860d5712",
+            "bytes": 524257,
+            "title": "1 Palabras a las parteras"
+          },
+          {
+            "file": "04-2-como-tratar-los-problemas-de-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_02.pdf",
+            "sha256": "8f368d011234da34f8760f3b5e24b10607e00a04d704c84566947b11dcfeb392",
+            "bytes": 634229,
+            "title": "2 Cómo tratar los problemas de salud"
+          },
+          {
+            "file": "05-3-el-cuerpo-de-la-mujer-y-el-embarazo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_03.pdf",
+            "sha256": "f0b824054e711a0f5a850907807bc979e91da5142a9363a57ceccaead8245dd7",
+            "bytes": 405853,
+            "title": "3 El cuerpo de la mujer y el embarazo"
+          },
+          {
+            "file": "06-4-ayudar-a-las-mujeres-a-cuidar-su-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_04.pdf",
+            "sha256": "54d06ed410cf6d2b06befcd7310353c2b7560777a4bab7f31e96e9702acc6236",
+            "bytes": 682628,
+            "title": "4 Ayudar a las mujeres a cuidar su salud"
+          },
+          {
+            "file": "07-5-prevenir-las-infecciones.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_05.pdf",
+            "sha256": "6f1295db79b464bd8412cf29bf695a6985ca5c22879d2028a35595ae6c53bc2d",
+            "bytes": 896179,
+            "title": "5 Prevenir las infecciones"
+          },
+          {
+            "file": "08-el-embarazo-introduccion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_05.5.pdf",
+            "sha256": "83417ee6f12ed77e8769f94b8b1fad915a2e6d016c5371d6f297ee2a088773c6",
+            "bytes": 184778,
+            "title": "El embarazo: introducción"
+          },
+          {
+            "file": "09-6-molestias-frecuentes-del-embarazo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_06.pdf",
+            "sha256": "6ff879254d4b21372721e3f4c9e5b8e0f3f92c25971030020c6a98ac0272fcca",
+            "bytes": 753732,
+            "title": "6 Molestias frecuentes del embarazo"
+          },
+          {
+            "file": "10-7-la-historia-clinica-de-una-mujer-embarazada.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_07.pdf",
+            "sha256": "f6431da14665fe8f036ae2f7910ad9df210e459d172256140dcd6665337ce49b",
+            "bytes": 858897,
+            "title": "7 La historia clínica de una mujer embarazada"
+          },
+          {
+            "file": "11-8-la-atencion-prenatal.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_08.pdf",
+            "sha256": "c781c8b500d27f61d4878fc44a4b684520792d2d5fb896318f77525004f313bb",
+            "bytes": 1101592,
+            "title": "8 La atención prenatal"
+          },
+          {
+            "file": "12-el-parto-introduccion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_08.5.pdf",
+            "sha256": "61c4424eff28bfc0d128ea3f8e428e873cbddfbd063b14d5acabb76ea6c9289d",
+            "bytes": 202381,
+            "title": "El parto: introducción"
+          },
+          {
+            "file": "13-9-prepararse-para-el-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_09.pdf",
+            "sha256": "4e369b9a09e1ebc245f7a42a21e5c87347d6bfd5daf6223d468f1a432f3707ed",
+            "bytes": 441839,
+            "title": "9 Prepararse para el parto"
+          },
+          {
+            "file": "14-10-dar-buenos-cuidados-durante-el-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_10.pdf",
+            "sha256": "6b66ead425b5d8095052b54f54ed339b2722baf2cf8c8f512fa74bdaa9d423a9",
+            "bytes": 545471,
+            "title": "10 Dar buenos cuidados durante el parto"
+          },
+          {
+            "file": "15-11-se-abre-el-cuello-de-la-matriz-la-primera-etapa-del-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_11.pdf",
+            "sha256": "ad193dc1aa4f8edc0f0f02bf67dcec370d70f10dbf335eff1a683e8facbdbc15",
+            "bytes": 869861,
+            "title": "11 Se abre el cuello de la matriz: la primera etapa del parto"
+          },
+          {
+            "file": "16-12-la-madre-puja-y-nace-el-bebe-la-segunda-etapa-del-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_12.pdf",
+            "sha256": "9c60bcfb9cbe5903b7f65d263739b5c8ea437e33247adebfebca555bff669047",
+            "bytes": 1001476,
+            "title": "12 La madre puja y nace el bebé: la segunda etapa del parto"
+          },
+          {
+            "file": "17-13-nace-la-placenta-la-tercera-etapa-del-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_13.pdf",
+            "sha256": "172bd8dbd045dfd32f178305b673257e151d570932365ad26842aa6dcb715ab8",
+            "bytes": 759594,
+            "title": "13 Nace la placenta: la tercera etapa del parto"
+          },
+          {
+            "file": "18-14-las-primeras-horas-despues-del-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_14.pdf",
+            "sha256": "eb3cbaea7fc263ac217e31ad44f4346bed5b3f5cc6f07df09dc6e60ab578d069",
+            "bytes": 695755,
+            "title": "14 Las primeras horas después del parto"
+          },
+          {
+            "file": "19-15-las-primeras-semanas-despues-del-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_15.pdf",
+            "sha256": "7b3950ba3f9bef0ced26b488cd78fc97eb8671507bfb83f74cc051e00f7980ba",
+            "bytes": 495599,
+            "title": "15 Las primeras semanas después del parto"
+          },
+          {
+            "file": "20-16-amamantamiento-dar-el-pecho.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_16.pdf",
+            "sha256": "743b526721274b030d059b82b40a9af61b988c4f7fd4561d5222ae9807b1d4d7",
+            "bytes": 733150,
+            "title": "16 Amamantamiento (dar el pecho)"
+          },
+          {
+            "file": "21-salud-de-la-mujer-introduccion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_16.5.pdf",
+            "sha256": "533e44383980ae84f26fd322c1a6efd8a809053965680bbb6668119fcb6185bf",
+            "bytes": 198984,
+            "title": "Salud de la mujer: introducción"
+          },
+          {
+            "file": "22-17-la-planificacion-familiar.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_17.pdf",
+            "sha256": "5ea60e01603fb86c8bcc994929d96e9e1cc2bc4a200070b12a115ac245066cb2",
+            "bytes": 822764,
+            "title": "17 La planificación familiar"
+          },
+          {
+            "file": "23-18-infecciones-de-transmision-sexual-y-otras-infecciones-de-.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_18.pdf",
+            "sha256": "b04e3a74b20839ef3cec61941d9c8907d09946b75d2fefb8d97741bba135b803",
+            "bytes": 579551,
+            "title": "18 Infecciones de transmisión sexual y otras infecciones de los genitales"
+          },
+          {
+            "file": "24-19-tecnicas-avanzadas-para-atender-el-embarazo-y-el-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_19.pdf",
+            "sha256": "3ebdef3ce3854f828566bfd5f729dd32cc214358954f82b9837bb9e334358533",
+            "bytes": 1083967,
+            "title": "19 Técnicas avanzadas para atender el embarazo y el parto"
+          },
+          {
+            "file": "25-20-el-examen-pelvico-como-examinar-la-matriz-y-la-vagina-de-.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_20.pdf",
+            "sha256": "0999107e745cba48338507f7015e4f05f7b5fc70fa53caaf72a4c72a23982e77",
+            "bytes": 797819,
+            "title": "20 El examen pélvico: cómo examinar la matriz y la vagina de una mujer"
+          },
+          {
+            "file": "26-21-colocar-un-diu.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_21.pdf",
+            "sha256": "643c1dbef22f3b87af7587f3ae4fa2b4c3bed3a0cc19242d4750018b81b9596c",
+            "bytes": 548013,
+            "title": "21 Colocar un DIU"
+          },
+          {
+            "file": "27-22-ayudar-a-una-mujer-despues-de-una-perdida-o-un-aborto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_22.pdf",
+            "sha256": "3385d3fadcb53712141d8d312fb1849b08c099e5898e2a042b78aaa1bfaff55f",
+            "bytes": 694836,
+            "title": "22 Ayudar a una mujer después de una pérdida o un aborto"
+          },
+          {
+            "file": "28-23-ameu-aspiracion-por-vacio-manual-aspiracion-manual-endout.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_23.pdf",
+            "sha256": "c315e856d77d34c826a35401ce44aa25a54831223472489826f330a0a7607adb",
+            "bytes": 672897,
+            "title": "23 AMEU (aspiración por vacío manual, aspiración manual endouterina)"
+          },
+          {
+            "file": "29-24-la-ayuda-medica-puede-salvar-vidas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_24.pdf",
+            "sha256": "660dd1c3a3315ce343839d58059b6f4a8c5c543388a74bcb390952803aef5094",
+            "bytes": 476082,
+            "title": "24 La ayuda médica puede salvar vidas"
+          },
+          {
+            "file": "30-25-equipo-y-materiales-de-ensenanza-caseros.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_25.pdf",
+            "sha256": "5aea3ffc3b67f0051de992473a680978ec6d9122ad4615d6a0b0e42a63400c92",
+            "bytes": 749406,
+            "title": "25 Equipo y materiales de enseñanza caseros"
+          },
+          {
+            "file": "31-medicinas-las-paginas-verdes-usos-dosis-y-precauciones.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_gp.pdf",
+            "sha256": "45d34ce4fb4bc5dd1ee35c0bd3cbfb0c85a58fd943f0d14d4c008d10fe7ae3cb",
+            "bytes": 716328,
+            "title": "Medicinas (las páginas verdes): usos, dosis y precauciones"
+          },
+          {
+            "file": "32-para-aprender-mas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_resc.pdf",
+            "sha256": "a725a297c34ae9cfbfc71af0369e866ca2edb58eb392821df8c6010707bd506a",
+            "bytes": 178077,
+            "title": "Para aprender más"
+          },
+          {
+            "file": "33-palabras-medicas-y-tecnicas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_gloss.pdf",
+            "sha256": "413e8bc5a6b9152dc11a1b4cdb9cb8628e3c42b14c40f250b03ebec9f03229bb",
+            "bytes": 164914,
+            "title": "Palabras médicas y técnicas"
+          },
+          {
+            "file": "34-indice-las-paginas-amarillas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_indxb.pdf",
+            "sha256": "1f464cda2c2b47686167985218d774c7326bc3c21adc98f7df474bd2c1238935",
+            "bytes": 426374,
+            "title": "Índice (las páginas amarillas)"
+          },
+          {
+            "file": "35-calculadora-de-la-fecha-probable-de-parto-otros-libros-de-he.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_midw_2016/es_midw_2016_bm.pdf",
+            "sha256": "87a878b19f15f9c573c4007e1e0d1184bf55f4f11af842935e10b4f04f0ba1b7",
+            "bytes": 457306,
+            "title": "Calculadora de la fecha probable de parto, Otros libros de Hesperian"
+          }
+        ],
+        "bytes": 21031871
+      },
+      "approxBytes": 21031871,
+      "license": "Hesperian invita a copiar, reproducir o adaptar cualquier parte sin fines de lucro y citando a Hesperian (Licencia de derechos de autor compartidos de Hesperian",
+      "publisher": "Hesperian",
+      "title": "Un libro para parteras",
+      "description": "Embarazo, parto, complicaciones, posparto y recién nacido para parteras y personas sin formación médica."
+    },
+    {
+      "id": "ops-complicaciones-embarazo-parto",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/837f9ea7-1547-4d19-8b94-21598cd667f2/content",
+        "file": "ops-complicaciones-embarazo-parto.pdf",
+        "sha256": "8a9aa38e78d1b6f58b2125620e8caa599507ab1c646ed19837f9360293ec11f5",
+        "bytes": 17517790
+      },
+      "approxBytes": 17517790,
+      "license": "CC BY-NC-SA 3.0 IGO (copiar, redistribuir y adaptar con fines no comerciales, citando la fuente)",
+      "publisher": "OPS / OMS",
+      "title": "Manejo de las complicaciones del embarazo y el parto: guía para obstetrices y médicos (2.ª ed.)",
+      "description": "Protocolos por síntoma de emergencias obstétricas (hemorragia, eclampsia, parto obstruido, sepsis) y procedimientos."
+    },
+    {
+      "id": "hesperian-donde-no-hay-dentista",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "parts": [
+          {
+            "file": "01-portada-agradacimientos-contenidos-introduccion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_TOC.pdf",
+            "sha256": "c5d6e86b529c447c856fb97adc5c4a1aa664f83fb09ef589e12afdf823ce4f74",
+            "bytes": 595884,
+            "title": "Portada, Agradacimientos, Contenidos, Introducción"
+          },
+          {
+            "file": "02-1-sus-dientes-y-encias.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_1.pdf",
+            "sha256": "80e929af91179f7430b10fba57054d6bc397330ebd0c33e167fad1736267d5b6",
+            "bytes": 831266,
+            "title": "1 Sus dientes y encías,"
+          },
+          {
+            "file": "03-2-como-proteger-dientes-y-encias.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_2.pdf",
+            "sha256": "c5cb3cd6e65b13883572b429d9c3e17401e6af14494b94b2905650fd2f9d07cd",
+            "bytes": 908534,
+            "title": "2 Cómo proteger dientes y encías"
+          },
+          {
+            "file": "04-3-aprendiendo-con-la-familia-y-los-amigos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_3.pdf",
+            "sha256": "ce1fddc4cf69eea65d910a9a5228c0c642ff2513f0da189fe8a6b2da4c5090e2",
+            "bytes": 875312,
+            "title": "3 Aprendiendo con la familia y los amigos,"
+          },
+          {
+            "file": "05-4-ensenando-en-la-escuela-sobre-la-salud-de-los-dientes.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_4.pdf",
+            "sha256": "f2f10b0471dc82b1b8356de85a66e8983ad2b84b6892c93b8336a578f9a699f5",
+            "bytes": 870134,
+            "title": "4 Enseñando en la escuela sobre la Salud de los dientes"
+          },
+          {
+            "file": "06-5-aprendamos-jugando-y-haciendo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_5.pdf",
+            "sha256": "7aa3e8e71e78116ed7623176da2b3ef0d1ce02d38cbff6fc57757bb994b8d02a",
+            "bytes": 1750350,
+            "title": "5 Aprendamos jugando y haciendo"
+          },
+          {
+            "file": "07-6-actividades-para-los-alumnos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_6.pdf",
+            "sha256": "5e2870bce49a5db2cc26b39608e16679746a1f7c3f650e1957fa1715ef39d320",
+            "bytes": 1379965,
+            "title": "6 Actividades para los alumnos"
+          },
+          {
+            "file": "08-7-mantener-todo-limpio.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_7.pdf",
+            "sha256": "785c953af189654673a38db279523195d21f900634b9319e62a6e0803e2259e8",
+            "bytes": 745562,
+            "title": "7 Mantener todo limpio"
+          },
+          {
+            "file": "09-8-examen-y-diagnostico.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_8.pdf",
+            "sha256": "0c61cbeebf65961a319688f80e88c14933c716c98823e0bf41a642d7053ff452",
+            "bytes": 826597,
+            "title": "8 Examen y diagnóstico"
+          },
+          {
+            "file": "10-9-como-tratar-algunos-problemas-comunes.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_9.pdf",
+            "sha256": "3f0833c613b11bbcb71b490726fdb9e50e3471a2f6c05758d1c0670b0281f877",
+            "bytes": 704272,
+            "title": "9 Cómo tratar algunos problemas comunes"
+          },
+          {
+            "file": "11-10-algunos-problemas-especiales.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_10.pdf",
+            "sha256": "59a8351d8458c436c7aa5594643329cbdb2cd725031191b864870eb48c7493ec",
+            "bytes": 787130,
+            "title": "10 Algunos problemas especiales"
+          },
+          {
+            "file": "12-11-raspando-los-dientes.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_11.pdf",
+            "sha256": "6c035470c2d5156383c429eccdc16c7c33ca2766cc7e4e4d6195d1c6171d83a5",
+            "bytes": 559297,
+            "title": "11 Raspando los dientes"
+          },
+          {
+            "file": "13-12-como-inyectar-en-la-boca.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_12.pdf",
+            "sha256": "5b829cf2e6177ed733b3eada04b71c749aeed493e46753f6c39e6d2f8b4555a1",
+            "bytes": 557143,
+            "title": "12 Cómo inyectar en la boca"
+          },
+          {
+            "file": "14-13-como-tapar-los-dientes-con-cemento.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_13.pdf",
+            "sha256": "308c5121e70bfebaa346931101e1319980ca81a7eef149d2981764546c44a832",
+            "bytes": 1235756,
+            "title": "13 Cómo tapar los dientes con cemento"
+          },
+          {
+            "file": "15-14-como-sacar-un-diente.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_14.pdf",
+            "sha256": "5cf66ae0d048e6dd242be89ffa9db710ad11cf041884886b64353f53bd8adf84",
+            "bytes": 936494,
+            "title": "14 Cómo sacar un diente"
+          },
+          {
+            "file": "16-15-el-botiquin-dental.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_15.pdf",
+            "sha256": "a033136ab4125abc0bbe25f14a853c016afac43ef06d90e1e0cea34d8aa1f8a4",
+            "bytes": 627689,
+            "title": "15 El botiquín dental"
+          },
+          {
+            "file": "17-16-la-experiencia-en-mexico.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_16.pdf",
+            "sha256": "7877c58a8a4329169402e14928d9a404ada601b42a5acb447391c4011ac7fcd2",
+            "bytes": 1311767,
+            "title": "16 La experiencia en México"
+          },
+          {
+            "file": "18-17-el-vih-sida-y-la-salud-oral.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_17.pdf",
+            "sha256": "933b566ea48f905558bacd83b6450904bed23e8960da5815edb1671d76d700f8",
+            "bytes": 1865112,
+            "title": "17 El VIH/SIDA y la salud oral"
+          },
+          {
+            "file": "19-18-que-hacer-con-los-desechos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_18.pdf",
+            "sha256": "7021488e329d11a80d5bd383fb4c416bd112df98e220a161f54b740d3fb78287",
+            "bytes": 345641,
+            "title": "18 Qué hacer con los desechos"
+          },
+          {
+            "file": "20-vocabulario.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_vocabulario.pdf",
+            "sha256": "79a6b10e9da6a0ae612d25b9b7a841034b7fb7d792276cccac066539dcebc484",
+            "bytes": 381892,
+            "title": "Vocabulario"
+          },
+          {
+            "file": "21-indice.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_indice.pdf",
+            "sha256": "ddf8263a2d857c21e4f8162a1f9d994e0039f3d57520d15c596d4e2d919b1f9c",
+            "bytes": 371970,
+            "title": "Índice"
+          },
+          {
+            "file": "22-otros-libros-de-la-hesperian.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_dent_2010/dentista_05_bm.pdf",
+            "sha256": "41b09d41c9e70ba75c01901c4a33d436d3127e9da7501921a6a5e12f0219bcf2",
+            "bytes": 186303,
+            "title": "Otros libros de la Hesperian"
+          }
+        ],
+        "bytes": 18654070
+      },
+      "approxBytes": 18654070,
+      "license": "Hesperian invita a copiar, reproducir o adaptar cualquier parte sin fines de lucro y citando a Hesperian (Licencia de derechos de autor compartidos de Hesperian",
+      "publisher": "Hesperian",
+      "title": "Donde no hay dentista",
+      "description": "Higiene dental, dolor, abscesos, extracciones y empastes sencillos con medios básicos."
+    },
+    {
+      "id": "hesperian-donde-no-hay-doctor-mujeres",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "parts": [
+          {
+            "file": "01-inicio-libro-agradecimientos-contenido-como-usar-este-libro.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_fm.pdf",
+            "sha256": "ceaba3b94de5b5ba92ccb1bb5919e85048006181f518459b3d94d6cd4387bde4",
+            "bytes": 480046,
+            "title": "Inicio libro: Agradecimientos, Contenido, Cómo usar este libro"
+          },
+          {
+            "file": "02-1-la-salud-de-la-mujer-es-un-asunto-comunitario.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_01.pdf",
+            "sha256": "3ce123688f664cdc859b90489f1ae6e033ff8bf472d5c3709b54e5f5575d0bf3",
+            "bytes": 898532,
+            "title": "1 La salud de la mujer es un asunto comunitario"
+          },
+          {
+            "file": "03-2-como-solucionar-problemas-medicos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_02.pdf",
+            "sha256": "ebb4d6e90621cea3e30d2fcf43c3fea5af4c6deb7cf557740062e0a53ecd61b7",
+            "bytes": 717999,
+            "title": "2 Cómo solucionar problemas médicos"
+          },
+          {
+            "file": "04-3-el-sistema-medico.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_03.pdf",
+            "sha256": "2dd1356e89dbff602a28b6f8fb0034c126b155de5e8c049f5de316373ce06e16",
+            "bytes": 554447,
+            "title": "3 El sistema médico"
+          },
+          {
+            "file": "05-4-entendamos-nuestros-cuerpos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_04.pdf",
+            "sha256": "635f32fa281edfd7931d1762c2d8b8580477b5e0c2ee314949e4e068089e7294",
+            "bytes": 600488,
+            "title": "4 Entendamos nuestros cuerpos"
+          },
+          {
+            "file": "06-5-palabras-a-las-jovenes.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_05.pdf",
+            "sha256": "e8668b4752a49bbb038c5f982539c1388b70b87693961346bd5d103ffeb91739",
+            "bytes": 742119,
+            "title": "5 Palabras a las jóvenes"
+          },
+          {
+            "file": "07-6-el-embarazo-y-el-parto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_06.pdf",
+            "sha256": "7832029ba41230fd4ec73abb2ad23fe57d4679502d4e4450c8ac194ef368bdf3",
+            "bytes": 1354392,
+            "title": "6 El embarazo y el parto"
+          },
+          {
+            "file": "08-7-dando-pecho.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_07.pdf",
+            "sha256": "b9c4193cb5ac4f2b461dbbe1e2297dd676eb9191d01e12b992ede46b1cbdb23d",
+            "bytes": 868533,
+            "title": "7 Dando pecho"
+          },
+          {
+            "file": "09-8-mujeres-mayores-de-edad.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_08.pdf",
+            "sha256": "1422f291576523cac6137cfa02cf421b0275896a0bd14073650eceee74dc4599",
+            "bytes": 723816,
+            "title": "8 Mujeres mayores de edad"
+          },
+          {
+            "file": "10-9-las-mujeres-con-discapacidad.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_09.pdf",
+            "sha256": "2f61c109ba311b7cd222d2904415e21a403c2323b809f9c0a5aff139e45399f1",
+            "bytes": 426961,
+            "title": "9 Las mujeres con discapacidad"
+          },
+          {
+            "file": "11-10-para-mantener-la-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_10.pdf",
+            "sha256": "2efa522f65c50f993f14641e92089788469f7668d6e59ea9c3405ce8019e2949",
+            "bytes": 694863,
+            "title": "10 Para mantener la salud"
+          },
+          {
+            "file": "12-11-alimentacion-para-la-buena-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_11.pdf",
+            "sha256": "ff5b5697e6edebb1ec7fd9cb4aaeb382098ae2d2cbffc79f050a74006195a002",
+            "bytes": 617330,
+            "title": "11 Alimentación para la buena salud"
+          },
+          {
+            "file": "13-12-la-salud-sexual.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_12.pdf",
+            "sha256": "f08f694d7549b0a2985d5c6023a7e3f1d8281b62b6340af7a71644bb12eb15c3",
+            "bytes": 551313,
+            "title": "12 La salud sexual"
+          },
+          {
+            "file": "14-13-la-planificacion-familiar.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_13.pdf",
+            "sha256": "968c194ce75266f432bc7e6cbc46ba72071693df233cd557b3a785548459d550",
+            "bytes": 935777,
+            "title": "13 La planificación familiar"
+          },
+          {
+            "file": "15-14-la-infertilidad.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_14.pdf",
+            "sha256": "8be9c30f6e2768b39721dafeaf3851a2e750d1baaa6012d91fe2e74b129d1723",
+            "bytes": 437842,
+            "title": "14 La infertilidad"
+          },
+          {
+            "file": "16-15-aborto-y-complicaciones-del-aborto.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_15.pdf",
+            "sha256": "b266af9ba70506abe3bb206352b503bde109f411294342339c3b642b966c7a49",
+            "bytes": 659866,
+            "title": "15 Aborto y complicaciones del aborto"
+          },
+          {
+            "file": "17-16-infecciones-sexuales-y-otras-infecciones-de-los-genitales.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_16.pdf",
+            "sha256": "e7f01e6b08b7b21852e4cad1aae26ac53658159a52feb5ec47f901bfb19abe51",
+            "bytes": 578975,
+            "title": "16 Infecciones sexuales y otras infecciones de los genitales"
+          },
+          {
+            "file": "18-17-vih-y-sida.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_17.pdf",
+            "sha256": "40dca595392465772b57ca4f31b6365d7fe8b7cf5563fee71bde420b13354db8",
+            "bytes": 845510,
+            "title": "17 VIH y SIDA"
+          },
+          {
+            "file": "19-18-la-violencia-contra-las-mujeres.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_18.pdf",
+            "sha256": "a5d6019af79b438b93f1ff075887ab8533818897276400b0613746f1525481e2",
+            "bytes": 572879,
+            "title": "18 La violencia contra las mujeres"
+          },
+          {
+            "file": "20-19-la-violacion-y-el-asalto-sexual.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_19.pdf",
+            "sha256": "6d21a059c7dc322a2037192911d0059286b07aaa86002a599a4234f13c4c8595",
+            "bytes": 478987,
+            "title": "19 La violación y el asalto sexual"
+          },
+          {
+            "file": "21-20-las-trabajadoras-de-sexo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_20.pdf",
+            "sha256": "cdba6590b7279bef7442101826e8bff659f0fc95c6e0388054794619dc88d4e5",
+            "bytes": 459740,
+            "title": "20 Las trabajadoras de sexo"
+          },
+          {
+            "file": "22-21-dolor-en-la-parte-baja-del-abdomen.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_21.pdf",
+            "sha256": "9bafe431695d6e49a9ff8e84b148c041b92941f8a13f84e623703237bc1e0186",
+            "bytes": 257839,
+            "title": "21 Dolor en la parte baja del abdomen"
+          },
+          {
+            "file": "23-22-sangrado-anormal-de-la-vagina.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_22.pdf",
+            "sha256": "5cb9754e5bd621c936245236e6ba637a0527bcc4ba75c72b7345cf653f2f8522",
+            "bytes": 292180,
+            "title": "22 Sangrado anormal de la vagina"
+          },
+          {
+            "file": "24-23-problemas-del-sistema-urinario.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_23.pdf",
+            "sha256": "b6876031eae3c09bd7e72f93febde06aa5130ac8146afecf707a59909de7f766",
+            "bytes": 372523,
+            "title": "23 Problemas del sistema urinario"
+          },
+          {
+            "file": "25-24-cancer-y-tumores.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_24.pdf",
+            "sha256": "ed991c1ec3e4b3bf09cd50bbd35dba912f5be93efe8b9d206fe7ebe7c4d87b0a",
+            "bytes": 431127,
+            "title": "24 Cáncer y tumores"
+          },
+          {
+            "file": "26-25-la-tuberculosis.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_25.pdf",
+            "sha256": "7f1df4d8232c23db3343a8bb71edef4c52c0e61053287c0f189bc714fb411929",
+            "bytes": 232105,
+            "title": "25 La tuberculosis"
+          },
+          {
+            "file": "27-26-el-trabajo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_26.pdf",
+            "sha256": "2bb34faf960cfbeaf86510ef1107f0ccd47f7edea66fa65d0e0bc0bd49d45f49",
+            "bytes": 715198,
+            "title": "26 El trabajo"
+          },
+          {
+            "file": "28-27-la-salud-mental.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_27.pdf",
+            "sha256": "8a41565a95188103d62e5ee549a8fcbaa299dd2db59197331b4051017838935d",
+            "bytes": 721086,
+            "title": "27 La salud mental"
+          },
+          {
+            "file": "29-28-alcohol-y-otras-drogas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_28.pdf",
+            "sha256": "0156844832e5d557a073e0922cecb66676c5da286eed953d942a9ea5d037e36b",
+            "bytes": 409863,
+            "title": "28 Alcohol y otras drogas"
+          },
+          {
+            "file": "30-29-mujeres-refugiadas-y-desplazadas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_29.pdf",
+            "sha256": "96fb13e322492010ad2852793b31b6eb068247a6b1ba0c352ef61936d0d3a00f",
+            "bytes": 485572,
+            "title": "29 Mujeres refugiadas y desplazadas"
+          },
+          {
+            "file": "31-30-la-circuncision-femenina-cortar-los-genitales.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_30.pdf",
+            "sha256": "e67164fd29c7cb10f4b9389f38a3ba38c5d1620605c090f069b3e2d762f99c83",
+            "bytes": 380155,
+            "title": "30 La circuncisión femenina (cortar los genitales"
+          },
+          {
+            "file": "32-31-el-uso-de-medicinas-para-la-salud-de-la-mujer.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_31.pdf",
+            "sha256": "06eba13f31d3bbc0897c3d77f2b0eccf96997fa22fa791b1e7242e13bc4843fb",
+            "bytes": 487031,
+            "title": "31 El uso de medicinas para la salud de la mujer"
+          },
+          {
+            "file": "33-informacion-sobre-medicinas-las-paginas-verdes.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_gp.pdf",
+            "sha256": "b7b5489591cc7ca829bdc134b5666c2c124753e7c9f4130bef203132fdb25639",
+            "bytes": 723780,
+            "title": "Información sobre medicinas: Las páginas verdes"
+          },
+          {
+            "file": "34-tecnicas-para-la-atencion-de-la-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_info.pdf",
+            "sha256": "5b2bd0871596970409716087a4d0bfec7941f92d89ca39a0b4b647d553bacf1a",
+            "bytes": 684107,
+            "title": "Técnicas para la atención de la salud"
+          },
+          {
+            "file": "35-glosario-listado-de-palabras-tecnicas-de-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_gloss.pdf",
+            "sha256": "00524d5660a325feced6f947d35949537fc088404a5d905a9c880c5763b2f9fd",
+            "bytes": 177464,
+            "title": "Glosario: Listado de palabras técnicas de salud"
+          },
+          {
+            "file": "36-recursos-para-mayor-informacion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_resc.pdf",
+            "sha256": "0d8c2745938a08b88cf3a98c78124f17764bb9cdd84749ae8f6c6fd876ebbbea",
+            "bytes": 166174,
+            "title": "Recursos para mayor información"
+          },
+          {
+            "file": "37-indice-las-paginas-amarillas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_indx.pdf",
+            "sha256": "496c4b0da5ddff05ef38003989116383458c5e47a510b83d2c33a01ef0147638",
+            "bytes": 243020,
+            "title": "Índice: Las páginas amarillas"
+          },
+          {
+            "file": "38-otros-libros-de-hesperian.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_wwhnd_2024/es_wwhnd_2024_ob.pdf",
+            "sha256": "aa23b567bf5d515f328dbc62741afe91309514677eacf1c2e2e5f5de45a21865",
+            "bytes": 221992,
+            "title": "Otros libros de Hesperian"
+          }
+        ],
+        "bytes": 21201631
+      },
+      "approxBytes": 21201631,
+      "license": "Hesperian invita a copiar, reproducir o adaptar cualquier parte sin fines de lucro y citando a Hesperian (Licencia de derechos de autor compartidos de Hesperian",
+      "publisher": "Hesperian",
+      "title": "Donde no hay doctor para mujeres (ed. 2024)",
+      "description": "Salud de la mujer: embarazo, ITS, violencia, salud mental, complicaciones del aborto y problemas médicos frecuentes."
+    },
+    {
+      "id": "cawst-tratamiento-agua-domiciliar",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://sswm.info/sites/default/files/reference_attachments/CAWST%202011.%20Introduccion%20al%20tratemiento%20de%20agua%20en%20el%20hogar.pdf",
+        "file": "cawst-tratamiento-agua-domiciliar.pdf",
+        "sha256": "03382d89e63808f741ecd20d0bcc69e0e80e8e5ceb66d8ebb0fdd3aab3ad159a",
+        "bytes": 2770018
+      },
+      "approxBytes": 2770018,
+      "license": "CC BY 3.0 Unported (copiar, redistribuir y adaptar citando a CAWST)",
+      "publisher": "CAWST",
+      "title": "Introducción al tratamiento del agua a nivel domiciliar y su almacenamiento seguro (manual del capacitador, 2011)",
+      "description": "Enfoque multibarrera: protección de la fuente, sedimentación, filtración (bioarena, cerámica), desinfección y almacenamiento."
+    },
+    {
+      "id": "cawst-saneamiento-ambiental",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://static.pseau.org/outils/ouvrages/cawst_introduccion_al_saneamiento_ambiental_manual_del_capacitador_2015.pdf",
+        "file": "cawst-saneamiento-ambiental.pdf",
+        "sha256": "449e314e353e3c2ec7c64eb1a3de3d302bc09cfc930d50f916dcd20424ad8f67",
+        "bytes": 10997186
+      },
+      "approxBytes": 10997186,
+      "license": "CC BY 4.0 (copiar, redistribuir y adaptar citando a CAWST)",
+      "publisher": "CAWST",
+      "title": "Introducción al saneamiento ambiental (manual del capacitador, 2015)",
+      "description": "Letrinas, gestión de excretas, aguas grises, residuos sólidos e higiene contra enfermedades fecal-orales."
+    },
+    {
+      "id": "ops-tratamiento-diarrea",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/fe3295bc-68a8-4654-b57e-011e563d05d0/content",
+        "file": "ops-tratamiento-diarrea.pdf",
+        "sha256": "1490e6e52085692668574c3aef4f173d1e7596a50cb51ed1ae734e1539f769e2",
+        "bytes": 2788442
+      },
+      "approxBytes": 2788442,
+      "license": "© OPS 2008; difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras anteriores a 2019.",
+      "publisher": "OPS / OMS",
+      "title": "Tratamiento de la diarrea: manual clínico para los servicios de salud",
+      "description": "Evaluación de la deshidratación y planes A/B/C de rehidratación oral e intravenosa; disentería y cólera."
+    },
+    {
+      "id": "oms-brote-diarrea-aguda",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/deb3fb08-5a4d-4fcb-9adc-4c1fbf55356b/content",
+        "file": "oms-brote-diarrea-aguda.pdf",
+        "sha256": "9faa79e21c6f01a3f9b2db2a85aae4c1b98fe680a92a6c55279126e0ef7e501a",
+        "bytes": 1193912
+      },
+      "approxBytes": 1193912,
+      "license": "© OMS 2011, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS / OPS",
+      "title": "Primeros pasos para controlar un brote de diarrea aguda",
+      "description": "Folleto de 8 páginas para los primeros días de un brote de cólera o diarrea: confirmar, tratar, clorar el agua y medidas de higiene."
+    },
+    {
+      "id": "oms-guia-humanitaria-mhgap",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/00dd9626-1d26-4d3f-8b0e-02e407fd4509/content",
+        "file": "oms-guia-humanitaria-mhgap.pdf",
+        "sha256": "44c69436763e1c1ca311fc2cd6f8681a4401c5641e13deb08b6878455a758de1",
+        "bytes": 1230364
+      },
+      "approxBytes": 1230364,
+      "license": "© OMS 2016, todos los derechos reservados; edición española de la OPS, difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras ",
+      "publisher": "OMS / ACNUR / OPS",
+      "title": "Guía de intervención humanitaria mhGAP (GIH-mhGAP)",
+      "description": "Manejo clínico de estrés agudo, duelo, depresión, psicosis, epilepsia, alcohol y riesgo de suicidio en emergencias, por personal no especialista."
+    },
+    {
+      "id": "ops-victimas-en-masa",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/9e5910ca-62d3-4e21-b4e5-4a275e8b20d3/content",
+        "file": "ops-victimas-en-masa.pdf",
+        "sha256": "3f1eb00ba40536b9f2598169b62ad470e7a0f8bcf204b095ba7baa91d882dc89",
+        "bytes": 3468961
+      },
+      "approxBytes": 3468961,
+      "license": "© OPS 1996; difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras anteriores a 2019.",
+      "publisher": "OPS / OMS",
+      "title": "Establecimiento de un sistema de atención de víctimas en masa",
+      "description": "Organización del triaje, puesto médico avanzado, evacuación y coordinación cuando hay muchos heridos a la vez."
+    },
+    {
+      "id": "oms-aps-ninos-adolescentes",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/ac018fca-c917-4aaa-a592-f3621193a3d7/content",
+        "file": "oms-aps-ninos-adolescentes.pdf",
+        "sha256": "cf03f376d4c001943fe0750b298c0505937669e272501084484fd20c8b9dce85",
+        "bytes": 10102467
+      },
+      "approxBytes": 10102467,
+      "license": "CC BY-NC-SA 3.0 IGO (copiar, redistribuir y adaptar con fines no comerciales, citando la fuente)",
+      "publisher": "OMS (Oficina Regional para Europa)",
+      "title": "Libro de bolsillo sobre la atención primaria de salud para niños, niñas y adolescentes (2025)",
+      "description": "Guía de bolsillo para diagnosticar y tratar problemas pediátricos frecuentes y reconocer signos de alarma."
+    },
+    {
+      "id": "cicr-cirugia-guerra-vol1",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://www.icrc.org/sites/default/files/external/doc/es/assets/files/other/p0973-spa.pdf",
+        "file": "cicr-cirugia-guerra-vol1.pdf",
+        "sha256": "472aa4da1cdf0b2583199df3e3331a7effe366aab57704e277853946c86ee3b4",
+        "bytes": 5542232
+      },
+      "approxBytes": 5542232,
+      "license": "© CICR. Uso personal/no comercial: se permite copiar el documento íntegro, sin modificaciones y manteniendo copyright y fuente. Descarga gratuita oficial.",
+      "publisher": "CICR",
+      "title": "Cirugía de guerra: trabajar con recursos limitados en conflictos armados y otras situaciones de violencia, vol. 1",
+      "description": "Balística de heridas, triaje, desbridamiento, manejo de heridas e infecciones, anestesia y cuidados con recursos mínimos."
+    },
+    {
+      "id": "cicr-cirugia-guerra-vol2",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://shop.icrc.org/download/ebook?sku=4105/003-ebook",
+        "file": "cicr-cirugia-guerra-vol2.pdf",
+        "sha256": "01db63e50db1373826dc0517059f552b37f72923bc96aec3068e5fbcc01b4f9c",
+        "bytes": 22111319
+      },
+      "approxBytes": 22111319,
+      "license": "© CICR. Uso personal/no comercial: se permite copiar el documento íntegro, sin modificaciones y manteniendo copyright y fuente. Descarga gratuita oficial.",
+      "publisher": "CICR",
+      "title": "Cirugía de guerra: trabajar con recursos limitados en conflictos armados y otras situaciones de violencia, vol. 2",
+      "description": "Cirugía por regiones (cabeza, tórax, abdomen, extremidades, quemaduras) con recursos limitados; para personal sanitario."
+    },
+    {
+      "id": "oms-guias-calidad-agua",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/89633b31-b58e-41e9-913a-a47c37713290/content",
+        "file": "oms-guias-calidad-agua.pdf",
+        "sha256": "cd4850493507acc2b22c522c9f44225db50a778b6697cfe8c0a220a96aa8713f",
+        "bytes": 6158614
+      },
+      "approxBytes": 6158614,
+      "license": "CC BY-NC-SA 3.0 IGO (copiar, redistribuir y adaptar con fines no comerciales, citando la fuente)",
+      "publisher": "OMS",
+      "title": "Guías para la calidad del agua de consumo humano (4.ª ed. con la 1.ª adenda)",
+      "description": "Referencia técnica (636 págs.) sobre patógenos, sustancias químicas, desinfección y planes de seguridad del agua."
+    },
+    {
+      "id": "cawst-analisis-calidad-agua",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://static.pseau.org/outils/ouvrages/cawst_introduccion_al_analisis_de_la_calidad_del_agua_de_consumo_2013.pdf",
+        "file": "cawst-analisis-calidad-agua.pdf",
+        "sha256": "2dea8f8494441224c6c7cc36d289f552b7e20e9b700eacde65e0118b01cbd615",
+        "bytes": 14938755
+      },
+      "approxBytes": 14938755,
+      "license": "CC BY 3.0 (copiar, redistribuir y adaptar citando a CAWST)",
+      "publisher": "CAWST",
+      "title": "Introducción al análisis de la calidad del agua de consumo (manual del capacitador, 2013)",
+      "description": "Análisis de agua sobre el terreno: turbidez, cloro residual, pH y pruebas microbiológicas sencillas."
+    },
+    {
+      "id": "ops-wash-coordinacion-emergencias",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/ac7b2f32-e4ce-4160-bc87-79405711c3e1/content",
+        "file": "ops-wash-coordinacion-emergencias.pdf",
+        "sha256": "34a0f0674268fd5b91547a5cae220aca4cdca7586ef2a546bacd7195b94be970",
+        "bytes": 8378592
+      },
+      "approxBytes": 8378592,
+      "license": "© OPS 2013, todos los derechos reservados; difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras anteriores a 2019.",
+      "publisher": "OPS / Ministerio de Salud Pública (Rep. Dominicana)",
+      "title": "Sector de agua potable, saneamiento e higiene: guía práctica para la coordinación de emergencias de salud pública y desastres",
+      "description": "Evaluación y respuesta de agua, saneamiento e higiene en desastres, con vigilancia de la calidad del agua."
+    },
+    {
+      "id": "oms-enfermedades-agua-hogares",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/ca99a41d-785d-45c5-81c0-9bcbbe5f3e6c/content",
+        "file": "oms-enfermedades-agua-hogares.pdf",
+        "sha256": "3abc9d9051fc99bd41627574c28d390476f3a8db05df41c0e6d9a98670ceaa93",
+        "bytes": 5919893
+      },
+      "approxBytes": 5919893,
+      "license": "© OMS 2007, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS",
+      "title": "Lucha contra las enfermedades transmitidas por el agua en los hogares",
+      "description": "Por qué y cómo tratar y guardar el agua en casa (cloro, filtros, SODIS, ebullición), con datos de eficacia."
+    },
+    {
+      "id": "ops-salud-mental-desastres",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/59d9ce56-894f-4c41-8443-ea5f531743f0/content",
+        "file": "ops-salud-mental-desastres.pdf",
+        "sha256": "0131d5a4549f822abe61d293e6165f7c7d111ffd78ff8b7f3d95222d03a22505",
+        "bytes": 4532980
+      },
+      "approxBytes": 4532980,
+      "license": "© OPS 2006; difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras anteriores a 2019.",
+      "publisher": "OPS / OMS",
+      "title": "Guía práctica de salud mental en situaciones de desastres",
+      "description": "Reacciones psicológicas tras un desastre, intervención en crisis, grupos vulnerables y cuidado de los equipos de ayuda."
+    },
+    {
+      "id": "ops-salud-mental-promotor",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/87ac62ba-ab70-4c1e-8372-92b5379697b3/content",
+        "file": "ops-salud-mental-promotor.pdf",
+        "sha256": "4cafbf3439c719fdd94c3fc8aece7dfccc16b62ca85def2ecf6f1eb5a5c41334",
+        "bytes": 4740957
+      },
+      "approxBytes": 4740957,
+      "license": "© OPS 2013, todos los derechos reservados; difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras anteriores a 2019.",
+      "publisher": "OPS",
+      "title": "Salud mental: guía del promotor comunitario",
+      "description": "Guía sencilla para detectar y acompañar depresión, ansiedad, violencia, alcohol y riesgo de suicidio en la comunidad."
+    },
+    {
+      "id": "oms-mhgap-2",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/2f2a12bd-7378-4d17-a31c-7d74807bbf2c/content",
+        "file": "oms-mhgap-2.pdf",
+        "sha256": "ad36bb3b686b9d20ece5f9f65150d1e59837e1a39a3a2288594a9f901b9c2146",
+        "bytes": 12873085
+      },
+      "approxBytes": 12873085,
+      "license": "© OMS/OPS 2017; difusión gratuita en IRIS-OPS; la OPS fomenta la reutilización no comercial de sus obras anteriores a 2019.",
+      "publisher": "OMS / OPS",
+      "title": "Guía de intervención mhGAP 2.0 para trastornos mentales, neurológicos y por consumo de sustancias",
+      "description": "Algoritmos de evaluación y tratamiento de depresión, psicosis, epilepsia, demencia y adicciones en atención no especializada."
+    },
+    {
+      "id": "oms-paludismo-grave",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/2269490b-b2da-43b4-8640-6da3bfb44fcc/content",
+        "file": "oms-paludismo-grave.pdf",
+        "sha256": "ffed38e0c768f4873f3c92e70327df104bd68fa2a0a3196ee08f038513ce61ae",
+        "bytes": 1147760
+      },
+      "approxBytes": 1147760,
+      "license": "© OMS 2013, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS",
+      "title": "Tratamiento del paludismo grave: manual práctico (3.ª ed.)",
+      "description": "Diagnóstico y tratamiento del paludismo grave y sus complicaciones en niños y adultos."
+    },
+    {
+      "id": "oms-tetanos-emergencias",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/a4af4f30-9d0f-49ff-a056-eb636470f476/content",
+        "file": "oms-tetanos-emergencias.pdf",
+        "sha256": "7a00f30b422947d768bcff569ea07e00660a2df1270930a824125bef4c3d5f8e",
+        "bytes": 255730
+      },
+      "approxBytes": 255730,
+      "license": "© OMS 2010, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS",
+      "title": "Recomendaciones actuales para el tratamiento del tétanos durante las emergencias humanitarias",
+      "description": "Nota técnica breve: profilaxis de heridas, inmunoglobulina, vacuna y manejo clínico del tétanos tras desastres."
+    },
+    {
+      "id": "oms-malnutricion-grave",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/50e78ce5-4c2c-413f-bb9f-fd2d8176b958/content",
+        "file": "oms-malnutricion-grave.pdf",
+        "sha256": "496d8e00a7d2be02c89f415dc6107a261813659e24eba9229b278ca634fd9fc7",
+        "bytes": 143360
+      },
+      "approxBytes": 143360,
+      "license": "© OMS 1999, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS",
+      "title": "Tratamiento de la malnutrición grave: manual para médicos y otros profesionales sanitarios superiores",
+      "description": "Los 10 pasos del tratamiento de la desnutrición grave: hipoglucemia, hipotermia, deshidratación y realimentación."
+    },
+    {
+      "id": "oms-uso-clinico-sangre-bolsillo",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/946b1758-409c-4246-96c1-f526d0622ea8/content",
+        "file": "oms-uso-clinico-sangre-bolsillo.pdf",
+        "sha256": "6d3b13720d725f15f4293046250e74cfd608c19618c65a77afeb6f0829503f64",
+        "bytes": 5910548
+      },
+      "approxBytes": 5910548,
+      "license": "© OMS 2001, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS",
+      "title": "El uso clínico de la sangre: manual de bolsillo",
+      "description": "Reposición de volumen, indicaciones de transfusión y alternativas en hemorragia, trauma, obstetricia y pediatría."
+    },
+    {
+      "id": "oms-higiene-entorno-sanitario",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/7e51a036-d14d-4a4d-a223-a575ad30208a/content",
+        "file": "oms-higiene-entorno-sanitario.pdf",
+        "sha256": "94e15d25b8f73d3f5777f769161911617ef4d1769908f4ad2996d7a336c40276",
+        "bytes": 1861600
+      },
+      "approxBytes": 1861600,
+      "license": "© OMS; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS",
+      "title": "Normas básicas de higiene del entorno en la atención sanitaria",
+      "description": "Cantidades mínimas de agua, saneamiento, residuos y limpieza para un puesto sanitario improvisado."
+    },
+    {
+      "id": "ops-primera-ayuda-psicologica-comunidad",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.paho.org/server/api/core/bitstreams/38b10109-8f5e-4820-8065-36fd22d2cf59/content",
+        "file": "ops-primera-ayuda-psicologica-comunidad.pdf",
+        "sha256": "fa0c9f63e16349431ce130313eede081ab0dad5abd258d354dcb8b50d67afbcd",
+        "bytes": 63146695
+      },
+      "approxBytes": 63146695,
+      "license": "CC BY-NC-SA 3.0 IGO (copiar, redistribuir y adaptar con fines no comerciales, citando la fuente)",
+      "publisher": "OPS / FICR",
+      "title": "Primera ayuda psicológica. Juntos más fuertes: guía para ayudarle a usted y a su comunidad (2.ª ed.)",
+      "description": "Versión comunitaria e ilustrada de la primera ayuda psicológica para vecinos y voluntarios (archivo grande: 63 MB)."
+    },
+    {
+      "id": "hesperian-aprendiendo-promover-salud",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "parts": [
+          {
+            "file": "01-inicio-libro-portada-agradecimientos-contenido.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Inicio_Libro.pdf",
+            "sha256": "cf8abfcb020671e9e75e9fcb1574bcb5f4dc90cd454fe23fac49f94837c43886",
+            "bytes": 405989,
+            "title": "Inicio Libro: Portada, Agradecimientos, Contenido"
+          },
+          {
+            "file": "02-introduccion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Intro.pdf",
+            "sha256": "60b100a3f1cc6202ddf9f3bbab61968a7cdc261c75b587361645a664a109d019",
+            "bytes": 1811822,
+            "title": "Introducción"
+          },
+          {
+            "file": "03-1-reflexiones-sobre-el-aprendizaje-y-la-ensenanza.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap1.pdf",
+            "sha256": "54a2196b98364e4fde7b7933dddcf382fab836757de081e653464f2968bb1ac2",
+            "bytes": 3344846,
+            "title": "1 Reflexiones sobre el aprendizaje y la enseñanza"
+          },
+          {
+            "file": "04-2-para-escoger-promotores-instructores-y-asesores.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap2.pdf",
+            "sha256": "a881b963b59ef73e66dc49ccc3de76023624aa885b235a71bbaeb56f8fd6ddb6",
+            "bytes": 2030424,
+            "title": "2 Para escoger promotores, instructores y asesores"
+          },
+          {
+            "file": "05-3-para-planificar-un-programa-de-capacitacion.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap3.pdf",
+            "sha256": "a8bca4faf75f58b189f2c3ea5f63645374ec170209bda2383f62437b3c31af88",
+            "bytes": 3618340,
+            "title": "3 Para planificar un programa de capacitación"
+          },
+          {
+            "file": "06-4-para-empezar-bien.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap4.pdf",
+            "sha256": "f799d74a72ed47385ab6ba2d33fdeff823a9cda6d606c4b0825f4728825d0c53",
+            "bytes": 1574922,
+            "title": "4 Para empezar bien"
+          },
+          {
+            "file": "07-5-como-planificar-una-clase.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap5.pdf",
+            "sha256": "bdd65f78cad38e42df1c3cdee202eebcf5b9813c5b901f17666362fbdaeaffe3",
+            "bytes": 1764893,
+            "title": "5 Cómo planificar una clase"
+          },
+          {
+            "file": "08-6-aprendamos-y-trabajemos-con-la-comunidad.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap6.pdf",
+            "sha256": "6b54dc100cabca6032e92287a3e8f9a88c57c334b1f312e887b097f28788e941",
+            "bytes": 3028362,
+            "title": "6 Aprendamos y trabajemos con la comunidad"
+          },
+          {
+            "file": "09-7-como-ayudar-a-la-gente-a-examinar-sus-costumbres-y-creenci.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap7.pdf",
+            "sha256": "2e8d727f9d531de443b7af3856f59e6394a790b827ea6f843df42d753acac89d",
+            "bytes": 1882839,
+            "title": "7 Cómo ayudar a la gente a examinar sus costumbres y creencias"
+          },
+          {
+            "file": "10-8-la-practica-en-la-atencion-de-los-enfermos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap8.pdf",
+            "sha256": "5f71b15ebef01c7da1b8dc44345166e42d4b2e72f6386c7e04d0f9e8fbf153a3",
+            "bytes": 2292291,
+            "title": "8 La práctica en la atención de los enfermos"
+          },
+          {
+            "file": "11-9-los-examenes-y-la-evaluacion-como-un-proceso-de-aprendizaj.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap9.pdf",
+            "sha256": "358ea48bac48a5a181cb30993d9e87b17c5617aea18d87d7e9a5bdb211009f78",
+            "bytes": 2242609,
+            "title": "9 Los exámenes y la evaluación como un proceso de aprendizaje"
+          },
+          {
+            "file": "12-10-el-seguimiento-el-apoyo-y-el-aprendizaje-continuado.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap10.pdf",
+            "sha256": "94559b87cb9c09e2be679efd672f353f4388c24c21e98e4580700a4542212a66",
+            "bytes": 2390443,
+            "title": "10 El seguimiento, el apoyo y el aprendizaje continuado"
+          },
+          {
+            "file": "13-11-como-hacer-y-usar-materiales-de-ensenanza.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap11.pdf",
+            "sha256": "98c533ba2e7315b0dac4f4a02c52b50f55b1e8fbd87aca828441ff95e09a8109",
+            "bytes": 9462798,
+            "title": "11 Cómo hacer y usar materiales de enseñanza"
+          },
+          {
+            "file": "14-12-para-aprender-a-hacer-y-usar-dibujos-y-fotos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap12.pdf",
+            "sha256": "82f6fc0633d070039e760656f283eea4e86b38d0e6e44100f66cb8e3bbbce66d",
+            "bytes": 4478794,
+            "title": "12 Para aprender a hacer y usar dibujos y fotos"
+          },
+          {
+            "file": "15-13-los-cuentos.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap13.pdf",
+            "sha256": "23a0f2d7778e8302449bfd3202f713edbfa5140077a01f9f38719847efb71857",
+            "bytes": 2171029,
+            "title": "13 Los cuentos"
+          },
+          {
+            "file": "16-14-sociodramas-y-practica-simulada.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap14.pdf",
+            "sha256": "554586834247b3a8da120973f42d6c78470af943fc4854aecbadf0df6aec8f06",
+            "bytes": 2440786,
+            "title": "14 Sociodramas y práctica simulada"
+          },
+          {
+            "file": "17-15-tecnologia-apropiada-e-inapropiada.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap15.pdf",
+            "sha256": "9d9fd011bc6d970536b340e1ca4305d952cfbe64df9db72216178a34ff5badee",
+            "bytes": 2594687,
+            "title": "15 Tecnología apropiada e inapropiada"
+          },
+          {
+            "file": "18-16-equipo-y-materiales-escritos-hechos-a-mano-y-de-bajo-cost.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap16.pdf",
+            "sha256": "a284ec7123097357417580a1e9eee9b3c93901944779c1145c339003846e5e7c",
+            "bytes": 2522133,
+            "title": "16 Equipo y materiales escritos hechos a mano y de bajo costo"
+          },
+          {
+            "file": "19-17-para-resolver-problemas-paso-a-paso.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap17.pdf",
+            "sha256": "159b7881dfbb015ec9d411b05b679881b5166addd25113128d877b30685c17f8",
+            "bytes": 1548814,
+            "title": "17 Para resolver problemas paso a paso"
+          },
+          {
+            "file": "20-18-para-aprender-el-uso-razonable-de-las-medicinas.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap18.pdf",
+            "sha256": "bc2d81fd833094da2045f2b8a52a6ed7ad174699b612b3349f53510f33c5d743",
+            "bytes": 2003520,
+            "title": "18 Para aprender el uso razonable de las medicinas"
+          },
+          {
+            "file": "21-19-ayudas-para-aprender-a-usar-medicinas-y-equipo.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap19.pdf",
+            "sha256": "805ba60488c1c02fcab2fcbcf3d18f6e3c3d25bd10ebf33c82e30aaeb35138e4",
+            "bytes": 3215571,
+            "title": "19 Ayudas para aprender a usar medicinas y equipo"
+          },
+          {
+            "file": "22-20-uso-del-contenido-indice-vocabulario-y-referencias-a-las-.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap20.pdf",
+            "sha256": "36c3acc92c95137202a5b95f20f7eedf77b2e4af829287af8a0ec3988f9d0569",
+            "bytes": 3630905,
+            "title": "20 Uso del Contenido, Indice, Vocabulario y Referencias a las Páginas"
+          },
+          {
+            "file": "23-21-la-practica-en-el-uso-de-guias-esquemas-y-hojas-de-regist.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap21.pdf",
+            "sha256": "5aa1831d55370069efbc4734948413ad1cc623b67c2fadb68814a9483af1eb11",
+            "bytes": 4555674,
+            "title": "21 La práctica en el uso de guías, esquemas y hojas de registro"
+          },
+          {
+            "file": "24-22-mujeres-embarazadas-madres-y-ninos-peque-os.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap22.pdf",
+            "sha256": "fe1d68d72fbc34b42970d6218344077b0fb9b8098bd5a7e6f65145791d97cb12",
+            "bytes": 4595007,
+            "title": "22 Mujeres embarazadas, madres y niños peque–os"
+          },
+          {
+            "file": "25-23-aspectos-politicos-y-sociales-de-la-planificacion-familia.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap23.pdf",
+            "sha256": "48d2fd34fcee594e8fbb467128519b731f54f95eb795722dcacf5aadbd107aa4",
+            "bytes": 1519808,
+            "title": "23 Aspectos políticos y sociales de la planificación familiar"
+          },
+          {
+            "file": "26-24-los-ninos-como-promotores-de-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap24.pdf",
+            "sha256": "bb6f3480dfbf0d617115322f49f0e7f54cba8f873f99ccbb3f9b8d147340b627",
+            "bytes": 6924312,
+            "title": "24 Los niños como promotores de salud"
+          },
+          {
+            "file": "27-25-comer-es-lo-primero.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap25.pdf",
+            "sha256": "9730ddb65b3c424a6b1d4ec652ed20e8099be52bc1492c92428d29cebc69021e",
+            "bytes": 8286434,
+            "title": "25 Comer es lo primero"
+          },
+          {
+            "file": "28-26-el-efecto-de-las-relaciones-humanas-sobre-la-salud.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap26.pdf",
+            "sha256": "465dc9b0787a6cf5279eb9069bf45d4d48558f4dc19b4c5ec50ea22af9ff27ee",
+            "bytes": 6186198,
+            "title": "26 El efecto de las relaciones humanas sobre la salud"
+          },
+          {
+            "file": "29-27-maneras-de-estimular-la-reflexion-y-la-accion-titeres-y-t.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Cap27.pdf",
+            "sha256": "5c2b5ae8af92ee60313312bbc724535766dd623593e4cd5dbb76ba0081b293ac",
+            "bytes": 19629742,
+            "title": "27 Maneras de estimular la reflexión y la acción títeres y teatro comunitario"
+          },
+          {
+            "file": "30-recursos-un-llamado-a-la-precaucion-donde-conseguir-material.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Mas.pdf",
+            "sha256": "d65ac67a17bb7ba6dce214863749de507c761e8f4888a87a91a21ec67e4d0176",
+            "bytes": 435691,
+            "title": "Recursos: Un llamado a la precaución, Donde conseguir materiales educativos"
+          },
+          {
+            "file": "31-indice-y-mas-indice-sobre-el-proyecto-piaxtla-y-los-autores-.pdf",
+            "url": "https://hesperian.org/wp-content/uploads/pdf/es_hhwl_2010/es_hhwl_2010_Indice.pdf",
+            "sha256": "612bdfebddc3704210132dffced57fb4324bcccfbf8d3be1e68ae1a01abe960f",
+            "bytes": 1326177,
+            "title": "Índice y más: Índice, Sobre el Proyecto Piaxtla y los autores, Otros libros de Hesperian"
+          }
+        ],
+        "bytes": 113915860
+      },
+      "approxBytes": 113915860,
+      "license": "Hesperian invita a copiar, reproducir o adaptar cualquier parte sin fines de lucro y citando a Hesperian (Licencia de derechos de autor compartidos de Hesperian",
+      "publisher": "Hesperian",
+      "title": "Aprendiendo a promover la salud",
+      "description": "Métodos para formar promotores de salud comunitarios; sirve para enseñar a otros (114 MB repartidos en 31 PDF)."
+    },
+    {
+      "id": "msf-cholera-epidemic-en",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://medicalguidelines.msf.org/sites/default/files/pdf/guideline-800-en.pdf",
+        "file": "msf-cholera-epidemic-en.pdf",
+        "sha256": "1f3eaa1c369a245c71ebf56221f953e76db3b9b1af2fbcf75e333ad94228b1d6",
+        "bytes": 2285423
+      },
+      "approxBytes": 2285423,
+      "license": "© MSF, todos los derechos reservados. Descarga gratuita ofrecida por MSF en su web oficial (uso personal; no redistribuir).",
+      "publisher": "Médicos Sin Fronteras",
+      "title": "Management of a cholera epidemic (MSF)",
+      "description": "Montaje de centros de tratamiento del cólera, cloración, aislamiento y logística; no existe versión MSF en español."
+    },
+    {
+      "id": "msf-public-health-engineering-en",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://medicalguidelines.msf.org/sites/default/files/2022-06/Public_health_engineering_2010.pdf",
+        "file": "msf-public-health-engineering-en.pdf",
+        "sha256": "e659326f1cf10920496db71e807857e6b54e11ff70352a50a7852827fea77532",
+        "bytes": 11301056
+      },
+      "approxBytes": 11301056,
+      "license": "© MSF, todos los derechos reservados. Descarga gratuita ofrecida por MSF en su web oficial (uso personal; no redistribuir).",
+      "publisher": "Médicos Sin Fronteras",
+      "title": "Public health engineering in precarious situations (MSF, 2010)",
+      "description": "Ingeniería sanitaria de campo: captación y tratamiento de agua, letrinas, residuos y control de vectores en campamentos."
+    },
+    {
+      "id": "oms-surgical-care-district-hospital-en",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://iris.who.int/server/api/core/bitstreams/8ece1ef3-1a8f-4003-a0a9-d46c3fa4f748/content",
+        "file": "oms-surgical-care-district-hospital-en.pdf",
+        "sha256": "694decd44daeb78a648e9137940d31f170380a3d8308ce065f0ad54df03d55e4",
+        "bytes": 6967399
+      },
+      "approxBytes": 6967399,
+      "license": "© OMS 2003, se reservan todos los derechos; difusión gratuita en IRIS (reproducir/traducir requiere permiso).",
+      "publisher": "OMS",
+      "title": "Surgical care at the district hospital (OMS, 2003)",
+      "description": "Técnicas quirúrgicas, anestésicas y de trauma básicas, ilustradas; no existe edición en español."
+    },
+    {
+      "id": "pc-guia-autoproteccion",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://www.proteccioncivil.es/documents/20121/0/07-Autoproteccion_accesible.pdf/4344b9ea-05ef-6415-0223-10ab4257effd",
+        "file": "pc-guia-autoproteccion.pdf",
+        "sha256": "703b0a5cb7037482e1cc70e42c2398e7e932da912751d0257fc012d49e0805f0",
+        "bytes": 2942848
+      },
+      "approxBytes": 2942848,
+      "license": "Reutilización de información del sector público (Ley 37/2007): copia y difusión citando a la DGPCE",
+      "publisher": "Dirección General de Protección Civil y Emergencias (Ministerio del Interior)",
+      "title": "Guía de información al ciudadano sobre Autoprotección",
+      "description": "Guía oficial española de autoprotección: qué hacer antes, durante y después de una emergencia en casa y fuera de ella."
+    },
+    {
+      "id": "guia-familias-autoproteccion-2025",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://recursosemergencias.educacionfpydeportes.gob.es/dam/jcr:53d2439d-69e5-4606-a79f-3fe1610638cd/esp-guiafamiliar.pdf",
+        "file": "guia-familias-autoproteccion-2025.pdf",
+        "sha256": "14c1b8191ae5cc372822d1d8bee1d84a8ede8cce8daac1788cc9eb887d12eca9",
+        "bytes": 1756196
+      },
+      "approxBytes": 1756196,
+      "license": "Reproducción de textos citando al Ministerio; resto, descarga y uso privado",
+      "publisher": "Ministerio de Educación, FP y Deportes / Ministerio del Interior",
+      "title": "Guía para las familias: prevención y autoprotección ante riesgos",
+      "description": "Plan familiar de emergencia, kit básico y actuación ante inundaciones, terremotos, volcanes, temporales, incendios y riesgos tecnológicos."
+    },
+    {
+      "id": "pc-guia-inundaciones",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://www.proteccioncivil.es/documents/20121/0/08-Inundaciones_accesible.pdf/9b11b38f-447a-5eea-38bd-088def20096f",
+        "file": "pc-guia-inundaciones.pdf",
+        "sha256": "c5686afc666078634797a2aca664cb60ebe5d4626b33a3444ea90580923d560f",
+        "bytes": 1686716
+      },
+      "approxBytes": 1686716,
+      "license": "Reutilización Ley 37/2007 citando a la DGPCE",
+      "publisher": "Dirección General de Protección Civil y Emergencias",
+      "title": "Guía al ciudadano ante el riesgo de inundaciones",
+      "description": "Qué hacer antes, durante y después de una inundación o DANA, según el criterio oficial español."
+    },
+    {
+      "id": "pc-guia-fenomenos-meteorologicos",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://www.proteccioncivil.es/documents/20121/0/06-Fenomenos%20metereologicos.pdf/1295223b-96b3-ae95-d8ec-d7e296d9bb05",
+        "file": "pc-guia-fenomenos-meteorologicos.pdf",
+        "sha256": "f372747433b13df35548d4886d0a5c31e9327af999583544cc750a5b9f9751a1",
+        "bytes": 22783836
+      },
+      "approxBytes": 22783836,
+      "license": "Reutilización Ley 37/2007 citando a la DGPCE",
+      "publisher": "Dirección General de Protección Civil y Emergencias",
+      "title": "Guía al ciudadano ante fenómenos meteorológicos adversos",
+      "description": "Olas de calor y frío, tormentas, nevadas, vientos fuertes y temporales costeros."
+    },
+    {
+      "id": "pc-guia-riesgo-quimico-nuclear",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://www.proteccioncivil.es/documents/20121/0/05-Riesgos%20Quimicos_accesible.pdf/86b70c01-48d7-7ffc-e332-d2431d1132fd",
+        "file": "pc-guia-riesgo-quimico-nuclear.pdf",
+        "sha256": "d6e8c1a4b2bd4dde92ec1ac31529a4af39d7cfa7b8093d45e01a4f6d1a9d3a8d",
+        "bytes": 1627928
+      },
+      "approxBytes": 1627928,
+      "license": "Reutilización Ley 37/2007 citando a la DGPCE",
+      "publisher": "Dirección General de Protección Civil y Emergencias",
+      "title": "Guía al ciudadano ante emergencias industriales, químicas y nucleares",
+      "description": "Confinamiento, evacuación y actuación ante accidentes industriales, químicos y nucleares."
+    },
+    {
+      "id": "ign-terremoto-tsunami",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://www.ign.es/web/resources/docs/IGNCnig/folletos/Quehacer_Terremoto_Tsunami.pdf",
+        "file": "ign-terremoto-tsunami.pdf",
+        "sha256": "387ddf5f6ccc466b7a0f4d610bf97abec491cc1562fff46b3a88f2355fcc1875",
+        "bytes": 1018614
+      },
+      "approxBytes": 1018614,
+      "license": "Reutilización permitida citando la fuente (aviso legal del IGN)",
+      "publisher": "Instituto Geográfico Nacional",
+      "title": "Qué hacer antes, durante y después de un terremoto y en caso de tsunami",
+      "description": "Agacharse, cubrirse y agarrarse; cortar suministros y evacuar ante un tsunami."
+    },
+    {
+      "id": "sanidad-calor-folleto",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://www.sanidad.gob.es/campannas/campanas08/pdf/folletoCombateCalor.pdf",
+        "file": "sanidad-calor-folleto.pdf",
+        "sha256": "ce5168a6ed97a7c1c7e73f640aad701782d9b0cfeb6a08f8e44812f2bfea7c8a",
+        "bytes": 310799
+      },
+      "approxBytes": 310799,
+      "license": "Reutilizable citando la fuente (aviso legal de sanidad.gob.es)",
+      "publisher": "Ministerio de Sanidad",
+      "title": "Prevención de los efectos de las altas temperaturas (folleto)",
+      "description": "Recomendaciones ante olas de calor, golpe de calor y personas vulnerables."
+    },
+    {
+      "id": "ifrc-kit-alojamiento",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://s3.eu-west-1.amazonaws.com/sheltercluster.org/public/docs/kit_de_alojamiento-sp-fiskr.pdf",
+        "file": "ifrc-kit-alojamiento.pdf",
+        "sha256": "5ba23978d20e048025c60875acd48cb2786138a63ac3418e853794a46e361e48",
+        "bytes": 963887
+      },
+      "approxBytes": 963887,
+      "license": "Copias para uso no comercial citando la fuente",
+      "publisher": "FICR (Cruz Roja y Media Luna Roja)",
+      "title": "Kit de Alojamiento de la FICR",
+      "description": "Montar un refugio de emergencia con lonas, cuerda y herramientas básicas (ilustrado)."
+    },
+    {
+      "id": "ops-wash-tratamiento-agua",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://paho.org/sites/default/files/2019-12/Nota-tecnica-sobre-agua-saneamiento-higiene-10.pdf",
+        "file": "ops-wash-tratamiento-agua.pdf",
+        "sha256": "065a6f7f35f4cc2c21e80f151a1f9c8674bdceeb9c5f699b87cfd8cab304affa",
+        "bytes": 784472
+      },
+      "approxBytes": 784472,
+      "license": "© OPS; descarga gratuita para uso personal",
+      "publisher": "OPS / OMS",
+      "title": "Tratamiento de emergencia de agua potable en el lugar de consumo (nota técnica 10)",
+      "description": "Hervir, clorar, filtrar y desinfectar con el sol (SODIS), con dosis."
+    },
+    {
+      "id": "ops-wash-almacenamiento-agua",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://paho.org/sites/default/files/2019-12/Nota-tecnica-sobre-agua-saneamiento-higiene-08.pdf",
+        "file": "ops-wash-almacenamiento-agua.pdf",
+        "sha256": "868458e87f4ed20363a82a7f25edc9752101761cd093351113818dcf2003aab5",
+        "bytes": 413320
+      },
+      "approxBytes": 413320,
+      "license": "© OPS; descarga gratuita para uso personal",
+      "publisher": "OPS / OMS",
+      "title": "Almacenamiento familiar de agua en emergencias (nota técnica 8)",
+      "description": "Recipientes, higiene y manejo seguro del agua almacenada en casa."
+    },
+    {
+      "id": "ops-wash-saneamiento",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://paho.org/sites/default/files/2019-12/Nota-tecnica-sobre-agua-saneamiento-higiene-13.pdf",
+        "file": "ops-wash-saneamiento.pdf",
+        "sha256": "102ebeecfd280e3123400d1b16e74c4707bfa05190ee74ed998f6b3f1373fc6a",
+        "bytes": 746770
+      },
+      "approxBytes": 746770,
+      "license": "© OPS; descarga gratuita para uso personal",
+      "publisher": "OPS / OMS",
+      "title": "Saneamiento de emergencia: planificación y opciones técnicas (nota técnica 13)",
+      "description": "Letrinas de emergencia y eliminación segura de excretas en los primeros días."
+    },
+    {
+      "id": "scouts-manual-orientacion",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://biblioteca.scout.es/wp-content/uploads/tainacan-items/110/17495/Manual-basico-de-Orientacion_2020.pdf",
+        "file": "scouts-manual-orientacion.pdf",
+        "sha256": "b89ebde7eff0dff8e9021aab587450b4fbd186f66dfdef249551896be3951f6f",
+        "bytes": 5426021
+      },
+      "approxBytes": 5426021,
+      "license": "Creative Commons Reconocimiento-NoComercial",
+      "publisher": "ASDE Scouts de España",
+      "title": "Manual básico de orientación",
+      "description": "Mapa y brújula, lectura del terreno y orientación natural, con ejercicios."
+    },
+    {
+      "id": "scouts-manual-cabuyeria",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://scout.es/wp-content/uploads/2024/06/Manual-Cabuyeria-interactivo_2016_BAJA.pdf",
+        "file": "scouts-manual-cabuyeria.pdf",
+        "sha256": "88835e382c59a67c6c502cefdcec157fdc92522900c8da83363c1cf1e17eb534",
+        "bytes": 904027
+      },
+      "approxBytes": 904027,
+      "license": "Creative Commons Reconocimiento-NoComercial",
+      "publisher": "ASDE Scouts de España",
+      "title": "Manual de cabuyería (nudos y amarres)",
+      "description": "Nudos y amarres para refugios, tendales y construcciones de campamento."
+    },
+    {
+      "id": "iaru-guia-telecom-emergencia",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://www.iaru-r2.org/wp-content/uploads/2020/01/IARU-Gu%C3%ADa-para-Telecomunicaciones-de-Emergencia-2016.pdf",
+        "file": "iaru-guia-telecom-emergencia.pdf",
+        "sha256": "e2d38133f8ccfbb39647b0db7166e46b40d5612b041902d36e70e585a938f964",
+        "bytes": 660086
+      },
+      "approxBytes": 660086,
+      "license": "Reproducción sin editar por cualquier medio reconociendo a la IARU",
+      "publisher": "IARU (traducción del Radio Club Argentino)",
+      "title": "Guía para telecomunicaciones de emergencia (IARU, 2016)",
+      "description": "Redes de emergencia, mensajería, energía y equipos de radio; incluye PMR446 y CB."
+    },
+    {
+      "id": "ure-manual-control-red",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://emergencias.ure.es/wp-content/uploads/2017/10/MANUAL-DE-CONTROL-DE-RED.pdf",
+        "file": "ure-manual-control-red.pdf",
+        "sha256": "841782371806c17e8ac4946d96b867c9500b58dabddf5f3be6455eb7aa95c471",
+        "bytes": 149986
+      },
+      "approxBytes": 149986,
+      "license": "Descarga gratuita de la URE para formación; uso personal",
+      "publisher": "URE – EMCOM",
+      "title": "Control de red de radioaficionados: manual de instrucción",
+      "description": "Cómo dirigir y participar en una red de radio de emergencia en España."
+    },
+    {
+      "id": "ign-actividades-mtn",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://www.ign.es/web/resources/acercaDe/libDigPub/actividades-geografia-IGN.pdf",
+        "file": "ign-actividades-mtn.pdf",
+        "sha256": "483b9698ee5b88e969cdda32284de7b35dd697d655971d43c225a4419c37cebf",
+        "bytes": 64724988
+      },
+      "approxBytes": 64724988,
+      "license": "Reutilización permitida citando la fuente (aviso legal del IGN)",
+      "publisher": "Instituto Geográfico Nacional",
+      "title": "Mapa Topográfico Nacional, ortofotografía y LiDAR: actividades de geografía",
+      "description": "Interpretar el mapa topográfico: escala, curvas de nivel, perfiles y relieve (65 MB)."
+    },
+    {
+      "id": "atp-3-50-21-survival",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://archive.org/download/survival-atp-3-50-21/Survival%20%28ATP%203-50-21%29.pdf",
+        "file": "atp-3-50-21-survival.pdf",
+        "sha256": "817746b13262e9e26e8ac7d25bf879790df369c2aa0a2600f69158ec4090461c",
+        "bytes": 23749774
+      },
+      "approxBytes": 23749774,
+      "license": "Dominio público (obra del Gobierno de EE. UU.; distribución ilimitada)",
+      "publisher": "Department of the Army (EE. UU.)",
+      "title": "ATP 3-50.21 Survival (Ejército de EE. UU., 2018)",
+      "description": "Manual de supervivencia vigente: agua, fuego, refugio, alimentos, señales y medicina básica."
+    },
+    {
+      "id": "fm-3-25-26-land-navigation",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "en",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://archive.org/download/milmanual-fm-3-25.26-map-reading-and-land-navigation/fm_3-25.26_map_reading_and_land_navigation.pdf",
+        "file": "fm-3-25-26-land-navigation.pdf",
+        "sha256": "e86dadb55f03d0cddb8b6c9a20458514743ce67ed7e29eef106b53211716d9f1",
+        "bytes": 23583528
+      },
+      "approxBytes": 23583528,
+      "license": "Dominio público (obra del Gobierno de EE. UU.)",
+      "publisher": "Department of the Army (EE. UU.)",
+      "title": "FM 3-25.26 Map Reading and Land Navigation",
+      "description": "Lectura de mapas, coordenadas, azimut, brújula y navegación sin GPS."
+    },
+    {
+      "id": "fm-21-76-survival",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "en",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://archive.org/download/milmanual-mcrp-3-02f-fm-21-76-survival/mcrp_3-02f_fm_21-76_survival.pdf",
+        "file": "fm-21-76-survival.pdf",
+        "sha256": "a2cb801150aff1931d8932e19d26dba0d7d66d646373f592ff47b81858f1ac15",
+        "bytes": 34917972
+      },
+      "approxBytes": 34917972,
+      "license": "Dominio público (obra del Gobierno de EE. UU.)",
+      "publisher": "US Army / US Marine Corps",
+      "title": "FM 21-76 / MCRP 3-02F Survival",
+      "description": "Manual de supervivencia clásico con apéndice ilustrado de plantas comestibles y venenosas."
+    },
+    {
+      "id": "fao-una-huerta-para-todos",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://coin.fao.org/coin-static/cms/media/1/12956304968670/cartilla_una_huerta_para_todos.pdf",
+        "file": "fao-una-huerta-para-todos.pdf",
+        "sha256": "8e899d47cb171d3c9c6e1de27dedcae0bf544a7397f3d744451b9ffbfeed3cba",
+        "bytes": 13946989
+      },
+      "approxBytes": 13946989,
+      "license": "Reproducción y difusión para fines educativos o no comerciales citando la fuente",
+      "publisher": "FAO / Gobernación de Antioquia",
+      "title": "Una huerta para todos (3.ª ed.)",
+      "description": "Montar y mantener un huerto familiar: suelo, semilleros, compost, plagas y calendario."
+    },
+    {
+      "id": "fao-huertos-familiares-urbanos",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://www.fao.org/3/a-as163s.pdf",
+        "file": "fao-huertos-familiares-urbanos.pdf",
+        "sha256": "6bd2261ca2597aaadcacb4ccc4ea2b751ba2437f231dbac1aca28e62c0fec41f",
+        "bytes": 1076469
+      },
+      "approxBytes": 1076469,
+      "license": "Reproducción y difusión para fines educativos o no comerciales citando la fuente",
+      "publisher": "FAO",
+      "title": "Prácticas para la producción de huertos familiares urbanos",
+      "description": "Cultivo en recipientes y espacios pequeños: sustrato, humus, riego y fichas de cultivo."
+    },
+    {
+      "id": "fao-huerto-escolar",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://www.fao.org/3/a0218s/a0218s.pdf",
+        "file": "fao-huerto-escolar.pdf",
+        "sha256": "406aa5bfff66398745861f818262749629f48ee8a4c7669113c4e5733c4bdda1",
+        "bytes": 4185269
+      },
+      "approxBytes": 4185269,
+      "license": "Reproducción y difusión para fines educativos o no comerciales citando la fuente",
+      "publisher": "FAO",
+      "title": "Crear y manejar un huerto escolar",
+      "description": "Planificar, sembrar y mantener un huerto comunitario."
+    },
+    {
+      "id": "fao-conservacion-frutas-hortalizas",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://www.fao.org/3/y5771s/y5771s.pdf",
+        "file": "fao-conservacion-frutas-hortalizas.pdf",
+        "sha256": "3acddadd9ee0af0485a8f2ba27d7f1f561ce7b40d28eeb3acde4e7317a0bd888",
+        "bytes": 808251
+      },
+      "approxBytes": 808251,
+      "license": "Reproducción y difusión para fines educativos o no comerciales citando la fuente",
+      "publisher": "FAO",
+      "title": "Conservación de frutas y hortalizas mediante tecnologías combinadas",
+      "description": "Conservar frutas y verduras sin frío: azúcar, acidez, conservantes y calor suave, paso a paso."
+    },
+    {
+      "id": "fao-silos-metalicos-familiares",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://www.fao.org/3/i3632s/i3632s.pdf",
+        "file": "fao-silos-metalicos-familiares.pdf",
+        "sha256": "63c27a8941917922b8790b398a8356c002ac242442db1dcf8471504a90760bdf",
+        "bytes": 6591769
+      },
+      "approxBytes": 6591769,
+      "license": "Copia y descarga para estudio privado y usos no comerciales citando a la FAO",
+      "publisher": "FAO",
+      "title": "Construcción y uso de silos metálicos familiares para cereales y leguminosas",
+      "description": "Guardar grano sin plagas durante meses en silos de 0,12 a 4,2 m³."
+    },
+    {
+      "id": "fao-captacion-agua-lluvia",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 1,
+      "default": true,
+      "doc": {
+        "url": "https://www.fao.org/3/i3247s/i3247s.pdf",
+        "file": "fao-captacion-agua-lluvia.pdf",
+        "sha256": "1896d54636ad6a50c8be3340bf0f782276afccd3fa584f23aa6d1278b62b44f0",
+        "bytes": 4887867
+      },
+      "approxBytes": 4887867,
+      "license": "Uso y difusión para estudio privado y fines no comerciales citando a la FAO",
+      "publisher": "FAO",
+      "title": "Captación y almacenamiento de agua de lluvia",
+      "description": "Tejados, cisternas, aljibes y pequeños embalses para captar y guardar agua de lluvia."
+    },
+    {
+      "id": "fao-avicultura-familiar",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 2,
+      "default": true,
+      "doc": {
+        "url": "https://www.fao.org/3/y5114s/y5114s.pdf",
+        "file": "fao-avicultura-familiar.pdf",
+        "sha256": "3d5b87786e9d9d3d23b8472976b549357eb74bdb72ab595e0161fa254f5a4db5",
+        "bytes": 394931
+      },
+      "approxBytes": 394931,
+      "license": "Copia y descarga para estudio privado y usos no comerciales citando a la FAO",
+      "publisher": "FAO",
+      "title": "Producción avícola familiar (folleto de diversificación 3)",
+      "description": "Cría doméstica de gallinas: razas, manejo, alimentación y sanidad básica."
+    },
+    {
+      "id": "fao-conejo-cria",
+      "kind": "doc",
+      "group": "manuales",
+      "lang": "es",
+      "priority": 3,
+      "default": true,
+      "doc": {
+        "url": "https://www.fao.org/3/t1690s/t1690s.pdf",
+        "file": "fao-conejo-cria.pdf",
+        "sha256": "c342deaed47f41f7d8c391e6370727663f63fb4eab93c9a34bd639e9307ade87",
+        "bytes": 12967783
+      },
+      "approxBytes": 12967783,
+      "license": "Descarga e impresión para estudio privado (condiciones de la FAO); uso personal",
+      "publisher": "FAO",
+      "title": "El conejo: cría y patología",
+      "description": "Cunicultura completa: alojamiento, alimentación, reproducción y enfermedades."
+    }
   ],
   "models": {
-    "qwen3-4b": { "file": "Qwen3-4B-Instruct-2507-Q4_0.gguf", "repo": "unsloth/Qwen3-4B-Instruct-2507-GGUF", "sha256": "e0ba675d86ab277c61701c6793659b2ae801d95e3be791464c321e6fbf613be2", "bytes": 2375773280, "license": "Apache-2.0" },
-    "gemma3-4b": { "file": "gemma-3-4b-it-Q4_K_M.gguf", "repo": "ggml-org/gemma-3-4b-it-GGUF", "sha256": "882e8d2db44dc554fb0ea5077cb7e4bc49e7342a1f0da57901c0802ea21a0863", "bytes": 2489757856, "license": "Gemma" },
-    "llama3.2-3b": { "file": "Llama-3.2-3B-Instruct-Q4_0.gguf", "repo": "bartowski/Llama-3.2-3B-Instruct-GGUF", "sha256": "4d491003bf6b470e4d04233824c5c939b76d6c81974ba17a3ff207343e1d8e85", "bytes": 1921909280, "license": "Llama-3.2" }
+    "qwen3-4b": {
+      "file": "Qwen3-4B-Instruct-2507-Q4_0.gguf",
+      "repo": "unsloth/Qwen3-4B-Instruct-2507-GGUF",
+      "sha256": "e0ba675d86ab277c61701c6793659b2ae801d95e3be791464c321e6fbf613be2",
+      "bytes": 2375773280,
+      "license": "Apache-2.0"
+    },
+    "gemma3-4b": {
+      "file": "gemma-3-4b-it-Q4_K_M.gguf",
+      "repo": "ggml-org/gemma-3-4b-it-GGUF",
+      "sha256": "882e8d2db44dc554fb0ea5077cb7e4bc49e7342a1f0da57901c0802ea21a0863",
+      "bytes": 2489757856,
+      "license": "Gemma"
+    },
+    "llama3.2-3b": {
+      "file": "Llama-3.2-3B-Instruct-Q4_0.gguf",
+      "repo": "bartowski/Llama-3.2-3B-Instruct-GGUF",
+      "sha256": "4d491003bf6b470e4d04233824c5c939b76d6c81974ba17a3ff207343e1d8e85",
+      "bytes": 1921909280,
+      "license": "Llama-3.2"
+    }
   },
   "components": {
     "kiwix-tools": {
       "version": "3.8.2",
-      "bins": ["kiwix-serve", "kiwix-manage"],
+      "bins": [
+        "kiwix-serve",
+        "kiwix-manage"
+      ],
       "assets": {
-        "win-x64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_win-x86_64-3.8.1.zip", "sha256": "fcd01ed2b93e9a68632c7863c83b9f66bf64406a66357be1df7b8b75596f3e45", "bytes": 18301924, "strip": "" },
-        "darwin-arm64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_macos-arm64-3.8.2.tar.gz", "sha256": "5c64d43176627e558a117146b02ea36b7da2b0cd3a332cbff075cde05d9585f9", "bytes": 10283222, "strip": "kiwix-tools_macos-arm64-3.8.2/" },
-        "darwin-x64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_macos-x86_64-3.8.2.tar.gz", "sha256": "ae341280e97ad5902e7a4282a24340eac7d7061c267661c0ef2a88a34547f247", "bytes": 10817537, "strip": "kiwix-tools_macos-x86_64-3.8.2/" },
-        "linux-x64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-x86_64-3.8.2.tar.gz", "sha256": "b0ae98dd344aa0469a15ab42feff6d5aafb79541a82fb4e2647c74b073123815", "bytes": 21661067, "strip": "kiwix-tools_linux-x86_64-3.8.2/" },
-        "linux-arm64": { "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-aarch64-3.8.2.tar.gz", "sha256": "a9898fc5363437327350db669bbc03dcc7ecfd498dae727d7184bebe77019514", "bytes": 20507463, "strip": "kiwix-tools_linux-aarch64-3.8.2/" }
+        "win-x64": {
+          "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_win-x86_64-3.8.1.zip",
+          "sha256": "fcd01ed2b93e9a68632c7863c83b9f66bf64406a66357be1df7b8b75596f3e45",
+          "bytes": 18301924,
+          "strip": ""
+        },
+        "darwin-arm64": {
+          "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_macos-arm64-3.8.2.tar.gz",
+          "sha256": "5c64d43176627e558a117146b02ea36b7da2b0cd3a332cbff075cde05d9585f9",
+          "bytes": 10283222,
+          "strip": "kiwix-tools_macos-arm64-3.8.2/"
+        },
+        "darwin-x64": {
+          "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_macos-x86_64-3.8.2.tar.gz",
+          "sha256": "ae341280e97ad5902e7a4282a24340eac7d7061c267661c0ef2a88a34547f247",
+          "bytes": 10817537,
+          "strip": "kiwix-tools_macos-x86_64-3.8.2/"
+        },
+        "linux-x64": {
+          "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-x86_64-3.8.2.tar.gz",
+          "sha256": "b0ae98dd344aa0469a15ab42feff6d5aafb79541a82fb4e2647c74b073123815",
+          "bytes": 21661067,
+          "strip": "kiwix-tools_linux-x86_64-3.8.2/"
+        },
+        "linux-arm64": {
+          "url": "https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-aarch64-3.8.2.tar.gz",
+          "sha256": "a9898fc5363437327350db669bbc03dcc7ecfd498dae727d7184bebe77019514",
+          "bytes": 20507463,
+          "strip": "kiwix-tools_linux-aarch64-3.8.2/"
+        }
       }
     },
     "llama": {
       "version": "b12428",
-      "bins": ["llama-server"],
+      "bins": [
+        "llama-server"
+      ],
       "assets": {
-        "win-x64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-win-cpu-x64.zip", "sha256": "4ebc7fb961cf707e3b61396806e62c9e4065e42990cfc31f238eb48264a465b2", "bytes": 25212756, "strip": "" },
-        "darwin-arm64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-macos-arm64.tar.gz", "sha256": "7d72477a2a375cc1d93e308b34e26fb9a608c2f93750517d2bafc59af578d3e2", "bytes": 17004150, "strip": "llama-b12428/" },
-        "darwin-x64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-macos-x64.tar.gz", "sha256": "27e4277bdbabcc9a4925cac77d99cd792abe0600c71bc33f265c43b8ea379d87", "bytes": 12760709, "strip": "llama-b12428/" },
-        "linux-x64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-ubuntu-x64.tar.gz", "sha256": "a9b243a3bc4ca172010e96c64062fc02afd1dc4f8b699716f813ae6845ada4c6", "bytes": 23457554, "strip": "llama-b12428/" },
-        "linux-arm64": { "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-ubuntu-arm64.tar.gz", "sha256": "68fdee3e3086de8d1b6b3ef3bb791ff03ec4a6f2a8e7e199130fb70167d33d6d", "bytes": 19090408, "strip": "llama-b12428/" }
+        "win-x64": {
+          "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-win-cpu-x64.zip",
+          "sha256": "4ebc7fb961cf707e3b61396806e62c9e4065e42990cfc31f238eb48264a465b2",
+          "bytes": 25212756,
+          "strip": ""
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-macos-arm64.tar.gz",
+          "sha256": "7d72477a2a375cc1d93e308b34e26fb9a608c2f93750517d2bafc59af578d3e2",
+          "bytes": 17004150,
+          "strip": "llama-b12428/"
+        },
+        "darwin-x64": {
+          "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-macos-x64.tar.gz",
+          "sha256": "27e4277bdbabcc9a4925cac77d99cd792abe0600c71bc33f265c43b8ea379d87",
+          "bytes": 12760709,
+          "strip": "llama-b12428/"
+        },
+        "linux-x64": {
+          "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-ubuntu-x64.tar.gz",
+          "sha256": "a9b243a3bc4ca172010e96c64062fc02afd1dc4f8b699716f813ae6845ada4c6",
+          "bytes": 23457554,
+          "strip": "llama-b12428/"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/ggml-org/llama.cpp/releases/download/b12428/llama-b12428-bin-ubuntu-arm64.tar.gz",
+          "sha256": "68fdee3e3086de8d1b6b3ef3bb791ff03ec4a6f2a8e7e199130fb70167d33d6d",
+          "bytes": 19090408,
+          "strip": "llama-b12428/"
+        }
       }
     },
     "pmtiles": {
       "version": "1.31.2",
-      "bins": ["pmtiles"],
+      "bins": [
+        "pmtiles"
+      ],
       "assets": {
-        "win-x64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Windows_x86_64.zip", "sha256": "a658baa4d7e55020aef6ca17bd9ff9faa1582671266b36f58c52db0ac8e785a1", "bytes": 17842310, "strip": "" },
-        "darwin-arm64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles-1.31.2_Darwin_arm64.zip", "sha256": "40528f7f616fcbf91207cd48c8fc023d213f6d86c0cbf1f748732803d1880f3d", "bytes": 15963714, "strip": "" },
-        "darwin-x64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles-1.31.2_Darwin_x86_64.zip", "sha256": "1f0dc02eee6c58312dd6c509faee1b5c32f0596568af1bf51f1b034e7a88a65b", "bytes": 18093572, "strip": "" },
-        "linux-x64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Linux_x86_64.tar.gz", "sha256": "3ed7dbf4ec2e6dfe5e25b6f70d1ffc932729f93c86db353bf514dd71010a312f", "bytes": 17444324, "strip": "" },
-        "linux-arm64": { "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Linux_arm64.tar.gz", "sha256": "f8bd47e7ea866863489cad588fbaf2f31f42e5821f7a03f009b3769f05801cb1", "bytes": 15779781, "strip": "" }
+        "win-x64": {
+          "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Windows_x86_64.zip",
+          "sha256": "a658baa4d7e55020aef6ca17bd9ff9faa1582671266b36f58c52db0ac8e785a1",
+          "bytes": 17842310,
+          "strip": ""
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles-1.31.2_Darwin_arm64.zip",
+          "sha256": "40528f7f616fcbf91207cd48c8fc023d213f6d86c0cbf1f748732803d1880f3d",
+          "bytes": 15963714,
+          "strip": ""
+        },
+        "darwin-x64": {
+          "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles-1.31.2_Darwin_x86_64.zip",
+          "sha256": "1f0dc02eee6c58312dd6c509faee1b5c32f0596568af1bf51f1b034e7a88a65b",
+          "bytes": 18093572,
+          "strip": ""
+        },
+        "linux-x64": {
+          "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Linux_x86_64.tar.gz",
+          "sha256": "3ed7dbf4ec2e6dfe5e25b6f70d1ffc932729f93c86db353bf514dd71010a312f",
+          "bytes": 17444324,
+          "strip": ""
+        },
+        "linux-arm64": {
+          "url": "https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Linux_arm64.tar.gz",
+          "sha256": "f8bd47e7ea866863489cad588fbaf2f31f42e5821f7a03f009b3769f05801cb1",
+          "bytes": 15779781,
+          "strip": ""
+        }
       }
     },
     "jre": {
       "version": "21.0.13+9",
-      "bins": ["bin/java"],
+      "bins": [
+        "bin/java"
+      ],
       "assets": {
-        "win-x64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip", "sha256": "2332c0b4cff6bed722da3567c91d5e47568bcba863fa4945d0a8d6fc76158628", "bytes": 49106397, "strip": "jdk-21.0.13+9-jre/" },
-        "darwin-arm64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.13_9.tar.gz", "sha256": "225bab0a09491ef06835488cd942f5d2befa9a0410a2484f0c8bbcf7506ec09a", "bytes": 47935740, "strip": "jdk-21.0.13+9-jre/Contents/Home/" },
-        "darwin-x64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.13_9.tar.gz", "sha256": "c909674b1c10c261b9a3fb7e9c0efebd303e33f88a4fe84be7135b5e2d711f89", "bytes": 41902098, "strip": "jdk-21.0.13+9-jre/Contents/Home/" },
-        "linux-x64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_linux_hotspot_21.0.13_9.tar.gz", "sha256": "a535a1df9c6284d9618872984e026ae0352d1f7e9e0605425c0e6114f47351dd", "bytes": 52181297, "strip": "jdk-21.0.13+9-jre/" },
-        "linux-arm64": { "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.13_9.tar.gz", "sha256": "b1734db7ade49c3f6acc6ae06233b8c2dd90e3e2f00f67000ae1c972aaa64d8c", "bytes": 51266660, "strip": "jdk-21.0.13+9-jre/" }
+        "win-x64": {
+          "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip",
+          "sha256": "2332c0b4cff6bed722da3567c91d5e47568bcba863fa4945d0a8d6fc76158628",
+          "bytes": 49106397,
+          "strip": "jdk-21.0.13+9-jre/"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.13_9.tar.gz",
+          "sha256": "225bab0a09491ef06835488cd942f5d2befa9a0410a2484f0c8bbcf7506ec09a",
+          "bytes": 47935740,
+          "strip": "jdk-21.0.13+9-jre/Contents/Home/"
+        },
+        "darwin-x64": {
+          "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.13_9.tar.gz",
+          "sha256": "c909674b1c10c261b9a3fb7e9c0efebd303e33f88a4fe84be7135b5e2d711f89",
+          "bytes": 41902098,
+          "strip": "jdk-21.0.13+9-jre/Contents/Home/"
+        },
+        "linux-x64": {
+          "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_linux_hotspot_21.0.13_9.tar.gz",
+          "sha256": "a535a1df9c6284d9618872984e026ae0352d1f7e9e0605425c0e6114f47351dd",
+          "bytes": 52181297,
+          "strip": "jdk-21.0.13+9-jre/"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.13_9.tar.gz",
+          "sha256": "b1734db7ade49c3f6acc6ae06233b8c2dd90e3e2f00f67000ae1c972aaa64d8c",
+          "bytes": 51266660,
+          "strip": "jdk-21.0.13+9-jre/"
+        }
       }
     },
     "brouter": {
       "version": "1.7.10",
       "bins": [],
       "assets": {
-        "any": { "url": "https://github.com/abrensch/brouter/releases/download/v1.7.10/brouter-1.7.10.zip", "sha256": "023fec3ba997758e8cd7ab9e1bae52e962af3f00b57683e3de86b84ffad01532", "bytes": 6724983, "strip": "brouter-1.7.10/" }
+        "any": {
+          "url": "https://github.com/abrensch/brouter/releases/download/v1.7.10/brouter-1.7.10.zip",
+          "sha256": "023fec3ba997758e8cd7ab9e1bae52e962af3f00b57683e3de86b84ffad01532",
+          "bytes": 6724983,
+          "strip": "brouter-1.7.10/"
+        }
       }
+    },
+    "xpdf": {
+      "version": "4.06",
+      "bins": [
+        "pdftotext"
+      ],
+      "assets": {
+        "win-x64": {
+          "url": "https://dl.xpdfreader.com/xpdf-tools-win-4.06.zip",
+          "sha256": "2b6ca45da794e7854a6468fd6c8063fde62701f001ce03fa4f603eab7e15a0b6",
+          "bytes": 12826385,
+          "strip": "xpdf-tools-win-4.06/bin64/"
+        },
+        "darwin-arm64": {
+          "url": "https://dl.xpdfreader.com/xpdf-tools-mac-4.06.tar.gz",
+          "sha256": "c0a2992348c0407356cec39f2f4b2e73705fb77edc852a4e9196e222712451a8",
+          "bytes": 15452690,
+          "strip": "xpdf-tools-mac-4.06/binARM/"
+        },
+        "darwin-x64": {
+          "url": "https://dl.xpdfreader.com/xpdf-tools-mac-4.06.tar.gz",
+          "sha256": "c0a2992348c0407356cec39f2f4b2e73705fb77edc852a4e9196e222712451a8",
+          "bytes": 15452690,
+          "strip": "xpdf-tools-mac-4.06/bin64/"
+        },
+        "linux-x64": {
+          "url": "https://dl.xpdfreader.com/xpdf-tools-linux-4.06.tar.gz",
+          "sha256": "940c137cbd1856e45813da1a25c12e8dd3dc8997b8ea735feb858684603031e3",
+          "bytes": 16124814,
+          "strip": "xpdf-tools-linux-4.06/bin64/"
+        }
+      },
+      "optional": true,
+      "note": "pdftotext para indexar los manuales PDF en la portable. Sin binario oficial para linux-arm64: se usa el del sistema (poppler-utils)."
     }
   },
   "sources": {
     "kiwixCatalog": "https://library.kiwix.org/catalog/v2/entries",
-    "kiwixMirrors": ["https://ftp.fau.de/kiwix", "https://mirror.accum.se/mirror/kiwix.org", "https://mirrors.dotsrc.org/kiwix", "https://download.kiwix.org"],
+    "kiwixMirrors": [
+      "https://ftp.fau.de/kiwix",
+      "https://mirror.accum.se/mirror/kiwix.org",
+      "https://mirrors.dotsrc.org/kiwix",
+      "https://download.kiwix.org"
+    ],
     "kiwixMaster": "https://download.kiwix.org",
     "protomapsBuilds": "https://build-metadata.protomaps.dev/builds.json",
     "protomapsBase": "https://build.protomaps.com",

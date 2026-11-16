@@ -1125,4 +1125,48 @@ async function displayOff(): Promise<void> {
   color: var(--tone);
   font-weight: 700;
 }
+
+/* Móvil y ventanas estrechas: la cabecera de estado se apila (los datos bajan a su propia fila). */
+@media (max-width: 640px) {
+  .hero {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .hero-text {
+    flex: 1 1 12rem;
+  }
+
+  .hero-text p {
+    white-space: normal;
+  }
+
+  .hero-stats {
+    flex: 1 1 100%;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .hero-stats div:first-child {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .gauges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trends {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ctl-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ctl-group {
+    grid-column: 1 / -1;
+  }
+}
 </style>

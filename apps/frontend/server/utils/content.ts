@@ -10,11 +10,11 @@ import { isPortable, portablePaths } from './portable'
 interface Catalog {
   updated: string
   groups: { id: string; title: string }[]
-  items: (ContentCatalogItem & { zim?: { name: string; flavour: string }; maps?: { region: string }; routing?: { tiles: string[] }; llm?: { model: string } })[]
+  items: (ContentCatalogItem & { zim?: { name: string; flavour: string }; maps?: { region: string }; routing?: { tiles: string[] }; llm?: { model: string }; doc?: { file?: string; parts?: { file: string }[] } })[]
   models: Record<string, { file: string }>
 }
 
-function dirs(): { data: string; zim: string; maps: string; llm: string; routing: string; state: string; setup: string; catalog: string } {
+function dirs(): { data: string; zim: string; maps: string; llm: string; routing: string; docs: string; state: string; setup: string; catalog: string } {
   if (isPortable()) {
     const { root, data } = portablePaths()
     return {
@@ -23,6 +23,7 @@ function dirs(): { data: string; zim: string; maps: string; llm: string; routing
       maps: join(data, 'maps'),
       llm: join(data, 'llm'),
       routing: join(data, 'routing'),
+      docs: join(data, 'library', 'docs'),
       state: join(data, 'content-state.json'),
       setup: join(data, 'setup.json'),
       catalog: join(root, 'app', 'content', 'catalog.json'),
@@ -38,6 +39,7 @@ function dirs(): { data: string; zim: string; maps: string; llm: string; routing
     maps: process.env.SURVIVAL_MAPS_DIR ?? join(v, 'maps'),
     llm: join(v, 'llm'),
     routing: process.env.SURVIVAL_ROUTING_DIR ?? join(v, 'routing'),
+    docs: join(v, 'library', 'docs'),
     state: join(v, 'content-state.json'),
     setup: join(v, 'setup.json'),
     catalog: catalog ?? '',
@@ -84,6 +86,16 @@ export async function contentOverview(): Promise<ContentOverview> {
     } else if (it.kind === 'routing' && it.routing) {
       const have = it.routing.tiles.filter((t) => segs.includes(`${t}.rd5`))
       if (have.length === it.routing.tiles.length) installed = { file: null, bytes: null }
+    } else if (it.kind === 'doc' && it.doc) {
+      if (it.doc.parts) {
+        // Libro por capítulos: instalado si están todos.
+        const dir = join(d.docs, 'manuales', it.id)
+        const have = await ls(dir)
+        if (it.doc.parts.every((p) => have.includes(p.file))) installed = { file: it.id, bytes: null }
+      } else if (it.doc.file) {
+        const size = await statFile(join(d.docs, 'manuales', it.doc.file))
+        if (size !== null) installed = { file: it.doc.file, bytes: size }
+      }
     } else if (it.kind === 'llm' && it.llm) {
       const file = catalog.models[it.llm.model]?.file
       if (file && models.includes(file)) installed = { file, bytes: await statFile(join(d.llm, 'models', file)) }

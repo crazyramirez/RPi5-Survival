@@ -248,7 +248,7 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
 
     <div v-if="status && !status.available" class="notice tone-info">
       <span>{{ status.active ? t('ask.loading') : t('ask.notInstalled') }}</span>
-      <NuxtLink v-if="!status.active" to="/sistema/mantenimiento" class="btn">{{ t('mnt.open') }}</NuxtLink>
+      <NuxtLink v-if="!status.active" to="/sistema/mantenimiento#mnt-content" class="btn btn-primary">{{ t('ask.install') }}</NuxtLink>
     </div>
 
     <div class="layout">
@@ -357,9 +357,18 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
 /* ------------------------------------------------------------ Cabecera */
 .top {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.65rem;
   margin-bottom: 0.6rem;
+}
+
+/* Móvil: «volver» en su fila; título y estado debajo, sin partir el título palabra a palabra. */
+@media (max-width: 640px) {
+  .top > .btn {
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
 }
 
 .title-orb {
@@ -375,7 +384,7 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
 }
 
 h1 {
-  flex: 1;
+  flex: 1 1 10rem;
   min-width: 0;
   font-size: 1.3rem;
   letter-spacing: -0.01em;
@@ -746,5 +755,10 @@ h1 {
 
 .faint {
   font-size: 0.85rem;
+}
+
+/* El aviso «no instalado» y su botón pasan a dos líneas si no caben. */
+.notice {
+  flex-wrap: wrap;
 }
 </style>

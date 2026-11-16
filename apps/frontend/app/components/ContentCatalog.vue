@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, Bot, Check, CircleAlert, Download, HeartPulse, LifeBuoy, LoaderCircle, Map as MapIcon, Trash2, Wrench } from '@lucide/vue'
+import { BookOpen, Bot, Check, CircleAlert, Download, FileText, HeartPulse, LifeBuoy, LoaderCircle, Map as MapIcon, Trash2, Wrench } from '@lucide/vue'
 import type { Component } from 'vue'
 import type { ContentCatalogItem, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
 import { formatBytes } from '~/utils/format'
@@ -52,7 +52,7 @@ onBeforeUnmount(() => timer && clearInterval(timer))
 const statusOf = (id: string): ContentItemStatus | undefined => ov.value?.items.find((s) => s.id === id)
 const sizeOf = (i: ContentCatalogItem): number => i.variants?.find((v) => v.flavour === variants[i.id])?.approxBytes ?? i.approxBytes
 
-const GROUP_ICONS: Record<string, Component> = { salud: HeartPulse, preparacion: LifeBuoy, saber: BookOpen, oficios: Wrench, libros: BookOpen, mapas: MapIcon, asistente: Bot }
+const GROUP_ICONS: Record<string, Component> = { salud: HeartPulse, preparacion: LifeBuoy, saber: BookOpen, oficios: Wrench, libros: BookOpen, manuales: FileText, mapas: MapIcon, asistente: Bot }
 const groups = computed(() =>
   (ov.value?.groups ?? []).map((g) => ({ ...g, icon: GROUP_ICONS[g.id] ?? BookOpen, items: (ov.value?.catalog ?? []).filter((i) => i.group === g.id) })).filter((g) => g.items.length),
 )
@@ -165,7 +165,8 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
       </div>
     </section>
 
-    <footer v-if="ov" class="foot">
+    <!-- El pie solo se queda fijo abajo cuando hay algo que hacer (selección o descarga en curso). -->
+    <footer v-if="ov" class="foot" :class="{ sticky: selected.size > 0 || job.running.value }">
       <span class="tot">
         <strong>{{ t('content.selected', { n: selected.size, size: formatBytes(selectedBytes) }) }}</strong>
         <small>{{ ov.freeBytes != null ? t('content.free', { size: formatBytes(ov.freeBytes) }) : '' }}</small>
@@ -304,9 +305,14 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
   font-weight: 700;
 }
 
-.foot {
+.foot.sticky {
   position: sticky;
   bottom: 0;
+  z-index: 2;
+  box-shadow: 0 -10px 24px rgb(0 0 0 / 35%);
+}
+
+.foot {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

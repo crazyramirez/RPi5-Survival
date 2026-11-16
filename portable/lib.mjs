@@ -97,7 +97,7 @@ export function vaultSocket(platform, data, webPort) {
   return p.length < 100 ? p : join(tmpdir(), `survival-os-vault-${webPort}.sock`)
 }
 
-export function serviceEnv({ root, data, ports, platform }) {
+export function serviceEnv({ root, data, ports, platform, arch }) {
   const app = join(root, 'app')
   const vault = vaultSocket(platform, data, ports.web)
   const url = (p) => `http://127.0.0.1:${p}`
@@ -117,6 +117,8 @@ export function serviceEnv({ root, data, ports, platform }) {
       LIBRARY_PORT: String(ports.library),
       LIBRARY_DATA_DIR: join(data, 'library'),
       LIBRARY_PROTOCOLS_DIR: join(app, 'content', 'protocols'),
+      // pdftotext (Xpdf) descargado con los manuales para este sistema (componente opcional).
+      PDFTOTEXT: join(root, 'runtime', platformKey(platform, arch ?? process.arch) ?? 'unknown', 'xpdf', platform === 'win32' ? 'pdftotext.exe' : 'pdftotext'),
       KIWIX_URL: `${url(ports.kiwix)}/kiwix`,
       LLM_URL: url(ports.llm),
     },

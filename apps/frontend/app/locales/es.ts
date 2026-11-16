@@ -120,6 +120,8 @@ export const es = {
 
   'maps.cartography': 'Cartografía offline',
   'maps.cartography.none': 'Ningún paquete cartográfico instalado.',
+  'maps.empty.text': 'Descarga el mapa de tu zona (España, Canarias o el mundo) para verlo sin conexión, con calles y caminos.',
+  'maps.empty.download': 'Descargar mapas',
   'maps.cartography.plan':
     'Los mapas offline (MapLibre + PMTiles/MBTiles locales) llegarán en la Fase 4. Se prepararán en un PC respetando las licencias de OpenStreetMap.',
   'maps.position': 'Posición actual',
@@ -140,6 +142,8 @@ export const es = {
   'nav.track.note': 'Grabación de tracks disponible cuando haya un receptor validado. Incluirá opción «no registrar».',
 
   'lib.kiwix': 'Kiwix (Wikipedia y otros ZIM)',
+  'lib.shelf.empty': 'Aún no hay enciclopedias ni libros. Descarga Wikipedia, guías médicas, de reparación y de supervivencia para leerlas sin conexión.',
+  'lib.shelf.download': 'Descargar contenidos',
   'lib.kiwix.missing': 'kiwix-serve no está instalado.',
   'lib.kiwix.installed': 'kiwix-serve instalado. Catálogo pendiente de configurar.',
   'lib.docs': 'Documentos propios',
@@ -206,6 +210,8 @@ export const es = {
   'vault.design':
     'Volumen cifrado LUKS2 (Argon2id) protegido por tu contraseña o PIN. Nunca se abre al arrancar; se bloquea solo tras unos minutos sin uso y solo funciona desde la pantalla local.',
   'vault.setup': 'Crear bóveda',
+  'vault.designPortable':
+    'Documentos cifrados con AES-256-GCM y una clave derivada con Argon2id de tu contraseña o PIN. Nunca se abre sola; se bloquea tras unos minutos sin uso y solo funciona en este equipo.',
   'vault.pass': 'Contraseña o PIN (mínimo 4)',
   'vault.pass2': 'Repite la contraseña',
   'vault.mismatch': 'Las contraseñas no coinciden',
@@ -328,6 +334,7 @@ export const es = {
   'portable.share': 'Compartir en la red local',
   'portable.shareHint': 'Los móviles conectados a la misma Wi-Fi podrán ver mapas, emergencias y biblioteca (solo lectura; nunca la bóveda ni los ajustes).',
   'portable.shareOn': 'Compartir',
+  'portable.shareOpen': 'Abre en el móvil:',
   'portable.shareOff': 'Dejar de compartir',
   'portable.shareFirewall': 'Abre esta dirección en el móvil. Si Windows pregunta por el cortafuegos, permite el acceso en redes privadas.',
   'portable.quit': 'Cerrar Survival OS',
@@ -588,10 +595,11 @@ export const es = {
   'mesh.remove': 'Quitar pasarela',
   'mesh.removeConfirm': '¿Quitar la pasarela Meshtastic?',
   'mesh.removeBody': 'Se para el servicio y se borra su entorno. Los mensajes guardados se conservan.',
+  'ask.install': 'Descargar el asistente',
   'ask.title': 'Preguntar al asistente',
   'ask.cta': 'Preguntar al asistente (responde con tu biblioteca y cita las fuentes)',
   'ask.disclaimer': 'Respuestas generadas por un modelo de IA local a partir de tu biblioteca. Pueden contener errores: comprueba siempre las fuentes citadas. En una emergencia, llama al 112 y sigue los protocolos.',
-  'ask.notInstalled': 'El asistente no está instalado. Instálalo desde Sistema → Mantenimiento.',
+  'ask.notInstalled': 'El asistente no está instalado todavía.',
   'ask.loading': 'El modelo se está cargando; espera unos segundos.',
   'ask.placeholder': 'Escribe tu pregunta (p. ej. ¿cómo potabilizo agua?)',
   'ask.send': 'Preguntar',
@@ -849,6 +857,7 @@ export const es = {
   'ui.vault.cipher': 'LUKS2 · Argon2id · solo pantalla local',
   'ui.vault.cipherPortable': 'AES-256-GCM · Argon2id · solo este equipo',
   'ui.vault.cryptsetup': 'cryptsetup',
+  'ui.vault.engine': 'Cifrado',
   'ui.vault.container': 'Contenedor',
   'ui.vault.attempts': 'Intentos fallidos',
   'ui.vault.autolockAfter': 'Autobloqueo',

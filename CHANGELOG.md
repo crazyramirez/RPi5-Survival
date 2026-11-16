@@ -3,6 +3,47 @@
 ## Sin publicar
 
 ### Añadido
+- **Manuales en PDF (ADR 0015, ampliado):** 66 manuales, 709 MB, 59 de ellos en español. Cada uno se ha verificado (URL directa, licencia y SHA-256 fijado) y se descarga desde la fuente oficial, sin copias de terceros.
+  - **Salud:**
+    - Hesperian: «Donde no hay doctor», «… para mujeres», «Donde no hay dentista», «Un libro para parteras», «Guía comunitaria para la salud ambiental» y «Aprendiendo a promover la salud»;
+    - OMS/CICR: atención básica de emergencia;
+    - CICR: primeros auxilios y cirugía con recursos limitados;
+    - MSF: medicamentos esenciales y guía clínica;
+    - OMS/OPS: primera ayuda psicológica, salud mental, diarrea y cólera, obstetricia, pediatría, cadáveres y víctimas en masa;
+    - FICR y CAWST: agua y saneamiento.
+  - **Preparación:**
+    - Protección Civil: autoprotección, inundaciones, meteorología adversa y riesgo químico o nuclear;
+    - guía para las familias (Educación/Interior);
+    - IGN: terremotos y tsunamis, y lectura del mapa topográfico;
+    - FICR: refugio;
+    - OPS: agua en emergencias;
+    - Scouts: orientación y cabuyería;
+    - IARU y URE: telecomunicaciones de emergencia;
+    - FAO: huertos, conservación de alimentos, silos, agua de lluvia, aves y conejos;
+    - Ejército de EE. UU.: supervivencia y navegación terrestre (en inglés, de dominio público).
+  - **Libros por capítulos** (Hesperian): cada capítulo se verifica por separado.
+  - **Búsqueda dentro de los manuales**, también en la portable: se descarga `pdftotext` (Xpdf 4.06) para el sistema. Los resultados muestran el título real del libro y del capítulo (`titles.json`).
+  - **`scripts/catalog-pin-docs.mjs`:** herramienta para fijar nuevos manuales (descarga, comprueba que es un PDF y calcula el SHA-256).
+  - **Fuera por ahora:** el Manual Esfera, porque ReliefWeb rechaza las descargas automáticas (HTTP 406) y spherestandards.org tiene protección anti-bots.
+- **Interfaz adaptable a cualquier pantalla:** portátil 16:10 y 16:9, monitor grande, tablet, móvil y el panel de 1024×600 de la Pi.
+  - **Tipografía y espaciado fluidos:** 16 px en la Pi y en móvil, hasta 20 px en 1920×1200. En pantallas ultrapanorámicas el contenido se centra (máximo 1880 px) y las barras se alinean con él.
+  - **Inicio:** cuadrícula según el número de módulos (4×2 sin filas cojas).
+    - Las tarjetas escalan icono, título y resumen con su tamaño (container queries).
+    - En vertical o en móvil, 2 columnas con desplazamiento.
+  - **Barra de estado** con prioridades según su ancho: primero se oculta la fecha, luego los textos secundarios, y la hora y su verificación se ven siempre. La **barra inferior** queda solo con iconos en móvil.
+  - **Estados vacíos claros y con acción** (componente `EmptyState`):
+    - Mapas → «Descargar mapas»;
+    - Biblioteca → «Descargar contenidos»;
+    - asistente → «Descargar el asistente».
+  - **Móvil:**
+    - las cabeceras de estado se apilan;
+    - el conversor de coordenadas se reparte en dos filas;
+    - el buscador de la biblioteca baja a su propia fila;
+    - el pie del catálogo solo se queda fijo cuando hay algo seleccionado.
+  - **Portable:**
+    - Comunicaciones muestra «Compartir en la red local» en lugar del punto de acceso de la Pi;
+    - la bóveda describe su cifrado real (AES-256-GCM);
+    - Herramientas lista los puertos COM o `/dev/cu.*`.
 - **Portable igual de completa que la Pi (ADR 0016):**
   - **Nuevo servicio `serial-hub`:** malla LoRa (Meshtastic) y GPS por USB en Windows, macOS y Linux, sin módulos nativos.
     - Ofrece la misma API que `survival-mesh` y un servidor compatible con gpsd, así que la interfaz y la navegación no cambian.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, FileText, FolderOpen, HardDriveDownload, Map as MapIcon, Power, Usb, Wifi } from '@lucide/vue'
+import { BookOpen, FileText, FolderOpen, HardDriveDownload, Map as MapIcon, Power, Usb } from '@lucide/vue'
 import type { Component } from 'vue'
 import type { PortableStatus } from '@survival-os/shared-types'
 import { formatBytes } from '~/utils/format'
@@ -47,21 +47,6 @@ async function install(): Promise<void> {
     await load()
   } catch (err) {
     error.value = actionErrorMessage(err)
-  }
-}
-
-const sharing = ref(false)
-async function toggleShare(): Promise<void> {
-  sharing.value = true
-  error.value = null
-  try {
-    await postAction('/api/portable/share', { on: !st.value?.share.on })
-    await new Promise((r) => setTimeout(r, 1200)) // el lanzador arranca la pasarela
-    await load()
-  } catch (err) {
-    error.value = actionErrorMessage(err)
-  } finally {
-    sharing.value = false
   }
 }
 
@@ -115,17 +100,6 @@ const job = computed(() => st.value?.installJob)
         <p v-if="job?.state === 'failed'" class="warn small" role="alert">{{ t('portable.installFailed', { error: job.message ?? '' }) }}</p>
       </template>
     </template>
-
-    <h3 class="cap">{{ t('portable.share') }}</h3>
-    <p class="faint small">{{ t('portable.shareHint') }}</p>
-    <div class="row">
-      <button type="button" class="btn" :class="{ 'btn-primary': !st?.share.on }" :disabled="sharing" @click="toggleShare">
-        <Wifi :size="18" aria-hidden="true" />{{ st?.share.on ? t('portable.shareOff') : t('portable.shareOn') }}
-      </button>
-      <strong v-if="st?.share.on && st.share.url" class="mono share-url selectable">{{ st.share.url }}</strong>
-    </div>
-    <p v-if="st?.share.on" class="faint small">{{ t('portable.shareFirewall') }}</p>
-    <p v-if="st?.share.error" class="warn small" role="alert">{{ st.share.error }}</p>
 
     <h3 class="cap">{{ t('portable.quit') }}</h3>
     <p class="faint small">{{ t('portable.quitHint') }}</p>
@@ -213,8 +187,4 @@ const job = computed(() => st.value?.installJob)
   margin-top: 0.6rem;
 }
 
-.share-url {
-  font-size: 1.1rem;
-  color: var(--accent);
-}
 </style>

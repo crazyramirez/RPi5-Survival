@@ -16,7 +16,7 @@ Thumbs.db
 !.env.example
 *.key
 *.pem
-vault/
+/vault/
 data/private/
 
 # Recursos de mapa descargados por scripts/fetch-map-assets.mjs

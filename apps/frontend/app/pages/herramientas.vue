@@ -318,4 +318,16 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
   color: var(--text-faint) !important;
   font-size: 0.82rem !important;
 }
+
+/* Móvil: el conversor se apila (campos arriba a ancho completo, resultado debajo). */
+@media (max-width: 640px) {
+  .converter {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .converter > :nth-child(2) {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+}
 </style>

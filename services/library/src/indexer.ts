@@ -36,7 +36,7 @@ async function walk(dir: string, root = dir, depth = 0): Promise<string[]> {
 
 export function pdfToText(file: string): Promise<string | null> {
   return new Promise((resolve) => {
-    execFile('pdftotext', ['-q', '-enc', 'UTF-8', '-l', '500', file, '-'], { timeout: 60_000, maxBuffer: 32 * 1024 * 1024 }, (err, stdout) =>
+    execFile(process.env.PDFTOTEXT || 'pdftotext', ['-q', '-enc', 'UTF-8', '-l', '500', file, '-'], { timeout: 60_000, maxBuffer: 32 * 1024 * 1024 }, (err, stdout) =>
       resolve(err ? null : String(stdout)),
     )
   })
@@ -65,6 +65,13 @@ export async function indexDocs(db: LibraryDb, docsDir: string, maxBytes: number
   const report: IndexReport = { scanned: 0, added: 0, updated: 0, removed: 0, skipped: [], durationMs: 0 }
   const files = await walk(docsDir)
   const known = new Map(db.listDocs().map((d) => [d.path, d]))
+  // Títulos de los manuales del catálogo (los escribe content-engine.mjs junto a los PDF).
+  let titles: Record<string, string> = {}
+  try {
+    titles = JSON.parse(await readFile(join(docsDir, 'manuales', 'titles.json'), 'utf8')) as Record<string, string>
+  } catch {
+    // sin manuales del catálogo (o fichero dañado): se usan los nombres de fichero
+  }
   const seen = new Set<string>()
 
   for (const file of files) {
@@ -77,14 +84,15 @@ export async function indexDocs(db: LibraryDb, docsDir: string, maxBytes: number
       continue
     }
     const prev = known.get(rel)
-    if (prev && prev.size === st.size && prev.mtime_ms === Math.floor(st.mtimeMs)) continue
+    const named = typeof titles[rel] === 'string' ? titles[rel].slice(0, 200) : null
+    if (prev && prev.size === st.size && prev.mtime_ms === Math.floor(st.mtimeMs) && (!named || prev.title === named)) continue
 
     const kind = KINDS[extname(file).toLowerCase()] as DocKind
     let text: string | null
     let title: string
     if (kind === 'pdf') {
       text = await pdfToText(file)
-      title = titleFor(kind, '', file)
+      title = named ?? titleFor(kind, '', file)
       if (text === null) report.skipped.push({ path: rel, reason: 'sin texto extraíble (pdftotext ausente o PDF escaneado)' })
     } else {
       const raw = await readFile(file, 'utf8')

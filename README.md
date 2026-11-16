@@ -1,6 +1,17 @@
-# Survival OS
+<p align="center">
+  <img src="docs/screenshots/cabecera.jpg" alt="Survival OS: tu centro de conocimiento sin Internet" width="100%">
+</p>
 
-![Survival OS: mapas, biblioteca, emergencias e IA sin Internet](docs/screenshots/portada.jpg)
+<p align="center">
+  <img src="https://img.shields.io/badge/versi%C3%B3n-0.8.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.8.0">
+  <img src="https://img.shields.io/badge/Raspberry%20Pi%205-quiosco%20t%C3%A1ctil-8cbf96?style=flat-square&labelColor=0f1412" alt="Raspberry Pi 5">
+  <img src="https://img.shields.io/badge/portable-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-8cbf96?style=flat-square&labelColor=0f1412" alt="Portable: Windows, macOS y Linux">
+  <img src="https://img.shields.io/badge/idiomas-ES%20%C2%B7%20EN%20%C2%B7%20FR%20%C2%B7%20IT-8cbf96?style=flat-square&labelColor=0f1412" alt="Idiomas: español, inglés, francés e italiano">
+  <img src="https://img.shields.io/badge/100%25-sin%20Internet-e5b85c?style=flat-square&labelColor=0f1412" alt="100 % sin Internet">
+  <img src="https://img.shields.io/badge/instalaci%C3%B3n%20con%20IA-Claude%20%C2%B7%20Codex%20%C2%B7%20Gemini-93b8cc?style=flat-square&labelColor=0f1412" alt="Instalación con asistentes de IA: Claude, Codex y Gemini">
+</p>
+
+# Survival OS
 
 **Un centro de conocimiento, mapas y comunicación que funciona sin Internet.** Mapas de cualquier país con rutas,
 la Wikipedia, 41 protocolos de emergencia, cientos de manuales, un asistente de IA local, mensajería por radio LoRa

@@ -126,10 +126,10 @@ if (!debug) {
   genv.ORG_GRADLE_PROJECT_survivalKeystorePassword = readFileSync(ksPass, 'utf8').trim()
 }
 say(`gradle ${task} (${abis.join(', ')})`)
-// En Windows, gradlew.bat necesita cmd; se llama por su nombre relativo (cwd = android/) para que una ruta con espacios
-// («D:\DEV\Mi proyecto\…») no se parta en el intérprete.
+// En Windows, gradlew.bat necesita cmd; se llama con ruta relativa explícita (cwd = android/) para que una ruta con
+// espacios («D:\DEV\Mi proyecto\…») no se parta en el intérprete y aunque esté activo NoDefaultCurrentDirectoryInExePath.
 const g = win
-  ? spawnSync(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'gradlew.bat', task, '--console=plain'], { cwd: ANDROID, stdio: 'inherit', env: genv })
+  ? spawnSync(process.env.ComSpec || 'cmd.exe', ['/d', '/c', '.\\gradlew.bat', task, '--console=plain'], { cwd: ANDROID, stdio: 'inherit', env: genv })
   : spawnSync(gradlew, [task, '--console=plain'], { cwd: ANDROID, stdio: 'inherit', env: genv })
 // Devolver las ABI apartadas.
 for (const a of Object.keys(ABIS)) {

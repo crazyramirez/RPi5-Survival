@@ -1,8 +1,10 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
-const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')
+// fileURLToPath decodifica %20: la carpeta del proyecto puede tener espacios («D:\DEV\Survivelia Project\…»).
+const APP = fileURLToPath(new URL('../app/', import.meta.url))
 
 function vueFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((e) => {

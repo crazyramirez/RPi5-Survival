@@ -30,13 +30,34 @@ export function workspaceDirs(root = ROOT) {
   return out.sort()
 }
 
+const DEP_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']
+
+/** Nombres de los paquetes del propio monorepo (@survival-os/…). */
+function workspaceNames(root) {
+  return new Set(workspaceDirs(root).map((d) => JSON.parse(readFileSync(join(root, d, 'package.json'), 'utf8')).name))
+}
+
+/**
+ * Dependencias internas fijadas a otra versión: npm las buscaría en el registro público (404 en un clon nuevo con
+ * `npm ci`). → [{ file, dep, version }]
+ */
+function internalDepMismatches(pkg, names, version, file) {
+  const out = []
+  for (const f of DEP_FIELDS) {
+    for (const [dep, v] of Object.entries(pkg?.[f] ?? {})) if (names.has(dep) && v !== version) out.push({ file: `${file} → ${dep}`, version: v })
+  }
+  return out
+}
+
 /** → { version, mismatches: [{ file, version }] } (version = la del package.json raíz). */
 export function checkVersions(root = ROOT) {
   const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
+  const names = workspaceNames(root)
   const mismatches = []
   for (const dir of workspaceDirs(root)) {
-    const v = JSON.parse(readFileSync(join(root, dir, 'package.json'), 'utf8')).version
-    if (v !== version) mismatches.push({ file: `${dir}/package.json`, version: v })
+    const pkg = JSON.parse(readFileSync(join(root, dir, 'package.json'), 'utf8'))
+    if (pkg.version !== version) mismatches.push({ file: `${dir}/package.json`, version: pkg.version })
+    mismatches.push(...internalDepMismatches(pkg, names, version, `${dir}/package.json`))
   }
   const lockFile = join(root, 'package-lock.json')
   if (existsSync(lockFile)) {
@@ -45,6 +66,7 @@ export function checkVersions(root = ROOT) {
     for (const key of ['', ...workspaceDirs(root)]) {
       const v = lock.packages?.[key]?.version
       if (lock.packages?.[key] && v !== version) mismatches.push({ file: `package-lock.json → ${key || '(raíz)'}`, version: v })
+      mismatches.push(...internalDepMismatches(lock.packages?.[key], names, version, `package-lock.json → ${key || '(raíz)'}`))
     }
   }
   return { version, mismatches }
@@ -60,14 +82,31 @@ function rewrite(file, mutate) {
 
 export function setVersion(version, root = ROOT) {
   if (!parseVersion(version)) throw new Error(`versión no válida: ${version} (formato X.Y.Z)`)
-  rewrite(join(root, 'package.json'), (p) => (p.version = version))
+  const names = workspaceNames(root)
+  // Las dependencias entre paquetes del monorepo siguen a la versión (si no, npm ci las busca en el registro).
+  const syncDeps = (pkg) => {
+    for (const f of DEP_FIELDS) for (const dep of Object.keys(pkg?.[f] ?? {})) if (names.has(dep)) pkg[f][dep] = version
+  }
+  rewrite(join(root, 'package.json'), (p) => {
+    p.version = version
+    syncDeps(p)
+  })
   const dirs = workspaceDirs(root)
-  for (const dir of dirs) rewrite(join(root, dir, 'package.json'), (p) => (p.version = version))
+  for (const dir of dirs) {
+    rewrite(join(root, dir, 'package.json'), (p) => {
+      p.version = version
+      syncDeps(p)
+    })
+  }
   const lockFile = join(root, 'package-lock.json')
   if (existsSync(lockFile)) {
     rewrite(lockFile, (lock) => {
       lock.version = version
-      for (const key of ['', ...dirs]) if (lock.packages?.[key]) lock.packages[key].version = version
+      for (const key of ['', ...dirs]) {
+        if (!lock.packages?.[key]) continue
+        lock.packages[key].version = version
+        syncDeps(lock.packages[key])
+      }
     })
   }
 }

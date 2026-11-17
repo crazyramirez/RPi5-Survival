@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.12.1 — 2026-11-17 · Volver es volver a donde estabas
+
+### Mejorado
+- **Biblioteca y Emergencias:** al volver de un libro, un PDF o una ficha, la lista sigue tal cual estaba —pestaña,
+  categoría, búsqueda y desplazamiento—, sin recargarse ni volver arriba. Los botones «Biblioteca» y «Emergencias»
+  de los lectores funcionan como «Atrás».
+- **Fichas de emergencia y visor de PDF:** «Atrás» las devuelve al mismo punto de la lectura (p. ej. tras abrir
+  «Imprimir»).
+- **Lector de la biblioteca:** tras seguir enlaces dentro de un libro y salir (a un PDF enlazado, a otra pantalla),
+  «Atrás» vuelve al último artículo leído y a su posición, no a la portada del libro.
+
 ## 0.12.0 — 2026-11-17 · Conversaciones con el asistente
 
 ### Nuevo

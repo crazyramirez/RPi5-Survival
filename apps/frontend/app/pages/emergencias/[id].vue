@@ -8,6 +8,7 @@ definePageMeta({ guideCatalog: true })
 
 const t = useT()
 const route = useRoute()
+const backTo = useBackTo()
 const publicView = isPublicView()
 const { loadFavorites } = useLibrary()
 const protocol = ref<ProtocolDetail | null>(null)
@@ -42,7 +43,7 @@ onBeforeUnmount(() => { request++ })
     :note="profile.medical ? t('em.aiNotice') : t('reader.aiNotice')"
     :translation-note="protocol.translatedFrom ? t('em.translated') : undefined"
   >
-    <template #back><NuxtLink to="/emergencias" class="btn"><ArrowLeft :size="22" aria-hidden="true" />{{ t('module.emergency') }}</NuxtLink></template>
+    <template #back><button type="button" class="btn" @click="backTo('/emergencias')"><ArrowLeft :size="22" aria-hidden="true" />{{ t('module.emergency') }}</button></template>
     <template #actions>
       <span v-if="profile.contact" class="reader-phone" role="note" :aria-label="`${t('em.call')}: ${t('em.call.number')}`"><Phone :size="21" aria-hidden="true" /><strong>{{ t('em.call.number') }}</strong></span>
       <FavoriteButton v-if="!publicView" :fav-id="`protocol:${protocol.id}`" :title="protocol.title" :href="`/emergencias/${protocol.id}`" />

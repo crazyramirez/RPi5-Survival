@@ -2,6 +2,7 @@
 import { DOC_SCROLLBAR_CSS, isDocumentLink, linkTitle, syncDocScrollbar, viewerUrl } from '~/utils/viewer'
 import { ArrowLeft, Moon, Sun } from '@lucide/vue'
 import { isSafeReaderPath } from '~/utils/snippet'
+import { readerPosition, rememberReaderPosition, restoreWindowScroll } from '~/utils/scroll-memory'
 
 /**
  * Lector Kiwix embebido (mismo origen vía proxy /kiwix). Mantiene la barra de estado
@@ -12,14 +13,27 @@ definePageMeta({ guideCatalog: true })
 const t = useT()
 const route = useRoute()
 const router = useRouter()
+const backTo = useBackTo()
 const { loadFavorites } = useLibrary()
 /** Vista pública (punto de acceso): sin favoritos (son del equipo, no del móvil). */
 const publicView = isPublicView()
 
-const src = computed(() => {
+function routeSrc(): string | null {
   const u = typeof route.query.u === 'string' ? route.query.u : ''
   return isSafeReaderPath(u) ? u : null
-})
+}
+/**
+ * Lo que carga el iframe. Fijo mientras se lee: el artículo abierto se anota en la URL (replace, más abajo) para
+ * volver a él —p. ej. desde un PDF enlazado— sin recargar el iframe. Solo otro enlace al lector lo cambia.
+ */
+const src = ref(routeSrc())
+watch(
+  () => route.query.u,
+  () => {
+    const u = routeSrc()
+    if (u !== current.value) src.value = u
+  },
+)
 /** Modo noche por defecto (kiosco de uso nocturno); el usuario puede pasar a día. */
 const night = useState<boolean>('reader:night', () => true)
 const title = ref(t('lib.reader'))
@@ -132,6 +146,7 @@ function injectTouch(doc: Document | null | undefined): void {
     inner.addEventListener('load', () => {
       injectTouch(inner.contentDocument)
       syncArticle(inner.contentDocument)
+      trackArticle(current.value, inner.contentWindow)
     })
     injectTouch(inner.contentDocument)
   }
@@ -165,9 +180,46 @@ function keepInApp(e: MouseEvent): void {
   if (v) void router.push(v)
 }
 
-/** Ruta del artículo abierto ahora (el visor la refleja en su #hash); para Favorito. */
+/** Ruta del artículo abierto ahora (el visor la refleja en su #hash); para Favorito y para volver a él. */
 const current = ref<string | null>(null)
 watch(src, (s) => (current.value = s), { immediate: true })
+/** Lo primero que se abrió: si se sigue en él, «Biblioteca» puede ser «Atrás» (no hay historial del iframe). */
+const opened = src.value
+watch(current, (c) => {
+  if (c && c !== route.query.u) void router.replace({ query: { ...route.query, u: c } })
+})
+
+/**
+ * Posición de lectura de cada artículo. Al volver al lector (desde un PDF enlazado, una ficha o «Atrás») se abre
+ * el artículo donde se dejó: el que figura en la URL se lleva a su última posición en cuanto carga.
+ */
+let restorePending = src.value
+function trackArticle(path: string | null, win: Window | null | undefined): void {
+  if (!path || !win) return
+  let raf = 0
+  win.addEventListener(
+    'scroll',
+    () => {
+      if (raf) return
+      raf = win.requestAnimationFrame(() => {
+        raf = 0
+        rememberReaderPosition(path, win.scrollY)
+      })
+    },
+    { passive: true },
+  )
+  if (restorePending === path) {
+    restorePending = null
+    restoreWindowScroll(win, readerPosition(path))
+  }
+}
+
+function toLibrary(): void {
+  // Tras seguir enlaces dentro del artículo, «Atrás» recorrería el historial del iframe: se abre la biblioteca
+  // (viva: sigue como estaba). Si no, es «Atrás» de verdad (búsqueda o pestaña de donde se vino).
+  if (current.value === opened) backTo('/biblioteca')
+  else void router.push('/biblioteca')
+}
 
 /** Título y ruta del artículo mostrado en el iframe interno del visor de Kiwix. */
 function syncArticle(inner: Document | null | undefined): void {
@@ -186,6 +238,13 @@ function onLoad(): void {
     const doc = frame.value?.contentDocument
     injectTouch(doc)
     if (doc?.title) title.value = doc.title
+    // Documento suelto (sin el visor de Kiwix): su propia dirección es el artículo.
+    const loc = frame.value?.contentWindow?.location
+    if (doc && loc && !doc.getElementById('content_iframe')) {
+      const href = `${loc.pathname}${loc.search}${loc.hash}`
+      if (isSafeReaderPath(href)) current.value = href
+      trackArticle(current.value, frame.value?.contentWindow)
+    }
   } catch {
     // Mismo origen siempre; si falla, se conserva el título genérico.
   }
@@ -199,7 +258,7 @@ onMounted(() => {
 <template>
   <div class="reader">
     <header class="bar">
-      <button type="button" class="btn" @click="router.push('/biblioteca')">
+      <button type="button" class="btn" @click="toLibrary">
         <ArrowLeft :size="20" aria-hidden="true" />
         {{ t('module.library') }}
       </button>

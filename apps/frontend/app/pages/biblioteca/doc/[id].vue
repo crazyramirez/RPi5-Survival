@@ -9,7 +9,7 @@ import type { DocSummary } from '@survival-os/shared-types'
  */
 const t = useT()
 const route = useRoute()
-const router = useRouter()
+const backTo = useBackTo()
 const night = useState<boolean>('reader:night', () => false)
 
 const id = computed(() => Number(route.params.id))
@@ -64,7 +64,7 @@ const srcdoc = computed(() => {
 <template>
   <div class="reader">
     <header class="bar">
-      <button type="button" class="btn" @click="router.push('/biblioteca')">
+      <button type="button" class="btn" @click="backTo('/biblioteca')">
         <ArrowLeft :size="20" aria-hidden="true" />
         {{ t('module.library') }}
       </button>

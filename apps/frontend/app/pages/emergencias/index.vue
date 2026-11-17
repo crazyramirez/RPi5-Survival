@@ -8,7 +8,9 @@ import type { MessageKey } from '~/locales/es'
 import type { ProtocolSummary } from '@survival-os/shared-types'
 import type { GuideCategoryLook, GuideEntry, GuideOverview } from '~/utils/guides'
 
-definePageMeta({ guideCatalog: true })
+// Viva entre navegaciones (keepalive): al volver de una ficha sigue igual, sin recargar ni volver arriba.
+defineOptions({ name: 'EmergencyPage' })
+definePageMeta({ guideCatalog: true, keepalive: true })
 
 const t = useT()
 const protocols = ref<ProtocolSummary[] | null>(null)
@@ -26,6 +28,12 @@ async function load(): Promise<void> {
   }
 }
 onMounted(load)
+// Al volver: refresco silencioso (p. ej. otro idioma elegido entretanto); la lista no se vacía mientras tanto.
+let mounted = false
+onActivated(() => {
+  if (mounted) void load()
+  mounted = true
+})
 
 const byId = computed(() => new Map((protocols.value ?? []).map((protocol) => [protocol.id, protocol])))
 const entries = computed<GuideEntry[]>(() => (protocols.value ?? []).map((protocol) => ({

@@ -45,7 +45,13 @@ import {
  * Biblioteca: buscador en la cabecera y tres secciones en pestañas —enciclopedias (ZIM), manuales en PDF del
  * catálogo y documentos propios—, cada una ordenada por categorías con barra lateral, filtro rápido por título
  * y, en los documentos propios, orden y tipo. Los resultados de búsqueda sustituyen a las pestañas.
+ *
+ * Se mantiene viva (keepalive): al volver de un libro, un PDF o una ficha sigue tal cual estaba —pestaña,
+ * categoría, búsqueda y desplazamiento (plugins/scroll-memory)— y solo refresca los datos en silencio.
  */
+defineOptions({ name: 'LibraryPage' })
+definePageMeta({ keepalive: true })
+
 const t = useT()
 const { favorites, loadFavorites } = useLibrary()
 
@@ -106,17 +112,37 @@ function syncUrl(): void {
 }
 watch(filter, syncUrl)
 
-onMounted(async () => {
-  loadRecent()
-  void load()
-  // Enlace directo o vuelta desde el lector: /biblioteca?q=deshidratación&f=zim
+/** Búsqueda pedida en la URL: enlace directo (/biblioteca?q=deshidratación&f=zim) o vuelta desde el lector. */
+async function applyQuery(): Promise<void> {
   const q = typeof route.query.q === 'string' ? route.query.q.trim() : ''
-  if (!q) return
+  if (!q) {
+    // Se vuelve sin búsqueda en la URL (p. ej. desde Inicio) con una búsqueda en pantalla: se conserva y se anota.
+    if (results.value) syncUrl()
+    return
+  }
+  if (results.value?.query === q) return
   query.value = q
   if (lastResults.value?.query === q) results.value = lastResults.value
   else await runSearch()
   const f = route.query.f
   if (results.value && typeof f === 'string' && (FILTERS as readonly string[]).includes(f)) filter.value = f as Filter
+}
+
+onMounted(() => {
+  loadRecent()
+  void load()
+  void applyQuery()
+})
+
+// Vuelta a la pantalla viva: datos al día (contenidos descargados entretanto) sin «Cargando…» ni perder el sitio.
+let mounted = false
+onActivated(() => {
+  if (!mounted) {
+    mounted = true
+    return
+  }
+  void load()
+  void applyQuery()
 })
 
 async function runSearch(): Promise<void> {

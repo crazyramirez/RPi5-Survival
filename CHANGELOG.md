@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.13.0 — 2026-11-18 · Bóveda: explorador de documentos
+
+### Nuevo
+- **Bóveda, vista de lista o de iconos:** los documentos se ven en lista o en cuadrícula. Las imágenes se ven en
+  miniatura y el resto con un icono y su tipo (PDF, TXT…) en color. La vista y el orden elegidos se recuerdan.
+- **Editar y borrar siempre a mano:** cada documento lleva «Editar» y «Borrar» a la vista. «Editar» cambia:
+  - el nombre (la extensión se conserva);
+  - las etiquetas, con sugerencias de las que ya se usan;
+  - la fecha de revisión, con atajos «En 6 meses» y «En 1 año».
+- **Buscar y ordenar:** búsqueda por nombre o etiqueta (sin distinguir tildes) y orden por recientes, nombre, tamaño
+  o tipo. Los filtros por tipo (con recuento) y por etiqueta van en una línea que se desliza con el dedo, y siempre a
+  la vista al desplazar la lista.
+- **Fechas de revisión con color:** caducado en rojo, próximos 30 días en ámbar y el resto en azul.
+- **Varios ficheros a la vez:** «Añadir ficheros» admite varios. En la portable se pueden arrastrar a la lista.
+
+### Mejorado
+- **Bóveda, vista previa:** los PDF se abren con el visor de la app (páginas, zoom, modo noche) y la vista previa queda
+  fija mientras se recorre la lista.
+
 ## 0.12.1 — 2026-11-17 · Volver es volver a donde estabas
 
 ### Mejorado

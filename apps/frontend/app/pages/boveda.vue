@@ -10,7 +10,6 @@ import {
   LifeBuoy,
   Lock,
   LockOpen,
-  Pencil,
   ShieldAlert,
   ShieldCheck,
   Trash2,
@@ -38,26 +37,18 @@ const pass = ref('')
 const pass2 = ref('')
 const sizeMiB = ref(1024)
 const preview = ref<{ file: VaultFile; url: string } | null>(null)
-const pendingDelete = ref<VaultFile | null>(null)
 
-// ---- Renombrar: se edita el nombre; la extensión se conserva (de ella dependen el tipo y la vista previa).
-const renaming = ref<{ file: VaultFile; base: string; ext: string } | null>(null)
-function splitName(name: string): { base: string; ext: string } {
-  const i = name.lastIndexOf('.')
-  return i > 0 && i >= name.length - 6 ? { base: name.slice(0, i), ext: name.slice(i) } : { base: name, ext: '' }
-}
-function startRename(f: VaultFile): void {
-  renaming.value = { file: f, ...splitName(f.name) }
-}
-function saveRename(): Promise<void> {
-  const r = renaming.value
-  if (!r) return Promise.resolve()
-  const name = `${r.base.trim()}${r.ext}`
-  renaming.value = null
-  if (!r.base.trim() || name === r.file.name) return Promise.resolve()
+// ---- Editar (nombre, etiquetas, fecha de revisión) y borrar: los pide el explorador (components/VaultBrowser).
+function saveFile(f: VaultFile, patch: { name?: string; tags?: string[]; reviewDate?: string | null }): Promise<void> {
   return act(async () => {
-    await vaultFetch(`files/${r.file.id}`, { method: 'PATCH', body: { name } })
-    if (preview.value?.file.id === r.file.id) preview.value = { ...preview.value, file: { ...preview.value.file, name } }
+    const updated = await vaultFetch<VaultFile>(`files/${f.id}`, { method: 'PATCH', body: patch })
+    if (preview.value?.file.id === f.id) preview.value = { ...preview.value, file: updated }
+  })
+}
+function removeFile(f: VaultFile): Promise<void> {
+  return act(async () => {
+    await vaultFetch(`files/${f.id}`, { method: 'DELETE' })
+    if (preview.value?.file.id === f.id) closePreview()
   })
 }
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -221,13 +212,26 @@ function closePreview(): void {
   preview.value = null
 }
 
-function upload(e: Event): Promise<void> {
-  const file = (e.target as HTMLInputElement).files?.[0]
+/** Subida de uno o varios ficheros, de uno en uno (cada uno se cifra al guardarse). */
+const uploading = ref<{ i: number; n: number } | null>(null)
+function uploadFiles(list: File[]): Promise<void> {
+  if (!list.length) return Promise.resolve()
   return act(async () => {
-    if (!file) return
-    await vaultFetch(`files?name=${encodeURIComponent(file.name)}`, { method: 'POST', body: file, headers: { 'content-type': 'application/octet-stream' } })
-    if (fileInput.value) fileInput.value.value = ''
+    try {
+      for (const [i, file] of list.entries()) {
+        uploading.value = { i: i + 1, n: list.length }
+        await vaultFetch(`files?name=${encodeURIComponent(file.name)}`, { method: 'POST', body: file, headers: { 'content-type': 'application/octet-stream' } })
+      }
+    } finally {
+      uploading.value = null
+    }
   })
+}
+function upload(e: Event): Promise<void> {
+  const input = e.target as HTMLInputElement
+  const list = [...(input.files ?? [])]
+  input.value = ''
+  return uploadFiles(list)
 }
 
 function loadRemovable(): Promise<void> {
@@ -242,14 +246,6 @@ function importFile(r: RemovableFile): Promise<void> {
   })
 }
 
-function confirmDelete(): Promise<void> {
-  const f = pendingDelete.value
-  pendingDelete.value = null
-  return act(async () => {
-    if (f) await vaultFetch(`files/${f.id}`, { method: 'DELETE' })
-    if (preview.value?.file.id === f?.id) closePreview()
-  })
-}
 
 const lockIn = computed(() => (st.value?.lockAt ? Math.max(0, Math.round((Date.parse(st.value.lockAt) - now.value) / 1000)) : null))
 const kind = (f: VaultFile): 'image' | 'pdf' | 'text' | 'other' =>
@@ -463,7 +459,7 @@ onBeforeUnmount(() => {
           <label class="ctl">
             <FileUp :size="24" aria-hidden="true" />
             <span><strong>{{ t('vault.upload') }}</strong><small>{{ t('ui.vault.uploadHint') }}</small></span>
-            <input ref="fileInput" type="file" hidden @change="upload" />
+            <input ref="fileInput" type="file" multiple hidden @change="upload" />
           </label>
           <button type="button" class="ctl" :disabled="busy" @click="loadRemovable">
             <Usb :size="24" aria-hidden="true" />
@@ -500,34 +496,29 @@ onBeforeUnmount(() => {
 
         <h2 class="ui-sec">{{ t('ui.vault.docs', { n: files.length }) }}</h2>
         <div class="split" :class="{ withPreview: preview && kind(preview.file) !== 'image' }">
-          <div class="list">
-            <p v-if="!files.length" class="empty"><Vault :size="18" aria-hidden="true" /><span>{{ t('vault.empty') }}</span></p>
-            <div v-for="f in files" :key="f.id" class="ui-row frow" :class="{ on: preview?.file.id === f.id }">
-              <button type="button" class="item" @click="open(f)">
-                <span class="ficon" aria-hidden="true"><component :is="fileIcon(f)" :size="18" /></span>
-                <span class="fmeta">
-                  <strong>{{ f.name }}</strong>
-                  <small>
-                    <span class="mono">{{ formatBytes(f.sizeBytes) }}</span>
-                    <template v-if="f.tags.length"> · {{ f.tags.join(', ') }}</template>
-                  </small>
-                </span>
-                <span v-if="f.reviewDate" class="ui-chip tone-info review">{{ t('vault.review', { date: f.reviewDate }) }}</span>
-              </button>
-              <button type="button" class="btn icon" :aria-label="t('ui.vault.rename')" @click="startRename(f)"><Pencil :size="18" /></button>
-              <button type="button" class="btn icon del" :aria-label="t('nav.delete')" @click="pendingDelete = f"><Trash2 :size="18" /></button>
-            </div>
-          </div>
+          <VaultBrowser
+            :files="files"
+            :busy="busy"
+            :active-id="preview?.file.id ?? null"
+            :uploading="uploading"
+            @open="open"
+            @save="saveFile"
+            @remove="removeFile"
+            @upload="uploadFiles"
+            @add="fileInput?.click()"
+          />
           <!-- Imágenes: visor a pantalla completa con zoom; PDF y texto en la vista lateral. -->
           <ImageViewer v-if="preview && kind(preview.file) === 'image'" :src="preview.url" :name="preview.file.name" @close="closePreview" />
-          <div v-if="preview && kind(preview.file) !== 'image'" class="preview">
+          <div v-if="preview && kind(preview.file) !== 'image'" class="preview" :class="{ dark: kind(preview.file) !== 'text' }">
             <div class="pv-bar">
               <span class="ficon" aria-hidden="true"><component :is="fileIcon(preview.file)" :size="16" /></span>
               <strong class="grow">{{ preview.file.name }}</strong>
               <button type="button" class="btn icon" :aria-label="t('display.close')" @click="closePreview"><X :size="18" /></button>
             </div>
             <img v-if="kind(preview.file) === 'image'" :src="preview.url" :alt="preview.file.name" />
-            <iframe v-else-if="kind(preview.file) === 'pdf' || kind(preview.file) === 'text'" :src="preview.url" :title="preview.file.name" />
+            <!-- PDF con el visor propio (pdf.js, estilos de la app); se lee del servicio (la CSP no deja leer blob:). -->
+            <PdfViewer v-else-if="kind(preview.file) === 'pdf'" :src="`/api/vault/files/${preview.file.id}/raw`" />
+            <iframe v-else-if="kind(preview.file) === 'text'" :src="preview.url" :title="preview.file.name" />
             <p v-else class="empty">{{ t('vault.noPreview') }}</p>
           </div>
         </div>
@@ -535,15 +526,6 @@ onBeforeUnmount(() => {
       <p v-else-if="!down" class="muted">{{ t('state.loading') }}</p>
     </template>
 
-    <ConfirmDialog
-      v-if="pendingDelete"
-      :title="t('nav.delete.title')"
-      :message="t('vault.delete.body', { name: pendingDelete.name })"
-      :confirm-label="t('nav.delete')"
-      danger
-      @confirm="confirmDelete"
-      @cancel="pendingDelete = null"
-    />
     <ConfirmDialog
       v-if="pendingDiscard"
       :title="t('vault.discard.title')"
@@ -577,19 +559,6 @@ onBeforeUnmount(() => {
         <label class="rk-check"><input v-model="keyWritten" type="checkbox" />{{ t('vault.rk.written') }}</label>
         <button type="button" class="btn btn-primary big" :disabled="!keyWritten" @click="closeKey">{{ t('vault.rk.done') }}</button>
       </section>
-    </div>
-    <div v-if="renaming" class="rn-backdrop" @click.self="renaming = null">
-      <form class="rn-dialog" @submit.prevent="saveRename">
-        <h2><Pencil :size="20" aria-hidden="true" />{{ t('ui.vault.rename') }}</h2>
-        <div class="rn-field">
-          <input v-model="renaming.base" class="ui-field" maxlength="110" autocomplete="off" :aria-label="t('ui.vault.renameLabel')" />
-          <span v-if="renaming.ext" class="rn-ext mono">{{ renaming.ext }}</span>
-        </div>
-        <div class="rn-actions">
-          <button type="button" class="btn" @click="renaming = null">{{ t('common.cancel') }}</button>
-          <button type="submit" class="btn btn-primary" :disabled="!renaming.base.trim() || busy">{{ t('common.save') }}</button>
-        </div>
-      </form>
     </div>
   </div>
 </template>
@@ -959,6 +928,13 @@ onBeforeUnmount(() => {
 
 .split.withPreview {
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .split.withPreview {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .list {
@@ -989,14 +965,7 @@ onBeforeUnmount(() => {
   color: var(--accent);
 }
 
-.frow {
-  gap: 0.4rem;
-}
 
-.frow.on .ficon {
-  color: var(--accent-ink);
-  background: var(--accent);
-}
 
 .item {
   flex: 1;
@@ -1073,9 +1042,6 @@ button.ui-row.item:last-child {
   color: var(--text-faint);
 }
 
-.review {
-  flex: none;
-}
 
 .go {
   flex: none;
@@ -1088,16 +1054,17 @@ button.ui-row.item:last-child {
   padding: 0 0.6rem;
 }
 
-.del svg {
-  color: var(--danger);
-}
 
 /* ------------------------------------------------------------ Vista previa */
+/* Fija al desplazar la lista: el documento abierto sigue a la vista mientras se busca otro. */
 .preview {
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
   min-height: 18rem;
+  height: calc(100dvh - var(--bar-h) - var(--action-h) - 2rem);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -1131,6 +1098,10 @@ button.ui-row.item:last-child {
 .preview img {
   max-width: 100%;
   object-fit: contain;
+}
+
+.preview.dark {
+  background: var(--surface);
 }
 
 .preview iframe {
@@ -1177,21 +1148,8 @@ button.ui-row.item:last-child {
   font-size: 1.1rem;
 }
 
-.rn-field {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
 
-.rn-field .ui-field {
-  flex: 1;
-  min-width: 0;
-  font-size: 1.05rem;
-}
 
-.rn-ext {
-  color: var(--text-muted);
-}
 
 .rn-actions {
   display: grid;

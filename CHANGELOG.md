@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.11.14 — 2026-11-17 · Emergencias con el estilo de la Biblioteca
+
+### Cambiado
+- **Emergencias** usa el mismo lenguaje visual que la Biblioteca:
+  - cabecera estándar con «Guía en papel» y el 112 en una píldora;
+  - categorías en una columna fija (en móviles, una tira), con iconos y letra más contenidos;
+  - accesos urgentes y protocolos en tarjetas con lomo de color;
+  - recordatorio PAS y aviso sanitario más discretos.
+- **Ficha de protocolo:** índice, títulos y números de los pasos armonizados con el resto; el texto sigue siendo
+  grande para leerlo bien en una emergencia.
+
 ## 0.11.13 — 2026-11-17 · Biblioteca por categorías
 
 ### Añadido

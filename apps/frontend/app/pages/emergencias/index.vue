@@ -83,16 +83,16 @@ const categoryLooks = computed<Record<string, GuideCategoryLook>>(() => {
 
 <template>
   <div class="page emergency">
-    <header class="emergency-header">
-      <div class="emergency-title"><LifeBuoy :size="48" aria-hidden="true" /><h1>{{ t('module.emergency') }}</h1></div>
-      <p class="emergency-subtitle">{{ t('em.catalog.subtitle') }}</p>
-      <NuxtLink to="/emergencias/imprimir" class="btn emergency-print"><Printer :size="20" aria-hidden="true" />{{ t('ui.print.open') }}</NuxtLink>
-      <!-- Informativo: la Raspberry Pi no realiza llamadas. Se ve también si falla la biblioteca. -->
-      <div class="emergency-phone" role="note" :aria-label="`${t('em.call')}: ${t('em.call.number')}`">
-        <Phone :size="40" aria-hidden="true" />
-        <div><span>{{ t('em.call') }}</span><strong class="mono">{{ t('em.call.number') }}</strong></div>
+    <PageHeader :title="t('module.emergency')" :icon="LifeBuoy">
+      <span class="head-gap" aria-hidden="true" />
+      <NuxtLink to="/emergencias/imprimir" class="btn"><Printer :size="20" aria-hidden="true" />{{ t('ui.print.open') }}</NuxtLink>
+      <!-- Informativo: el equipo no realiza llamadas. Se ve también si falla la biblioteca. -->
+      <div class="phone" role="note" :aria-label="`${t('em.call')}: ${t('em.call.number')}`">
+        <Phone :size="20" aria-hidden="true" />
+        <span class="phone-label">{{ t('em.call') }}</span>
+        <strong class="mono">{{ t('em.call.number') }}</strong>
       </div>
-    </header>
+    </PageHeader>
 
     <div v-if="error" class="notice tone-danger emergency-error" role="alert">
       <p>{{ t('lib.serviceDown') }}</p><button type="button" class="btn" @click="load">{{ t('guides.retry') }}</button>
@@ -105,173 +105,274 @@ const categoryLooks = computed<Record<string, GuideCategoryLook>>(() => {
       :title="t('em.catalog.all')" :search-label="t('ui.em.search')"
     >
       <template #sidebar>
-        <NuxtLink v-if="pas" :to="`/emergencias/${pas.id}`" class="emergency-pas">
-          <h2>{{ t('em.catalog.pas') }}</h2>
+        <NuxtLink v-if="pas" :to="`/emergencias/${pas.id}`" class="pas">
+          <span class="pas-title">{{ t('em.catalog.pas') }}</span>
           <ol><li>{{ t('em.pas.p') }}</li><li>{{ t('em.pas.a') }}</li><li>{{ t('em.pas.s') }}</li></ol>
-          <span>{{ t('em.catalog.pasOpen') }}<ArrowRight :size="18" aria-hidden="true" /></span>
+          <span class="pas-open">{{ t('em.catalog.pasOpen') }}<ArrowRight :size="16" aria-hidden="true" /></span>
         </NuxtLink>
       </template>
       <template #featured>
-        <section v-if="shortcuts.length" class="emergency-featured" aria-labelledby="emergency-shortcuts">
-          <header><h2 id="emergency-shortcuts">{{ t('em.catalog.shortcuts') }}</h2><p>{{ t('em.catalog.shortcutsHint') }}</p></header>
-          <div class="emergency-shortcuts">
+        <section v-if="shortcuts.length" class="featured" aria-labelledby="emergency-shortcuts">
+          <h2 id="emergency-shortcuts" class="group-head">
+            <span class="group-icon"><Siren :size="18" aria-hidden="true" /></span>
+            {{ t('em.catalog.shortcuts') }}
+            <small>{{ t('em.catalog.shortcutsHint') }}</small>
+          </h2>
+          <div class="shortcuts">
             <NuxtLink
               v-for="shortcut in shortcuts" :key="shortcut.id" :to="`/emergencias/${shortcut.id}`"
-              :aria-label="shortcut.fullTitle" class="emergency-shortcut" :class="{ 'emergency-primary': shortcut.id === 'rcp-adulto' }"
+              :aria-label="shortcut.fullTitle" class="shortcut" :class="{ primary: shortcut.id === 'rcp-adulto' }"
             >
-              <component :is="shortcut.icon" :size="42" aria-hidden="true" />
-              <strong>{{ shortcut.title }}</strong><ChevronRight :size="26" aria-hidden="true" />
+              <span class="spine"><component :is="shortcut.icon" :size="22" aria-hidden="true" /></span>
+              <strong>{{ shortcut.title }}</strong>
+              <ChevronRight :size="20" class="chev" aria-hidden="true" />
             </NuxtLink>
           </div>
         </section>
       </template>
+      <template #footer>
+        <p class="disclaimer"><ShieldAlert :size="18" aria-hidden="true" /><span>{{ t('em.disclaimer') }}</span></p>
+      </template>
     </GuideCatalog>
-    <p class="emergency-disclaimer"><ShieldAlert :size="22" aria-hidden="true" /><span>{{ t('em.disclaimer') }}</span></p>
   </div>
 </template>
 
 <style scoped>
+/* Mismo lenguaje visual que la Biblioteca: cabecera estándar, tarjetas con lomo de color y textos contenidos. */
 .emergency {
   --guide-violet: #b9a3e8;
-  --emergency-accent: color-mix(in srgb, var(--danger) 65%, #ff9485);
+}
+
+.head-gap {
+  flex: 1;
+}
+
+.phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--touch);
+  padding: 0 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--danger) 55%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface-2));
+  color: var(--text);
+}
+
+.phone > svg,
+.phone-label {
+  color: var(--danger);
+}
+
+.phone-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.phone strong {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.featured {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-  padding: 0 0 12px;
+  gap: 0.5rem;
 }
-.emergency-header {
+
+.group-head {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.55rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 1.08rem;
+  line-height: 1.2;
+}
+
+.group-icon {
   flex: none;
-  gap: 1.2rem;
-  min-height: 90px;
-  padding: 0.3rem 1.1rem;
-  border-bottom: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
 }
-.emergency-title { display: flex; align-items: center; gap: 1.1rem; flex: none; }
-.emergency-title > svg { flex: none; color: var(--accent); }
-.emergency-title h1 { font-size: 2.25rem; line-height: 1.1; }
-.emergency-subtitle { padding-left: 1.2rem; border-left: 1px solid var(--text-muted); color: var(--text-muted); font-size: 1rem; }
-.emergency-print { flex: none; min-height: 2.7rem; margin-left: auto; padding: 0 1.1rem; border-color: var(--guide-border); font-size: 1.1rem; }
-.emergency-phone {
+
+.group-head small {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.shortcuts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 0.5rem;
+}
+
+.shortcut {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.85rem;
-  flex: none;
-  min-width: 15.5rem;
-  min-height: 3.3rem;
-  padding: 0.2rem 0.8rem;
-  border: 1px solid var(--emergency-accent);
-  border-radius: 0.65rem;
-  background: linear-gradient(110deg, color-mix(in srgb, var(--danger) 10%, var(--surface)), var(--surface));
-}
-.emergency-phone > svg, .emergency-phone span { color: var(--emergency-accent); }
-.emergency-phone span { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.015em; }
-.emergency-phone strong { display: block; font-size: 1.8rem; font-family: var(--font-ui); font-weight: 700; line-height: 1; }
-.emergency-pas {
-  display: block;
-  padding: 0.75rem 1.1rem 0.5rem;
-  border: 1px solid var(--guide-border);
-  border-radius: 0.85rem;
-  background: var(--surface-grad);
-  color: var(--text);
-  text-decoration: none;
-}
-.emergency-pas h2 { font-size: 1.2rem; line-height: 1.2; }
-.emergency-pas ol { display: grid; gap: 0.35rem; margin: 0.8rem 0 0.9rem; padding: 0; list-style: none; counter-reset: pas; }
-.emergency-pas li { display: flex; align-items: center; gap: 0.75rem; font-size: 1.2rem; counter-increment: pas; }
-.emergency-pas li::before {
-  content: counter(pas);
-  display: grid; place-items: center; flex: none; width: 1.6rem; height: 1.6rem;
-  border: 2px solid var(--emergency-accent); border-radius: 50%;
-  color: var(--emergency-accent); font-size: 1rem; font-family: var(--font-mono);
-}
-.emergency-pas > span { display: flex; align-items: center; gap: 0.6rem; min-height: 44px; border-top: 1px solid var(--guide-border); color: var(--accent); font-size: 1rem; }
-.emergency-featured { margin-bottom: 0.8rem; }
-.emergency-featured header { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem 1.1rem; margin-bottom: 0.55rem; }
-.emergency-featured h2 { font-size: 1.65rem; line-height: 1.2; }
-.emergency-featured header p { padding-left: 1.1rem; border-left: 1px solid var(--text-muted); color: var(--text-muted); font-size: 1rem; }
-.emergency-shortcuts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.65rem; }
-.emergency-shortcut {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  min-height: 4.15rem;
+  align-items: stretch;
+  gap: 0.75rem;
   min-width: 0;
-  padding: 0.7rem 1rem;
-  border: 1px solid var(--guide-border);
-  border-radius: 0.65rem;
-  background: var(--surface-grad);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 5%, transparent);
+  min-height: 3.8rem;
+  padding: 0.45rem 0.55rem 0.45rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(70% 90% at 100% 100%, color-mix(in srgb, var(--danger) 8%, transparent), transparent 70%),
+    var(--surface-grad);
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.12s, border-color 0.12s, transform 0.08s ease-out;
+}
+
+.shortcut:hover {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+}
+
+.shortcut:active {
+  background: var(--surface-3);
+  border-color: var(--danger);
+  transform: scale(0.98);
+}
+
+.shortcut.primary {
+  border-color: color-mix(in srgb, var(--danger) 60%, var(--border));
+  background: linear-gradient(115deg, color-mix(in srgb, var(--danger) 18%, var(--surface-2)), var(--surface-2));
+}
+
+.spine {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  border-radius: 0.6rem 0.35rem 0.35rem 0.6rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--danger) 30%, var(--surface-2)), color-mix(in srgb, var(--danger) 14%, var(--surface)));
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--danger) 70%, transparent);
+  color: var(--danger);
+}
+
+.shortcut strong {
+  flex: 1;
+  min-width: 0;
+  align-self: center;
+  font-size: 1.02rem;
+  line-height: 1.22;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.chev {
+  flex: none;
+  align-self: center;
+  color: var(--text-faint);
+}
+
+/* PAS en la columna de categorías: recordatorio breve, mismo tamaño de letra que las categorías. */
+.pas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--danger) 6%, var(--surface));
   color: var(--text);
   text-decoration: none;
 }
-.emergency-shortcut > svg { flex: none; color: var(--emergency-accent); }
-.emergency-shortcut > svg:last-child { margin-left: auto; color: var(--text-muted); }
-.emergency-shortcut strong { font-size: clamp(1rem, 1.82vw, 1.4rem); line-height: 1.15; overflow-wrap: anywhere; }
-.emergency-primary { border: 2px solid var(--emergency-accent); background: linear-gradient(110deg, color-mix(in srgb, var(--emergency-accent) 28%, var(--surface)), color-mix(in srgb, var(--danger) 17%, var(--surface))); }
-.emergency-shortcut:hover { border-color: var(--emergency-accent); background: color-mix(in srgb, var(--danger) 16%, var(--surface)); }
-.emergency-disclaimer {
+
+.pas-title {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.pas ol {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: pas;
+}
+
+.pas li {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.55rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  counter-increment: pas;
+}
+
+.pas li::before {
+  content: counter(pas);
+  display: grid;
+  place-items: center;
   flex: none;
-  gap: 0.7rem;
-  min-height: 44px;
-  margin: 20px 18px 0;
-  padding: 0.35rem 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--warn) 72%, var(--border));
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1.5px solid color-mix(in srgb, var(--danger) 70%, transparent);
+  border-radius: 50%;
+  color: var(--danger);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.pas-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.2rem;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--warn) 45%, var(--border));
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--warn) 9%, var(--surface));
-  color: var(--text);
-  font-size: 0.9rem;
-  line-height: 1.25;
+  background: color-mix(in srgb, var(--warn) 6%, var(--surface));
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.3;
 }
-.emergency-disclaimer > svg { flex: none; color: var(--warn); }
-.emergency-error { display: grid; justify-items: start; align-content: start; flex: 1; min-height: 0; overflow-y: auto; gap: 0.7rem; margin: 0.75rem; }
-.emergency > p.muted { flex: 1; margin: 0.75rem; }
-@media (max-width: 1300px) {
-  .emergency-subtitle { display: none; }
+
+.disclaimer > svg {
+  flex: none;
+  color: var(--warn);
 }
-@media (max-width: 1150px), (max-height: 700px) {
-  .emergency { padding-bottom: 0.3rem; }
-  .emergency-header { min-height: 60px; padding: 0.4rem 0.7rem; gap: 0.6rem; }
-  .emergency-title { gap: 0.55rem; }
-  .emergency-title > svg { width: 28px; height: 28px; }
-  .emergency-title h1 { font-size: 1.5rem; }
-  .emergency-print { min-height: var(--touch); padding-inline: 0.85rem; font-size: 1rem; }
-  .emergency-phone { min-width: 0; min-height: var(--touch); padding: 0.3rem 0.65rem; gap: 0.55rem; }
-  .emergency-phone > svg { width: 26px; height: 26px; }
-  .emergency-phone span { display: none; }
-  .emergency-phone strong { font-size: 1.7rem; }
-  .emergency-featured { margin-bottom: 0.75rem; }
-  .emergency-featured header { gap: 0.3rem; margin-bottom: 0.45rem; }
-  .emergency-featured h2 { font-size: 1.25rem; }
-  .emergency-featured header p { padding-left: 0; border-left: 0; font-size: 0.8rem; }
-  .emergency-shortcuts { gap: 0.5rem; }
-  .emergency-shortcut { min-height: 4.5rem; padding: 0.55rem; gap: 0.5rem; }
-  .emergency-shortcut > svg { width: 26px; height: 26px; }
-  .emergency-shortcut > svg:last-child { width: 18px; height: 18px; }
-  .emergency-shortcut strong { font-size: 1rem; }
-  .emergency-disclaimer { min-height: 0; margin: 0.45rem 0.65rem 0; padding: 0.3rem 0.55rem; gap: 0.45rem; font-size: 0.75rem; }
-  .emergency-disclaimer > svg { width: 16px; height: 16px; }
-  .emergency-pas { padding: 0.75rem; }
-  .emergency-pas h2, .emergency-pas li { font-size: 1rem; }
+
+.emergency-error {
+  display: grid;
+  justify-items: start;
+  gap: 0.7rem;
 }
-@container (max-width: 39rem) {
-  .emergency-shortcut { flex-wrap: wrap; gap: 0.35rem; }
-  .emergency-shortcut strong { order: 1; width: 100%; }
-}
-@container (max-width: 32rem) {
-  .emergency-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 680px) {
-  .emergency-header { flex-wrap: wrap; gap: 0.5rem; }
-  .emergency-title h1 { font-size: 1.35rem; }
-  .emergency-print { order: 2; flex: 1 0 100%; }
-  .emergency-phone { margin-left: auto; }
-  .emergency-disclaimer { font-size: 0.7rem; }
+
+@media (max-width: 640px) {
+  .head-gap,
+  .phone-label {
+    display: none;
+  }
+
+  .group-head small {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
 }
 </style>

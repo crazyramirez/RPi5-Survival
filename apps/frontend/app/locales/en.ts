@@ -166,6 +166,7 @@ export const en: Record<MessageKey, string> = {
   'lib.favorites': 'Favourites',
   'lib.fav.add': 'Favourite',
   'lib.fav.remove': 'Remove favourite',
+  'lib.fav.error': 'Could not save',
   'lib.books.count': '{n} {n:book|books}',
   'lib.books.none': 'kiwix-serve is running but no ZIM is installed.',
   'lib.articles': 'articles',

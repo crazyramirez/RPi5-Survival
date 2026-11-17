@@ -12,7 +12,10 @@ export function splitSnippet(snippet: string): { text: string; mark: boolean }[]
   return parts
 }
 
-/** Solo rutas del lector Kiwix servidas por este equipo. */
+/**
+ * Solo rutas del lector Kiwix servidas por este equipo. Admite los caracteres que el navegador deja sin codificar
+ * en una URL (paréntesis, apóstrofo, coma…): muchos títulos de Wikipedia los llevan, p. ej. «Hipotermia_(medicina)».
+ */
 export function isSafeReaderPath(u: string): boolean {
-  return /^\/kiwix\/[\w\-/#%.?=&:~+]*$/.test(u) && !u.includes('..') && !u.startsWith('//')
+  return /^\/kiwix\/[\w\-/#%.?=&:~+!'()*,;@$]*$/.test(u) && !u.includes('..') && !u.startsWith('//')
 }

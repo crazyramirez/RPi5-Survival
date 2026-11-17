@@ -172,6 +172,7 @@ export const es = {
   'lib.favorites': 'Favoritos',
   'lib.fav.add': 'Favorito',
   'lib.fav.remove': 'Quitar favorito',
+  'lib.fav.error': 'No se pudo guardar',
   'lib.books.count': '{n} {n:libro|libros}',
   'lib.books.none': 'kiwix-serve funciona pero no hay ningún ZIM instalado.',
   'lib.articles': 'artículos',

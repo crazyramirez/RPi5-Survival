@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMessages, clip, excerpt, GENERAL_PROMPTS, keywords, relevance, searchTerms, stem, SYSTEM_PROMPT, SYSTEM_PROMPTS } from '../src/assistant.ts'
+import { buildMessages, clip, excerpt, GENERAL_PROMPTS, keywords, relevance, repetitionCut, searchTerms, stem, SYSTEM_PROMPT, SYSTEM_PROMPTS } from '../src/assistant.ts'
 
 describe('asistente (RAG)', () => {
   it('palabras clave sin palabras vacías ni acentos', () => {
@@ -53,12 +53,15 @@ describe('asistente (RAG)', () => {
       { n: 2, title: 'Agua potable (Wikipedia)', href: '/kiwix/viewer#x/Agua', source: 'zim', text: 'Agua apta para el consumo.' },
     ])
     expect(m[0]?.content).toBe(SYSTEM_PROMPT)
-    expect(SYSTEM_PROMPT).toMatch(/Usa primero la información de las FUENTES/)
+    expect(SYSTEM_PROMPT).toMatch(/pueden no tener relación con la pregunta/)
+    expect(SYSTEM_PROMPT).toMatch(/al final de la frase que la usa/)
+    expect(SYSTEM_PROMPT).toMatch(/Nunca escribas números de cita sueltos/)
     expect(SYSTEM_PROMPT).toMatch(/Fuera de la biblioteca:/)
     expect(SYSTEM_PROMPT).toMatch(/no inventes/)
     expect(SYSTEM_PROMPT).toMatch(/112/)
     expect(m[1]?.content).toContain('[1] Potabilizar agua\nHervir 1 minuto.')
     expect(m[1]?.content).toContain('[2] Agua potable (Wikipedia)')
+    expect(m[1]?.content.startsWith('PREGUNTA: ¿Cómo potabilizo agua?\n\nFUENTES:')).toBe(true)
     expect(m[1]?.content.endsWith('PREGUNTA: ¿Cómo potabilizo agua?')).toBe(true)
   })
 
@@ -72,5 +75,16 @@ describe('asistente (RAG)', () => {
       expect(GENERAL_PROMPTS[l]).toMatch(/112/)
       expect(SYSTEM_PROMPTS[l]).toMatch(/\[1\]/)
     }
+  })
+
+  it('corta los bucles del modelo (la misma línea o frase por tercera vez)', () => {
+    // Visto en la Pi con Qwen 2.5 1.5B: «[1] [2] [3] [4]» hasta agotar los tokens.
+    expect(repetitionCut('[1] [2] [3] [4]\n\n[1] [2] [3] [4]\n\n[1] [2] [3] [4]\n')).toBe('[1] [2] [3] [4]')
+    const loop = 'Usa una lámpara. Si no es seguro, mantén las luces encendidas. Si no es seguro, mantén las luces encendidas. Si no es seguro, mantén las luces encendidas.'
+    expect(repetitionCut(loop)).toBe('Usa una lámpara. Si no es seguro, mantén las luces encendidas.')
+    // Dos veces todavía no; ni frases cortas («Paso 1.») ni la última frase a medias.
+    expect(repetitionCut('Hierve el agua. Hierve el agua. Hierve el ag')).toBeNull()
+    expect(repetitionCut('1. Sí.\n2. Sí.\n3. Sí.\n')).toBeNull()
+    expect(repetitionCut('Llama al 112. Abriga a la persona [1]. Dale bebidas calientes [2].')).toBeNull()
   })
 })

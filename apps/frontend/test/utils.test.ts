@@ -5,6 +5,7 @@ import { parseDecimalDegrees, parseMapQuery, toDms } from '../app/utils/coords'
 import { formatBytes, formatDuration } from '../app/utils/format'
 import { interpolate, translate } from '../app/utils/i18n'
 import { moduleSummaries } from '../app/utils/summaries'
+import { isSafeReaderPath } from '../app/utils/snippet'
 import { allowPrivateRequest, isLoopbackAddress, isPrivatePath, isTrustedActionRequest } from '../server/utils/net'
 
 const at = '2026-11-08T17:00:00.000Z'
@@ -241,5 +242,18 @@ describe('parseMapQuery (enlaces /mapas?lat=&lon=&z=)', () => {
     expect(parseMapQuery({ lat: '91', lon: '0' })).toBeNull()
     expect(parseMapQuery({ lat: ['1'], lon: '2' })).toBeNull()
     expect(parseMapQuery({ lat: '1', lon: '2', z: '40' })?.zoom).toBe(18)
+  })
+})
+
+describe('isSafeReaderPath', () => {
+  it('admite artículos con paréntesis, apóstrofo o coma (Favorito del lector) y rechaza lo que sale del lector', () => {
+    expect(isSafeReaderPath('/kiwix/viewer#wikipedia_es_all_maxi/A/Hipotermia_(medicina)')).toBe(true)
+    expect(isSafeReaderPath("/kiwix/viewer#wikipedia_en_all/A/Hunter's_moon,_1990")).toBe(true)
+    expect(isSafeReaderPath('/kiwix/viewer#ifixit_es_all/Gu%C3%ADa/Puerto%2BUSB-C/1')).toBe(true)
+    expect(isSafeReaderPath('/kiwix/../api/admin')).toBe(false)
+    expect(isSafeReaderPath('//evil.example/kiwix/')).toBe(false)
+    expect(isSafeReaderPath('/kiwix/a"onload=x')).toBe(false)
+    expect(isSafeReaderPath('/kiwix/<script>')).toBe(false)
+    expect(isSafeReaderPath('https://evil.example/kiwix/')).toBe(false)
   })
 })

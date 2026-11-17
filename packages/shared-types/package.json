@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/shared-types",
-  "version": "0.11.16",
+  "version": "0.11.17",
   "private": true,
   "type": "module",
   "description": "Tipos compartidos entre servicios locales y la interfaz.",

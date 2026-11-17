@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.11.17 — 2026-11-17 · El asistente ya no repite «[1] [2] [3] [4]»; Favorito en el lector
+
+### Corregido
+- **Asistente con fuentes de la biblioteca:** con fuentes poco relacionadas con la pregunta, el modelo pequeño
+  escribía «[1] [2] [3] [4]» una y otra vez o copiaba los fragmentos.
+  - Ahora sabe que alguna fuente puede no venir al caso, responde con frases completas y cita al final de cada frase.
+  - Si aún así repite la misma frase o línea, la respuesta se corta en la primera aparición.
+- **Favorito en la biblioteca:** no se guardaba en artículos cuyo nombre lleva paréntesis, apóstrofo o coma
+  (p. ej. «Hipotermia (medicina)»), y el botón no decía nada. Ahora se guarda y, si falla, el botón lo indica.
+
 ## 0.11.16 — 2026-11-17 · Asistente que responde de todo; rutas y asistente en Linux
 
 ### Cambiado

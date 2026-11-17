@@ -169,6 +169,7 @@ export const it: Record<MessageKey, string> = {
   'lib.favorites': 'Preferiti',
   'lib.fav.add': 'Preferito',
   'lib.fav.remove': 'Rimuovi dai preferiti',
+  'lib.fav.error': 'Impossibile salvare',
   'lib.books.count': '{n} {n:libro|libri}',
   'lib.books.none': 'kiwix-serve funziona ma non è installato alcuno ZIM.',
   'lib.articles': 'articoli',

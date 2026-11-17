@@ -190,6 +190,9 @@ async function ask(): Promise<void> {
         } else if (ev === 'token') {
           phase.value = 'writing'
           answer.value += v as string
+        } else if (ev === 'replace') {
+          // El servicio cortó una repetición del modelo: sustituye lo escrito.
+          answer.value = v as string
         } else if (ev === 'timings') {
           const tm = v as { predicted_per_second?: number }
           if (tm.predicted_per_second) speed.value = Math.round(tm.predicted_per_second * 10) / 10

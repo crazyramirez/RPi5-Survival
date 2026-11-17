@@ -632,7 +632,8 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     send(res, 200, db.listFavorites())
     return
   }
-  const fav = /^\/favorites\/([\w:.\-/%]{1,200})$/.exec(path)
+  // El id llega con encodeURIComponent, que deja sin codificar !'()*~ (títulos como «Hipotermia_(medicina)»).
+  const fav = /^\/favorites\/([\w:.\-/%!'()*~]{1,1000})$/.exec(path)
   if (fav && (method === 'PUT' || method === 'DELETE')) {
     const id = decodeURIComponent(fav[1] ?? '')
     if (method === 'DELETE') {
@@ -644,7 +645,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     const title = typeof body.title === 'string' ? body.title.slice(0, 200) : ''
     const href = typeof body.href === 'string' ? body.href : ''
     // Solo rutas internas: un favorito nunca puede apuntar fuera del equipo.
-    if (!title || !/^\/[\w\-/#%.?=&:]*$/.test(href) || href.startsWith('//')) {
+    if (!title || !/^\/[\w\-/#%.?=&:~+!'()*,;@$]{0,2000}$/.test(href) || href.startsWith('//')) {
       send(res, 400, { error: 'invalid_favorite' })
       return
     }

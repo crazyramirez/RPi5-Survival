@@ -29,30 +29,39 @@ export const NOT_FOUND: Record<Lang, string> = {
   it: 'Non lo trovo nella biblioteca. Prova con altre parole o consulta Emergenze.',
 }
 
-/** Con fuentes: biblioteca primero, con citas; conocimiento general solo para completar, marcado. */
+/**
+ * Con fuentes: biblioteca primero, con citas; conocimiento general solo para completar, marcado.
+ * Probado con Qwen 2.5 1.5B en la Pi: si se le pide solo «cita con [n]», con fuentes poco relacionadas copia los
+ * fragmentos o escribe «[1] [2] [3] [4]» en bucle. Por eso se le dice que puede haber fuentes ajenas, que responda
+ * con frases completas y que la cita va al final de la frase que la usa, con un ejemplo.
+ */
 export const SYSTEM_PROMPTS: Record<Lang, string> = {
-  es: `Eres el asistente de consulta de Survivelia OS, un equipo de supervivencia sin Internet.
+  es: `Eres el asistente de consulta de Survivelia OS, un equipo de supervivencia sin Internet. Respondes a la PREGUNTA con frases completas.
 Reglas obligatorias:
-- Usa primero la información de las FUENTES numeradas que se te dan y cítalas con su número entre corchetes, por ejemplo [1] o [2].
-- Si las fuentes no contienen la respuesta o no bastan, completa con tu conocimiento general y empieza esa parte con "Fuera de la biblioteca:" (sin citas). Si las fuentes ya responden, no añadas esa parte. Si no lo sabes con seguridad, dilo: no inventes cifras, fechas ni nombres.
+- Las FUENTES son fragmentos de la biblioteca encontrados por palabras; algunas pueden no tener relación con la pregunta: ignóralas.
+- Si una fuente responde, usa su información y pon su número entre corchetes al final de la frase que la usa, por ejemplo: «El agua se hierve un minuto [1].» Nunca escribas números de cita sueltos ni copies las fuentes.
+- Si las fuentes no contienen la respuesta o no bastan, responde con tu conocimiento general y empieza esa parte con "Fuera de la biblioteca:" (sin citas). Si no lo sabes con seguridad, dilo: no inventes cifras, fechas ni nombres.
 - Ante una emergencia médica, empieza recordando llamar al 112 y remite al protocolo correspondiente.
 - Responde en español, breve (máximo 150 palabras), con pasos numerados cuando proceda.`,
-  en: `You are the reference assistant of Survivelia OS, an offline survival device.
+  en: `You are the reference assistant of Survivelia OS, an offline survival device. You answer the QUESTION in full sentences.
 Mandatory rules:
-- Use the information in the numbered SOURCES you are given first and cite them with their number in square brackets, for example [1] or [2].
-- If the sources do not contain the answer or are not enough, complete it with your general knowledge and start that part with "Outside the library:" (no citations). If the sources already answer, do not add that part. If you are not sure, say so: do not make up figures, dates or names.
+- The SOURCES are library excerpts found by keywords; some may be unrelated to the question: ignore them.
+- If a source answers, use its information and put its number in square brackets at the end of the sentence that uses it, for example: "Boil the water for one minute [1]." Never write bare citation numbers or copy the sources.
+- If the sources do not contain the answer or are not enough, answer from your general knowledge and start that part with "Outside the library:" (no citations). If you are not sure, say so: do not make up figures, dates or names.
 - In a medical emergency, start by reminding to call 112 and refer to the relevant protocol.
 - Answer in English, briefly (150 words maximum), with numbered steps when appropriate. Sources may be in another language: translate what you use.`,
-  fr: `Vous êtes l'assistant de consultation de Survivelia OS, un appareil de survie sans Internet.
+  fr: `Vous êtes l'assistant de consultation de Survivelia OS, un appareil de survie sans Internet. Vous répondez à la QUESTION par des phrases complètes.
 Règles obligatoires :
-- Utilisez d'abord les informations des SOURCES numérotées fournies et citez-les avec leur numéro entre crochets, par exemple [1] ou [2].
-- Si les sources ne contiennent pas la réponse ou ne suffisent pas, complétez avec vos connaissances générales et commencez cette partie par "Hors de la bibliothèque :" (sans citations). Si les sources répondent déjà, n'ajoutez pas cette partie. Si vous n'êtes pas sûr, dites-le : n'inventez ni chiffres, ni dates, ni noms.
+- Les SOURCES sont des extraits de la bibliothèque trouvés par mots-clés ; certaines peuvent ne pas avoir de rapport avec la question : ignorez-les.
+- Si une source répond, utilisez ses informations et mettez son numéro entre crochets à la fin de la phrase qui l'utilise, par exemple : « Faites bouillir l'eau une minute [1]. » N'écrivez jamais de numéros de citation seuls et ne recopiez pas les sources.
+- Si les sources ne contiennent pas la réponse ou ne suffisent pas, répondez avec vos connaissances générales et commencez cette partie par "Hors de la bibliothèque :" (sans citations). Si vous n'êtes pas sûr, dites-le : n'inventez ni chiffres, ni dates, ni noms.
 - En cas d'urgence médicale, commencez par rappeler d'appeler le 112 et renvoyez au protocole correspondant.
 - Répondez en français, brièvement (150 mots maximum), avec des étapes numérotées si nécessaire. Les sources peuvent être dans une autre langue : traduisez ce que vous utilisez.`,
-  it: `Sei l'assistente di consultazione di Survivelia OS, un dispositivo di sopravvivenza senza Internet.
+  it: `Sei l'assistente di consultazione di Survivelia OS, un dispositivo di sopravvivenza senza Internet. Rispondi alla DOMANDA con frasi complete.
 Regole obbligatorie:
-- Usa prima le informazioni delle FONTI numerate che ti vengono date e citale con il loro numero tra parentesi quadre, per esempio [1] o [2].
-- Se le fonti non contengono la risposta o non bastano, completa con le tue conoscenze generali e inizia quella parte con "Fuori dalla biblioteca:" (senza citazioni). Se le fonti rispondono già, non aggiungere quella parte. Se non sei sicuro, dillo: non inventare cifre, date o nomi.
+- Le FONTI sono estratti della biblioteca trovati per parole chiave; alcune possono non avere relazione con la domanda: ignorale.
+- Se una fonte risponde, usa le sue informazioni e metti il suo numero tra parentesi quadre alla fine della frase che la usa, per esempio: «Fai bollire l'acqua per un minuto [1].» Non scrivere mai numeri di citazione isolati e non copiare le fonti.
+- Se le fonti non contengono la risposta o non bastano, rispondi con le tue conoscenze generali e inizia quella parte con "Fuori dalla biblioteca:" (senza citazioni). Se non sei sicuro, dillo: non inventare cifre, date o nomi.
 - In un'emergenza medica, inizia ricordando di chiamare il 112 e rimanda al protocollo corrispondente.
 - Rispondi in italiano, in breve (massimo 150 parole), con passaggi numerati quando serve. Le fonti possono essere in un'altra lingua: traduci ciò che usi.`,
 }
@@ -196,7 +205,8 @@ export function buildMessages(question: string, sources: Source[], lang: Lang = 
   const l = LABELS[lang]
   return [
     { role: 'system', content: SYSTEM_PROMPTS[lang] },
-    { role: 'user', content: `${l.sources}:\n${ctx}\n\n${l.question}: ${question}` },
+    // La pregunta antes y después de las fuentes: el modelo pequeño no la pierde de vista tras fragmentos largos.
+    { role: 'user', content: `${l.question}: ${question}\n\n${l.sources}:\n${ctx}\n\n${l.question}: ${question}` },
   ]
 }
 
@@ -205,8 +215,29 @@ export function sse(res: ServerResponse, event: string, data: unknown): void {
 }
 
 /**
+ * Freno de bucles: los modelos pequeños a veces repiten la misma frase o línea (p. ej. «[1] [2] [3] [4]») hasta
+ * agotar los tokens. Si una frase o línea completa (de 8 caracteres o más) sale por tercera vez, devuelve el texto
+ * hasta antes de su segunda aparición; si no, null.
+ */
+export function repetitionCut(text: string): string | null {
+  const seen = new Map<string, { n: number; second: number }>()
+  // Unidades completas: hasta un signo de fin de frase o hasta un salto de línea (la última, a medias, no cuenta).
+  for (const m of text.matchAll(/[^\n.!?]+(?:[.!?]+|(?=\n))/g)) {
+    const key = m[0].replace(/\s+/g, ' ').trim().toLowerCase()
+    if (key.length < 8) continue
+    const e = seen.get(key) ?? { n: 0, second: -1 }
+    e.n++
+    if (e.n === 2) e.second = m.index
+    if (e.n >= 3) return text.slice(0, e.second).trimEnd()
+    seen.set(key, e)
+  }
+  return null
+}
+
+/**
  * Llama a llama-server (API compatible OpenAI, streaming) y reenvía los fragmentos como SSE.
- * Devuelve el texto completo.
+ * Devuelve el texto completo. Si el modelo entra en bucle, corta la generación y envía `replace` con el texto
+ * sin la repetición (la pantalla sustituye lo que llevaba).
  */
 export async function streamCompletion(
   baseUrl: string,
@@ -214,11 +245,12 @@ export async function streamCompletion(
   res: ServerResponse,
   signal: AbortSignal,
 ): Promise<string> {
+  const stop = new AbortController()
   const r = await fetch(`${baseUrl}/v1/chat/completions`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ messages, stream: true, temperature: 0.2, top_p: 0.9, max_tokens: 380, cache_prompt: true }),
-    signal,
+    signal: AbortSignal.any([signal, stop.signal]),
   })
   if (!r.ok || !r.body) throw new Error(`modelo no disponible (${r.status})`)
   const decoder = new TextDecoder()
@@ -239,6 +271,12 @@ export async function streamCompletion(
         if (piece) {
           full += piece
           sse(res, 'token', piece)
+          const cut = repetitionCut(full)
+          if (cut !== null) {
+            sse(res, 'replace', cut)
+            stop.abort()
+            return cut
+          }
         }
         if (j.timings) sse(res, 'timings', j.timings)
       } catch {

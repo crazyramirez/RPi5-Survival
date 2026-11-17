@@ -106,7 +106,7 @@ describe('asistente (RAG)', () => {
 
   it('conversación: la búsqueda suma la pregunta anterior y las respuestas se recortan', () => {
     expect(retrievalQuery('¿y si es un niño?', [])).toBe('¿y si es un niño?')
-    expect(retrievalQuery('¿y si es un niño?', [{ question: 'a', answer: 'b' }, { question: '¿quemadura?', answer: 'c' }])).toBe('¿y si es un niño? ¿quemadura?')
+    expect(retrievalQuery('¿cuándo voy al médico?', [{ question: '¿quemadura?', answer: 'b' }, { question: '¿y si es un niño?', answer: 'c' }])).toBe('¿cuándo voy al médico? ¿y si es un niño? ¿quemadura?')
     expect(keywords(retrievalQuery('¿y si es un niño?', [{ question: '¿Cómo trato una quemadura?', answer: '' }]))).toEqual(['nino', 'trato', 'quemadura'])
     expect(priorAnswer('x '.repeat(1000)).length).toBeLessThanOrEqual(701)
   })

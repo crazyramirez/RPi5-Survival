@@ -217,10 +217,13 @@ export function priorAnswer(answer: string): string {
   return clip(answer.replace(/\s*\[\d+\]/g, ''), 700)
 }
 
-/** Consulta de búsqueda de una pregunta de seguimiento: la nueva primero y, detrás, la anterior («¿y si es un niño?» sola no encuentra nada). */
+/**
+ * Consulta de búsqueda de una pregunta de seguimiento: la nueva primero y, detrás, las anteriores de la más reciente
+ * a la más antigua («¿y si es un niño?» sola no encuentra nada; «¿cuándo voy al médico?» necesita la primera,
+ * la de la quemadura). keywords() se queda con las 8 primeras palabras clave: manda la pregunta nueva.
+ */
 export function retrievalQuery(question: string, prior: PriorTurn[]): string {
-  const last = prior.at(-1)
-  return last ? `${question} ${last.question}` : question
+  return [question, ...prior.map((p) => p.question).reverse()].join(' ')
 }
 
 /**

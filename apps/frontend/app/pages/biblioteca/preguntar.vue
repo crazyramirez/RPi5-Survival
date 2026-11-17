@@ -921,13 +921,24 @@ h1 {
 }
 
 .answer.past {
+  margin-bottom: 0.6rem;
   opacity: 0.85;
+}
+
+/* En la tarjeta de una pregunta anterior: el mismo margen interior que el texto de la respuesta. */
+.answer.past .turn-q {
+  padding: 0.8rem 1rem 0;
+}
+
+.answer.past .answer-text {
+  font-size: 1rem;
 }
 
 .past-src {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
+  padding: 0 1rem 0.9rem;
 }
 
 .past-link {
@@ -952,22 +963,35 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
-  margin-top: 0.4rem;
-  padding: 0.7rem;
-  border-radius: var(--radius-lg);
-  border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--border));
-  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  margin-top: 0.6rem;
 }
 
 .follow-row {
   display: flex;
   gap: 0.5rem;
+  padding: 0.3rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface-grad);
 }
 
+/* Mismo aspecto que el campo de arriba (.composer). */
 .follow-row input {
   flex: 1;
   min-width: 0;
   min-height: var(--touch);
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.05rem;
+  outline: none;
+}
+
+.follow-row:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
 }
 
 .memory {

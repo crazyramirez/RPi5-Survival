@@ -476,11 +476,21 @@ function findBrowser() {
 /** Ventana de la app abierta por este lanzador (se cierra al aplicar una actualización: la nueva abre otra). */
 let appWindow = null
 
+/**
+ * Abre `url` con el programa del sistema (xdg-open, open, start). Si no existe (un Linux mínimo sin xdg-open),
+ * Survivelia OS sigue en marcha y dice la dirección: antes el error sin capturar cerraba el lanzador entero.
+ */
+function openDefault(url) {
+  const o = openCommand(platform, url)
+  const c = spawn(o.cmd, o.args, { stdio: 'ignore', detached: true })
+  c.on('error', () => say(`No se ha podido abrir el navegador (${o.cmd}). Abre esta dirección en uno: ${url}`))
+  c.unref()
+}
+
 function openBrowser(url, { attach }) {
   const browser = findBrowser()
   if (!browser) {
-    const o = openCommand(platform, url)
-    spawn(o.cmd, o.args, { stdio: 'ignore', detached: true }).unref()
+    openDefault(url)
     say('Abierto en el navegador predeterminado. Para salir: Sistema → «Cerrar Survivelia OS».')
     return
   }
@@ -498,10 +508,7 @@ function openBrowser(url, { attach }) {
     }
     stop(0)
   })
-  b.on('error', () => {
-    const o = openCommand(platform, url)
-    spawn(o.cmd, o.args, { stdio: 'ignore', detached: true }).unref()
-  })
+  b.on('error', () => openDefault(url))
 }
 
 // ------------------------------------------------------------------ Arranque

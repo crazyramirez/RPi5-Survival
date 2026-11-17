@@ -12,6 +12,10 @@
 - **Consultas anteriores:** una conversación se guarda como una sola consulta que indica cuántas preguntas
   tiene. Al abrirla se puede seguir preguntándole.
 
+### Corregido
+- **Portable en Linux:** en un equipo sin `xdg-open` (un Linux mínimo), Survivelia OS se cerraba al intentar
+  abrir el navegador. Ahora sigue en marcha y dice la dirección que hay que abrir.
+
 ## 0.11.19 — 2026-11-17 · Consultas anteriores más legibles
 
 ### Cambiado

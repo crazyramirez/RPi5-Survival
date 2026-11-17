@@ -444,6 +444,8 @@ export const en: Record<MessageKey, string> = {
   'content.interest.juegos': 'Games',
   'content.error': "The content catalogue couldn't be read.",
   'setup.title': 'Welcome to Survivelia OS',
+  'setup.close': 'Close',
+  'setup.closeLabel': 'Close the welcome screen and go back',
   'setup.language': 'Language',
   'setup.lead': 'Maps, health and knowledge that work without Internet. Choose how to start.',
   'setup.default': 'Everything is chosen in your language whenever it exists; otherwise in English. Maps are for your country.',

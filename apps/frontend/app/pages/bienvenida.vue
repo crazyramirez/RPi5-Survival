@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, ArrowRight, CloudDownload, Download, Globe2, ListChecks, PartyPopper, Search, Siren } from '@lucide/vue'
+import { ArrowLeft, ArrowRight, CloudDownload, Download, Globe2, ListChecks, PartyPopper, Search, Siren, X } from '@lucide/vue'
 import type { ContentOverview } from '@survival-os/shared-types'
 import { searchCountries } from '~/composables/useRegion'
 import { formatBytes } from '~/utils/format'
@@ -13,6 +13,8 @@ import { formatBytes } from '~/utils/format'
 definePageMeta({ layout: 'bare' })
 
 const t = useT()
+const route = useRoute()
+const backTo = useBackTo()
 const { status } = useDeviceStatus()
 const step = ref<'intro' | 'pick' | 'done'>('intro')
 const ov = ref<ContentOverview | null>(null)
@@ -52,6 +54,21 @@ function pickRegion(id: string): void {
   regionOpen.value = false
   regionQuery.value = ''
 }
+
+/**
+ * Abierta de nuevo (desde Sistema, o con la primera puesta en marcha ya hecha u omitida): botón «Cerrar» arriba a la
+ * izquierda y Esc, que vuelven a donde se estaba. La primera vez no se ofrece: la bienvenida guía por sí misma.
+ */
+const fromSystem = computed(() => route.query.desde === 'sistema')
+const reopened = computed(() => fromSystem.value || (!!ov.value && ov.value.setup.state !== 'pending'))
+function close(): void {
+  backTo(fromSystem.value ? '/sistema' : '/')
+}
+function onKey(e: KeyboardEvent): void {
+  if (e.key === 'Escape' && reopened.value && !regionOpen.value) close()
+}
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 /** Con red local hay salida probable a Internet; sin ella, las descargas no pueden empezar. */
 const online = computed(() => status.value?.network.state === 'ok' && status.value.network.value.mode === 'local')
@@ -95,7 +112,10 @@ async function openGuides(): Promise<void> {
 </script>
 
 <template>
-  <div class="welcome-screen" :class="`step-${step}`">
+  <div class="welcome-screen" :class="[`step-${step}`, { reopened }]">
+    <button v-if="reopened" type="button" class="btn glass close" :aria-label="t('setup.closeLabel')" @click="close">
+      <X :size="22" aria-hidden="true" />{{ t('setup.close') }}
+    </button>
     <img class="bg" src="/backgrounds/welcome-topo.webp" alt="" aria-hidden="true" decoding="async" draggable="false" />
     <div class="shade" aria-hidden="true" />
 
@@ -516,6 +536,24 @@ h1 {
   gap: 0.4rem;
 }
 
+/* «Cerrar» (bienvenida abierta de nuevo): siempre arriba a la izquierda, por encima del contenido que se desplaza. */
+.close {
+  position: fixed;
+  top: max(0.75rem, env(safe-area-inset-top));
+  left: max(0.75rem, env(safe-area-inset-left));
+  z-index: 20;
+  gap: 0.45rem;
+  min-height: 3.2rem;
+  padding: 0 1.1rem 0 0.85rem;
+  font-size: 1rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+
+/* Paso de elegir contenidos: su cabecera baja para no quedar debajo de «Cerrar». */
+.reopened .pick {
+  padding-top: 3.8rem;
+}
+
 .glass {
   justify-content: center;
   min-height: 3.2rem;
@@ -623,6 +661,11 @@ h1 {
 
 /* Estrecho (móvil, tablet vertical): un camino debajo del otro, con «o» en horizontal. */
 @media (max-width: 760px) {
+  /* Móvil: los idiomas bajan para no quedar debajo de «Cerrar». */
+  .reopened .stage {
+    padding-top: 4.4rem;
+  }
+
   .paths {
     grid-template-columns: minmax(0, 1fr);
   }

@@ -368,7 +368,7 @@ async function displayOff(): Promise<void> {
         </span>
         <ChevronRight :size="22" class="q-go" aria-hidden="true" />
       </NuxtLink>
-      <NuxtLink to="/bienvenida" class="quick-card welcome">
+      <NuxtLink to="/bienvenida?desde=sistema" class="quick-card welcome">
         <span class="q-ico" aria-hidden="true"><Compass :size="24" /></span>
         <span class="q-text">
           <strong>{{ t('sys.welcome') }}</strong>

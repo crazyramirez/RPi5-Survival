@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.1 — 2026-11-18 · Cerrar la bienvenida
+
+### Mejorado
+- **Bienvenida abierta desde Sistema:** arriba a la izquierda aparece «✕ Cerrar», en todos sus pasos, que devuelve a
+  Sistema tal como estaba (también con la tecla Esc). La primera vez que se enciende el equipo no aparece: la
+  bienvenida guía por sí misma.
+
 ## 0.13.0 — 2026-11-18 · Bóveda: explorador de documentos
 
 ### Nuevo

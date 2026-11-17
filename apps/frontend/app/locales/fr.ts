@@ -452,6 +452,8 @@ export const fr: Record<MessageKey, string> = {
   'content.interest.juegos': 'Jeux',
   'content.error': 'Impossible de lire le catalogue de contenus.',
   'setup.title': 'Bienvenue dans Survivelia OS',
+  'setup.close': 'Fermer',
+  'setup.closeLabel': 'Fermer l’accueil et revenir',
   'setup.language': 'Langue',
   'setup.lead': 'Cartes, santé et connaissances qui fonctionnent sans Internet. Choisissez comment commencer.',
   'setup.default': "Tout est choisi dans votre langue dès qu'elle existe ; sinon en anglais. Les cartes sont celles de votre pays.",

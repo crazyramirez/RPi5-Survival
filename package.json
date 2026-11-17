@@ -1,6 +1,6 @@
 {
   "name": "survival-os",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "private": true,
   "description": "Terminal de supervivencia offline para Raspberry Pi 5 (pantalla HDMI táctil 7\").",
   "license": "UNLICENSED",

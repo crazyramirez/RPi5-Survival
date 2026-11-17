@@ -455,6 +455,8 @@ export const es = {
   'content.interest.juegos': 'Juegos',
   'content.error': 'No se pudo leer el catálogo de contenidos.',
   'setup.title': 'Bienvenido a Survivelia OS',
+  'setup.close': 'Cerrar',
+  'setup.closeLabel': 'Cerrar la bienvenida y volver',
   'setup.language': 'Idioma',
   'setup.lead': 'Mapas, salud y conocimiento que funcionan sin Internet. Elige cómo empezar.',
   'setup.default': 'Todo se elige en tu idioma siempre que exista; si no, en inglés. Los mapas, de tu país.',

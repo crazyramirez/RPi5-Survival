@@ -156,6 +156,18 @@ def listen(dev: str, baud: int) -> str:
         os.close(fd)
 
 
+def aid(dev: str) -> None:
+    """Ayuda sin Internet al receptor si es un u-blox (gnss-aid.py): fija en segundos en vez de minutos."""
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gnss-aid.py")
+    try:
+        r = subprocess.run([sys.executable, "-I", script, "inject", dev], capture_output=True, text=True, timeout=40, check=False)
+        out = (r.stdout or r.stderr).strip()
+        if out:
+            log(out)
+    except (OSError, subprocess.SubprocessError) as e:
+        log(f"{dev}: sin ayuda u-blox ({e})")
+
+
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1 or not re.match(r"^/dev/tty(ACM|USB)\d{1,3}$", args[0]):
@@ -181,6 +193,7 @@ def main() -> int:
         return 0
     if real(dev) in known:
         log(f"{dev}: gpsd ya lo usa")
+        aid(dev)
         return 0
     if open_elsewhere(dev):
         log(f"{dev}: en uso por otro servicio")
@@ -198,6 +211,8 @@ def main() -> int:
                 log(f"{dev}: NMEA a {baud} baudios, pero gpsdctl falló: {(r.stderr or r.stdout).strip()}")
                 return 1
             log(f"{dev}: receptor GNSS (NMEA a {baud} baudios) añadido a gpsd")
+            time.sleep(1)
+            aid(dev)
             return 0
     log(f"{dev}: sin NMEA (no es un receptor GNSS)")
     return 0

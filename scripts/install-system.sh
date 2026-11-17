@@ -129,7 +129,7 @@ fi
 systemctl daemon-reload
 
 # Servicios base siempre; opcionales solo si su unidad declara que puede arrancar (ver hooks de fase).
-UNITS="survival-device-api.service survival-web.service survival-healthcheck.timer survival-timesync.timer survival-ups.timer survival-games.service survival-update.timer"
+UNITS="survival-device-api.service survival-web.service survival-healthcheck.timer survival-timesync.timer survival-ups.timer survival-games.service survival-update.timer survival-gnss-aid.timer"
 [ -x "$DEST/scripts/install-hooks.sh" ] && DEST="$DEST" KIOSK_USER="$KIOSK_USER" "$DEST/scripts/install-hooks.sh"
 for extra in survival-library survival-kiwix survival-navigation survival-vault survival-esp32-gateway; do
   [ -f "/etc/systemd/system/$extra.service" ] && UNITS="$UNITS $extra.service"

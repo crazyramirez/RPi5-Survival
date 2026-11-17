@@ -51,6 +51,27 @@ export const KNOWN_VIDS = new Set(['303a', '10c4', '1a86', '0403', '239a', '2e8a
 const run = (cmd: string, args: string[], timeout = 8000): Promise<string> =>
   new Promise((ok) => execFile(cmd, args, { timeout, windowsHide: true }, (err, out) => ok(err ? '' : String(out))))
 
+/**
+ * Firma barata de los puertos presentes, para notar enseguida que se enchufa o desenchufa algo (cada pocos segundos)
+ * sin el coste de listPorts (en Windows, PowerShell + WMI). Windows: el registro (SERIALCOMM); macOS/Linux: /dev.
+ */
+export async function portSignature(platform = process.platform): Promise<string> {
+  if (platform === 'android') {
+    const r = await androidBridge<{ ports: PortInfo[] }>('/serial/ports').catch(() => ({ ports: [] as PortInfo[] }))
+    return r.ports.map((p) => p.path).sort().join('|')
+  }
+  if (platform === 'win32') {
+    const out = await run('reg', ['query', String.raw`HKLM\HARDWARE\DEVICEMAP\SERIALCOMM`], 4000)
+    return (out.match(/COM\d+/g) ?? []).sort().join('|')
+  }
+  try {
+    const re = platform === 'darwin' ? /^cu\./ : /^tty(ACM|USB)\d+$/
+    return readdirSync('/dev').filter((f) => re.test(f)).sort().join('|')
+  } catch {
+    return ''
+  }
+}
+
 export async function listPorts(platform = process.platform): Promise<PortInfo[]> {
   if (platform === 'android') {
     const r = await androidBridge<{ ports: PortInfo[] }>('/serial/ports').catch(() => ({ ports: [] as PortInfo[] }))
@@ -154,7 +175,10 @@ export async function openPort(path: string, baud: number, platform = process.pl
       throw new Error(`stty falló en ${path}`)
     }
   }
-  const stream = createReadStream('', { fd, autoClose: false, highWaterMark: 1024 })
+  // Windows: con `mode … to=off` cada lectura espera a llenar el búfer entero. Un GPS sin fijación emite ~300 B/s:
+  // con 1024 bytes el primer dato tardaba más de 3 s (el sondeo NMEA no lo veía y el GPS quedaba «ignorado»).
+  // Con 64 bytes llega en ~0,2 s. En Linux/macOS (stty raw) la lectura devuelve lo que haya.
+  const stream = createReadStream('', { fd, autoClose: false, highWaterMark: platform === 'win32' ? 64 : 1024 })
   let closed = false
   return {
     path,

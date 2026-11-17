@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Cpu } from '@lucide/vue'
 import type { Esp32Status } from '@survival-os/shared-types'
+import type { MessageKey } from '~/locales/es'
 import { formatNumber } from '~/utils/format'
 
 /** Dispositivos ESP32 por USB serie. Sondeo propio (5 s) solo mientras la tarjeta está visible. */
@@ -44,7 +45,7 @@ const ago = (iso: string | null): string => (iso ? `${Math.max(0, Math.round((Da
     </div>
     <template v-if="st?.ports.length">
       <p class="faint">{{ t('esp.ports') }}</p>
-      <KvRow v-for="p in st.ports" :key="p.path" :label="p.path" :value="`${p.chip} → ${p.use}`" mono />
+      <KvRow v-for="p in st.ports" :key="p.path" :label="p.path" :value="`${p.chip} → ${t(`esp.use.${p.use}` as MessageKey)}`" mono />
     </template>
     <p class="faint">{{ t('esp.note') }}</p>
   </AppCard>

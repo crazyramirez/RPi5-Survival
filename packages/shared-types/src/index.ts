@@ -473,7 +473,7 @@ export interface Esp32Device {
 export interface Esp32Status {
   devices: Esp32Device[]
   /** Puertos serie USB vistos y por qué se usan o no. */
-  ports: { path: string; vendorId: string | null; productId: string | null; chip: string; use: 'esp32' | 'gpsd' | 'meshtastic' | 'ignorado' }[]
+  ports: { path: string; vendorId: string | null; productId: string | null; chip: string; use: 'esp32' | 'gpsd' | 'meshtastic' | 'ocupado' | 'ignorado' }[]
 }
 
 // ---------------------------------------------------------------- Mantenimiento (tareas root vía systemd)

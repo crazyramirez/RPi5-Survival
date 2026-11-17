@@ -2,7 +2,9 @@ import { chmodSync, rmSync } from 'node:fs'
 import { createServer, type Server, type Socket } from 'node:net'
 import { applyNmea, emptyNmea, toSky, toTpv, type NmeaState } from './nmea.ts'
 import { log } from './mesh.ts'
-import { openPort, type SerialPort } from './serial.ts'
+import { openPort, ANDROID_GNSS, type SerialPort } from './serial.ts'
+import type { AidStore } from './aid.ts'
+import { CLS_MON, ID_MON_VER, pollAidEph, pollAidHui, pollMonVer, UbxScanner, type UbxFrame } from './ubx.ts'
 
 interface Receiver {
   port: SerialPort
@@ -10,7 +12,17 @@ interface Receiver {
   baud: number
   state: NmeaState
   openedAt: number
+  /** Confirmado como u-blox (respondió a MON-VER): se le envía ayuda y se guardan sus efemérides. */
+  ublox: boolean
+  /** Tramas UBX recibidas mientras se espera la respuesta a un sondeo. */
+  collecting: UbxFrame[] | null
+  timers: NodeJS.Timeout[]
 }
+
+/** Cada cuánto se guardan las efemérides de un u-blox con fijación 3D. */
+const EPH_SAVE_MS = 20 * 60_000
+/** Primer guardado tras la primera fijación 3D (da tiempo a que descargue las de varios satélites). */
+const EPH_FIRST_SAVE_MS = 3 * 60_000
 
 /**
  * Receptores GNSS (NMEA por USB, GNSS interno de Android…) + servidor compatible con gpsd (ADR 0016). Puede haber
@@ -23,6 +35,12 @@ export class Gps {
   private server: Server | null = null
   /** Último error por ruta (desconexión, apertura fallida). */
   private errors = new Map<string, string>()
+  private readonly aid: AidStore | null
+
+  /** `aid`: ayuda sin Internet a receptores u-blox (posición, hora, efemérides guardadas). */
+  constructor(aid: AidStore | null = null) {
+    this.aid = aid
+  }
 
   listen(port: number, host = '127.0.0.1'): void {
     this.server = this.createGpsd()
@@ -71,14 +89,16 @@ export class Gps {
       this.errors.set(path, `No se pudo abrir: ${err instanceof Error ? err.message : String(err)}`)
       throw err
     }
-    const r: Receiver = { port, path, baud, state: emptyNmea(), openedAt: Date.now() }
+    const r: Receiver = { port, path, baud, state: emptyNmea(), openedAt: Date.now(), ublox: false, collecting: null, timers: [] }
     this.receivers.set(path, r)
     this.errors.delete(path)
     let buf = ''
     let lastTpv = 0
-    port.stream.setEncoding('latin1')
+    const scanner = new UbxScanner()
     port.stream.on('data', (raw: string | Buffer) => {
-      buf += String(raw)
+      const bytes = typeof raw === 'string' ? Buffer.from(raw, 'latin1') : raw
+      for (const f of scanner.push(bytes)) this.onUbx(r, f)
+      buf += bytes.toString('latin1')
       const lines = buf.split(/\r?\n/)
       buf = lines.pop() ?? ''
       if (buf.length > 4096) buf = ''
@@ -87,6 +107,7 @@ export class Gps {
       // Una TPV/SKY por segundo y receptor como mucho (los receptores emiten una ráfaga de frases por ciclo).
       if (changed && Date.now() - lastTpv > 900) {
         lastTpv = Date.now()
+        this.onFix(r)
         this.broadcast(toTpv(r.state, path))
         this.broadcast(toSky(r.state, path))
       }
@@ -101,6 +122,59 @@ export class Gps {
     port.stream.on('close', lost)
     this.broadcast({ class: 'DEVICE', path, activated: new Date().toISOString() })
     log('info', 'gps_connected', { port: path, baud })
+    // ¿Es un u-blox? Un sondeo MON-VER (8 bytes) que los demás receptores ignoran. El GNSS de Android no se toca.
+    if (this.aid && path !== ANDROID_GNSS) r.timers.push(setTimeout(() => void port.write(pollMonVer()).catch(() => undefined), 500))
+  }
+
+  private onUbx(r: Receiver, f: UbxFrame): void {
+    if (r.collecting) r.collecting.push(f)
+    if (f.cls === CLS_MON && f.id === ID_MON_VER && !r.ublox) {
+      r.ublox = true
+      const sw = f.payload.subarray(0, 30).toString('latin1').replace(/\u0000.*$/s, '').trim()
+      log('info', 'gps_ublox', { port: r.path, sw })
+      void this.sendAid(r)
+    }
+  }
+
+  /** Ayuda al arrancar: posición y hora, ionosfera/UTC y efemérides guardadas (si aún valen). */
+  private async sendAid(r: Receiver): Promise<void> {
+    if (!this.aid) return
+    // Si ya tiene fijación no hace falta (p. ej. se reabrió el puerto con el receptor ya en marcha).
+    if (r.state.mode >= 2) return
+    const msgs = this.aid.messages()
+    for (const m of msgs) {
+      if (this.receivers.get(r.path) !== r) return
+      await r.port.write(m).catch(() => undefined)
+      await new Promise((ok) => setTimeout(ok, 30)) // sin saturar el búfer de entrada del receptor (9600 baudios)
+    }
+    if (msgs.length) log('info', 'gps_aided', { port: r.path, messages: msgs.length })
+  }
+
+  private onFix(r: Receiver): void {
+    const st = r.state
+    if (!this.aid || st.mode < 2 || st.lat === null || st.lon === null) return
+    this.aid.savePosition(st.lat, st.lon, st.mode >= 3 ? st.altMSL : null)
+    // Efemérides: primera vez a los 3 min de la primera 3D, luego cada 20 min.
+    if (r.ublox && st.mode >= 3 && !r.timers.length) {
+      const save = (): void => {
+        r.timers.push(setTimeout(() => void this.saveEphemeris(r).finally(save), EPH_SAVE_MS))
+      }
+      r.timers.push(setTimeout(() => void this.saveEphemeris(r).finally(save), EPH_FIRST_SAVE_MS))
+    }
+  }
+
+  /** Pide al receptor sus efemérides e ionosfera/UTC y las guarda (solo con fijación 3D: datos frescos). */
+  private async saveEphemeris(r: Receiver): Promise<void> {
+    if (!this.aid || this.receivers.get(r.path) !== r || r.state.mode < 3) return
+    r.collecting = []
+    await r.port.write(pollAidHui()).catch(() => undefined)
+    await new Promise((ok) => setTimeout(ok, 300))
+    await r.port.write(pollAidEph()).catch(() => undefined)
+    await new Promise((ok) => setTimeout(ok, 5000)) // 32 respuestas de hasta 112 bytes a 9600 baudios ≈ 4 s
+    const frames = r.collecting
+    r.collecting = null
+    const n = this.aid.saveFrames(frames)
+    log('info', 'gps_ephemeris_saved', { port: r.path, satellites: n })
   }
 
   /** Cierra un receptor (o todos sin argumento). */
@@ -108,6 +182,7 @@ export class Gps {
     for (const r of [...this.receivers.values()]) {
       if (path !== undefined && r.path !== path) continue
       this.receivers.delete(r.path)
+      for (const t of r.timers) clearTimeout(t)
       r.port.close()
       this.broadcast({ class: 'DEVICE', path: r.path, activated: 0 })
     }

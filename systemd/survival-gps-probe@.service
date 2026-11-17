@@ -7,7 +7,7 @@ ConditionPathExists=/dev/%I
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/python3 -I /opt/survival-os/current/scripts/gps-usb-probe.py /dev/%I
-TimeoutStartSec=60
+TimeoutStartSec=90
 Nice=10
 
 NoNewPrivileges=yes

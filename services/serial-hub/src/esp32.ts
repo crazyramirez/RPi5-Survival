@@ -111,7 +111,7 @@ export function applyLine(dev: Esp32Device, limiter: RateLimiter, line: string, 
 /** Tabla de puertos de /status: por qué se usa o no cada uno (mismo criterio y orden que la Pi). */
 export function describePorts(
   list: PortInfo[],
-  roles: { gps: string | string[] | null; mesh: string | null; esp32: Set<string>; meshtastic: Set<string> },
+  roles: { gps: string | string[] | null; mesh: string | null; esp32: Set<string>; meshtastic: Set<string>; busy?: Set<string> },
   key: (p: string) => string,
 ): Esp32Status['ports'] {
   const gps = new Set((Array.isArray(roles.gps) ? roles.gps : [roles.gps]).filter((g): g is string => !!g).map(key))
@@ -122,6 +122,7 @@ export function describePorts(
     if (gps.has(k)) use = 'gpsd'
     else if (k === mesh || roles.meshtastic.has(k)) use = 'meshtastic'
     else if (roles.esp32.has(k)) use = 'esp32'
+    else if (roles.busy?.has(k)) use = 'ocupado'
     return { path: p.path, vendorId: p.vid, productId: p.pid, chip: chipOf(p), use }
   })
 }
@@ -161,6 +162,8 @@ export class Esp32Hub {
   private tried = new Map<string, number>()
   private list: PortInfo[] = []
   private roles: { gps: string[]; mesh: string | null } = { gps: [], mesh: null }
+  /** Puertos que no se pudieron abrir porque otro programa los usa (claves). */
+  private busyPorts = new Set<string>()
   private readonly open: Opener
   private readonly platform: NodeJS.Platform
 
@@ -173,7 +176,7 @@ export class Esp32Hub {
 
   status(): Esp32Status {
     const esp32 = new Set([...this.conns.values()].filter((c) => c.port).map((c) => c.key))
-    return { devices: [...this.conns.values()].map((c) => c.dev), ports: describePorts(this.list, { ...this.roles, esp32, meshtastic: this.meshtastic }, this.key) }
+    return { devices: [...this.conns.values()].map((c) => c.dev), ports: describePorts(this.list, { ...this.roles, esp32, meshtastic: this.meshtastic, busy: this.busyPorts }, this.key) }
   }
 
   /** Claves de los puertos abiertos como ESP32 (la malla y el GPS no deben tocarlos). */
@@ -186,6 +189,12 @@ export class Esp32Hub {
     const k = this.key(path)
     if (this.conns.has(k) || this.meshtastic.has(k) || this.conns.size >= MAX_DEVICES) return false
     return now - (this.tried.get(k) ?? -Infinity) >= RETRY_MS
+  }
+
+  /** Marca (o desmarca) un puerto como ocupado por otro programa, para explicarlo en /status. */
+  setBusy(path: string, busy: boolean): void {
+    if (busy) this.busyPorts.add(this.key(path))
+    else this.busyPorts.delete(this.key(path))
   }
 
   isMeshtastic(path: string): boolean {

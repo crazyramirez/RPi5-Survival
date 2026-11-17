@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.11.11 — 2026-11-17 · GPS más rápido sin Internet
+
+### Añadido
+- **Ayuda sin Internet a receptores u-blox** (A-GPS local) en la Pi, la portable y Android: al conectar el GPS se
+  le envían la última posición, la hora (solo si el reloj es fiable) y, si se guardaron hace menos de 4 h, sus
+  efemérides e ionosfera. Con eso fija en segundos en vez de minutos, aunque se haya desenchufado. Mientras tiene
+  fijación, se guardan cada 20 min.
+- **El GPS aparece en segundos al enchufarlo** (antes, hasta 15 s).
+- En la tarjeta de puertos serie, cada puerto dice para qué se usa en tu idioma, y «en uso por otro programa» si
+  otra aplicación lo tiene abierto (antes, «ignorado»).
+
+### Corregido
+- **Windows:** algunos GPS USB no se detectaban (aparecían como «ignorado»): la lectura del puerto esperaba a
+  llenar un bloque grande y el sondeo no llegaba a ver ninguna frase.
+
 ## 0.11.10 — 2026-11-17 · GPS buscando satélites
 
 ### Corregido

@@ -3,10 +3,11 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { join } from 'node:path'
 import { Esp32Hub, parseEsp32Ports, portKey } from './esp32.ts'
 import { Gps } from './gps.ts'
+import { AidStore } from './aid.ts'
 import { Mesh, Store, log, VERSION } from './mesh.ts'
 import { looksLikeNmea } from './nmea.ts'
 import { FrameParser, frame, wantConfig } from './meshtastic.ts'
-import { ANDROID_GNSS, ANDROID_PORT_RE, KNOWN_VIDS, listPorts, openPort, type PortInfo } from './serial.ts'
+import { ANDROID_GNSS, ANDROID_PORT_RE, KNOWN_VIDS, listPorts, openPort, portSignature, type PortInfo } from './serial.ts'
 
 /**
  * serial-hub (ADR 0016): nodo Meshtastic + receptor GNSS + placas ESP32 por USB en Windows, macOS y Linux.
@@ -74,7 +75,8 @@ function saveConfig(): void {
 
 const store = new Store(join(DATA, 'mesh.db'))
 const mesh = new Mesh(store, DATA)
-const gps = new Gps()
+// Ayuda sin Internet a receptores u-blox: última posición, hora y efemérides guardadas (ubx.ts, aid.ts).
+const gps = new Gps(new AidStore(join(DATA, 'gnss-aid')))
 // Android (ADR 0020): socket Unix en la carpeta privada de la app; cualquier otra app podría leer el TCP de loopback.
 if (env.GPSD_SOCKET) gps.listenSocket(env.GPSD_SOCKET)
 else gps.listen(GPSD_PORT, HOST)
@@ -85,7 +87,8 @@ const esp32 = new Esp32Hub()
 let ports: PortInfo[] = []
 const failed = new Map<string, number>() // puerto → momento del último sondeo fallido
 
-async function probeNmea(path: string): Promise<number | null> {
+/** Baudios si emite NMEA; null si no; 'busy' si no se pudo abrir (otro programa lo usa, p. ej. otra app de GPS). */
+async function probeNmea(path: string): Promise<number | 'busy' | null> {
   for (const baud of [9600, 4800, 38400, 115200]) {
     let text = ''
     try {
@@ -96,7 +99,7 @@ async function probeNmea(path: string): Promise<number | null> {
       await new Promise((r) => setTimeout(r, 2500))
       p.close()
     } catch {
-      return null
+      return 'busy'
     }
     if (looksLikeNmea(text)) return baud
   }
@@ -181,6 +184,12 @@ async function sync(): Promise<void> {
         const known = !p.listenOnly && (!p.vid || KNOWN_VIDS.has(p.vid))
         if (gpsPorts().length < MAX_GPS) {
           const baud = await probeNmea(p.path)
+          esp32.setBusy(p.path, baud === 'busy')
+          if (baud === 'busy') {
+            // En uso por otro programa: se reintenta en el próximo sondeo (no se espera 2 min como con lo que no es GPS).
+            log('info', 'port_busy', { port: p.path })
+            continue
+          }
           if (baud) {
             config.gpsAuto.push({ path: p.path, baud })
             saveConfig()
@@ -213,6 +222,19 @@ async function sync(): Promise<void> {
 }
 void sync()
 setInterval(() => void sync(), 15_000)
+// Al enchufar o desenchufar algo, sondeo inmediato (no hay que esperar a los 15 s): un GPS aparece en segundos.
+let lastSignature: string | null = null
+setInterval(() => {
+  void portSignature()
+    .then((sig) => {
+      if (lastSignature !== null && sig !== lastSignature) {
+        log('info', 'ports_changed', {})
+        void sync()
+      }
+      lastSignature = sig
+    })
+    .catch(() => undefined)
+}, 3000)
 
 // ------------------------------------------------------------------ HTTP
 

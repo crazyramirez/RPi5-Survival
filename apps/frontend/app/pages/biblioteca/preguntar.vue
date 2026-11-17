@@ -723,7 +723,7 @@ h1 {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.55rem;
   max-height: 55vh;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -758,8 +758,8 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.15rem;
-  padding: 0.4rem 0.6rem;
+  gap: 0.35rem;
+  padding: 0.7rem 0.85rem;
   border: 0;
   background: none;
   color: var(--text);
@@ -769,11 +769,15 @@ h1 {
   cursor: pointer;
 }
 
+/* Dos líneas completas: con su propio interlineado, el recorte no se come la parte baja de las letras. */
 .item .q {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  width: 100%;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .when {

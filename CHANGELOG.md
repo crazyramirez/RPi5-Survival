@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.19 — 2026-11-17 · Consultas anteriores más legibles
+
+### Cambiado
+- **Asistente, «Consultas anteriores»:** cada consulta tiene más margen y separación, y muestra dos líneas
+  completas de la pregunta (antes la segunda línea se cortaba por abajo).
+
 ## 0.11.18 — 2026-11-17 · Favoritos del lector, cada uno el suyo
 
 ### Corregido

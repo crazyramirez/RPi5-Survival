@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.18 — 2026-11-17 · Favoritos del lector, cada uno el suyo
+
+### Corregido
+- **Favorito en el lector de la biblioteca:** todos los artículos se guardaban como el mismo favorito, porque la
+  parte del enlace tras `#` se perdía por el camino. Cada favorito nuevo sustituía al anterior y el botón salía
+  marcado en cualquier artículo. Ahora cada artículo tiene el suyo; los favoritos de antes hay que volver a marcarlos.
+
 ## 0.11.17 — 2026-11-17 · El asistente ya no repite «[1] [2] [3] [4]»; Favorito en el lector
 
 ### Corregido

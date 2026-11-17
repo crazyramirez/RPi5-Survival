@@ -729,8 +729,10 @@ h1 {
   overscroll-behavior: contain;
 }
 
+/* flex: none: en la columna con altura máxima, los elementos no se aplastan; la lista se desplaza. */
 .hist-list li {
   position: relative;
+  flex: none;
   display: flex;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);

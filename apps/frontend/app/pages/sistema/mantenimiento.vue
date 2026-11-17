@@ -363,7 +363,7 @@ const PIN_LEGEND = [
               <span class="mono muted">{{ i.ipv4[0] ?? t('ui.mnt.noIp') }}</span>
             </div>
           </div>
-          <p v-if="portable" class="notice tone-info">{{ t('mnt.net.portable') }}</p>
+          <p v-if="portable" class="notice tone-info">{{ t(android ? 'mnt.net.android' : 'mnt.net.portable') }}</p>
           <p v-else>{{ t('mnt.net.note') }}</p>
           <button v-if="!portable && radio !== 'disabled'" type="button" class="btn" :disabled="wifiJob.running.value" @click="pending = { title: t('mnt.net.offConfirm'), body: t('mnt.net.offBody'), label: t('mnt.net.turnOff'), run: () => wifiJob.start({ state: 'off' }) }">
             <WifiOff :size="18" /> {{ t('mnt.net.turnOff') }}
@@ -382,7 +382,7 @@ const PIN_LEGEND = [
             <span v-if="timeSource" class="ui-chip" :class="`tone-${timeSource === 'unverified' ? 'warn' : 'ok'}`">{{ t(`sys.time.source.${timeSource}` as never) }}</span>
             <span class="cap">{{ formatDate(now) }}</span>
           </div>
-          <p v-if="portable" class="notice tone-info">{{ t('mnt.time.portable') }}</p>
+          <p v-if="portable" class="notice tone-info">{{ t(android ? 'mnt.time.android' : 'mnt.time.portable') }}</p>
           <p v-else>{{ t('mnt.time.note') }}</p>
           <div v-if="!portable" class="row2">
             <input v-model="dateInput" type="date" class="ui-field grow" />
@@ -619,8 +619,9 @@ const PIN_LEGEND = [
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.3rem;
-  margin: -0.15rem -0.875rem 0;
-  padding: 1.15rem 0.875rem 0.4rem;
+  /* Sin margen negativo arriba: el fondo opaco taparía el borde inferior de las baldosas del resumen. */
+  margin: 0 -0.875rem;
+  padding: 1rem 0.875rem 0.4rem;
   background: linear-gradient(180deg, var(--bg) 80%, transparent);
 }
 
@@ -644,7 +645,8 @@ const PIN_LEGEND = [
 
 .mnt-sec,
 #mnt-update {
-  scroll-margin-top: 3.4rem;
+  /* Bajo las pestañas fijas (≈ 4,3 rem de alto menos los 0,75 rem del relleno de .page). */
+  scroll-margin-top: 4rem;
 }
 
 /* ------------------------------------------------------------ Rejillas */

@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import type { AdminJob, AdminJobStatus } from '@survival-os/shared-types'
+import { isAndroid } from './android'
 import { isPortable } from './portable'
 import { portableJobState, startPortableJob, stopPortableJob } from './portable-jobs'
 
@@ -8,6 +9,10 @@ export const ADMIN_DIR = process.env.SURVIVAL_ADMIN_DIR ?? '/run/survival-os/adm
 
 /** Tope de elementos por tarea de contenidos (= CONTENT_MAX_ITEMS de admin-job.py). «Descargarlo todo» en español ya pasa de 100. */
 const CONTENT_MAX_ITEMS = 500
+
+/** Puertos serie que acepta cada plataforma (mismo criterio que serial-hub). */
+const DESKTOP_PORT_RE = /^(COM\d{1,3}|\/dev\/[\w./-]+)$/
+const ANDROID_PORT_RE = /^(usb:\d{1,6}|android:gnss)$/
 
 const MEDIA_RE = /^[\w.-]{1,64}\/[^/\0]{1,128}$/
 
@@ -70,8 +75,9 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
     const pps = b.pps === null || b.pps === undefined ? null : Number(b.pps)
     if (pps !== null && (!Number.isInteger(pps) || pps < 2 || pps > 27)) bad('GPIO PPS no válido')
     // Portable: puerto USB elegido de la lista (COM3, /dev/ttyACM0, /dev/cu.usbmodem…). En la Pi no se usa.
+    // Android: el GNSS de la tablet («android:gnss») o un GPS por USB OTG («usb:<id>», como en serial-hub).
     const port = b.port === undefined || b.port === null ? null : String(b.port)
-    if (port !== null && (port.length > 200 || port.includes('\0') || !/^(COM\d{1,3}|\/dev\/[\w./-]+)$/.test(port))) bad('Puerto no válido')
+    if (port !== null && (port.length > 200 || port.includes('\0') || !(isAndroid() ? ANDROID_PORT_RE : DESKTOP_PORT_RE).test(port))) bad('Puerto no válido')
     return { action: 'enable', baud, pps, ...(port ? { port } : {}) }
   },
   'set-time': (b) => {
@@ -114,7 +120,7 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
     if (b.action === 'scan' || b.action === 'remove') return { action: b.action }
     if (b.action !== 'install' && b.action !== 'port') bad('Acción no válida')
     // Pi: /dev/serial/by-id. Portable (serial-hub, ADR 0016): también COMn (Windows) y /dev/cu.* o tty (macOS/Linux).
-    const portRe = isPortable() ? /^(COM\d{1,3}|\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100}))$/ : /^\/dev\/serial\/by-id\/[A-Za-z0-9_.:+-]{1,200}$/
+    const portRe = isAndroid() ? ANDROID_PORT_RE : isPortable() ? /^(COM\d{1,3}|\/dev\/(serial\/by-id\/[\w.:+-]{1,200}|tty(ACM|USB)\d{1,3}|cu\.[\w.-]{1,100}))$/ : /^\/dev\/serial\/by-id\/[A-Za-z0-9_.:+-]{1,200}$/
     if (typeof b.port !== 'string' || !portRe.test(b.port)) bad('Puerto no válido')
     return { action: b.action, port: b.port }
   },

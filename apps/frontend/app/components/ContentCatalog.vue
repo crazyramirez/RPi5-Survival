@@ -71,6 +71,21 @@ onMounted(() => {
 })
 onBeforeUnmount(() => timer && clearInterval(timer))
 
+/** Progreso del motor mientras descarga: elementos listos de los pedidos y el que baja ahora (como ContentProgress). */
+const progress = computed(() => {
+  const items = ov.value?.items ?? []
+  const tracked = items.filter((i) => i.state !== 'missing')
+  const a = items.find((i) => i.state === 'downloading' || i.state === 'verifying') ?? null
+  const ratio = a?.total && a.done != null ? Math.min(1, a.done / a.total) : null
+  return {
+    done: tracked.filter((i) => i.state === 'installed').length,
+    total: tracked.length,
+    name: a ? (ov.value?.catalog.find((c) => c.id === a.id)?.title ?? a.id) : null,
+    pct: ratio !== null ? `${Math.floor(ratio * 100)} %` : '',
+    ratio,
+  }
+})
+
 const statusOf = (id: string): ContentItemStatus | undefined => ov.value?.items.find((s) => s.id === id)
 /** Instalado o en curso: no se puede marcar. */
 const blocked = computed(() => new Set((ov.value?.items ?? []).filter((s) => s.state !== 'missing' && s.state !== 'failed').map((s) => s.id)))
@@ -273,8 +288,18 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
       </div>
     </section>
 
-    <!-- El pie solo se queda fijo abajo cuando hay algo que hacer (selección o descarga en curso). -->
-    <footer v-if="ov" class="foot" :class="{ sticky: mode === 'manage' && (selected.size > 0 || job.running.value) }">
+    <!-- Descarga en marcha sin nada nuevo marcado: progreso real del motor y «Detener», sin pie fijo que estorbe. -->
+    <div v-if="ov && mode === 'manage' && job.running.value && !selected.size" class="running" role="status">
+      <Download :size="20" aria-hidden="true" />
+      <span class="grow">
+        <strong>{{ t('content.progress', { done: progress.done, total: progress.total }) }}</strong>
+        <small v-if="progress.name">{{ t('content.progressNow', { name: progress.name, pct: progress.pct }) }}</small>
+        <span v-if="progress.ratio !== null" class="bar" aria-hidden="true"><span :style="{ width: `${progress.ratio * 100}%` }" /></span>
+      </span>
+      <button type="button" class="btn btn-danger" @click="job.stop()">{{ t('content.stop') }}</button>
+    </div>
+    <!-- El pie solo se queda fijo abajo cuando hay algo marcado que descargar. -->
+    <footer v-else-if="ov" class="foot" :class="{ sticky: mode === 'manage' && selected.size > 0 }">
       <span class="tot">
         <strong>{{ t('content.selected', { n: selected.size, size: formatBytes(selectedBytes) }) }}</strong>
         <small>{{ ov.freeBytes != null ? t('content.free', { size: formatBytes(ov.freeBytes) }) : '' }}</small>
@@ -508,6 +533,54 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
   align-items: center;
   gap: 0.3rem;
   font-weight: 700;
+}
+
+.running {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--info) 45%, var(--border));
+  background: color-mix(in srgb, var(--info) 9%, var(--surface));
+}
+
+.running > svg {
+  flex: none;
+  color: var(--info);
+}
+
+.running .grow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.running small {
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.running .bar {
+  display: block;
+  height: 4px;
+  margin-top: 0.15rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.running .bar > span {
+  display: block;
+  height: 100%;
+  background: var(--info);
+}
+
+.running .btn {
+  flex: none;
 }
 
 .foot.sticky {

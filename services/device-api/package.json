@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/device-api",
-  "version": "0.11.12",
+  "version": "0.11.13",
   "private": true,
   "type": "module",
   "description": "Servicio local de estado del dispositivo (solo lectura, solo loopback).",
@@ -13,6 +13,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@survival-os/shared-types": "0.11.12"
+    "@survival-os/shared-types": "0.11.13"
   }
 }

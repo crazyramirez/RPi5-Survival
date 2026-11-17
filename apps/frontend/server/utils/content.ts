@@ -1,7 +1,7 @@
 import { existsSync, promises as fs } from 'node:fs'
 import { totalmem } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import type { ContentCatalogItem, ContentDetails, ContentDetailsResponse, ContentItemStatus, ContentKiwixMeta, ContentOverview } from '@survival-os/shared-types'
+import type { ContentCatalogItem, ContentDetails, ContentDetailsResponse, ContentItemStatus, ContentKiwixMeta, ContentOverview, LibraryShelfMap } from '@survival-os/shared-types'
 import { jobStatus } from './admin'
 import { isPortable, portablePaths } from './portable'
 // Lógica común con el motor de descargas (mismos zooms y tamaños).
@@ -14,7 +14,7 @@ import { countryLand, countryMaxZoom, countryName, countryZones, estimateMapByte
 interface Catalog {
   updated: string
   groups: { id: string; title: string }[]
-  items: (ContentCatalogItem & { template?: string; zim?: { name: string; flavour: string }; maps?: { region: string; maxzoom?: number }; routing?: { tiles: string[] }; llm?: { model: string }; doc?: { file?: string; parts?: { file: string; title?: string }[] }; publisher?: string })[]
+  items: (ContentCatalogItem & { template?: string; zim?: { name: string; flavour: string }; maps?: { region: string; maxzoom?: number }; routing?: { tiles: string[] }; llm?: { model: string }; doc?: { file?: string; parts?: { file: string; title?: string }[] }; publisher?: string; topic?: string })[]
   models: Record<string, { file: string }>
 }
 
@@ -110,6 +110,33 @@ export async function contentDetails(lang = 'es'): Promise<ContentDetailsRespons
     }
   }
   return { items, kiwixFetched: kiwix.fetched ?? null }
+}
+
+/** Cómo se ordena la biblioteca: grupo de cada ZIM y tema de cada manual del catálogo, con títulos traducidos. */
+export async function libraryShelf(lang = 'es'): Promise<LibraryShelfMap> {
+  const d = dirs()
+  const catalog = await loadCatalog()
+  const tr = await catalogI18n(d.catalog, lang)
+  const title = (it: Catalog['items'][number]): string => tr.items?.[it.id]?.title ?? it.title
+  const description = (it: Catalog['items'][number]): string => tr.items?.[it.id]?.description ?? it.description
+  return {
+    groups: catalog.groups.map((g) => ({ id: g.id, title: tr.groups?.[g.id] ?? g.title })),
+    zims: catalog.items.flatMap((it) => it.kind === 'zim' && it.zim
+      ? [{ id: it.id, name: it.zim.name, group: it.group, title: title(it), description: description(it) }]
+      : []),
+    manuals: catalog.items.flatMap((it) => it.kind === 'doc' && it.doc
+      ? [{
+          id: it.id,
+          topic: it.topic ?? 'otros',
+          title: title(it),
+          description: description(it),
+          publisher: it.publisher ?? null,
+          lang: it.lang,
+          file: it.doc.parts ? null : (it.doc.file ?? null),
+          parts: it.doc.parts?.map((p) => ({ file: p.file, title: p.title?.trim().replace(/,$/, '') || p.file })) ?? null,
+        }]
+      : []),
+  }
 }
 
 /** Estado de cada elemento: lo que hay en disco manda; el registro del motor aporta progreso y errores. */

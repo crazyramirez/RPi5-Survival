@@ -5,6 +5,8 @@ import type { DimLevel } from '~/composables/useDisplaySettings'
 const t = useT()
 const { settings, panelOpen, update } = useDisplaySettings()
 const DIM_LEVELS: DimLevel[] = [0, 30, 60]
+// Android ya trae su teclado: el interruptor del teclado en pantalla no haría nada.
+const caps = usePlatformCaps()
 </script>
 
 <template>
@@ -63,7 +65,7 @@ const DIM_LEVELS: DimLevel[] = [0, 30, 60]
         </button>
       </div>
 
-      <div class="row">
+      <div v-if="caps.onScreenKeyboard" class="row">
         <Keyboard :size="22" aria-hidden="true" />
         <span class="label">{{ t('display.osk') }}</span>
         <button type="button" class="btn toggle" :aria-pressed="settings.osk" @click="update({ osk: !settings.osk })">

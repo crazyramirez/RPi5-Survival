@@ -952,5 +952,24 @@ export interface ContentOverview {
   setup: { state: 'pending' | 'completed' | 'skipped'; at: string | null }
 }
 
+/** Organización de la biblioteca (GET /api/content/shelf): de qué grupo es cada ZIM y de qué tema cada manual. */
+export interface LibraryShelfMap {
+  /** Grupos del catálogo con su título en el idioma pedido. */
+  groups: { id: string; title: string }[]
+  /** ZIM del catálogo: `name` es el prefijo del fichero (sin variante ni fecha). */
+  zims: { id: string; name: string; group: string; title: string; description: string }[]
+  /** Manuales en PDF: `file` si es un solo fichero; `parts` si es un libro por capítulos (carpeta manuales/<id>/). */
+  manuals: {
+    id: string
+    topic: string
+    title: string
+    description: string
+    publisher: string | null
+    lang: string
+    file: string | null
+    parts: { file: string; title: string }[] | null
+  }[]
+}
+
 export type * from './notes.ts'
 export type * from './places.ts'

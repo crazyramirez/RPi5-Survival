@@ -58,7 +58,8 @@ const ifaceIcon = (kind: string) => (kind === 'wifi' ? Wifi : kind === 'ethernet
           <dt>{{ t('ui.comms.activeIfaces') }}</dt>
           <dd class="mono">{{ net ? `${upCount} / ${interfaces.length}` : '—' }}</dd>
         </div>
-        <div>
+        <!-- Radio Wi-Fi: solo la Pi la controla; en la portable y en Android es cosa del sistema anfitrión. -->
+        <div v-if="!portable">
           <dt>{{ t('ui.comms.radio') }}</dt>
           <dd :class="net?.wifiRadio === 'enabled' ? 'tone-ok toned' : ''">{{ radioLabel }}</dd>
         </div>

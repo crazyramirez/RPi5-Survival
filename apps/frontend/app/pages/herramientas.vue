@@ -5,6 +5,9 @@ import { parseDecimalDegrees, toDms } from '~/utils/coords'
 
 const t = useT()
 const { status } = useDeviceStatus()
+const caps = usePlatformCaps()
+/** Tarjetas de «Hardware conectado» en esta plataforma (puertos y ESP32 siempre; entrada y brújula según el sistema). */
+const hwCount = computed(() => 2 + Number(caps.value.inputProbe) + Number(!caps.value.deviceCompass))
 const serial = computed(() => status.value?.serial)
 const input = computed(() => status.value?.input)
 
@@ -78,7 +81,7 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
 
     <!-- Hardware conectado -->
     <h2 class="ui-sec">{{ t('ui.tools.secHardware') }}</h2>
-    <div class="bento quad">
+    <div class="bento quad hw" :class="`hw-${hwCount}`">
       <AppCard
         :title="t('tools.serial')"
         :icon="Usb"
@@ -101,7 +104,9 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
         </template>
       </AppCard>
 
+      <!-- Dispositivos de entrada (/proc/bus/input): solo en Linux. -->
       <AppCard
+        v-if="caps.inputProbe"
         :title="t('tools.input')"
         :icon="Keyboard"
         :tone="devices.length ? 'info' : 'muted'"
@@ -122,7 +127,8 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
 
       <Esp32Card />
 
-      <AppCard :title="t('tools.compass')" :icon="Compass" tone="muted" :pill="t('state.unavailable')">
+      <!-- En tablets y móviles la brújula del dispositivo está en Navegación: aquí no se dice «no disponible». -->
+      <AppCard v-if="!caps.deviceCompass" :title="t('tools.compass')" :icon="Compass" tone="muted" :pill="t('state.unavailable')">
         <p>{{ t('tools.compass.none') }}</p>
       </AppCard>
     </div>
@@ -281,6 +287,22 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
 @media (min-width: 1500px) {
   .bento.quad {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* Hardware con menos de 4 tarjetas (Android, Windows, macOS): una fila sin huecos. */
+  .bento.hw-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .bento.hw-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Dos columnas con un número impar de tarjetas: la última ocupa la fila entera. */
+@media (min-width: 701px) and (max-width: 1499px) {
+  .bento.hw > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }
 

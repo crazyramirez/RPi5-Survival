@@ -36,6 +36,8 @@ const TEMP_SCALE_MAX_C = 90
 const t = useT()
 const config = useRuntimeConfig()
 const { status, lastOkAt, apiDown, alerts, ageSeconds, history } = useDeviceStatus()
+// Lo que esta plataforma no permite nunca no se muestra (utils/platform.ts); lo transitorio sigue como «no disponible».
+const caps = usePlatformCaps()
 
 // Tendencias medidas (memoria del navegador, últimos 15 min de sondeo).
 const trend = computed(() => ({
@@ -66,7 +68,18 @@ watch(lastOkAt, loadHealth)
 
 // ------------------------------------------------------------------ Estado global
 
-const KEY_PROBES = ['cpu', 'memory', 'storage', 'power', 'time', 'display', 'input', 'services'] as const
+type KeyProbe = 'cpu' | 'memory' | 'storage' | 'power' | 'time' | 'display' | 'input' | 'services'
+/** Medidas clave que esta plataforma puede dar: las imposibles no cuentan como «sin dato». */
+const keyProbes = computed<KeyProbe[]>(() => {
+  const c = caps.value
+  const list: KeyProbe[] = ['memory', 'storage', 'time']
+  if (c.cpuProbe === 'yes') list.push('cpu')
+  if (c.piHardware) list.push('power')
+  if (c.displayProbe) list.push('display')
+  if (c.inputProbe) list.push('input')
+  if (c.systemd) list.push('services')
+  return list
+})
 
 const hero = computed(() => {
   const list = alerts.value
@@ -75,7 +88,7 @@ const hero = computed(() => {
   }
   if (list.length === 0) {
     // "En orden" solo afirma lo medido: si faltan medidas clave se dice cuántas.
-    const missing = s.value ? KEY_PROBES.filter((k) => s.value![k].state !== 'ok').length : 0
+    const missing = s.value ? keyProbes.value.filter((k) => s.value![k].state !== 'ok').length : 0
     return {
       tone: (missing ? 'info' : 'ok') as Tone,
       icon: ShieldCheck,
@@ -115,6 +128,10 @@ const deviceApiTone = computed<Tone | undefined>(() =>
 // ------------------------------------------------------------------ Medidores
 
 const cpu = computed(() => (s.value?.cpu.state === 'ok' ? s.value.cpu.value : null))
+// Temperatura y carga: siempre en Linux; en Android solo si el fabricante deja leerlas; nunca en Windows/macOS.
+const showTemp = computed(() => caps.value.cpuProbe === 'yes' || (caps.value.cpuProbe === 'maybe' && cpu.value?.temperatureC != null))
+const showLoad = computed(() => caps.value.cpuProbe === 'yes' || (caps.value.cpuProbe === 'maybe' && cpu.value !== null))
+const gaugeCount = computed(() => 2 + Number(showTemp.value) + Number(showLoad.value))
 const tempTone = computed<Tone | undefined>(() => {
   const c = cpu.value?.temperatureC
   if (c == null) return undefined
@@ -123,7 +140,8 @@ const tempTone = computed<Tone | undefined>(() => {
 const fanSub = computed(() => {
   const f = s.value?.fan
   if (!f) return null
-  if (f.state !== 'ok') return t('sys.g.noFan')
+  // Ventilador PWM: solo la Pi tiene uno que se pueda leer.
+  if (f.state !== 'ok') return caps.value.piHardware ? t('sys.g.noFan') : null
   return f.value.pwm != null
     ? t('sys.g.fanPwm', { rpm: f.value.rpm, pwm: Math.round((f.value.pwm / 255) * 100) })
     : t('sys.g.fan', { rpm: f.value.rpm })
@@ -370,7 +388,7 @@ async function displayOff(): Promise<void> {
           <span v-if="hero.more" class="more">{{ t('sys.hero.more', { n: hero.more }) }}</span>
         </p>
         <p class="hero-id mono">
-          {{ s?.platform.model ?? s?.platform.os ?? '—' }}<template v-if="s?.platform.hostname"> · {{ s.platform.hostname }}</template>
+          {{ s?.platform.model ?? s?.platform.os ?? '—' }}<template v-if="caps.hostname && s?.platform.hostname"> · {{ s.platform.hostname }}</template>
         </p>
       </div>
       <dl class="hero-stats">
@@ -389,9 +407,10 @@ async function displayOff(): Promise<void> {
       </dl>
     </section>
 
-    <!-- Recursos -->
-    <div class="gauges">
+    <!-- Recursos: solo los medidores que esta plataforma puede dar; la rejilla se ajusta a cuántos son. -->
+    <div class="gauges" :class="`n-${gaugeCount}`">
       <SysGauge
+        v-if="showTemp"
         :label="t('sys.g.temp')" :icon="Thermometer"
         :ratio="cpu?.temperatureC != null ? cpu.temperatureC / TEMP_SCALE_MAX_C : null"
         :value="cpu?.temperatureC != null ? formatNumber(cpu.temperatureC, 1) : null" unit="°C"
@@ -399,6 +418,7 @@ async function displayOff(): Promise<void> {
         :sub="cpu ? fanSub : (s?.cpu.state !== 'ok' ? translateServer(s?.cpu.reason) : null)"
       />
       <SysGauge
+        v-if="showLoad"
         :label="t('sys.g.load')" :icon="Activity"
         :ratio="loadRatio" :value="cpu ? formatNumber(cpu.load1, 2) : null"
         :unit="cpu ? t('sys.g.loadUnit', { n: cpu.cores }) : undefined" :tone="loadTone"
@@ -410,7 +430,7 @@ async function displayOff(): Promise<void> {
         :sub="mem ? t('sys.memory.of', { avail: formatBytes(mem.availableBytes), total: formatBytes(mem.totalBytes) }) : (s?.memory.state !== 'ok' ? translateServer(s?.memory.reason) : null)"
       />
       <SysGauge
-        :label="rootMount ? t('sys.g.disk', { mount: rootMount.mount }) : t('sys.storage')" :icon="HardDrive"
+        :label="rootMount && rootMount.mount.length <= 12 ? t('sys.g.disk', { mount: rootMount.mount }) : t('sys.storage')" :icon="HardDrive"
         :ratio="rootMount ? usageRatio(rootMount.totalBytes, rootMount.availableBytes) : null"
         :value="rootMount ? pct(usageRatio(rootMount.totalBytes, rootMount.availableBytes)) : null"
         :unit="t('sys.g.used')"
@@ -420,12 +440,14 @@ async function displayOff(): Promise<void> {
     </div>
 
     <!-- Tendencias -->
-    <div class="trends">
+    <div class="trends" :class="`n-${gaugeCount - 1}`">
       <SysSparkline
+        v-if="showTemp"
         :label="t('sys.g.temp')" :values="trend.temp" :min="30" :max="90" :mark="TEMP_WARN_C"
         :value="cpu?.temperatureC != null ? formatNumber(cpu.temperatureC, 1) : null" unit="°C" :tone="tempTone" :span="trendSpan"
       />
       <SysSparkline
+        v-if="showLoad"
         :label="t('sys.g.load')" :values="trend.load" :min="0" :max="100" :mark="80"
         :value="pct(loadRatio)" unit="%" :tone="loadTone" :span="trendSpan"
       />
@@ -444,7 +466,8 @@ async function displayOff(): Promise<void> {
           <h3>{{ t('sys.power') }}</h3>
           <StatePill v-if="power" :tone="powerTone" :label="throttleIssues?.length ? t('sys.review') : t('state.ok')" />
         </header>
-        <ProbeNote :probe="s?.power" />
+        <!-- Tensión y limitación (vcgencmd): solo en la Pi. Fuera de ella el panel es la batería y el cargador. -->
+        <ProbeNote v-if="caps.piHardware" :probe="s?.power" />
         <template v-if="power">
           <p class="figure">
             <span class="num mono">{{ power.inputVoltageV != null ? formatNumber(power.inputVoltageV, 2) : '—' }}</span>
@@ -492,7 +515,7 @@ async function displayOff(): Promise<void> {
             :label="t('sys.time.lastStep')"
             :value="t('sys.time.lastStepValue', { d: formatDuration(Math.abs(time.lastStep.deltaS)), dir: time.lastStep.deltaS > 0 ? t('sys.time.forward') : t('sys.time.back'), src: t(`bar.time.${time.lastStep.source}` as MessageKey), when: timeAgo(time.lastStep.at) })"
           />
-          <button type="button" class="btn time-check" :disabled="timeCheck.running.value" @click="checkTimeNow">
+          <button v-if="caps.clockControl" type="button" class="btn time-check" :disabled="timeCheck.running.value" @click="checkTimeNow">
             <RefreshCw :size="18" aria-hidden="true" :class="{ spin: timeCheck.running.value }" /> {{ t('sys.time.checkNow') }}
           </button>
           <p v-if="timeCheckText" class="time-check-msg" role="status">{{ timeCheckText }}</p>
@@ -505,7 +528,8 @@ async function displayOff(): Promise<void> {
         />
       </section>
 
-      <section class="panel" :class="`tone-${displayTone}`">
+      <!-- Pantallas (DRM) y táctil: Android, Windows y macOS no los exponen a las apps. -->
+      <section v-if="caps.displayProbe" class="panel" :class="`tone-${displayTone}`">
         <header class="ph">
           <span class="ph-icon"><Monitor :size="18" aria-hidden="true" /></span>
           <h3>{{ t('sys.display') }}</h3>
@@ -555,7 +579,8 @@ async function displayOff(): Promise<void> {
         </template>
       </section>
 
-      <section class="panel" :class="`tone-${servicesTone}`">
+      <!-- Unidades systemd: solo en la instalación de sistema (la portable y Android lanzan sus servicios). -->
+      <section v-if="caps.systemd" class="panel" :class="`tone-${servicesTone}`">
         <header class="ph">
           <span class="ph-icon"><Layers :size="18" aria-hidden="true" /></span>
           <h3>{{ t('sys.services') }}</h3>
@@ -578,7 +603,7 @@ async function displayOff(): Promise<void> {
           <h3>{{ t('sys.platform') }}</h3>
         </header>
         <KvRow :label="t('sys.model')" :value="s?.platform.model ?? s?.platform.os ?? null" />
-        <KvRow :label="t('sys.hostname')" :value="s?.platform.hostname ?? null" mono />
+        <KvRow v-if="caps.hostname" :label="t('sys.hostname')" :value="s?.platform.hostname ?? null" mono />
         <KvRow :label="t('sys.kernel')" :value="s?.platform.kernel ?? null" mono />
         <KvRow :label="t('sys.services.web')" :value="`v${config.public.version}`" tone="ok" mono />
         <KvRow :label="t('sys.services.device')" :value="deviceApiLabel" :tone="deviceApiTone" />
@@ -597,10 +622,10 @@ async function displayOff(): Promise<void> {
         </button>
         <button type="button" class="ctl ctl-danger tone-danger" @click="quitPending = true">
           <Power :size="24" aria-hidden="true" />
-          <span><strong>{{ t('portable.quit') }}</strong><small>{{ t('portable.quitHint') }}</small></span>
+          <span><strong>{{ t('portable.quit') }}</strong><small>{{ t(caps.android ? 'android.quitHint' : 'portable.quitHint') }}</small></span>
         </button>
         <!-- Desde una memoria USB (ADR 0019): cerrar y expulsarla con seguridad. -->
-        <button v-if="usb?.volume.removable" type="button" class="ctl ctl-danger tone-danger" @click="ejectPending = true">
+        <button v-if="!caps.android && usb?.volume.removable" type="button" class="ctl ctl-danger tone-danger" @click="ejectPending = true">
           <Unplug :size="24" aria-hidden="true" />
           <span><strong>{{ t('usb.eject') }}</strong><small>{{ t('usb.ejectHint') }}</small></span>
         </button>
@@ -903,10 +928,27 @@ async function displayOff(): Promise<void> {
   margin-top: var(--gap);
 }
 
+.trends.n-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.trends.n-1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 4 medidores en la Pi; 3 o 2 donde la plataforma no da temperatura o carga (Android, Windows, macOS). */
 .gauges {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--gap);
+}
+
+.gauges.n-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gauges.n-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* ------------------------------------------------------------ Secciones */
@@ -1044,6 +1086,12 @@ async function displayOff(): Promise<void> {
   justify-content: space-between;
   gap: 0.6rem;
   font-size: 0.875rem;
+}
+
+/* Rutas largas (Android: /storage/emulated/0/Android/data/…) se cortan en vez de ensanchar la tarjeta. */
+.mount-row .mono {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .meter {
@@ -1285,11 +1333,18 @@ async function displayOff(): Promise<void> {
     border-left: none;
   }
 
-  .gauges {
+  .gauges,
+  .gauges.n-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .trends {
+  /* Número impar de medidores: el último ocupa la fila entera (sin hueco). */
+  .gauges > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .trends,
+  .trends.n-2 {
     grid-template-columns: minmax(0, 1fr);
   }
 

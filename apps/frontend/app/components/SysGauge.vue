@@ -146,10 +146,14 @@ const ticks = computed(() => (props.marks ?? []).map((m) => ({ a: polar(m, R + 6
 }
 
 .label {
+  max-width: 100%;
   margin-top: -0.6rem;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sub {

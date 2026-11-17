@@ -31,6 +31,10 @@ const RESOURCES = [
   /^\/api\/health$/,
   /^\/api\/maps\/?$/,
   /^\/api\/library\/(status|books)$/,
+  // Categorías de la estantería: solo lee el catálogo público (content/catalog.json).
+  /^\/api\/content\/shelf$/,
+  // Categorías de la estantería: solo lee el catálogo público (content/catalog.json).
+  /^\/api\/content\/shelf$/,
   /^\/api\/library\/protocols(\/[a-z0-9-]{1,80})?$/,
   // Buscador de lugares: nombres de los propios mapas, sin datos personales (la referencia es el centro del mapa).
   /^\/api\/library\/places\/search$/,

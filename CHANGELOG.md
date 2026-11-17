@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.11.13 — 2026-11-17 · Biblioteca por categorías
+
+### Añadido
+- **Biblioteca ordenada por categorías**, con tres pestañas: Enciclopedias, Manuales y Mis documentos. Cada pestaña tiene
+  categorías en una barra lateral (o en una tira en móviles) y un filtro rápido por título.
+  - **Enciclopedias:** por tema (salud, preparación, referencia, oficios, libros).
+  - **Manuales en PDF:** por tema (medicina, mujer y niños, salud mental, agua, huerto, emergencias, supervivencia,
+    radio). Los libros por capítulos ocupan **una sola tarjeta** que abre su índice, en lugar de decenas de filas.
+  - **Mis documentos:** por carpeta, con filtro por tipo (PDF, MD, TXT, HTML) y orden por nombre, fecha o tamaño.
+- Cada versión (Pi, portable y Android) **oculta lo que esa plataforma no puede hacer** (temperatura de CPU en
+  Android, servicios, pantalla y radio Wi-Fi fuera de la Pi…) y recoloca el resto sin huecos.
+
+### Corregido
+- **Android:** elegir el GPS de la tablet o un GPS por USB en Mantenimiento daba «Puerto no válido».
+- **Mantenimiento:** las tarjetas de resumen (Red, Hora, Biblioteca, Asistente) ya no pierden el borde inferior.
+- **Mantenimiento:** con una descarga en marcha, en lugar de un panel fijo con «0 seleccionados» aparece el progreso
+  real (cuántos están listos, qué se descarga y el %) con «Detener descargas».
+- **Sistema (Android):** la ruta larga del disco ya no desborda la tarjeta ni crea desplazamiento horizontal.
+
 ## 0.11.12 — 2026-11-17 · Emergencias con el mismo aspecto que el resto
 
 ### Corregido

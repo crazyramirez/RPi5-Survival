@@ -42,16 +42,55 @@ Pregunta solo lo que no sepas. Con estas respuestas eliges el camino:
 | (b) ¿Cuál es su **IP** (o nombre, p. ej. `raspberrypi.local`) y su **usuario**? | Acceso SSH |
 | ¿En qué **idioma** la quieres? (es, en, fr, it) | Ajustes por defecto |
 | ¿En qué **país** estás o vas a usarla? | Mapas y contenidos por defecto |
-| ¿Quieres **descargarlo todo** ahora? (puede ocupar 40–60 GB y tardar horas) | Descargas |
+| ¿Quieres **descargarlo todo** ahora? (suele ocupar 40–80 GB según idioma y país, y tardar horas; `download` da la cifra exacta) | Descargas |
 
-Ejecuta todo **desde la raíz de este repositorio**. Empieza siempre con:
+Ejecuta todo **desde la raíz de este repositorio**. Si aún no lo tienes (la persona te lo pide desde otra carpeta):
+
+```sh
+git clone --depth 1 https://github.com/crazyramirez/Survivelia-OS.git
+cd Survivelia-OS
+```
+
+Sin `git`: descargar <https://github.com/crazyramirez/Survivelia-OS/archive/refs/heads/main.zip>, descomprimir y
+entrar en la carpeta. Empieza siempre con:
 
 ```sh
 npm run express -- doctor
 ```
 
-`doctor` dice qué falta en este ordenador (Node 24.15 o posterior, dependencias, cliente SSH…). Si falta Node,
-indica a la persona cómo instalarlo (<https://nodejs.org>, versión LTS 24 o posterior) y espera.
+`doctor` dice qué hay en este ordenador y qué falta:
+
+- Node, dependencias y cliente SSH;
+- `adb` y los Android conectados;
+- la portable de `~/Survivelia OS`, si ya está;
+- la última versión publicada, con su firma verificada.
+
+Si falta Node, indica a la persona cómo instalarlo (<https://nodejs.org>, versión LTS 24 o posterior) y espera.
+
+### De dónde sale la app: `--release` (recomendado) o compilar
+
+`portable`, `pi` y `android` pueden obtener la app de dos formas:
+
+| | `--release` | sin `--release` |
+|---|---|---|
+| Qué hace | Descarga la última versión **publicada** en GitHub | Compila este código |
+| Verificación | Firma Ed25519 del manifiesto + SHA-256 del fichero | — |
+| Necesita | Node e Internet | Node 24.15+, `npm install`, varios minutos (Android: JDK, SDK, NDK y Go) |
+| Cuándo | **Siempre que haya Internet** al instalar a una persona | Sin Internet, o al desarrollar (cambios aún sin publicar) |
+
+Las descargas se guardan en la carpeta temporal del sistema (`survival-os-express/`) y se reutilizan.
+
+### Dónde está el equipo (DESTINO)
+
+`defaults`, `status`, `download` y `update` necesitan saber a qué Survivelia OS hablar:
+
+| Opción | Equipo |
+|---|---|
+| `--host <IP> --user <usuario>` | Pi o Linux por SSH |
+| `--local` | Este mismo Linux (el agente corre en la propia Pi) |
+| `--dest <carpeta>` | La portable de esa carpeta (lee el puerto de `data/run.json`; tiene que estar abierta) |
+| `--url http://127.0.0.1:<puerto>` | Cualquiera en este equipo |
+| (nada) | La portable de `~/Survivelia OS`, si está abierta |
 
 ---
 
@@ -77,34 +116,38 @@ indica a la persona cómo instalarlo (<https://nodejs.org>, versión LTS 24 o po
 Es lo más fácil: no instala nada en el sistema.
 
 ```sh
-npm run express -- portable                       # genera la portable de este sistema, la copia a ~/Survivelia OS y la abre
-npm run express -- portable --dest "D:\Survivelia OS"   # otra carpeta, p. ej. una memoria USB
-npm run express -- portable --install             # además la instala en el equipo con acceso directo (sin administrador)
-npm run express -- portable --no-open             # solo prepararla
+npm run express -- portable --release             # descarga la portable de este sistema, la copia a ~/Survivelia OS y la abre
+npm run express -- portable --release --dest "E:\Survivelia OS"   # otra carpeta, p. ej. una memoria USB
+npm run express -- portable --release --all-systems --dest "E:\Survivelia OS"   # USB que sirve en Windows, macOS y Linux
+npm run express -- portable --release --install   # además la instala en el equipo con acceso directo (sin administrador)
+npm run express -- portable --release --no-open   # solo prepararla
+npm run express -- stop                           # cerrarla (como su botón «Cerrar Survivelia OS»)
 ```
 
-- La primera compilación tarda unos minutos.
-- Si la carpeta de destino ya existe, se actualiza **sin tocar** `data/` (mapas, documentos, descargas).
-- Se abre en una ventana propia con la **bienvenida**: idioma, país y «Descargarlo todo».
+- Sin `--release` la compila desde el código (unos minutos).
+- Si la carpeta de destino ya existe, se actualiza **sin tocar** `data/` (mapas, documentos, descargas). Si está
+  abierta, `portable` se niega: ciérrala antes con `stop --dest <carpeta>`.
+- Se abre en una ventana propia con la **bienvenida**: idioma, país y «Descargarlo todo». `portable` espera a que
+  responda, así que se puede seguir directamente con los comandos de abajo.
 
-**Configurar sin tocar la pantalla** (opcional), con la app abierta:
+**Configurar sin tocar la pantalla** (opcional), con la app abierta. Para `~/Survivelia OS` no hace falta indicar
+destino; para otra carpeta, añade `--dest "<carpeta>"`:
 
 ```sh
-npm run express -- defaults --dest "<carpeta>" --lang fr --country fra     # idioma y país por defecto
-npm run express -- status   --url http://127.0.0.1:47800                   # estado
-npm run express -- download --url http://127.0.0.1:47800                   # ver el plan de «Descargarlo todo»
-npm run express -- download --url http://127.0.0.1:47800 --yes             # lanzarlo (tras confirmar con la persona)
+npm run express -- defaults --lang fr --country fra    # idioma y país por defecto
+npm run express -- status                              # estado y descargas en curso
+npm run express -- download                            # ver el plan de «Descargarlo todo»
+npm run express -- download --yes                      # lanzarlo (tras confirmar con la persona)
+npm run express -- status --watch                      # seguir el progreso cada 30 s hasta que termine
 ```
-
-`47800` es el puerto habitual de la portable. Si estaba ocupado, el puerto real está en `<carpeta>/data/run.json`.
 
 **Actualizaciones:** la portable se actualiza sola desde GitHub (modo «Automática»): descarga la versión nueva, la
 verifica y la aplica **al cerrar** Survivelia OS. Si no arranca, vuelve sola a la anterior. Para comprobarlo o
 instalar ya:
 
 ```sh
-npm run express -- update --url http://127.0.0.1:47800 --check         # estado y «Buscar ahora»
-npm run express -- update --url http://127.0.0.1:47800 --yes           # instalar ya (tras confirmar con la persona)
+npm run express -- update --check         # estado y «Buscar ahora»
+npm run express -- update --yes           # instalar ya (tras confirmar con la persona)
 ```
 
 Avisos que puedes dar:
@@ -155,10 +198,14 @@ Guía a la persona; esto no se puede hacer desde aquí:
 ### 5.3 Instalar (o actualizar)
 
 ```sh
-npm run express -- pi --host <IP> --user <usuario>               # comprueba y describe (no cambia nada)
-npm run express -- pi --host <IP> --user <usuario> --yes         # compila, copia, instala y verifica
-npm run express -- pi --host <IP> --user <usuario> --yes --reboot   # y reinicia para arrancar en modo quiosco
+npm run express -- pi --host <IP> --user <usuario> --release                 # comprueba y describe (no cambia nada)
+npm run express -- pi --host <IP> --user <usuario> --release --yes           # descarga, copia, instala y verifica
+npm run express -- pi --host <IP> --user <usuario> --release --yes --reboot  # y reinicia para arrancar en modo quiosco
 ```
+
+- Sin `--release`, compila y empaqueta este código en lugar de descargar la versión publicada.
+- **Si el agente corre en la propia Pi** (o en el Linux donde se instala), cambia `--host … --user …` por `--local`:
+  no hace falta SSH. Lo mismo vale después para `defaults`, `status`, `download` y `update`.
 
 **Qué comprueba antes de instalar:**
 
@@ -168,8 +215,8 @@ npm run express -- pi --host <IP> --user <usuario> --yes --reboot   # y reinicia
 
 **Qué hace al instalar:**
 
-- compila y empaqueta (`release/survival-os-X.Y.Z.tar.gz`);
-- lo copia junto con `install-system.sh`, verifica su SHA-256 e instala en `/opt/survival-os`;
+- obtiene el paquete `survival-os-X.Y.Z.tar.gz`: lo descarga y verifica (`--release`) o lo compila;
+- lo copia, comprueba su SHA-256 e instala en `/opt/survival-os` con el `install-system.sh` del propio paquete;
 - comprueba que responde (`/api/health`).
 
 Los datos y la configuración existentes **se conservan**; también se conserva la versión anterior.
@@ -187,6 +234,7 @@ ordenadores, la portable suele ser mejor opción.
 | 2 | Uso incorrecto | Revisar los argumentos |
 | 3 | Falta acceso SSH | Volver a la sección 5.2 |
 | 4 | Falta sudo sin contraseña | `express` imprime el arreglo, que la persona ejecuta en la Pi |
+| 5 | (`android`) No hay ningún Android por adb | El APK quedó preparado: copiarlo a mano (sección 6.2) |
 
 ### 5.4 Configurar y descargar
 
@@ -195,7 +243,11 @@ npm run express -- defaults --host <IP> --user <usuario> --lang es --country esp
 npm run express -- status   --host <IP> --user <usuario>
 npm run express -- download --host <IP> --user <usuario>          # muestra el plan (qué, cuánto ocupa, qué no cabe)
 npm run express -- download --host <IP> --user <usuario> --yes    # lanza «Descargarlo todo» (confirmar antes)
+npm run express -- status   --host <IP> --user <usuario> --watch  # seguir el progreso hasta que termine
 ```
+
+- `download` sin opciones usa el idioma y país por defecto del equipo. Para otros: `--lang fr --country fra`.
+  `--recommended` deja fuera lo menos útil. El plan dice la cifra exacta antes de lanzar nada.
 
 - **Idioma y país por defecto:** se guardan en `/etc/survival-os/defaults.json` y la pantalla los aplica si nadie eligió
   otros. Códigos de país: tres letras (`esp`, `fra`, `ita`, `usa`, `mex`…), en `content/countries.json`.
@@ -222,34 +274,42 @@ npm run express -- download --host <IP> --user <usuario> --yes    # lanza «Desc
 Lo que se necesita:
 
 - **El dispositivo:** Android 10 o posterior, de 64 bits (casi todos desde 2019).
-- **Espacio:** el que se quiera descargar (40–60 GB para todo); una microSD sirve.
+- **Espacio:** el que se quiera descargar (40–80 GB para todo, según idioma y país); una microSD sirve.
 - **Memoria:** con 3–4 GB de RAM, el asistente usa el modelo ligero; se elige solo.
 
-### 6.1 Conseguir el APK
+### 6.1 Con `express` (recomendado)
 
-- **Publicado:** `survival-os-X.Y.Z-android-arm64.apk` (y su `.sha256`) en las Releases del repositorio.
-- **Desde el código** (necesita JDK 17+, Android SDK, NDK y Go; instalarlos ocupa unos 7 GB):
+```sh
+npm run express -- android --release          # detecta el dispositivo por adb y describe (no cambia nada)
+npm run express -- android --release --yes    # descarga y verifica el APK, lo instala y abre la app
+```
 
-  ```sh
-  npm run build && npm run release:android      # → release/survival-os-X.Y.Z-android-arm64.apk
-  ```
+- Elige solo la arquitectura (arm64 o x86_64) y comprueba que el Android sea 10 o posterior.
+- **Sin `adb` o sin dispositivo:** con `--yes` deja el APK verificado preparado, dice dónde está y sale con código
+  5; la persona lo copia a la tablet (sección 6.2, «Sin ordenador»).
+- Otras opciones:
+  - `--serial <id>` si hay varios dispositivos;
+  - `--abi arm64|x86_64` para forzar la arquitectura;
+  - `--apk <fichero>` para instalar un APK que ya tienes (comprueba su `.sha256` si está al lado).
+- Si Android dice que la app instalada **está firmada con otra clave**, `express` lo explica y se para. Desinstalarla
+  borra sus datos internos (no los de la carpeta SurvivalOS o la microSD): pregunta antes a la persona.
 
-  La primera vez descarga y prepara los binarios nativos (`android/scripts/natives.mjs`) y crea la clave de firma
-  en `.data/android-keystore.jks`. **Avisa a la persona de que la guarde:** sin ella no se puede actualizar la app ya
-  instalada.
+**`adb`** viene en las Android SDK Platform-Tools (<https://developer.android.com/tools/releases/platform-tools>);
+`doctor` lo busca en el PATH y en las rutas habituales del SDK.
 
-### 6.2 Instalarlo
+**Desde el código** (sin `--release`; necesita JDK 17+, Android SDK, NDK y Go, unos 7 GB): la primera vez descarga y
+prepara los binarios nativos (`android/scripts/natives.mjs`) y crea la clave de firma en `.data/android-keystore.jks`.
+**Avisa a la persona de que la guarde:** sin ella no se puede actualizar la app ya instalada.
 
-- **Por cable (recomendado si hay `adb`):**
+### 6.2 A mano
+
+- **Publicado:** `survival-os-X.Y.Z-android-arm64.apk` (y su `.sha256`) en las Releases del repositorio:
+  <https://github.com/crazyramirez/Survivelia-OS/releases/latest>.
+- **Por cable:**
   1. La persona activa la *Depuración USB*: Ajustes → Información del teléfono → pulsar 7 veces «Número de
      compilación» → Opciones de desarrollador → Depuración USB.
   2. Conecta el cable y acepta el aviso en la tablet.
-  3. Instala con:
-
-     ```sh
-     adb install -r release/survival-os-X.Y.Z-android-arm64.apk
-     ```
-
+  3. `adb install -r survival-os-X.Y.Z-android-arm64.apk`
 - **Sin ordenador:** copiar el APK a la tablet (USB, microSD, descarga) y abrirlo. Android pedirá permitir
   «instalar apps desconocidas» para el gestor de archivos o el navegador.
 
@@ -324,7 +384,65 @@ cabecera `x-survival-action: 1`.
 
 ---
 
-## 9. Cómo presentar el resultado a la persona
+## 9. Recetas completas
+
+Cada receta, de principio a fin. Los pasos con `--yes` cambian algo: **confírmalos antes con la persona**.
+
+**«Instálamelo en este ordenador, en francés para Francia, y descárgalo todo»**
+
+```sh
+npm run express -- doctor
+npm run express -- portable --release --install        # descarga, instala con acceso directo y abre
+npm run express -- defaults --lang fr --country fra
+npm run express -- download                            # enseña el plan (tamaño, qué no cabe) → confirmar
+npm run express -- download --yes
+npm run express -- status --watch                      # opcional: seguir hasta que termine
+```
+
+**«Prepárame un USB que funcione en cualquier ordenador»** (la app ocupa unos cientos de MB; los contenidos, aparte):
+
+```sh
+npm run express -- portable --release --all-systems --dest "E:\Survivelia OS" --no-open
+```
+
+Para llenarlo de contenidos, ábrelo desde el USB (`Abrir Survivelia OS`) y sigue con `defaults`, `download`… con
+`--dest "E:\Survivelia OS"`.
+
+**«Instálalo en mi Raspberry Pi y déjala lista»**
+
+```sh
+npm run express -- ssh-setup --host <IP> --user <usuario>                    # una vez (sección 5.2)
+npm run express -- pi --host <IP> --user <usuario> --release                 # describe → confirmar
+npm run express -- pi --host <IP> --user <usuario> --release --yes --reboot
+npm run express -- defaults --host <IP> --user <usuario> --lang es --country esp
+npm run express -- download --host <IP> --user <usuario>                     # plan → confirmar
+npm run express -- download --host <IP> --user <usuario> --yes
+```
+
+**El agente corre en la propia Pi:** las mismas órdenes con `--local` en lugar de `--host … --user …`, sin
+`ssh-setup`.
+
+**«Instálalo en mi tablet»**
+
+```sh
+npm run express -- android --release           # ¿se ve la tablet? (si no: Depuración USB, sección 6.2)
+npm run express -- android --release --yes
+```
+
+Después la persona sigue la sección 6.3 en la pantalla. La descarga de contenidos se lanza desde la bienvenida.
+
+**«¿Está al día? Actualízalo»**
+
+```sh
+npm run express -- update --check                           # portable de este equipo; --host/--local para una Pi
+npm run express -- update --yes
+```
+
+En Android, actualizar es volver a ejecutar `android --release --yes`.
+
+---
+
+## 10. Cómo presentar el resultado a la persona
 
 Al terminar, di en pocas líneas y en su idioma:
 

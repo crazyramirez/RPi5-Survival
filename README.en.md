@@ -94,19 +94,24 @@ gemini -i "Set up Survivelia OS in French for France and download everything"
 - **Raspberry Pi or Linux:**
   - guides you through preparing the card with Raspberry Pi Imager and finding the IP address;
   - sets up SSH access; you type the password yourself, once;
-  - builds, installs, verifies and reboots into kiosk mode.
-- **Portable version:** builds it for your system (Windows, macOS or Linux), copies it wherever you say (a USB drive
-  too) and opens it or installs it with a shortcut.
-- **Configuration:** language, country, "Download everything", device status and updates.
+  - downloads the latest published version (signature verified), installs it, checks it and reboots into kiosk mode;
+  - also when the assistant runs on the Pi itself, without SSH.
+- **Portable version:** downloads it for your system (Windows, macOS or Linux) or for all of them, copies it wherever
+  you say (a USB drive too) and opens it or installs it with a shortcut.
+- **Android:** downloads the APK, installs it over USB with `adb` and opens the app; without a cable, it leaves it
+  ready to copy.
+- **Configuration:** language, country, "Download everything" (and its progress), device status and updates.
 - **Safety:** before installing or starting large downloads it tells you what it is about to do and waits for your
   confirmation. It never stores passwords.
 
-**No AI assistant?** The same steps, one command each (requires [Node 24](https://nodejs.org) or later):
+**No AI assistant?** The same steps, one command each (requires [Node](https://nodejs.org); `--release` downloads the
+published version, no build needed):
 
 ```sh
 npm run express -- doctor                                         # what this computer is missing
-npm run express -- portable                                       # portable version for this computer, ready and open
-npm run express -- pi --host 192.168.1.50 --user pi --yes --reboot  # install on a Raspberry Pi over SSH
+npm run express -- portable --release                             # portable version for this computer, ready and open
+npm run express -- pi --host 192.168.1.50 --user pi --release --yes --reboot  # install on a Raspberry Pi over SSH
+npm run express -- android --release --yes                        # install on the tablet connected over USB
 npm run express -- download --host 192.168.1.50 --user pi --yes   # "Download everything" on the Pi
 npm run express -- update --host 192.168.1.50 --user pi --check   # is there a new version?
 ```

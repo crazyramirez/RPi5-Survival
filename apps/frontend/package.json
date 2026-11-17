@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/frontend",
-  "version": "0.11.11",
+  "version": "0.11.12",
   "private": true,
   "type": "module",
   "description": "Interfaz táctil offline (Nuxt) para pantalla HDMI de 7\".",
@@ -23,7 +23,7 @@
     "vue": "^3.5.45"
   },
   "devDependencies": {
-    "@survival-os/shared-types": "0.11.11",
+    "@survival-os/shared-types": "0.11.12",
     "vue-tsc": "^3.3.14"
   }
 }

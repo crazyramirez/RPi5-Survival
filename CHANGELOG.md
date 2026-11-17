@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.12 — 2026-11-17 · Emergencias con el mismo aspecto que el resto
+
+### Corregido
+- **Emergencias, lector de guías y visor** ya no cambian la barra inferior de botones, la barra de estado ni los
+  colores y tamaños de letra al entrar: se ven igual que las demás pantallas.
+
 ## 0.11.11 — 2026-11-17 · GPS más rápido sin Internet
 
 ### Añadido

@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/library",
-  "version": "0.11.11",
+  "version": "0.11.12",
   "private": true,
   "type": "module",
   "description": "Biblioteca offline: protocolos, documentos propios (FTS5) y pasarela de búsqueda Kiwix. Solo loopback.",
@@ -13,6 +13,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@survival-os/shared-types": "0.11.11"
+    "@survival-os/shared-types": "0.11.12"
   }
 }

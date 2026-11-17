@@ -37,31 +37,9 @@ const route = useRoute()
   height: 100dvh;
 }
 
-/* La composición de catálogo conserva las proporciones de la propuesta sin cambiar las otras pantallas. */
+/* Catálogos (emergencias, lector, visor): solo un borde algo más visible; barras y paleta iguales que el resto. */
 .shell-guide {
-  background: var(--bg);
-  --bar-h: 44px;
-  --action-h: 96px;
   --guide-border: color-mix(in srgb, var(--text) 25%, var(--border));
-  --actions-padding: 5px 14px 17px;
-  --actions-gap: 12px;
-  --actions-font-size: 1.25rem;
-  --actions-icon-size: 30px;
-  --status-font-size: 0.95rem;
-  --status-clock-size: 1.25rem;
-  --status-version-display: none;
-  --status-detail-display: none;
-}
-@media (max-width: 1150px), (max-height: 700px) {
-  .shell-guide {
-    --action-h: 68px;
-    --actions-padding: 7px 10px;
-    --actions-gap: 8px;
-    --actions-font-size: 1.05rem;
-    --actions-icon-size: 26px;
-    --status-font-size: 0.875rem;
-    --status-clock-size: 1.15rem;
-  }
 }
 
 .content {

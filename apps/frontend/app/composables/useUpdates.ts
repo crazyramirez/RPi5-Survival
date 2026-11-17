@@ -1,5 +1,6 @@
 import type { UpdateMode, UpdateStatus } from '@survival-os/shared-types'
 import { locale } from '~/utils/i18n'
+import { VERSION_CHECK_EVENT } from '~/utils/version-check'
 
 /**
  * Actualizaciones desde GitHub (ADR 0021): estado compartido entre la barra de estado (aviso «Actualización X») y
@@ -10,6 +11,11 @@ export function useUpdates() {
 
   async function refresh(): Promise<UpdateStatus | null> {
     status.value = await $fetch<UpdateStatus>(`/api/update?lang=${locale.value}`, { timeout: 6000, retry: 0 }).catch(() => status.value)
+    // Recién instalada otra versión: que la pantalla se recargue ya, no en la próxima comprobación del minuto.
+    const installed = status.value?.installed
+    if (import.meta.client && installed && installed !== String(useRuntimeConfig().public.version ?? '')) {
+      window.dispatchEvent(new Event(VERSION_CHECK_EVENT))
+    }
     return status.value
   }
 

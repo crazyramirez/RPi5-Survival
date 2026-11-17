@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.15 — 2026-11-17 · La pantalla muestra la versión nueva al instante
+
+### Corregido
+- Tras instalar una actualización desde el aviso o desde Mantenimiento, la pantalla **se recarga en cuanto termina**
+  con la versión nueva. Antes podía seguir mostrando la versión anterior hasta un minuto.
+
 ## 0.11.14 — 2026-11-17 · Emergencias con el estilo de la Biblioteca
 
 ### Cambiado

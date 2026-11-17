@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.12.0 — 2026-11-17 · Conversaciones con el asistente
+
+### Nuevo
+- **Seguir preguntando:** bajo cada respuesta del asistente hay un campo para preguntar sobre lo mismo
+  («¿y si es un niño?»). El asistente recuerda las preguntas y respuestas anteriores de la consulta.
+  - Recuerda hasta 3 preguntas en la Pi y la portable y 2 en Android, donde el modelo es más ligero. Un indicador
+    lo muestra y avisa antes de olvidar la más antigua.
+  - Cada pregunta busca sus propias fuentes en la biblioteca, ayudándose de la anterior.
+  - El campo de arriba sigue empezando una consulta nueva.
+- **Consultas anteriores:** una conversación se guarda como una sola consulta que indica cuántas preguntas
+  tiene. Al abrirla se puede seguir preguntándole.
+
 ## 0.11.19 — 2026-11-17 · Consultas anteriores más legibles
 
 ### Cambiado

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Bot, Check, ChevronRight, History, Send, ShieldAlert, Square, Trash2 } from '@lucide/vue'
+import { ArrowLeft, Bot, Brain, Check, ChevronRight, CornerDownRight, History, Send, ShieldAlert, Square, Trash2 } from '@lucide/vue'
 import type { AskHistory, AskHistoryEntry, AskSource, AssistantStatus } from '@survival-os/shared-types'
 import { formatClock, formatDate } from '~/utils/format'
 import { llmModelLabel } from '~/utils/llm'
@@ -7,6 +7,8 @@ import { llmModelLabel } from '~/utils/llm'
 /**
  * Asistente de consulta local. Primero la biblioteca (protocolos, documentos, Wikipedia), citando las
  * fuentes; si no hay ninguna, el modelo responde con su conocimiento general y la pantalla lo avisa.
+ * Conversación: bajo cada respuesta, «Seguir preguntando» manda también las preguntas y respuestas anteriores
+ * (hasta `threadMax`, que decide el servicio según el equipo); el campo de arriba siempre empieza una consulta nueva.
  * La salida del modelo se muestra como texto plano (nunca HTML).
  */
 const t = useT()
@@ -14,6 +16,8 @@ const router = useRouter()
 const route = useRoute()
 const status = ref<AssistantStatus | null>(null)
 const question = ref('')
+/** Pregunta de la respuesta en curso (la del campo de arriba o la de «Seguir preguntando»). */
+const currentQ = ref('')
 const answer = ref('')
 const sources = ref<AskSource[]>([])
 /** Respuesta sin fuentes: conocimiento general del modelo. */
@@ -26,6 +30,22 @@ const speed = ref<number | null>(null)
 const otherBusy = ref(false)
 const cancelling = ref(false)
 let ctrl: AbortController | null = null
+
+// ---- Conversación: preguntas ya respondidas de esta consulta (la en curso va en currentQ/answer/sources).
+interface Turn {
+  question: string
+  answer: string
+  sources: AskSource[]
+  general: boolean
+}
+const prevTurns = ref<Turn[]>([])
+/** Consulta del historial a la que se añaden las preguntas de seguimiento. */
+const threadId = ref<number | null>(null)
+const followUp = ref('')
+const threadMax = computed(() => status.value?.threadMax ?? 3)
+/** Preguntas de la conversación hasta ahora (la última respondida incluida). */
+const threadSize = computed(() => prevTurns.value.length + (answer.value ? 1 : 0))
+const currentCard = ref<HTMLElement | null>(null)
 
 async function loadStatus(): Promise<void> {
   status.value = await $fetch<AssistantStatus>('/api/library/ask/status', { timeout: 5000, retry: 0 }).catch(() => null)
@@ -52,10 +72,18 @@ async function loadHistory(): Promise<void> {
 function showEntry(e: AskHistoryEntry): void {
   if (busy.value) return
   viewing.value = e
-  question.value = e.question
-  answer.value = e.answer
-  sources.value = e.sources
-  general.value = !e.sources.length && !!e.model
+  // La consulta guardada es una conversación: la primera pregunta y sus seguimientos; la última queda «en curso»
+  // para poder seguir preguntando sobre ella.
+  const all = [{ question: e.question, answer: e.answer, sources: e.sources, model: e.model }, ...(e.turns ?? [])]
+  const last = all[all.length - 1] ?? all[0]!
+  prevTurns.value = all.slice(0, -1).map((x) => ({ question: x.question, answer: x.answer, sources: x.sources, general: !x.sources.length && !!x.model }))
+  threadId.value = e.id
+  question.value = ''
+  followUp.value = ''
+  currentQ.value = last.question
+  answer.value = last.answer
+  sources.value = last.sources
+  general.value = !last.sources.length && !!last.model
   error.value = null
   otherBusy.value = false
   speed.value = null
@@ -108,6 +136,11 @@ function setSaving(enabled: boolean): Promise<void> {
 function newQuestion(): void {
   viewing.value = null
   question.value = ''
+  currentQ.value = ''
+  followUp.value = ''
+  prevTurns.value = []
+  threadId.value = null
+  error.value = null
   answer.value = ''
   sources.value = []
   general.value = false
@@ -137,9 +170,29 @@ function linkFor(s: AskSource): string {
   return s.source === 'zim' ? `/biblioteca/leer?u=${encodeURIComponent(s.href)}` : s.href
 }
 
-async function ask(): Promise<void> {
-  const q = question.value.trim()
-  if (q.length < 3 || phase.value === 'searching' || phase.value === 'thinking' || phase.value === 'writing') return
+/**
+ * Pregunta nueva (campo de arriba) o de seguimiento (`follow`): la de seguimiento pasa la respuesta actual a la
+ * conversación y manda las anteriores como contexto. Reintentar tras «ocupado» repite la misma.
+ */
+let lastAsk: { q: string; follow: boolean } | null = null
+async function ask(follow = false, retry = false): Promise<void> {
+  if (busy.value) return
+  const q = retry && lastAsk ? lastAsk.q : (follow ? followUp.value : question.value).trim()
+  if (retry && lastAsk) follow = lastAsk.follow
+  if (q.length < 3) return
+  if (!retry) {
+    if (follow && answer.value) {
+      prevTurns.value.push({ question: currentQ.value, answer: answer.value, sources: sources.value, general: general.value })
+    } else if (!follow) {
+      prevTurns.value = []
+      threadId.value = null
+    }
+    if (follow) followUp.value = ''
+    else question.value = ''
+  }
+  lastAsk = { q, follow }
+  currentQ.value = q
+  const context = follow ? prevTurns.value.slice(-(threadMax.value - 1)).map((x) => ({ question: x.question, answer: x.answer })) : []
   answer.value = ''
   sources.value = []
   general.value = false
@@ -150,13 +203,14 @@ async function ask(): Promise<void> {
   elapsed.value = null
   speed.value = null
   phase.value = 'searching'
+  if (follow) void nextTick(() => currentCard.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   ctrl = new AbortController()
   const started = Date.now()
   try {
     const res = await fetch('/api/library/ask', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-survival-action': '1', 'x-survival-lang': locale.value },
-      body: JSON.stringify({ question: q }),
+      body: JSON.stringify({ question: q, context, threadId: follow ? threadId.value : null }),
       signal: ctrl.signal,
     })
     if (!res.ok || !res.body) {
@@ -201,6 +255,7 @@ async function ask(): Promise<void> {
         } else if (ev === 'cancelled') {
           error.value = t('ask.cancelled')
         } else if (ev === 'done' && (v as { historyId?: number | null }).historyId) {
+          threadId.value = (v as { historyId: number }).historyId
           void loadHistory()
         }
       }
@@ -228,7 +283,7 @@ async function cancelOther(): Promise<void> {
   cancelling.value = true
   try {
     await $fetch('/api/library/ask/cancel', { method: 'POST', headers: { 'x-survival-action': '1' }, timeout: 5000, retry: 0 })
-    await ask()
+    await ask(false, true)
   } catch {
     error.value = t('ask.error')
   } finally {
@@ -279,13 +334,29 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
 
     <div class="layout">
       <div class="main">
-        <form class="composer" @submit.prevent="ask">
+        <form class="composer" @submit.prevent="ask(false)">
           <input v-model="question" type="text" maxlength="300" :placeholder="t('ask.placeholder')" enterkeyhint="send" />
           <button v-if="!busy" type="submit" class="btn btn-primary" :disabled="question.trim().length < 3 || !status?.available">
             <Send :size="20" /> {{ t('ask.send') }}
           </button>
           <button v-else type="button" class="btn btn-danger" @click="stop"><Square :size="18" /> {{ t('ask.stop') }}</button>
         </form>
+
+        <!-- Conversación: preguntas ya respondidas (sus fuentes, en corto). Texto plano, nunca v-html. -->
+        <article v-for="(p, i) in prevTurns" :key="i" class="answer past">
+          <h2 class="turn-q"><CornerDownRight v-if="i > 0" :size="16" aria-hidden="true" />{{ p.question }}</h2>
+          <p v-if="p.general" class="answer-general">{{ t('ask.general') }}</p>
+          <p class="answer-text">{{ p.answer }}</p>
+          <nav v-if="p.sources.length" class="past-src" :aria-label="t('ask.sources')">
+            <NuxtLink v-for="s in p.sources" :key="s.n" :to="linkFor(s)" class="past-link"><span class="num mono">{{ s.n }}</span>{{ s.title }}</NuxtLink>
+          </nav>
+        </article>
+
+        <div ref="currentCard" class="turn-anchor">
+          <h2 v-if="currentQ && (busy || answer || error)" class="turn-q current">
+            <CornerDownRight v-if="prevTurns.length" :size="16" aria-hidden="true" />{{ currentQ }}
+          </h2>
+        </div>
 
         <!-- Progreso real de la consulta: las fases que emite el servidor. -->
         <ol v-if="busy || (phase === 'done' && answer)" class="steps">
@@ -329,6 +400,21 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
             <ChevronRight :size="18" class="chev" aria-hidden="true" />
           </NuxtLink>
         </section>
+
+        <!-- Seguir preguntando sobre lo mismo: manda las preguntas anteriores como contexto. -->
+        <form v-if="phase === 'done' && answer && status?.available" class="follow" @submit.prevent="ask(true)">
+          <div class="follow-row">
+            <input v-model="followUp" type="text" maxlength="300" :placeholder="t('ask.followUp.placeholder')" enterkeyhint="send" />
+            <button type="submit" class="btn btn-primary" :disabled="followUp.trim().length < 3">
+              <CornerDownRight :size="20" /> {{ t('ask.followUp.send') }}
+            </button>
+          </div>
+          <p class="memory">
+            <Brain :size="16" aria-hidden="true" />
+            <span>{{ t('ask.memory', { n: Math.min(threadSize, threadMax), max: threadMax }) }}</span>
+            <span v-if="threadSize >= threadMax" class="memory-full">{{ t('ask.memoryFull') }}</span>
+          </p>
+        </form>
       </div>
 
       <aside class="hist" :aria-label="t('ask.history.title')">
@@ -349,12 +435,12 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
         <p v-if="history && !history.enabled" class="faint">{{ t('ask.history.off') }}</p>
         <p v-if="!history" class="faint">{{ t('ask.history.unavailable') }}</p>
         <p v-else-if="!history.items.length" class="faint">{{ t('ask.history.empty') }}</p>
-        <button v-if="viewing" type="button" class="btn btn-primary" @click="newQuestion"><Send :size="18" /> {{ t('ask.history.new') }}</button>
+        <button v-if="viewing || answer" type="button" class="btn btn-primary" :disabled="busy" @click="newQuestion"><Send :size="18" /> {{ t('ask.history.new') }}</button>
         <ul v-if="history?.items.length" class="hist-list">
-          <li v-for="e in history.items" :key="e.id" :class="{ active: viewing?.id === e.id }">
+          <li v-for="e in history.items" :key="e.id" :class="{ active: threadId === e.id }">
             <button type="button" class="item" :disabled="busy" @click="showEntry(e)">
               <span class="q">{{ e.question }}</span>
-              <span class="when">{{ when(e.createdAt) }}</span>
+              <span class="when">{{ when(e.createdAt) }}<template v-if="e.turns?.length"> · {{ t('ask.history.turns', { n: e.turns.length + 1 }) }}</template></span>
             </button>
             <button type="button" class="del" :aria-label="t('ask.history.delete')" :disabled="historyBusy" @click="deleteEntry(e.id)">
               <Trash2 :size="18" />
@@ -806,6 +892,100 @@ h1 {
 
 .faint {
   font-size: 0.85rem;
+}
+
+/* ---------- Conversación ---------- */
+.turn-q {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.turn-q svg {
+  flex: none;
+  margin-top: 0.2rem;
+  color: var(--accent);
+}
+
+.turn-anchor {
+  scroll-margin-top: 0.5rem;
+}
+
+.turn-q.current {
+  margin-top: 0.4rem;
+}
+
+.answer.past {
+  opacity: 0.85;
+}
+
+.past-src {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.past-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.2rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  text-decoration: none;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.follow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.4rem;
+  padding: 0.7rem;
+  border-radius: var(--radius-lg);
+  border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.follow-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.follow-row input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--touch);
+}
+
+.memory {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-faint);
+}
+
+.memory svg {
+  color: var(--accent);
+}
+
+.memory-full {
+  color: var(--warn);
 }
 
 /* El aviso «no instalado» y su botón pasan a dos líneas si no caben. */

@@ -1,7 +1,7 @@
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
-import type { AskHistoryEntry, AskSource, DocKind, DocSummary, Favorite, Note, NoteSummary } from '@survival-os/shared-types'
+import type { AskHistoryEntry, AskSource, AskTurn, DocKind, DocSummary, Favorite, Note, NoteSummary } from '@survival-os/shared-types'
 
 export interface DocRow {
   id: number
@@ -62,6 +62,9 @@ export class LibraryDb {
         title, body, tokenize = 'unicode61 remove_diacritics 2'
       );
     `)
+    // Conversaciones: preguntas de seguimiento de cada consulta (columna añadida en 0.12.0).
+    const cols = this.db.prepare('PRAGMA table_info(ask_history)').all() as unknown as { name: string }[]
+    if (!cols.some((c) => c.name === 'turns')) this.db.exec("ALTER TABLE ask_history ADD COLUMN turns TEXT NOT NULL DEFAULT '[]'")
   }
 
   // ------------------------------------------------------------------ Notas
@@ -137,6 +140,16 @@ export class LibraryDb {
       .run(e.question, e.answer, JSON.stringify(e.sources), e.model, new Date().toISOString(), Math.round(e.ms))
     this.db.prepare('DELETE FROM ask_history WHERE id NOT IN (SELECT id FROM ask_history ORDER BY id DESC LIMIT ?)').run(keep)
     return Number(r.lastInsertRowid)
+  }
+
+  /** Añade una pregunta de seguimiento a una consulta. Devuelve false si ya no existe. */
+  appendAskTurn(id: number, turn: AskTurn): boolean {
+    const r = this.db.prepare('SELECT turns FROM ask_history WHERE id = ?').get(id) as unknown as { turns: string } | undefined
+    if (!r) return false
+    const turns = parseTurns(r.turns)
+    turns.push({ ...turn, ms: Math.round(turn.ms) })
+    this.db.prepare('UPDATE ask_history SET turns = ? WHERE id = ?').run(JSON.stringify(turns), id)
+    return true
   }
 
   listAskHistory(limit: number): AskHistoryEntry[] {
@@ -306,6 +319,16 @@ interface AskHistoryRow {
   model: string | null
   created_at: string
   ms: number
+  turns?: string
+}
+
+function parseTurns(json: string | undefined): AskTurn[] {
+  try {
+    const v = JSON.parse(json ?? '[]') as unknown
+    return Array.isArray(v) ? (v as AskTurn[]) : []
+  } catch {
+    return []
+  }
 }
 
 function askRow(r: AskHistoryRow): AskHistoryEntry {
@@ -315,7 +338,8 @@ function askRow(r: AskHistoryRow): AskHistoryEntry {
   } catch {
     // fila antigua o dañada: se muestra sin fuentes
   }
-  return { id: r.id, question: r.question, answer: r.answer, sources, model: r.model, createdAt: r.created_at, ms: r.ms }
+  const turns = parseTurns(r.turns)
+  return { id: r.id, question: r.question, answer: r.answer, sources, model: r.model, createdAt: r.created_at, ms: r.ms, ...(turns.length ? { turns } : {}) }
 }
 
 export function docSummary(r: DocRow): DocSummary {

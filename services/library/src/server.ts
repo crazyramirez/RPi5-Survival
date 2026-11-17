@@ -8,7 +8,7 @@ import { LibraryDb, docSummary } from './db.ts'
 import { indexDocs } from './indexer.ts'
 import { KiwixClient } from './kiwix.ts'
 import { escapeHtml, htmlToText, renderMarkdown } from './markdown.ts'
-import { buildMessages, clip, excerpt, isLang, keywords, LANGS, NOT_FOUND, relevance, searchTerms, sse, streamCompletion, type Lang, type Source } from './assistant.ts'
+import { buildMessages, clip, excerpt, isLang, keywords, LANGS, NOT_FOUND, relevance, retrievalQuery, searchTerms, sse, streamCompletion, type Lang, type PriorTurn, type Source } from './assistant.ts'
 import { loadProtocols, localized, summarize, type LoadedProtocol } from './protocols.ts'
 import { PlaceIndex } from './places.ts'
 
@@ -200,15 +200,22 @@ let askingAbort: AbortController | null = null
 
 /** Historial de consultas: solo en el equipo, máx. HISTORY_LIMIT, desactivable por el usuario. */
 const HISTORY_LIMIT = 200
+/**
+ * Preguntas que recuerda una conversación, la nueva incluida. En Android el modelo es más ligero (y la memoria,
+ * menor): 2. En la Pi y la portable, 3: con unas 300 palabras por pregunta anterior caben en los 4096 tokens.
+ */
+const THREAD_MAX = process.platform === 'android' ? 2 : 3
 const historyEnabled = (): boolean => db.getMeta('ask_history') !== 'off'
 
 async function activeModel(): Promise<string | null> {
   return (await readFile(resolve(config.dataDir, '..', 'llm', 'active'), 'utf8').catch(() => '')).trim() || null
 }
 
-function saveHistory(question: string, answer: string, sources: AskSource[], model: string | null, ms: number): number | null {
+/** Guarda la consulta; con `threadId` (pregunta de seguimiento), la añade a esa consulta en vez de crear otra. */
+function saveHistory(question: string, answer: string, sources: AskSource[], model: string | null, ms: number, threadId: number | null = null): number | null {
   if (!historyEnabled() || !answer.trim()) return null
   try {
+    if (threadId !== null && db.appendAskTurn(threadId, { question, answer: answer.trim(), sources, model, ms })) return threadId
     return db.addAskHistory({ question, answer: answer.trim(), sources, model, ms }, HISTORY_LIMIT)
   } catch (err) {
     log('warn', 'ask_history_save_failed', { error: err instanceof Error ? err.message : String(err) })
@@ -222,7 +229,7 @@ function historyHits(words: string[]): SearchHit[] {
   return db
     .listAskHistory(HISTORY_LIMIT)
     .filter((e) => {
-      const hay = norm(`${e.question} ${e.answer}`)
+      const hay = norm([e.question, e.answer, ...(e.turns ?? []).flatMap((x) => [x.question, x.answer])].join(' '))
       return words.every((w) => hay.includes(w))
     })
     .slice(0, 5)
@@ -242,12 +249,12 @@ async function llmStatus(): Promise<AssistantStatus> {
     const r = await fetch(`${config.llmUrl}/v1/models`, { signal: AbortSignal.timeout(1500) })
     if (r.ok) {
       const j = (await r.json()) as { data?: { id?: string }[] }
-      return { available: true, model: j.data?.[0]?.id?.split('/').pop() ?? null, busy: asking, installed, active, failure: null }
+      return { available: true, model: j.data?.[0]?.id?.split('/').pop() ?? null, busy: asking, installed, active, failure: null, threadMax: THREAD_MAX }
     }
   } catch {
     // aún cargando o caído
   }
-  return { available: false, model: null, busy: asking, installed, active, failure: active ? await llmFailure(llmDir) : null }
+  return { available: false, model: null, busy: asking, installed, active, failure: active ? await llmFailure(llmDir) : null, threadMax: THREAD_MAX }
 }
 
 /** Fallo anotado por el lanzador de la portable/Android (data/llm/server.json) si llama-server se ha cerrado. */
@@ -337,10 +344,31 @@ async function retrieve(question: string, lang: Lang = 'es'): Promise<Source[]> 
   return out
 }
 
-async function ask(question: string, res: ServerResponse, signal: AbortSignal, lang: Lang = 'es'): Promise<void> {
+/** Pregunta de una conversación: `prior` son las anteriores (ya recortadas a THREAD_MAX - 1) y `threadId` su consulta guardada. */
+interface Thread {
+  prior: PriorTurn[]
+  threadId: number | null
+}
+
+/**
+ * Conversación que manda la pantalla: `context` (preguntas y respuestas anteriores, la más reciente al final) y
+ * `threadId` (consulta del historial a la que se añade). Se recorta aquí: el cliente no decide cuánto contexto entra.
+ */
+function parseThread(body: Record<string, unknown>): Thread {
+  const raw = Array.isArray(body.context) ? (body.context as unknown[]) : []
+  const prior = raw
+    .filter((x): x is { question: string; answer: string } => !!x && typeof (x as PriorTurn).question === 'string' && typeof (x as PriorTurn).answer === 'string')
+    .map((x) => ({ question: x.question.trim().slice(0, 300), answer: x.answer.trim().slice(0, 2000) }))
+    .filter((x) => x.question && x.answer)
+    .slice(-(THREAD_MAX - 1))
+  const id = body.threadId
+  return { prior, threadId: typeof id === 'number' && Number.isInteger(id) && id > 0 ? id : null }
+}
+
+async function ask(question: string, res: ServerResponse, signal: AbortSignal, lang: Lang = 'es', thread: Thread = { prior: [], threadId: null }): Promise<void> {
   res.writeHead(200, { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', 'x-accel-buffering': 'no' })
   const started = Date.now()
-  const sources = await retrieve(question, lang)
+  const sources = await retrieve(retrievalQuery(question, thread.prior), lang)
   const publicSources: AskSource[] = sources.map(({ text: _t, ...s }) => s)
   sse(res, 'sources', publicSources)
   // Sin fuentes, el modelo responde con su conocimiento general (la pantalla lo avisa); si no está en marcha,
@@ -350,16 +378,16 @@ async function ask(question: string, res: ServerResponse, signal: AbortSignal, l
     const msg = NOT_FOUND[lang]
     sse(res, 'token', msg)
     const ms = Date.now() - started
-    sse(res, 'done', { ms, model: false, historyId: saveHistory(question, msg, [], null, ms) })
+    sse(res, 'done', { ms, model: false, historyId: saveHistory(question, msg, [], null, ms, thread.threadId) })
     res.end()
     return
   }
   if (general) sse(res, 'mode', 'general')
   try {
-    const answer = await streamCompletion(config.llmUrl, buildMessages(question, sources, lang), res, signal)
+    const answer = await streamCompletion(config.llmUrl, buildMessages(question, sources, lang, thread.prior), res, signal)
     const ms = Date.now() - started
     // Solo respuestas completas: una pregunta cancelada no se guarda.
-    sse(res, 'done', { ms, model: true, historyId: saveHistory(question, answer, publicSources, await activeModel(), ms) })
+    sse(res, 'done', { ms, model: true, historyId: saveHistory(question, answer, publicSources, await activeModel(), ms, thread.threadId) })
   } catch (err) {
     if (signal.aborted) sse(res, 'cancelled', {})
     else sse(res, 'error', err instanceof Error ? err.message : 'error del modelo')
@@ -491,7 +519,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     askingAbort = ac
     res.on('close', () => ac.abort())
     try {
-      await ask(q, res, ac.signal, langOf(req))
+      await ask(q, res, ac.signal, langOf(req), parseThread(body))
     } finally {
       asking = false
       askingAbort = null

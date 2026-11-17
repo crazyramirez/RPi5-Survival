@@ -654,6 +654,11 @@ export interface AssistantStatus {
    * reason: 'library' (falta una biblioteca), 'memory' (sin memoria), 'model' (modelo ilegible) u 'other'.
    */
   failure?: { reason: 'library' | 'memory' | 'model' | 'other'; detail: string; at: string } | null
+  /**
+   * Preguntas que el asistente recuerda en una conversación (la nueva incluida): 3 en la Pi y la portable,
+   * 2 en Android (modelo más ligero). Las anteriores se olvidan.
+   */
+  threadMax?: number
 }
 
 export interface AskSource {
@@ -661,6 +666,15 @@ export interface AskSource {
   title: string
   href: string
   source: 'protocol' | 'doc' | 'zim' | 'note'
+}
+
+/** Pregunta de seguimiento dentro de una consulta del historial. */
+export interface AskTurn {
+  question: string
+  answer: string
+  sources: AskSource[]
+  model: string | null
+  ms: number
 }
 
 /** Consulta guardada en el historial del asistente (solo en el equipo, borrable). */
@@ -673,6 +687,8 @@ export interface AskHistoryEntry {
   model: string | null
   createdAt: string
   ms: number
+  /** Preguntas de seguimiento tras la primera (question/answer/sources de arriba), en orden. */
+  turns?: AskTurn[]
 }
 
 export interface AskHistory {

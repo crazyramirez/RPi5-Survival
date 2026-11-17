@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMessages, clip, excerpt, GENERAL_PROMPTS, keywords, relevance, repetitionCut, searchTerms, stem, SYSTEM_PROMPT, SYSTEM_PROMPTS } from '../src/assistant.ts'
+import { buildMessages, clip, excerpt, GENERAL_PROMPTS, keywords, priorAnswer, relevance, repetitionCut, retrievalQuery, searchTerms, stem, SYSTEM_PROMPT, SYSTEM_PROMPTS } from '../src/assistant.ts'
 
 describe('asistente (RAG)', () => {
   it('palabras clave sin palabras vacías ni acentos', () => {
@@ -86,5 +86,28 @@ describe('asistente (RAG)', () => {
     expect(repetitionCut('Hierve el agua. Hierve el agua. Hierve el ag')).toBeNull()
     expect(repetitionCut('1. Sí.\n2. Sí.\n3. Sí.\n')).toBeNull()
     expect(repetitionCut('Llama al 112. Abriga a la persona [1]. Dale bebidas calientes [2].')).toBeNull()
+  })
+
+  it('conversación: las preguntas anteriores van antes de la nueva, sin citas ni fuentes', () => {
+    const prior = [{ question: '¿Cómo trato una quemadura?', answer: 'Enfría con agua 20 minutos [1]. No revientes las ampollas [2].' }]
+    const src = [{ n: 1, title: 'Quemaduras', href: '/emergencias/quemaduras', source: 'protocol' as const, text: 'En niños, acude antes al médico.' }]
+    const m = buildMessages('¿Y si es un niño?', src, 'es', prior)
+    expect(m.map((x) => x.role)).toEqual(['system', 'user', 'assistant', 'user'])
+    expect(m[0]?.content).toContain('preguntas y respuestas anteriores de esta conversación')
+    expect(m[1]?.content).toBe('¿Cómo trato una quemadura?')
+    expect(m[2]?.content).toBe('Enfría con agua 20 minutos. No revientes las ampollas.')
+    expect(m[3]?.content).toContain('[1] Quemaduras')
+    // Sin conversación, el prompt no cambia (y sin fuentes tampoco lleva el aviso).
+    expect(buildMessages('x', src, 'es')[0]?.content).toBe(SYSTEM_PROMPTS.es)
+    const g = buildMessages('¿Y en verano?', [], 'en', prior)
+    expect(g.map((x) => x.role)).toEqual(['system', 'user', 'assistant', 'user'])
+    expect(g[0]?.content.startsWith(GENERAL_PROMPTS.en)).toBe(true)
+  })
+
+  it('conversación: la búsqueda suma la pregunta anterior y las respuestas se recortan', () => {
+    expect(retrievalQuery('¿y si es un niño?', [])).toBe('¿y si es un niño?')
+    expect(retrievalQuery('¿y si es un niño?', [{ question: 'a', answer: 'b' }, { question: '¿quemadura?', answer: 'c' }])).toBe('¿y si es un niño? ¿quemadura?')
+    expect(keywords(retrievalQuery('¿y si es un niño?', [{ question: '¿Cómo trato una quemadura?', answer: '' }]))).toEqual(['nino', 'trato', 'quemadura'])
+    expect(priorAnswer('x '.repeat(1000)).length).toBeLessThanOrEqual(701)
   })
 })

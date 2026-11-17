@@ -195,16 +195,55 @@ export function excerpt(text: string, query: string, max: number): string {
   return clip((start > 0 ? '…' : '') + t.slice(start), max)
 }
 
-/** Mensajes para el modelo: con fuentes (biblioteca primero) o, sin ninguna, solo la pregunta (conocimiento general). */
-export function buildMessages(question: string, sources: Source[], lang: Lang = 'es'): { role: string; content: string }[] {
+/** Pregunta y respuesta anteriores de la misma conversación. */
+export interface PriorTurn {
+  question: string
+  answer: string
+}
+
+/** Aviso al modelo cuando hay preguntas anteriores: la nueva puede referirse a ellas («¿y si es un niño?»). */
+const CONTEXT_NOTES: Record<Lang, string> = {
+  es: '- Antes de la PREGUNTA verás preguntas y respuestas anteriores de esta conversación: úsalas para entender a qué se refiere la PREGUNTA nueva, pero responde solo a ella y no repitas lo ya dicho.',
+  en: '- Before the QUESTION you will see earlier questions and answers of this conversation: use them to understand what the new QUESTION refers to, but answer only it and do not repeat what was already said.',
+  fr: "- Avant la QUESTION, vous verrez des questions et réponses précédentes de cette conversation : servez-vous-en pour comprendre à quoi se réfère la nouvelle QUESTION, mais ne répondez qu'à elle et ne répétez pas ce qui a déjà été dit.",
+  it: '- Prima della DOMANDA vedrai domande e risposte precedenti di questa conversazione: usale per capire a cosa si riferisce la nuova DOMANDA, ma rispondi solo a quella e non ripetere quanto già detto.',
+}
+
+/**
+ * Respuesta anterior tal como se le recuerda al modelo: sin citas [n] (sus fuentes ya no están en el contexto y
+ * confundirían las nuevas) y recortada, para que quepan varias en el contexto de 4096 tokens de la Pi.
+ */
+export function priorAnswer(answer: string): string {
+  return clip(answer.replace(/\s*\[\d+\]/g, ''), 700)
+}
+
+/** Consulta de búsqueda de una pregunta de seguimiento: la nueva primero y, detrás, la anterior («¿y si es un niño?» sola no encuentra nada). */
+export function retrievalQuery(question: string, prior: PriorTurn[]): string {
+  const last = prior.at(-1)
+  return last ? `${question} ${last.question}` : question
+}
+
+/**
+ * Mensajes para el modelo: con fuentes (biblioteca primero) o, sin ninguna, solo la pregunta (conocimiento general).
+ * Con `prior`, las preguntas y respuestas anteriores de la conversación van entre el sistema y la pregunta nueva,
+ * sin sus fuentes: solo la pregunta nueva lleva fuentes.
+ */
+export function buildMessages(question: string, sources: Source[], lang: Lang = 'es', prior: PriorTurn[] = []): { role: string; content: string }[] {
+  const note = prior.length ? `\n${CONTEXT_NOTES[lang]}` : ''
+  const past = prior.flatMap((p) => [
+    { role: 'user', content: p.question },
+    { role: 'assistant', content: priorAnswer(p.answer) },
+  ])
   if (!sources.length) return [
-    { role: 'system', content: GENERAL_PROMPTS[lang] },
+    { role: 'system', content: GENERAL_PROMPTS[lang] + note },
+    ...past,
     { role: 'user', content: question },
   ]
   const ctx = sources.map((s) => `[${s.n}] ${s.title}\n${s.text}`).join('\n\n')
   const l = LABELS[lang]
   return [
-    { role: 'system', content: SYSTEM_PROMPTS[lang] },
+    { role: 'system', content: SYSTEM_PROMPTS[lang] + note },
+    ...past,
     // La pregunta antes y después de las fuentes: el modelo pequeño no la pierde de vista tras fragmentos largos.
     { role: 'user', content: `${l.question}: ${question}\n\n${l.sources}:\n${ctx}\n\n${l.question}: ${question}` },
   ]

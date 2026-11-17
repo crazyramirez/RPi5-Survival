@@ -279,8 +279,8 @@ const tarBin = () => (process.platform === 'win32' ? join(process.env.SystemRoot
 
 function extract(archive, dir) {
   mkdirSync(dir, { recursive: true })
-  // El tar de Android (toybox) no abre zip.
-  if (process.platform === 'android' && archive.toLowerCase().endsWith('.zip')) return extractZip(archive, dir)
+  // Ni el tar de Android (toybox) ni el de GNU (Linux) abren zip (BRouter, juegos…); el bsdtar de Windows y macOS sí.
+  if ((process.platform === 'android' || process.platform === 'linux') && archive.toLowerCase().endsWith('.zip')) return extractZip(archive, dir)
   const r = spawnSync(tarBin(), ['-xf', archive, '-C', dir], { encoding: 'utf8' })
   if (r.status !== 0) throw new Error(`No se pudo extraer ${archive}: ${r.stderr}`)
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMessages, clip, excerpt, keywords, relevance, searchTerms, stem, SYSTEM_PROMPT } from '../src/assistant.ts'
+import { buildMessages, clip, excerpt, GENERAL_PROMPTS, keywords, relevance, searchTerms, stem, SYSTEM_PROMPT, SYSTEM_PROMPTS } from '../src/assistant.ts'
 
 describe('asistente (RAG)', () => {
   it('palabras clave sin palabras vacías ni acentos', () => {
@@ -47,17 +47,30 @@ describe('asistente (RAG)', () => {
     expect(excerpt(`paraguas ${'y '.repeat(300)}agua limpia`, 'agua', 30)).toContain('agua limpia')
   })
 
-  it('el prompt obliga a usar solo las fuentes y numera las citas', () => {
+  it('el prompt pone la biblioteca primero, numera las citas y marca lo que no sale de ella', () => {
     const m = buildMessages('¿Cómo potabilizo agua?', [
       { n: 1, title: 'Potabilizar agua', href: '/emergencias/agua-potable', source: 'protocol', text: 'Hervir 1 minuto.' },
       { n: 2, title: 'Agua potable (Wikipedia)', href: '/kiwix/viewer#x/Agua', source: 'zim', text: 'Agua apta para el consumo.' },
     ])
     expect(m[0]?.content).toBe(SYSTEM_PROMPT)
-    expect(SYSTEM_PROMPT).toMatch(/SOLO con la información de las FUENTES/)
-    expect(SYSTEM_PROMPT).toMatch(/No lo encuentro en la biblioteca/)
+    expect(SYSTEM_PROMPT).toMatch(/Usa primero la información de las FUENTES/)
+    expect(SYSTEM_PROMPT).toMatch(/Fuera de la biblioteca:/)
+    expect(SYSTEM_PROMPT).toMatch(/no inventes/)
     expect(SYSTEM_PROMPT).toMatch(/112/)
     expect(m[1]?.content).toContain('[1] Potabilizar agua\nHervir 1 minuto.')
     expect(m[1]?.content).toContain('[2] Agua potable (Wikipedia)')
     expect(m[1]?.content.endsWith('PREGUNTA: ¿Cómo potabilizo agua?')).toBe(true)
+  })
+
+  it('sin fuentes, conocimiento general: solo la pregunta y un prompt que lo dice', () => {
+    const m = buildMessages('¿Cuándo se escribió el Quijote?', [], 'es')
+    expect(m).toEqual([
+      { role: 'system', content: GENERAL_PROMPTS.es },
+      { role: 'user', content: '¿Cuándo se escribió el Quijote?' },
+    ])
+    for (const l of ['es', 'en', 'fr', 'it'] as const) {
+      expect(GENERAL_PROMPTS[l]).toMatch(/112/)
+      expect(SYSTEM_PROMPTS[l]).toMatch(/\[1\]/)
+    }
   })
 })

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 // @ts-expect-error módulo .mjs sin tipos (portable/, fuera del monorepo TypeScript)
-import { DATA_EXCLUDE, PREFERRED_PORTS, browserArgs, browserCandidates, defaultInstallDir, nodePath, platformKey, serviceEnv } from '../../../portable/lib.mjs'
+import { DATA_EXCLUDE, PREFERRED_PORTS, browserArgs, browserCandidates, defaultInstallDir, llmFailure, nodePath, platformKey, serviceEnv } from '../../../portable/lib.mjs'
 
 describe('portable: plataformas', () => {
   it('mapea sistema y arquitectura a la carpeta de runtime', () => {
@@ -60,5 +60,20 @@ describe('portable: entorno de servicios', () => {
     expect(env.web.NUXT_MESH_URL).toBe(`http://127.0.0.1:${PREFERRED_PORTS.mesh}`)
     expect(env.navigation.GPSD_PORT).toBe(String(PREFERRED_PORTS.gpsd))
     expect(env.web.NUXT_ESP32_URL).toBe(`http://127.0.0.1:${PREFERRED_PORTS.mesh}/esp32`)
+  })
+})
+
+describe('portable: por qué no arranca el asistente', () => {
+  it('falta una biblioteca del sistema (libgomp en un Linux recién instalado)', () => {
+    const tail = 'build: 12428\n./llama-server: error while loading shared libraries: libgomp.so.1: cannot open shared object file: No such file or directory\n'
+    expect(llmFailure({ code: 127, signal: null, tail })).toEqual({ reason: 'library', detail: './llama-server: error while loading shared libraries: libgomp.so.1: cannot open shared object file: No such file or directory' })
+  })
+  it('el sistema lo cierra por falta de memoria', () => {
+    expect(llmFailure({ code: null, signal: 'SIGKILL', tail: 'load_tensors: loading model\n' }).reason).toBe('memory')
+    expect(llmFailure({ code: 1, tail: 'ggml_aligned_malloc: failed to allocate 2300.00 MiB\n' }).reason).toBe('memory')
+  })
+  it('modelo dañado y caso general', () => {
+    expect(llmFailure({ code: 1, tail: 'llama_model_load: error loading model: invalid magic\n' }).reason).toBe('model')
+    expect(llmFailure({ code: 3, tail: '' })).toEqual({ reason: 'other', detail: 'code=3, signal=null' })
   })
 })

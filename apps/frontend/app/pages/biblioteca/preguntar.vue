@@ -5,9 +5,9 @@ import { formatClock, formatDate } from '~/utils/format'
 import { llmModelLabel } from '~/utils/llm'
 
 /**
- * Asistente de consulta local. Las respuestas se basan SOLO en fragmentos de la biblioteca
- * (protocolos, documentos, Wikipedia) y citan sus fuentes. La salida del modelo se muestra como
- * texto plano (nunca HTML).
+ * Asistente de consulta local. Primero la biblioteca (protocolos, documentos, Wikipedia), citando las
+ * fuentes; si no hay ninguna, el modelo responde con su conocimiento general y la pantalla lo avisa.
+ * La salida del modelo se muestra como texto plano (nunca HTML).
  */
 const t = useT()
 const router = useRouter()
@@ -16,6 +16,8 @@ const status = ref<AssistantStatus | null>(null)
 const question = ref('')
 const answer = ref('')
 const sources = ref<AskSource[]>([])
+/** Respuesta sin fuentes: conocimiento general del modelo. */
+const general = ref(false)
 const phase = ref<'idle' | 'searching' | 'thinking' | 'writing' | 'done' | 'error'>('idle')
 const error = ref<string | null>(null)
 const elapsed = ref<number | null>(null)
@@ -28,6 +30,9 @@ let ctrl: AbortController | null = null
 async function loadStatus(): Promise<void> {
   status.value = await $fetch<AssistantStatus>('/api/library/ask/status', { timeout: 5000, retry: 0 }).catch(() => null)
 }
+// Mientras el modelo carga, el estado se consulta cada pocos segundos: la pantalla pasa sola a «listo» (o al fallo).
+let statusTimer: ReturnType<typeof setInterval> | null = null
+const waitingModel = computed(() => !!status.value && !status.value.available && !!status.value.active)
 
 // ---- Historial de consultas (solo en el equipo; el usuario puede borrarlo o no guardarlo)
 /** Escritura en el historial. URL como `string`: las rutas tipadas de Nuxt agotan al compilador con PUT/DELETE. */
@@ -50,6 +55,7 @@ function showEntry(e: AskHistoryEntry): void {
   question.value = e.question
   answer.value = e.answer
   sources.value = e.sources
+  general.value = !e.sources.length && !!e.model
   error.value = null
   otherBusy.value = false
   speed.value = null
@@ -104,6 +110,7 @@ function newQuestion(): void {
   question.value = ''
   answer.value = ''
   sources.value = []
+  general.value = false
   elapsed.value = null
   phase.value = 'idle'
   if (route.query.h) void router.replace({ query: {} })
@@ -118,6 +125,9 @@ function when(iso: string): string {
 }
 
 onMounted(() => {
+  statusTimer = setInterval(() => {
+    if (waitingModel.value || !status.value) void loadStatus()
+  }, 3000)
   void loadStatus()
   void loadHistory()
   void openFromQuery()
@@ -132,6 +142,7 @@ async function ask(): Promise<void> {
   if (q.length < 3 || phase.value === 'searching' || phase.value === 'thinking' || phase.value === 'writing') return
   answer.value = ''
   sources.value = []
+  general.value = false
   error.value = null
   otherBusy.value = false
   viewing.value = null
@@ -174,6 +185,8 @@ async function ask(): Promise<void> {
         if (ev === 'sources') {
           sources.value = v as AskSource[]
           phase.value = 'thinking'
+        } else if (ev === 'mode') {
+          general.value = v === 'general'
         } else if (ev === 'token') {
           phase.value = 'writing'
           answer.value += v as string
@@ -220,7 +233,10 @@ async function cancelOther(): Promise<void> {
   }
 }
 
-onBeforeUnmount(stop)
+onBeforeUnmount(() => {
+  stop()
+  if (statusTimer) clearInterval(statusTimer)
+})
 const busy = computed(() => ['searching', 'thinking', 'writing'].includes(phase.value))
 
 // ---- Presentación: fases visibles del progreso (solo lectura de `phase`).
@@ -246,7 +262,14 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
       <span>{{ t('ask.disclaimer') }}</span>
     </div>
 
-    <div v-if="status && !status.available" class="notice tone-info">
+    <div v-if="status && !status.available && status.active && status.failure" class="notice tone-danger">
+      <span class="grow">
+        {{ t(`ask.failed.${status.failure.reason}`) }}
+        <small class="fail-detail mono">{{ status.failure.detail }}</small>
+      </span>
+      <NuxtLink to="/sistema/mantenimiento#mnt-content" class="btn">{{ t('ask.manage') }}</NuxtLink>
+    </div>
+    <div v-else-if="status && !status.available" class="notice tone-info">
       <span>{{ status.active ? t('ask.loading') : t('ask.notInstalled') }}</span>
       <NuxtLink v-if="!status.active" to="/sistema/mantenimiento#mnt-content" class="btn btn-primary">{{ t('ask.install') }}</NuxtLink>
     </div>
@@ -289,6 +312,7 @@ const stepIndex = computed(() => (STEPS as readonly string[]).indexOf(phase.valu
               {{ t('ask.timing', { s: elapsed }) }}<template v-if="speed"> · {{ t('ui.ask.speed', { n: speed }) }}</template>
             </span>
           </header>
+          <p v-if="general" class="answer-general">{{ t('ask.general') }}</p>
           <p class="answer-text">{{ answer }}</p>
           <footer v-if="phase === 'done' && modelLabel" class="answer-foot mono">{{ modelLabel }}</footer>
         </article>
@@ -566,6 +590,24 @@ h1 {
   font-size: 1.1rem;
   line-height: 1.6;
   color: var(--text);
+}
+
+.answer-general {
+  margin: 0.55rem 1rem 0;
+  padding: 0.45rem 0.7rem;
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.fail-detail {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
 }
 
 .answer-foot {

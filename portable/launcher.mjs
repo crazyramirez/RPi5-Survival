@@ -16,7 +16,7 @@ import { createServer } from 'node:net'
 import { availableParallelism, homedir, networkInterfaces, tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { DATA_DIRS, PREFERRED_PORTS, androidComponentLinks, browserArgs, browserCandidates, lanAddress, openCommand, optionalServices, platformKey, serviceEnv, shouldRotate } from './lib.mjs'
+import { DATA_DIRS, PREFERRED_PORTS, androidComponentLinks, browserArgs, browserCandidates, lanAddress, llmFailure, openCommand, optionalServices, platformKey, serviceEnv, shouldRotate } from './lib.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const APP = join(ROOT, 'app')
@@ -212,11 +212,22 @@ function logStream(name) {
   }
 }
 
-function launch(name, cmd, args, env, { ipc = false, cwd = DATA } = {}) {
-  const write = logStream(name)
+/**
+ * Lanza un servicio y lo relanza si termina (hasta 5 veces). `onState(state, info)` recibe 'starting' en cada
+ * arranque y 'exited' (con el código, la señal y las últimas líneas de su salida) cada vez que termina.
+ */
+function launch(name, cmd, args, env, { ipc = false, cwd = DATA, onState = null } = {}) {
+  const log = logStream(name)
+  let tail = ''
+  const write = (chunk) => {
+    log(chunk)
+    if (onState) tail = (tail + String(chunk)).slice(-4000)
+  }
   let restarts = 0
   let stopped = false
   const start = () => {
+    tail = ''
+    onState?.('starting', { restarts })
     const child = spawn(cmd, args, {
       env: { ...process.env, ...env },
       cwd,
@@ -228,6 +239,7 @@ function launch(name, cmd, args, env, { ipc = false, cwd = DATA } = {}) {
     if (ipc) child.on('message', onMessage)
     child.on('exit', (code, signal) => {
       if (stopping || stopped) return
+      onState?.('exited', { code, signal, tail, final: restarts >= 5 })
       write(`\n[launcher] ${name} terminó (code=${code}, signal=${signal})\n`)
       if (restarts >= 5) {
         say(`${name} se ha detenido demasiadas veces; ver data/logs/${name}.log`)
@@ -579,6 +591,21 @@ function launchBridged(name, spec) {
 // rápidos lo frenan; 4 es el punto habitual.
 const llmThreads = ANDROID ? Math.max(1, Math.min(4, availableParallelism() - 2)) : Math.max(1, availableParallelism() - 1)
 
+/**
+ * Estado del servidor del asistente para la pantalla (data/llm/server.json): si llama-server se cae al cargar el
+ * modelo (falta una biblioteca, falta memoria…), la pantalla lo dice en vez de quedarse en «cargando».
+ */
+function llmState(state, info) {
+  // Los reintentos tras un fallo no lo borran: solo el primer arranque (o un modelo nuevo) vuelve a «cargando».
+  if (state === 'starting' && info.restarts > 0) return
+  const at = new Date().toISOString()
+  try {
+    writeFileSync(join(DATA, 'llm', 'server.json'), JSON.stringify(state === 'starting' ? { state, at } : { state: 'failed', ...llmFailure(info), at }))
+  } catch {
+    // sin escritura en data/: la pantalla seguirá diciendo «cargando»
+  }
+}
+
 function syncOptional() {
   if (stopping || !key) return
   let wanted = {}
@@ -604,9 +631,14 @@ function syncOptional() {
       optional.set(name, { sig: spec.sig, handle: launchBridged(name, spec) })
       continue
     }
-    // Bibliotecas compartidas junto al binario (llama.cpp en Linux).
-    const libEnv = { ...(platform === 'linux' ? { LD_LIBRARY_PATH: spec.cwd } : {}), ...(spec.env ? env[spec.env] : {}) }
-    optional.set(name, { sig: spec.sig, handle: launch(name, spec.cmd, spec.args, libEnv, { cwd: spec.cwd }) })
+    // Bibliotecas compartidas junto al binario (llama.cpp en Linux) y las que trae la portable (libgomp, que un
+    // Linux recién instalado puede no tener).
+    const libEnv = {
+      ...(platform === 'linux' ? { LD_LIBRARY_PATH: [spec.cwd, join(ROOT, 'runtime', key, 'lib'), process.env.LD_LIBRARY_PATH].filter(Boolean).join(':') } : {}),
+      ...(spec.env ? env[spec.env] : {}),
+    }
+    const onState = name === 'llm' ? llmState : null
+    optional.set(name, { sig: spec.sig, handle: launch(name, spec.cmd, spec.args, libEnv, { cwd: spec.cwd, onState }) })
   }
 }
 // En la autoprueba solo cuenta el núcleo: ni Wikipedia ni el asistente (cargar un modelo tarda y no se usa).

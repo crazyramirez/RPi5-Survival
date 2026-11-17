@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.11.16 — 2026-11-17 · Asistente que responde de todo; rutas y asistente en Linux
+
+### Cambiado
+- **El asistente ya no se limita a la biblioteca.**
+  - Primero busca en ella y cita las fuentes.
+  - Si no hay nada (p. ej. «¿qué pines tiene un USB 2.0?», «¿cuándo se escribió el Quijote?»), responde con el
+    conocimiento general del modelo. Un aviso indica que esa respuesta no tiene fuentes y puede equivocarse.
+  - Si las fuentes se quedan cortas, completa la respuesta y marca esa parte como «Fuera de la biblioteca».
+
+### Corregido
+- **Asistente en Linux (portable):** no arrancaba en un Ubuntu o Xubuntu recién instalado porque faltaba `libgomp`.
+  La pantalla se quedaba en «El modelo se está cargando» para siempre. La portable trae ahora esa biblioteca.
+- **Rutas sin conexión en Linux (portable):** el componente de rutas (un `.zip`) no se podía extraer, así que las
+  rutas no funcionaban aunque la cuadrícula se descargara.
+- **«El modelo se está cargando» sin fin:**
+  - la pantalla del asistente comprueba el estado cada pocos segundos y pasa sola a «listo»;
+  - si el modelo no puede arrancar, lo dice y explica el motivo (falta memoria, falta una biblioteca o modelo
+    dañado), con un acceso a Mantenimiento para cambiar de modelo.
+
 ## 0.11.15 — 2026-11-17 · La pantalla muestra la versión nueva al instante
 
 ### Corregido

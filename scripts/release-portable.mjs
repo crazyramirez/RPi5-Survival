@@ -75,6 +75,39 @@ async function fetchNode(key) {
   rmSync(tmp, { recursive: true, force: true })
 }
 
+/**
+ * libgomp (OpenMP de GCC) para Linux: el llama-server publicado para Ubuntu la necesita y un Ubuntu/Debian de
+ * escritorio recién instalado no siempre la trae (sin ella el asistente no arranca: «libgomp.so.1: cannot open
+ * shared object file»). Se toma de conda-forge (glibc ≥ 2.17) con SHA-256 fijado y va en runtime/<so-arq>/lib,
+ * que el lanzador añade a LD_LIBRARY_PATH.
+ */
+const LIBGOMP = {
+  'linux-x64': { url: 'https://conda.anaconda.org/conda-forge/linux-64/libgomp-12.2.0-h65d4601_19.tar.bz2', sha256: '81a76d20cfdee9fe0728b93ef057ba93494fd1450d42bc3717af4e468235661e' },
+  'linux-arm64': { url: 'https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-12.2.0-h607ecd0_19.tar.bz2', sha256: 'd802eaceaf6f77fb8cb2e990aacf9b3eaa83361b16369a760fc1585841d7885c' },
+}
+
+async function fetchLibgomp(key) {
+  const src = LIBGOMP[key]
+  if (!src) return
+  const file = join(cache, 'libgomp', src.url.split('/').pop())
+  await download(src.url, file)
+  if (sha256(file) !== src.sha256) {
+    rmSync(file, { force: true })
+    fail(`Checksum incorrecto de ${file} (descarga borrada; vuelve a intentarlo)`)
+  }
+  const tmp = join(cache, 'libgomp', `x-${key}`)
+  rmSync(tmp, { recursive: true, force: true })
+  mkdirSync(tmp, { recursive: true })
+  const r = spawnSync(tarBin, ['-xf', file, '-C', tmp, 'lib/libgomp.so.1.0.0', 'share/licenses/gcc-libs/RUNTIME.LIBRARY.EXCEPTION.gomp_copy'], { encoding: 'utf8' })
+  if (r.status !== 0) fail(`No se pudo extraer ${file}: ${r.stderr}`)
+  const dest = join(stage, 'runtime', key, 'lib')
+  mkdirSync(dest, { recursive: true })
+  // El paquete solo trae libgomp.so.1.0.0 (el enlace lo crea conda al instalar): se copia con su soname.
+  cpSync(join(tmp, 'lib', 'libgomp.so.1.0.0'), join(dest, 'libgomp.so.1'))
+  cpSync(join(tmp, 'share', 'licenses', 'gcc-libs', 'RUNTIME.LIBRARY.EXCEPTION.gomp_copy'), join(dest, 'LICENSE-libgomp.txt'))
+  rmSync(tmp, { recursive: true, force: true })
+}
+
 // ------------------------------------------------------------------ Montaje de la carpeta
 
 rmSync(join(outDir, 'portable'), { recursive: true, force: true })
@@ -120,7 +153,10 @@ cpSync(join(root, 'portable', 'LEEME.txt'), join(stage, 'LEEME.txt'))
 mkdirSync(join(stage, 'data'), { recursive: true })
 cpSync(join(root, 'portable', 'data-LEEME.txt'), join(stage, 'data', 'LEEME.txt'))
 
-for (const t of targets) await fetchNode(t)
+for (const t of targets) {
+  await fetchNode(t)
+  await fetchLibgomp(t)
+}
 
 // Permisos locales (si se monta en macOS/Linux) y en el zip.
 const isExec = (rel) =>

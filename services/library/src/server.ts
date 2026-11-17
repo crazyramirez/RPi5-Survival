@@ -240,11 +240,25 @@ async function llmStatus(): Promise<AssistantStatus> {
   const active = (await readFile(resolve(llmDir, 'active'), 'utf8').catch(() => '')).trim() || null
   try {
     const r = await fetch(`${config.llmUrl}/v1/models`, { signal: AbortSignal.timeout(1500) })
-    if (!r.ok) return { available: false, model: null, busy: asking, installed, active }
-    const j = (await r.json()) as { data?: { id?: string }[] }
-    return { available: true, model: j.data?.[0]?.id?.split('/').pop() ?? null, busy: asking, installed, active }
+    if (r.ok) {
+      const j = (await r.json()) as { data?: { id?: string }[] }
+      return { available: true, model: j.data?.[0]?.id?.split('/').pop() ?? null, busy: asking, installed, active, failure: null }
+    }
   } catch {
-    return { available: false, model: null, busy: asking, installed, active }
+    // aún cargando o caído
+  }
+  return { available: false, model: null, busy: asking, installed, active, failure: active ? await llmFailure(llmDir) : null }
+}
+
+/** Fallo anotado por el lanzador de la portable/Android (data/llm/server.json) si llama-server se ha cerrado. */
+async function llmFailure(llmDir: string): Promise<AssistantStatus['failure']> {
+  try {
+    const j = JSON.parse(await readFile(resolve(llmDir, 'server.json'), 'utf8')) as { state?: string; reason?: string; detail?: unknown; at?: unknown }
+    if (j.state !== 'failed') return null
+    const reason = (['library', 'memory', 'model'] as const).find((r) => r === j.reason) ?? 'other'
+    return { reason, detail: String(j.detail ?? '').slice(0, 240), at: String(j.at ?? '') }
+  } catch {
+    return null
   }
 }
 
@@ -329,7 +343,10 @@ async function ask(question: string, res: ServerResponse, signal: AbortSignal, l
   const sources = await retrieve(question, lang)
   const publicSources: AskSource[] = sources.map(({ text: _t, ...s }) => s)
   sse(res, 'sources', publicSources)
-  if (!sources.length) {
+  // Sin fuentes, el modelo responde con su conocimiento general (la pantalla lo avisa); si no está en marcha,
+  // se dice que no está en la biblioteca.
+  const general = !sources.length
+  if (general && !(await llmStatus()).available) {
     const msg = NOT_FOUND[lang]
     sse(res, 'token', msg)
     const ms = Date.now() - started
@@ -337,6 +354,7 @@ async function ask(question: string, res: ServerResponse, signal: AbortSignal, l
     res.end()
     return
   }
+  if (general) sse(res, 'mode', 'general')
   try {
     const answer = await streamCompletion(config.llmUrl, buildMessages(question, sources, lang), res, signal)
     const ms = Date.now() - started

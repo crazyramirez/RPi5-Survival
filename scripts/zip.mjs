@@ -1,7 +1,7 @@
 /**
  * Extracción de zip sin dependencias ni programas externos (sin Zip64: los zip de la portable y de BRouter son
- * menores de 4 GiB). La usan la actualización de la portable (portable-admin.mjs) y, en Android, el motor de
- * descargas: el `tar` de Android (toybox) no abre zip.
+ * menores de 4 GiB). La usan la actualización de la portable (portable-admin.mjs) y, en Android y Linux, el motor
+ * de descargas: ni el `tar` de Android (toybox) ni el de GNU abren zip.
  */
 import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve, sep } from 'node:path'

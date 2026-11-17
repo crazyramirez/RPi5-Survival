@@ -649,6 +649,11 @@ export interface AssistantStatus {
   installed: { file: string; sizeBytes: number }[]
   /** Fichero del modelo activo según la configuración (aunque el servidor aún esté cargando). */
   active: string | null
+  /**
+   * El servidor del modelo se ha cerrado al arrancar (versión portable y Android; lo anota el lanzador).
+   * reason: 'library' (falta una biblioteca), 'memory' (sin memoria), 'model' (modelo ilegible) u 'other'.
+   */
+  failure?: { reason: 'library' | 'memory' | 'model' | 'other'; detail: string; at: string } | null
 }
 
 export interface AskSource {

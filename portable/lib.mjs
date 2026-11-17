@@ -296,3 +296,24 @@ export const DATA_DIRS = ['maps', 'library/docs', 'library/zim', 'navigation', '
 export function shouldRotate(sizeBytes, max = 5 * 1024 * 1024) {
   return sizeBytes > max
 }
+
+/**
+ * Por qué se ha cerrado llama-server, a partir de su código, su señal y el final de su salida.
+ * reason: 'library' (falta una biblioteca del sistema), 'memory' (sin memoria: el sistema lo cierra con SIGKILL),
+ * 'model' (el modelo no se puede cargar) u 'other'. detail: la última línea útil, para mostrarla tal cual.
+ */
+export function llmFailure({ code = null, signal = null, tail = '' } = {}) {
+  const lines = String(tail)
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l && !/^\[launcher\]/.test(l))
+  const pick = (re) => [...lines].reverse().find((l) => re.test(l))
+  const lib = pick(/error while loading shared libraries|cannot open shared object|GLIBC_?[\d.]+'? not found|GLIBCXX_[\d.]+'? not found|Library not loaded|dlopen failed/i)
+  if (lib) return { reason: 'library', detail: lib.slice(0, 240) }
+  const mem = pick(/out of memory|failed to allocate|bad_alloc|cannot allocate memory|unable to allocate/i)
+  if (mem || signal === 'SIGKILL') return { reason: 'memory', detail: (mem ?? `signal=${signal}`).slice(0, 240) }
+  const model = pick(/failed to load model|error loading model|unable to load model|invalid magic|gguf/i)
+  if (model) return { reason: 'model', detail: model.slice(0, 240) }
+  const last = pick(/error|fail|abort/i) ?? lines.at(-1)
+  return { reason: 'other', detail: (last ?? `code=${code}, signal=${signal}`).slice(0, 240) }
+}

@@ -27,7 +27,7 @@
     <string name="perm_location_body">Survivelia OS usa el receptor GNSS de la tablet para mostrar tu posición en el mapa y grabar rutas, sin Internet. La ubicación nunca sale del dispositivo.</string>
     <string name="perm_battery_title">Seguir funcionando con la pantalla apagada</string>
     <string name="perm_battery_body">Para que las descargas, la radio y el GPS no se detengan con la pantalla apagada, permite que Survivelia OS funcione sin restricciones de batería. En algunas marcas (Realme, Xiaomi, Huawei…) revisa también «Inicio automático» y «Actividad en segundo plano» en los ajustes de la app.</string>
-    <string name="install_permission">Permite a Survivelia OS instalar aplicaciones para actualizarse y vuelve a intentarlo.</string>
+    <string name="install_permission">Para instalar la versión nueva, Android necesita que permitas a Survivelia OS instalar aplicaciones. Actívalo en la pantalla siguiente y vuelve atrás: el instalador se abrirá solo.</string>
     <string name="download_saved">Guardado en Descargas: %1$s</string>
     <string name="download_failed">No se pudo guardar: %1$s</string>
     <string name="btn_continue">Continuar</string>
@@ -35,4 +35,13 @@
     <string name="btn_retry">Reintentar</string>
     <string name="btn_other_storage">Elegir otra carpeta</string>
     <string name="splash_tagline">Conocimiento, mapas y comunicación sin Internet</string>
+    <string name="install_permission_title">Permiso para actualizar</string>
+    <string name="state_waiting_volume">Esperando a la tarjeta «%1$s» con tus datos…</string>
+    <string name="err_volume_missing">No se encuentra la tarjeta «%1$s», donde están tus datos (%2$s). Comprueba que está bien puesta: Survivelia OS arrancará solo en cuanto aparezca. También puedes elegir otra carpeta.</string>
+    <string name="err_files_permission">Falta el permiso «Acceso a todos los archivos» para usar tus datos en %1$s. Concédelo otra vez (tus datos siguen ahí) o elige otra carpeta.</string>
+    <string name="btn_grant">Dar permiso</string>
+    <string name="storage_current">la actual</string>
+    <string name="storage_has_data">tiene datos de Survivelia OS</string>
+    <string name="storage_switch_title">¿Usar una carpeta vacía?</string>
+    <string name="storage_switch_body">Tus mapas, libros y descargas se quedan en %1$s: no se mueven ni se borran, y puedes volver a esa carpeta cuando quieras. En la nueva empezarás sin datos.</string>
 </resources>

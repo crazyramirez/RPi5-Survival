@@ -25,7 +25,7 @@
     <string name="perm_location_body">Survivelia OS utilise le récepteur GNSS de la tablette pour afficher votre position sur la carte et enregistrer des traces, sans Internet. Votre position ne quitte jamais l\'appareil.</string>
     <string name="perm_battery_title">Continuer écran éteint</string>
     <string name="perm_battery_body">Pour que les téléchargements, la radio et le GPS ne s\'arrêtent pas écran éteint, autorisez Survivelia OS à fonctionner sans restriction de batterie. Sur certaines marques (Realme, Xiaomi, Huawei…), vérifiez aussi « Démarrage automatique » et « Activité en arrière-plan » dans les paramètres de l\'app.</string>
-    <string name="install_permission">Autorisez Survivelia OS à installer des applications pour se mettre à jour, puis réessayez.</string>
+    <string name="install_permission">Pour installer la nouvelle version, Android doit autoriser Survivelia OS à installer des applications. Activez-le sur l’écran suivant puis revenez : le programme d’installation s’ouvrira tout seul.</string>
     <string name="download_saved">Enregistré dans Téléchargements : %1$s</string>
     <string name="download_failed">Impossible d\'enregistrer : %1$s</string>
     <string name="btn_continue">Continuer</string>
@@ -33,4 +33,13 @@
     <string name="btn_retry">Réessayer</string>
     <string name="btn_other_storage">Choisir un autre dossier</string>
     <string name="splash_tagline">Savoir, cartes et communication sans Internet</string>
+    <string name="install_permission_title">Autorisation de mise à jour</string>
+    <string name="state_waiting_volume">En attente de la carte « %1$s » avec vos données…</string>
+    <string name="err_volume_missing">La carte « %1$s », où se trouvent vos données (%2$s), est introuvable. Vérifiez qu’elle est bien insérée : Survivelia OS démarrera tout seul dès qu’elle apparaîtra. Vous pouvez aussi choisir un autre dossier.</string>
+    <string name="err_files_permission">L’autorisation « Accès à tous les fichiers » est nécessaire pour utiliser vos données dans %1$s. Accordez-la de nouveau (vos données sont toujours là) ou choisissez un autre dossier.</string>
+    <string name="btn_grant">Autoriser</string>
+    <string name="storage_current">actuel</string>
+    <string name="storage_has_data">contient des données de Survivelia OS</string>
+    <string name="storage_switch_title">Utiliser un dossier vide ?</string>
+    <string name="storage_switch_body">Vos cartes, livres et téléchargements restent dans %1$s : ils ne sont ni déplacés ni supprimés, et vous pouvez revenir à ce dossier à tout moment. Le nouveau commence vide.</string>
 </resources>

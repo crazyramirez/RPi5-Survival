@@ -75,6 +75,8 @@ public final class MainActivity extends Activity implements SurvivalService.List
     private ValueCallback<Uri[]> fileCallback;
     /** Carpeta elegida a la espera del permiso «todos los archivos». */
     private String pendingDir;
+    /** Actualización lista a la espera del permiso «instalar apps»: se abre el instalador al volver de Ajustes. */
+    private boolean pendingInstall;
 
     // ------------------------------------------------------------------ ciclo de vida
 
@@ -105,6 +107,10 @@ public final class MainActivity extends Activity implements SurvivalService.List
             pendingDir = null;
             if (Storage.hasAllFilesAccess(this)) useDir(dir);
             else filesDenied();
+        }
+        if (pendingInstall && getPackageManager().canRequestPackageInstalls()) {
+            pendingInstall = false;
+            runAction("install-apk");
         }
     }
 
@@ -352,31 +358,48 @@ public final class MainActivity extends Activity implements SurvivalService.List
     public void onState(SurvivalService.Phase phase, String detail, int progress) {
         switch (phase) {
             case PREPARING:
+                showSplash();
                 setStatus(detail + " " + progress + " %", progress, false);
                 break;
             case STARTING:
             case IDLE:
-                setStatus(getString(R.string.state_starting), 0, true);
+                showSplash();
+                setStatus(detail.isEmpty() ? getString(R.string.state_starting) : detail, 0, true);
+                if (SurvivalService.WAIT_VOLUME.equals(SurvivalService.failure)) addButton(R.string.btn_other_storage, this::chooseStorage);
                 break;
             case READY:
                 show(detail);
                 break;
             case FAILED:
-                web.setVisibility(View.INVISIBLE);
-                splash.setVisibility(View.VISIBLE);
-                if (glowAnim != null) glowAnim.resume();
+                showSplash();
                 status.setText(detail);
                 bar.setVisibility(View.GONE);
                 actions.removeAllViews();
-                addButton(R.string.btn_retry, () -> {
-                    stopService(new Intent(this, SurvivalService.class));
-                    status.postDelayed(this::start, 800);
-                });
+                if (SurvivalService.FAIL_PERMISSION.equals(SurvivalService.failure) && Storage.dataDir(this) != null) {
+                    addButton(R.string.btn_grant, () -> askFiles(Storage.dataDir(this)));
+                } else {
+                    addButton(R.string.btn_retry, this::restart);
+                }
                 addButton(R.string.btn_other_storage, this::chooseStorage);
                 break;
             case STOPPED:
                 break;
         }
+    }
+
+    /** Pantalla de arranque encima mientras los servicios (re)arrancan: nunca una página muerta. */
+    private void showSplash() {
+        if (splash.getVisibility() == View.VISIBLE) return;
+        web.setVisibility(View.INVISIBLE);
+        splash.setVisibility(View.VISIBLE);
+        if (glowAnim != null) glowAnim.resume();
+    }
+
+    /** Detiene los servicios y los vuelve a arrancar (con la carpeta de datos que haya elegida). */
+    private void restart() {
+        stopService(new Intent(this, SurvivalService.class));
+        loadedUrl = null;
+        status.postDelayed(this::start, 800);
     }
 
     /** Carga la interfaz con la cookie del token (la guarda de Node rechaza lo que no la lleve). */
@@ -399,23 +422,50 @@ public final class MainActivity extends Activity implements SurvivalService.List
 
     // ------------------------------------------------------------------ carpeta de datos
 
+    /**
+     * Elegir (o cambiar) dónde guardar los datos. Con una carpeta ya elegida se puede cancelar; cada opción dice si
+     * es la actual y si ya tiene datos de Survivelia OS, para no confundirse de disco.
+     */
     private void chooseStorage() {
+        String cur = Storage.dataDir(this);
         List<Storage.Option> opts = Storage.options(this);
         String[] labels = new String[opts.size()];
         for (int i = 0; i < opts.size(); i++) {
             Storage.Option o = opts.get(i);
-            String free = o.freeBytes >= 0 ? getString(R.string.storage_free, Formatter.formatShortFileSize(this, o.freeBytes)) : "";
-            labels[i] = o.label + "\n" + free + " · " + getString(o.deletedOnUninstall ? R.string.storage_deleted : R.string.storage_keeps);
+            StringBuilder l = new StringBuilder(o.label);
+            if (o.path.equals(cur)) l.append(" — ").append(getString(R.string.storage_current));
+            l.append("\n");
+            if (o.freeBytes >= 0) l.append(getString(R.string.storage_free, Formatter.formatShortFileSize(this, o.freeBytes))).append(" · ");
+            if (o.hasData) l.append(getString(R.string.storage_has_data)).append(" · ");
+            l.append(getString(o.deletedOnUninstall ? R.string.storage_deleted : R.string.storage_keeps));
+            labels[i] = l.toString();
         }
-        new AlertDialog.Builder(this)
+        AlertDialog.Builder b = new AlertDialog.Builder(this)
                 .setTitle(R.string.storage_title)
-                .setCancelable(false)
-                .setItems(labels, (d, which) -> {
-                    Storage.Option o = opts.get(which);
-                    if (o.needsPermission && !Storage.hasAllFilesAccess(this)) askFiles(o.path);
-                    else useDir(o.path);
-                })
-                .show();
+                .setCancelable(cur != null)
+                .setItems(labels, (d, which) -> pickStorage(opts.get(which), cur));
+        if (cur != null) b.setNegativeButton(android.R.string.cancel, null);
+        b.show();
+    }
+
+    private void pickStorage(Storage.Option o, String cur) {
+        // La misma carpeta y todo en marcha: nada que hacer.
+        if (o.path.equals(cur) && SurvivalService.phase != SurvivalService.Phase.FAILED) return;
+        Runnable go = () -> {
+            if (o.needsPermission && !Storage.hasAllFilesAccess(this)) askFiles(o.path);
+            else useDir(o.path);
+        };
+        // De una carpeta con datos a otra vacía: avisar de que los datos no se mueven (ni se borran).
+        if (cur != null && !o.path.equals(cur) && !o.hasData && Storage.hasData(cur)) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.storage_switch_title)
+                    .setMessage(getString(R.string.storage_switch_body, cur))
+                    .setPositiveButton(R.string.btn_continue, (d, w) -> go.run())
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+        } else {
+            go.run();
+        }
     }
 
     private void askFiles(String dir) {
@@ -449,14 +499,9 @@ public final class MainActivity extends Activity implements SurvivalService.List
 
     private void useDir(String dir) {
         Storage.setDataDir(this, dir);
-        if (SurvivalService.instance != null) {
-            // Cambio de carpeta: se reinician los servicios (los datos anteriores se quedan donde estaban).
-            stopService(new Intent(this, SurvivalService.class));
-            loadedUrl = null;
-            status.postDelayed(this::start, 800);
-        } else {
-            start();
-        }
+        // Cambio de carpeta: se reinician los servicios (los datos anteriores se quedan donde estaban).
+        if (SurvivalService.instance != null) restart();
+        else start();
     }
 
     // ------------------------------------------------------------------ permisos (primer arranque y desde Mantenimiento)
@@ -542,8 +587,16 @@ public final class MainActivity extends Activity implements SurvivalService.List
                     break;
                 case "install-apk":
                     if (!getPackageManager().canRequestPackageInstalls()) {
-                        Toast.makeText(this, R.string.install_permission, Toast.LENGTH_LONG).show();
-                        runAction("permission-install");
+                        // Al volver de Ajustes con el permiso, onResume abre el instalador (sin repetir la descarga).
+                        new AlertDialog.Builder(this)
+                                .setTitle(R.string.install_permission_title)
+                                .setMessage(R.string.install_permission)
+                                .setPositiveButton(R.string.btn_continue, (d, w) -> {
+                                    pendingInstall = true;
+                                    runAction("permission-install");
+                                })
+                                .setNegativeButton(R.string.btn_later, null)
+                                .show();
                         return;
                     }
                     startActivity(new Intent(Intent.ACTION_VIEW)

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.13.2 — 2026-11-18 · Android: carpeta de datos y actualizaciones
+
+### Corregido
+- **Tarjeta microSD tras reiniciar:** si la tarjeta con los datos aún no está montada, la app espera a que aparezca
+  (hasta 3 minutos, y arranca sola en cuanto se monta) en lugar de darla por perdida. Si no aparece, lo dice con el
+  nombre de la tarjeta y deja reintentar o elegir otra carpeta.
+- **Permiso de archivos perdido:** si Android retira «Acceso a todos los archivos», la app lo explica y ofrece «Dar
+  permiso» (los datos siguen ahí) en lugar de fallar al arrancar.
+- **Cambiar la carpeta de datos:** el selector se puede cancelar, marca la carpeta actual y las que ya tienen datos de
+  Survivelia OS, y avisa antes de pasar a una carpeta vacía (los datos anteriores no se mueven ni se borran). Mientras
+  los servicios se reinician se ve la pantalla de arranque, no una página muerta.
+- **Actualizar en Android:** al volver de Ajustes tras permitir «Instalar apps», el instalador se abre solo. El aviso
+  de versión nueva muestra lo que va haciendo («Descargando…»), los errores (nunca un «Instalando…» eterno) y «Abrir
+  el instalador» si se cerró sin instalar; también en Mantenimiento → Actualizaciones.
+
 ## 0.13.1 — 2026-11-18 · Cerrar la bienvenida
 
 ### Mejorado

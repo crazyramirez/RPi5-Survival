@@ -39,6 +39,8 @@ final class Storage {
         final boolean needsPermission;
         final boolean deletedOnUninstall;
         final long freeBytes;
+        /** Ya hay datos de Survivelia OS (mapas, descargas…): para no confundirla con una carpeta vacía. */
+        final boolean hasData;
 
         Option(String path, String label, boolean removable, boolean needsPermission, boolean deletedOnUninstall) {
             this.path = path;
@@ -47,6 +49,7 @@ final class Storage {
             this.needsPermission = needsPermission;
             this.deletedOnUninstall = deletedOnUninstall;
             this.freeBytes = free(new File(path).getParentFile() != null && !new File(path).exists() ? new File(path).getParentFile() : new File(path));
+            this.hasData = hasData(path);
         }
     }
 
@@ -81,6 +84,61 @@ final class Storage {
         } catch (Exception e) {
             return -1;
         }
+    }
+
+    /** La carpeta ya tiene datos de Survivelia OS (lo que escribe el lanzador de la portable al arrancar). */
+    static boolean hasData(String path) {
+        File d = new File(path);
+        return new File(d, "content-state.json").isFile() || new File(d, "defaults.json").isFile() || new File(d, "maps").isDirectory();
+    }
+
+    /** Carpeta privada de la app (Android/data/<paquete>): no necesita permisos. */
+    static boolean isPrivate(Context ctx, String path) {
+        for (File f : ctx.getExternalFilesDirs(null)) {
+            if (f != null && (path + "/").startsWith(f.getPath() + "/")) return true;
+        }
+        return false;
+    }
+
+    /** Volumen (memoria interna, microSD, USB) que contiene la ruta, o null si no está entre los que ve Android. */
+    static StorageVolume volumeOf(Context ctx, String path) {
+        StorageManager sm = (StorageManager) ctx.getSystemService(Context.STORAGE_SERVICE);
+        if (sm == null) return null;
+        StorageVolume best = null;
+        int bestLen = -1;
+        for (StorageVolume v : sm.getStorageVolumes()) {
+            File dir = volumeDir(v);
+            if (dir == null) continue;
+            String root = dir.getPath();
+            if ((path + "/").startsWith(root + "/") && root.length() > bestLen) {
+                best = v;
+                bestLen = root.length();
+            }
+        }
+        return best;
+    }
+
+    /**
+     * ¿Está montado el volumen de la carpeta? Tras reiniciar, la microSD tarda en montarse (a veces más de un minuto
+     * si Android la revisa): hasta entonces la carpeta «no existe», pero no hay que cambiar nada, solo esperar.
+     */
+    static boolean volumeReady(Context ctx, String path) {
+        StorageVolume v = volumeOf(ctx, path);
+        if (v != null) return Environment.MEDIA_MOUNTED.equals(v.getState());
+        // Sin volumen conocido: la raíz /storage/<UUID> no existe hasta que se monta.
+        String[] parts = path.split("/");
+        if (parts.length > 2 && "storage".equals(parts[1]) && !"emulated".equals(parts[2]) && !"self".equals(parts[2])) {
+            return new File("/storage/" + parts[2]).isDirectory();
+        }
+        return true;
+    }
+
+    /** Nombre legible del volumen de la carpeta («Tarjeta SD de SanDisk») o, si no se conoce, la ruta. */
+    static String volumeLabel(Context ctx, String path) {
+        StorageVolume v = volumeOf(ctx, path);
+        if (v != null) return v.getDescription(ctx);
+        String[] parts = path.split("/");
+        return parts.length > 2 && "storage".equals(parts[1]) ? "microSD / USB " + parts[2] : path;
     }
 
     /** Raíz de un volumen (API 30: getDirectory; API 29: ruta por reflexión, igual que el sistema). */

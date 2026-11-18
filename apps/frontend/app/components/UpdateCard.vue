@@ -15,7 +15,17 @@ const error = ref<string | null>(null)
 const confirmInstall = ref(false)
 const applying = ref(false)
 
+const android = useAndroid()
 const job = useAdminJob('update-online', () => void refresh())
+/** Android: la última «Instalar» dejó el APK verificado listo (si el instalador se cerró, se reabre sin descargar). */
+const apkReady = computed(() => {
+  const s = job.status.value
+  return android && !busy.value && s?.state === 'inactive' && !!(s.data as { apk?: string } | null)?.apk && st.value?.status === 'available'
+})
+async function openInstaller(): Promise<void> {
+  error.value = null
+  await postAction('/api/android/action', { action: 'install-update' }).catch((err: unknown) => (error.value = actionErrorMessage(err)))
+}
 const auto = useAdminJob('update-auto', () => void refresh())
 onMounted(refresh)
 const busy = computed(() => job.running.value || auto.running.value)
@@ -140,6 +150,9 @@ const confirmBody = computed(() => {
         </button>
         <button v-if="canApplyNow" type="button" class="btn btn-primary" :disabled="busy || applying" @click="doApplyNow">
           <RotateCcw :size="18" aria-hidden="true" />{{ t('upd.applyNow') }}
+        </button>
+        <button v-if="apkReady" type="button" class="btn btn-primary" @click="openInstaller">
+          <CloudDownload :size="18" aria-hidden="true" />{{ t('upd.prompt.openInstaller') }}
         </button>
         <span v-if="canInstall && st.asset" class="faint small">{{ t('upd.size', { size: formatBytes(st.asset.size) }) }}</span>
       </div>

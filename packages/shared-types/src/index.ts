@@ -845,6 +845,8 @@ export type AndroidAction =
   | 'app-settings'
   | 'storage'
   | 'kiosk'
+  /** Reabrir el instalador con la actualización ya descargada y verificada (ADR 0021). */
+  | 'install-update'
 
 /** Memoria USB de Survivelia OS (versión portable, ADR 0019). */
 export interface PortableUsbStatus {

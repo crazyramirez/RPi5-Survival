@@ -71,6 +71,12 @@ public final class SurvivalService extends Service {
     static volatile String url;
     /** Token de esta ejecución: cookie de la WebView y cabecera de los servicios. */
     static volatile String token;
+    /** Por qué falló el arranque, si es por la carpeta de datos (la ventana ofrece el arreglo adecuado). */
+    static final String FAIL_PERMISSION = "permission";
+    static final String FAIL_MISSING = "missing";
+    /** No es un fallo: se espera a que se monte la tarjeta (la ventana deja elegir otra carpeta mientras). */
+    static final String WAIT_VOLUME = "waiting";
+    static volatile String failure;
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private Bridge bridge;
@@ -197,6 +203,12 @@ public final class SurvivalService extends Service {
         @Override
         public void onReceive(Context c, Intent i) {
             Storage.writeVolumes(c);
+            // La tarjeta con los datos apareció después de rendirse la espera: se arranca sin que haya que tocar nada.
+            String data = Storage.dataDir(c);
+            if (phase == Phase.FAILED && FAIL_MISSING.equals(failure) && node == null && data != null && Storage.volumeReady(c, data)) {
+                failure = null;
+                new Thread(SurvivalService.this::boot, "survival-boot").start();
+            }
         }
     };
 
@@ -210,7 +222,30 @@ public final class SurvivalService extends Service {
                 return;
             }
             File dataDir = new File(data);
+            failure = null;
+            // Carpeta SurvivalOS sin el permiso «todos los archivos» (revocado, o lo quitó la limpieza de la marca):
+            // se pide otra vez en lugar de arrancar y fallar al leer.
+            if (!Storage.isPrivate(this, data) && !Storage.hasAllFilesAccess(this)) {
+                failure = FAIL_PERMISSION;
+                setState(Phase.FAILED, getString(R.string.err_files_permission, data), 0);
+                return;
+            }
+            // Tras reiniciar, la microSD tarda en montarse: se espera (hasta 3 min) sin tocar la carpeta elegida.
+            if (!dataDir.isDirectory() && !Storage.volumeReady(this, data)) {
+                String label = Storage.volumeLabel(this, data);
+                failure = WAIT_VOLUME;
+                setState(Phase.STARTING, getString(R.string.state_waiting_volume, label), 0);
+                for (int i = 0; i < 90 && !quitting && !Storage.volumeReady(this, data); i++) Thread.sleep(2000);
+                failure = null;
+                if (quitting) return;
+                if (!Storage.volumeReady(this, data)) {
+                    failure = FAIL_MISSING;
+                    setState(Phase.FAILED, getString(R.string.err_volume_missing, label, data), 0);
+                    return;
+                }
+            }
             if (!dataDir.isDirectory() && !dataDir.mkdirs()) {
+                failure = FAIL_MISSING;
                 setState(Phase.FAILED, getString(R.string.err_storage, data), 0);
                 return;
             }
@@ -521,6 +556,10 @@ public final class SurvivalService extends Service {
             case "app-settings":
             case "storage":
                 main.post(() -> a.runAction(action));
+                return new JSONObject().put("ok", true);
+            case "install-update":
+                // Volver a abrir el instalador con el APK ya verificado (si se cerró o faltaba el permiso).
+                installApk(new File(new File(Storage.dataDir(this), "admin"), "update.apk").getPath());
                 return new JSONObject().put("ok", true);
             case "kiosk":
                 boolean on = body.optBoolean("on");

@@ -11,13 +11,19 @@ const t = useT()
 const route = useRoute()
 const { locked } = useScreenLock()
 const { status: st, refresh, applyNow } = useUpdates()
-const job = useAdminJob('update-online', () => void refresh())
+const android = useAndroid()
+const job = useAdminJob('update-online', (s) => {
+  void refresh()
+  finished(s)
+})
 
 const SNOOZE = 'survival-os:update-snooze'
 const SNOOZE_MS = 12 * 3600_000
 const snoozed = ref<{ v: string; until: number } | null>(null)
 const busy = ref(false)
 const error = ref<string | null>(null)
+/** Android: APK descargado y verificado; el instalador del sistema pide confirmación (y se puede reabrir). */
+const apkReady = ref(false)
 
 onMounted(() => {
   try {
@@ -44,7 +50,7 @@ const version = computed(() => {
 const show = computed(() => {
   const v = version.value
   if (!v || locked.value || route.path.startsWith('/bienvenida')) return false
-  if (busy.value) return true
+  if (busy.value || apkReady.value) return true
   const z = snoozed.value
   return !(z && z.v === v && Date.now() < z.until)
 })
@@ -75,6 +81,7 @@ function later(): void {
 
 async function install(): Promise<void> {
   error.value = null
+  apkReady.value = false
   busy.value = true
   try {
     if (prepared.value) await applyNow()
@@ -85,6 +92,35 @@ async function install(): Promise<void> {
     error.value = actionErrorMessage(err)
   }
 }
+
+/** Fin de la descarga: el error a la vista (nunca un «instalando…» eterno) o, en Android, el instalador. */
+function finished(s: { state: string; log: string[] }): void {
+  if (!busy.value) return
+  busy.value = false
+  if (s.state === 'failed') {
+    const line = [...s.log].reverse().find((l) => l.includes('ERROR')) ?? ''
+    error.value = t('upd.prompt.failed', { msg: line.replace(/^\d\d:\d\d:\d\d\s+/, '').replace(/^ERROR:\s*/, '') || '?' })
+  } else if (android) {
+    apkReady.value = true
+  }
+}
+
+/** Reabre el instalador de Android con el APK ya verificado (sin volver a descargarlo). */
+async function openInstaller(): Promise<void> {
+  error.value = null
+  try {
+    await postAction('/api/android/action', { action: 'install-update' })
+  } catch (err) {
+    error.value = actionErrorMessage(err)
+  }
+}
+
+/** Lo que va haciendo la tarea (descargando, verificando…): la última línea del registro. */
+const progressLine = computed(() => {
+  const l = job.status.value?.log
+  const last = l?.length ? l[l.length - 1]! : ''
+  return last.replace(/^\d\d:\d\d:\d\d\s+/, '')
+})
 </script>
 
 <template>
@@ -112,12 +148,19 @@ async function install(): Promise<void> {
             <span v-if="size && !prepared" class="chip">{{ t('upd.size', { size }) }}</span>
           </div>
 
-          <p v-if="busy" class="state" role="status"><LoaderCircle :size="18" class="spin" aria-hidden="true" />{{ t('upd.prompt.installing') }}</p>
+          <p v-if="busy" class="state" role="status">
+            <LoaderCircle :size="18" class="spin" aria-hidden="true" />{{ android && !prepared ? t('upd.prompt.downloading') : t('upd.prompt.installing') }}
+          </p>
+          <p v-if="busy && android && progressLine" class="faint small">{{ progressLine }}</p>
+          <p v-if="apkReady" class="state" role="status"><ShieldCheck :size="18" aria-hidden="true" />{{ t('upd.prompt.apkReady') }}</p>
           <p v-if="error" class="err" role="alert">{{ error }}</p>
 
           <div class="actions">
             <button type="button" class="btn ghost" :disabled="busy" @click="later">{{ t('upd.prompt.later') }}</button>
-            <button type="button" class="btn btn-primary go" :disabled="busy" @click="install">
+            <button v-if="apkReady" type="button" class="btn btn-primary go" @click="openInstaller">
+              <Download :size="20" aria-hidden="true" />{{ t('upd.prompt.openInstaller') }}
+            </button>
+            <button v-else type="button" class="btn btn-primary go" :disabled="busy" @click="install">
               <RotateCw v-if="prepared" :size="20" aria-hidden="true" />
               <Download v-else :size="20" aria-hidden="true" />
               {{ prepared ? t('upd.prompt.apply') : t('upd.prompt.install') }}

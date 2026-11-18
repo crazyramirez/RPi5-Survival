@@ -25,7 +25,7 @@
     <string name="perm_location_body">Survivelia OS uses the tablet\'s GNSS receiver to show your position on the map and record tracks, without Internet. Your location never leaves the device.</string>
     <string name="perm_battery_title">Keep working with the screen off</string>
     <string name="perm_battery_body">So that downloads, radio and GPS do not stop with the screen off, let Survivelia OS run without battery restrictions. On some brands (Realme, Xiaomi, Huawei…) also check «Auto-launch» and «Background activity» in the app settings.</string>
-    <string name="install_permission">Allow Survivelia OS to install apps so it can update itself, then try again.</string>
+    <string name="install_permission">To install the new version, Android needs you to allow Survivelia OS to install apps. Turn it on in the next screen and go back: the installer will open by itself.</string>
     <string name="download_saved">Saved to Downloads: %1$s</string>
     <string name="download_failed">Could not save: %1$s</string>
     <string name="btn_continue">Continue</string>
@@ -33,4 +33,13 @@
     <string name="btn_retry">Retry</string>
     <string name="btn_other_storage">Choose another folder</string>
     <string name="splash_tagline">Knowledge, maps and communication without Internet</string>
+    <string name="install_permission_title">Permission to update</string>
+    <string name="state_waiting_volume">Waiting for the “%1$s” card with your data…</string>
+    <string name="err_volume_missing">The “%1$s” card, where your data is (%2$s), cannot be found. Check that it is inserted properly: Survivelia OS will start by itself as soon as it appears. You can also choose another folder.</string>
+    <string name="err_files_permission">The “All files access” permission is needed to use your data in %1$s. Grant it again (your data is still there) or choose another folder.</string>
+    <string name="btn_grant">Grant permission</string>
+    <string name="storage_current">current</string>
+    <string name="storage_has_data">has Survivelia OS data</string>
+    <string name="storage_switch_title">Use an empty folder?</string>
+    <string name="storage_switch_body">Your maps, books and downloads stay in %1$s: they are not moved or deleted, and you can switch back to that folder at any time. The new one starts empty.</string>
 </resources>

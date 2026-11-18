@@ -17,14 +17,41 @@ export interface SummaryExtras {
   nav: NavStatus | null
   /** Paquetes cartográficos instalados; null = desconocido. */
   maps: number | null
+  /** Biblioteca (/api/library/status); null = desconocido. */
+  library?: LibrarySummaryInput | null
+}
+
+/**
+ * Lo que hay de verdad en la biblioteca: libros que el lector (kiwix-serve) sirve ahora mismo, libros instalados en
+ * la carpeta de datos y documentos propios. Nunca se deduce de que exista el programa.
+ */
+export interface LibrarySummaryInput {
+  /** Libros que responde el lector; null si el lector no responde. */
+  served: number | null
+  /** Libros (ZIM) instalados en la carpeta de datos. */
+  installed: number
+  /** Documentos propios (PDF, textos…). */
+  docs: number
+}
+
+export function librarySummary(lib: LibrarySummaryInput | null | undefined): ModuleSummary {
+  if (!lib) return { key: 'summary.library.empty', tone: 'muted' }
+  const books = lib.served ?? 0
+  if (books > 0) {
+    return lib.docs > 0
+      ? { key: 'summary.library.booksDocs', params: { n: books, d: lib.docs }, tone: 'ok' }
+      : { key: 'summary.library.books', params: { n: books }, tone: 'ok' }
+  }
+  // Instalados pero el lector no los sirve (aún arrancando o caído): se dice, no se oculta.
+  if (lib.installed > 0) return { key: 'summary.library.notServed', params: { n: lib.installed }, tone: 'warn' }
+  if (lib.docs > 0) return { key: 'summary.library.docs', params: { d: lib.docs }, tone: 'info' }
+  return { key: 'summary.library.empty', tone: 'muted' }
 }
 
 export function moduleSummaries(status: DeviceStatus | null, extras: SummaryExtras = { nav: null, maps: null }): Record<ModuleId, ModuleSummary | null> {
   if (!status) {
     return { maps: null, navigation: null, library: null, emergency: null, vault: null, comms: null, tools: null, system: null }
   }
-
-  const kiwix = status.software.state === 'ok' && status.software.value.kiwixServe
 
   let comms: ModuleSummary = { key: 'summary.comms.offline', tone: 'muted' }
   if (status.network.state === 'ok') {
@@ -70,7 +97,7 @@ export function moduleSummaries(status: DeviceStatus | null, extras: SummaryExtr
             : extras.nav?.gnss.state === 'ok'
               ? { key: 'summary.navigation.noFix', tone: 'warn' }
               : { key: 'summary.navigation.noGnss', tone: 'muted' },
-    library: kiwix ? { key: 'summary.library.kiwix', tone: 'info' } : { key: 'summary.library.empty', tone: 'muted' },
+    library: librarySummary(extras.library),
     emergency: { key: 'summary.emergency', tone: 'info' },
     vault: { key: 'summary.vault', tone: 'muted' },
     comms,

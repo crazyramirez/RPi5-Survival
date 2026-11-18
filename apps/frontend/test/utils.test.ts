@@ -4,7 +4,7 @@ import { deriveAlerts } from '../app/utils/alerts'
 import { parseDecimalDegrees, parseMapQuery, toDms } from '../app/utils/coords'
 import { formatBytes, formatDuration } from '../app/utils/format'
 import { interpolate, translate } from '../app/utils/i18n'
-import { moduleSummaries } from '../app/utils/summaries'
+import { librarySummary, moduleSummaries } from '../app/utils/summaries'
 import { isSafeReaderPath } from '../app/utils/snippet'
 import { allowPrivateRequest, isLoopbackAddress, isPrivatePath, isTrustedActionRequest } from '../server/utils/net'
 
@@ -143,6 +143,16 @@ describe('moduleSummaries', () => {
     const searching = { nav: { ...nav(gnss('none'), fb).nav, devices: ['/dev/ttyACM1'] } as never, maps: null }
     expect(moduleSummaries(baseStatus(), searching).navigation?.key).toBe('summary.navigation.noFix')
     expect(moduleSummaries(baseStatus(), nav({ state: 'unavailable', reason: 'x' })).navigation?.key).toBe('summary.navigation.noGnss')
+  })
+  it('biblioteca: lo que hay de verdad en la carpeta de datos, no si existe el programa', () => {
+    expect(librarySummary(null).key).toBe('summary.library.empty')
+    expect(librarySummary({ served: 0, installed: 0, docs: 0 }).key).toBe('summary.library.empty')
+    expect(librarySummary({ served: 5, installed: 5, docs: 0 })).toMatchObject({ key: 'summary.library.books', params: { n: 5 }, tone: 'ok' })
+    expect(librarySummary({ served: 5, installed: 5, docs: 3 })).toMatchObject({ key: 'summary.library.booksDocs', params: { n: 5, d: 3 } })
+    // Instalados pero el lector aún no responde (arrancando o caído): aviso honesto.
+    expect(librarySummary({ served: null, installed: 4, docs: 0 })).toMatchObject({ key: 'summary.library.notServed', tone: 'warn' })
+    expect(librarySummary({ served: null, installed: 0, docs: 2 })).toMatchObject({ key: 'summary.library.docs', params: { d: 2 } })
+    expect(moduleSummaries(baseStatus(), { nav: null, maps: null, library: { served: 2, installed: 2, docs: 0 } }).library?.key).toBe('summary.library.books')
   })
   it('sistema en aviso si hubo undervoltage', () => {
     const s = baseStatus()

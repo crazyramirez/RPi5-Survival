@@ -2,21 +2,37 @@
 import { CircleCheck, Info, RadioTower, TriangleAlert } from '@lucide/vue'
 import { MODULES } from '~/utils/modules'
 import type { MessageKey } from '~/locales/es'
-import { moduleSummaries } from '~/utils/summaries'
+import type { LibraryStatus } from '@survival-os/shared-types'
+import { moduleSummaries, type LibrarySummaryInput } from '~/utils/summaries'
 
 const t = useT()
 const { status, alerts } = useDeviceStatus()
 const { nav } = useNav()
 const mapsCount = ref<number | null>(null)
-onMounted(async () => {
-  try {
-    mapsCount.value = (await $fetch<unknown[]>('/api/maps', { timeout: 5000, retry: 0 })).length
-  } catch {
-    mapsCount.value = null
-  }
-})
+const library = ref<LibrarySummaryInput | null>(null)
 
-const summaries = computed(() => moduleSummaries(status.value, { nav: nav.value, maps: mapsCount.value }))
+/**
+ * Mapas y biblioteca tal como están en la carpeta de datos (también tras cambiarla o tras una descarga): se leen al
+ * entrar y cada 15 s, porque el lector de libros arranca unos segundos después que la web.
+ */
+async function loadContent(): Promise<void> {
+  const [maps, lib] = await Promise.all([
+    $fetch<unknown[]>('/api/maps', { timeout: 5000, retry: 0 }).catch(() => null),
+    $fetch<LibraryStatus>('/api/library/status', { timeout: 8000, retry: 0 }).catch(() => null),
+  ])
+  mapsCount.value = maps ? maps.length : null
+  library.value = lib
+    ? { served: lib.kiwix.state === 'ok' ? lib.kiwix.value.books : null, installed: lib.zim.installed.length, docs: lib.docs.count }
+    : null
+}
+let contentTimer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  void loadContent()
+  contentTimer = setInterval(() => void loadContent(), 15_000)
+})
+onBeforeUnmount(() => contentTimer && clearInterval(contentTimer))
+
+const summaries = computed(() => moduleSummaries(status.value, { nav: nav.value, maps: mapsCount.value, library: library.value }))
 
 const publicView = isPublicView()
 /** Columnas en horizontal según el número de módulos: 8 → 4×2, 6 → 3×2, 4 → 2×2 (sin filas cojas). */

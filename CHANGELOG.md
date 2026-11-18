@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.3 — 2026-11-18 · Inicio: la biblioteca tal como está
+
+### Corregido
+- **Biblioteca en Inicio:** decía «Sin enciclopedias» en la portable y en Android aunque hubiera libros (miraba si
+  existía el programa lector en las rutas de la Pi, no los contenidos). Ahora cuenta lo que hay de verdad en la
+  carpeta de datos activa: «31 libros · 246 documentos», o «4 libros instalados · abriendo el lector…» mientras el
+  lector arranca. Se actualiza cada 15 s, también tras cambiar la carpeta de datos o terminar una descarga.
+
 ## 0.13.2 — 2026-11-18 · Android: carpeta de datos y actualizaciones
 
 ### Corregido

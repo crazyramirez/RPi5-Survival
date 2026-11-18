@@ -44,6 +44,85 @@ done
 die() { echo "ERROR: $*" >&2; exit 1; }
 info() { echo "==> $*"; }
 
+# Pone key=value en un .conf de pcmanfm/greeter (sección única): reemplaza la línea o la añade tras la cabecera.
+set_conf() {
+  local file="$1" key="$2" value="$3"
+  if grep -q "^$key=" "$file"; then
+    sed -i "s|^$key=.*|$key=$value|" "$file"
+  else
+    sed -i "0,/^\[/s|^\[.*\]\$|&\n$key=$value|" "$file"
+  fi
+}
+
+# Imagen de Survivelia OS (kiosk/branding): fondo de escritorio, pantalla de acceso y arranque (Plymouth).
+# Idempotente; solo reconstruye el initramfs si el tema cambió. uninstall-system.sh lo deshace.
+BRAND_DIR=/usr/share/survival-os
+apply_branding() {
+  local src="$DEST/kiosk/branding" wall="$BRAND_DIR/wallpaper.jpg" bg='#0f0f14141212' n f
+  [ -d "$src" ] || return 0
+  install -D -m 0644 "$src/wallpaper.jpg" "$wall"
+
+  # Escritorio (pcmanfm --profile LXDE-pi, un fichero por monitor). Se parte del de sistema si no hay uno propio.
+  for n in 0 1; do
+    f="$KIOSK_HOME/.config/pcmanfm/LXDE-pi/desktop-items-$n.conf"
+    if [ ! -f "$f" ]; then
+      install -d -o "$KIOSK_USER" -g "$KIOSK_USER" "$(dirname "$f")"
+      if [ -f "/etc/xdg/pcmanfm/LXDE-pi/desktop-items-$n.conf" ]; then
+        cp "/etc/xdg/pcmanfm/LXDE-pi/desktop-items-$n.conf" "$f"
+      else
+        printf '[*]\n' > "$f"
+      fi
+    fi
+    set_conf "$f" wallpaper "$wall"
+    set_conf "$f" wallpaper_mode crop
+    set_conf "$f" desktop_bg "$bg"
+    set_conf "$f" desktop_shadow "$bg"
+    chown "$KIOSK_USER:$KIOSK_USER" "$f"
+  done
+
+  # Pantalla de acceso (pi-greeter), por si se cierra la sesión.
+  f=/etc/lightdm/pi-greeter.conf
+  if [ -f "$f" ]; then
+    [ -f "$f.bak-survival" ] || cp -p "$f" "$f.bak-survival"
+    set_conf "$f" wallpaper "$wall"
+    set_conf "$f" wallpaper_mode crop
+    set_conf "$f" desktop_bg "$bg"
+  fi
+
+  # Arranque y apagado: tema Plymouth propio (sustituye a «pix», el de Raspberry Pi).
+  if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+    local theme=/usr/share/plymouth/themes/survivelia changed=0
+    install -d "$theme"
+    for f in survivelia.plymouth survivelia.script splash.png; do
+      if ! cmp -s "$src/plymouth/$f" "$theme/$f"; then install -m 0644 "$src/plymouth/$f" "$theme/$f"; changed=1; fi
+    done
+    if [ "$changed" -eq 1 ] || [ "$(plymouth-set-default-theme)" != survivelia ]; then
+      info "Tema de arranque Survivelia OS (reconstruyendo initramfs, ~1 min)"
+      plymouth-set-default-theme -R survivelia >/dev/null
+    fi
+  fi
+
+  # Firmware/kernel (Raspberry Pi): sin el arcoíris del firmware ni los logos de frambuesa del kernel.
+  local boot=/boot/firmware
+  [ -d "$boot" ] || boot=/boot
+  if [ -f "$boot/config.txt" ] && ! grep -q '^disable_splash=' "$boot/config.txt"; then
+    cp -p "$boot/config.txt" "$boot/config.txt.bak-survival-$(date +%Y%m%d%H%M%S)"
+    printf '\n[all]\n# Survivelia OS: sin pantalla arcoíris del firmware\ndisable_splash=1\n' >> "$boot/config.txt"
+  fi
+  if [ -f "$boot/cmdline.txt" ] && ! grep -qw 'logo.nologo' "$boot/cmdline.txt"; then
+    cp -p "$boot/cmdline.txt" "$boot/cmdline.txt.bak-survival-$(date +%Y%m%d%H%M%S)"
+    sed -i '1s/[[:space:]]*$/ logo.nologo/' "$boot/cmdline.txt"
+  fi
+
+  # Aplicar ya el fondo si la sesión gráfica está abierta (si no, al iniciar sesión).
+  local uid; uid="$(id -u "$KIOSK_USER")"
+  if [ -S "/run/user/$uid/wayland-0" ]; then
+    timeout 10 runuser -u "$KIOSK_USER" -- env XDG_RUNTIME_DIR="/run/user/$uid" WAYLAND_DISPLAY=wayland-0 \
+      pcmanfm --profile LXDE-pi --reconfigure >/dev/null 2>&1 || true
+  fi
+  info "Imagen de Survivelia OS en escritorio y arranque"
+}
+
 [ "$(id -u)" -eq 0 ] || die "Ejecutar con sudo."
 [ -f "$RELEASE_TGZ" ] || die "Indica el tarball de la release."
 id "$KIOSK_USER" >/dev/null 2>&1 || die "Usuario de escritorio '$KIOSK_USER' no existe."
@@ -180,6 +259,8 @@ quick_exec=1
     sed -i 's/mouseEmulation="yes"/mouseEmulation="no"/g' "$RC"
     info "Táctil sin emulación de ratón en $RC"
   fi
+  # Imagen propia en arranque, escritorio y pantalla de acceso: sin la marca ni el fondo de Raspberry Pi.
+  apply_branding || echo "AVISO: no se pudo aplicar la imagen de Survivelia OS (no afecta a la app)." >&2
   info "Kiosco habilitado (survival-kiosk.path para $KIOSK_USER; activo en el próximo inicio de sesión)"
 fi
 

@@ -44,6 +44,19 @@ pkill -u "$KIOSK_USER" -f 'class=[s]urvival-kiosk' 2>/dev/null || true
 
 systemctl --global disable survival-kiosk.path >/dev/null 2>&1 || true
 rm -f /etc/systemd/user/survival-kiosk.*
+
+# Imagen de Survivelia OS (install-system.sh apply_branding): volver a la de Raspberry Pi OS.
+# disable_splash=1 y logo.nologo se dejan en config.txt/cmdline.txt (inocuos; hay copias .bak-survival-*).
+if command -v plymouth-set-default-theme >/dev/null 2>&1 && [ "$(plymouth-set-default-theme)" = survivelia ]; then
+  if [ -d /usr/share/plymouth/themes/pix ]; then plymouth-set-default-theme -R pix >/dev/null || true
+  else plymouth-set-default-theme -R -r >/dev/null || true; fi
+fi
+rm -rf /usr/share/plymouth/themes/survivelia
+[ -f /etc/lightdm/pi-greeter.conf.bak-survival ] && mv -f /etc/lightdm/pi-greeter.conf.bak-survival /etc/lightdm/pi-greeter.conf
+for f in "$KIOSK_HOME"/.config/pcmanfm/LXDE-pi/desktop-items-*.conf; do
+  [ -f "$f" ] && grep -q '^wallpaper=/usr/share/survival-os/' "$f" && rm -f "$f"   # vuelve al de /etc/xdg
+done
+rm -rf /usr/share/survival-os
 rm -rf /opt/survival-os
 # Actualizaciones (ADR 0021): solo descargas y estado; no son datos del usuario.
 rm -rf /var/lib/survival-os-update

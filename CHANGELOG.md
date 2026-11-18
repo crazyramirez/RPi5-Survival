@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.4 — 2026-11-18 · Raspberry Pi: imagen propia al arrancar
+
+### Cambiado
+- **Arranque y escritorio de la Pi con la imagen de Survivelia OS:** la pantalla de arranque y apagado (tema
+  Plymouth propio, en lugar del de Raspberry Pi), el fondo del escritorio y el de la pantalla de acceso muestran ahora
+  la imagen de Survivelia OS. También se quitan la pantalla arcoíris del firmware y los logos de frambuesa del kernel
+  (`disable_splash=1`, `logo.nologo`, con copia de seguridad de `config.txt` y `cmdline.txt`). Se aplica al instalar
+  o actualizar con quiosco; el initramfs solo se reconstruye si el tema cambia. `uninstall-system.sh` lo deshace.
+
 ## 0.13.3 — 2026-11-18 · Inicio: la biblioteca tal como está
 
 ### Corregido

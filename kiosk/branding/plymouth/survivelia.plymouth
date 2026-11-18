@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=survivelia
+Description=Survivelia OS: pantalla de arranque
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/survivelia
+ScriptFile=/usr/share/plymouth/themes/survivelia/survivelia.script

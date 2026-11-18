@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/vault",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "private": true,
   "type": "module",
   "description": "Bóveda cifrada LUKS2: sin red, solo socket Unix, montaje en espacio de nombres privado.",
@@ -13,6 +13,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@survival-os/shared-types": "0.13.3"
+    "@survival-os/shared-types": "0.13.4"
   }
 }

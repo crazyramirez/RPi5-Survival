@@ -1,0 +1,24 @@
+# Pantalla de arranque y apagado de Survivelia OS (tema Plymouth de tipo script).
+# La imagen llena la pantalla (cubre: mantiene la proporción y recorta lo que sobra) en cualquier resolución.
+Window.SetBackgroundTopColor(0.059, 0.078, 0.071);
+Window.SetBackgroundBottomColor(0.059, 0.078, 0.071);
+
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+
+image = Image("splash.png");
+scale = Math.Max(screen_width / image.GetWidth(), screen_height / image.GetHeight());
+scaled = image.Scale(image.GetWidth() * scale, image.GetHeight() * scale);
+
+sprite = Sprite(scaled);
+sprite.SetPosition((screen_width - scaled.GetWidth()) / 2, (screen_height - scaled.GetHeight()) / 2, -100);
+
+# Mensajes de estado (fsck, etc.) abajo, en el color crema del tema.
+message_sprite = Sprite();
+message_sprite.SetPosition(screen_width * 0.05, screen_height * 0.92, 10000);
+
+fun message_callback(text) {
+  message_sprite.SetImage(Image.Text(text, 0.925, 0.902, 0.839));
+}
+Plymouth.SetUpdateStatusFunction(message_callback);
+Plymouth.SetMessageFunction(message_callback);

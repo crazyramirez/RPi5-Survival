@@ -217,13 +217,33 @@ npm run express -- pi --host <IP> --user <usuario> --release --yes --reboot  # y
 
 - obtiene el paquete `survival-os-X.Y.Z.tar.gz`: lo descarga y verifica (`--release`) o lo compila;
 - lo copia, comprueba su SHA-256 e instala en `/opt/survival-os` con el `install-system.sh` del propio paquete;
+- con quiosco, pone la **imagen de Survivelia OS** en lugar de la de Raspberry Pi (`scripts/pi-branding.sh`):
+  - pantalla de arranque y apagado (tema Plymouth `survivelia`; reconstruye el initramfs, ~1 min, solo si cambia);
+  - fondo del escritorio y de la pantalla de acceso;
+  - sin pantalla arcoíris ni logos de frambuesa: `disable_splash=1` en `config.txt` y `logo.nologo` en
+    `cmdline.txt`, con copia `.bak-survival-*`. **Es un cambio del arranque:** dilo al describir el plan;
+  - se ve al reiniciar (`--reboot`);
 - comprueba que responde (`/api/health`).
 
 Los datos y la configuración existentes **se conservan**; también se conserva la versión anterior.
 
+**La imagen de arranque:**
+
+- Si la persona quiere conservar la de Raspberry Pi: `--no-branding`.
+- Para ponerla en una Pi sin quiosco: `--branding`.
+- Las dos opciones, igual que `--no-kiosk`, se recuerdan en `/etc/survival-os/install.env` para las actualizaciones
+  desde la pantalla.
+- Por SSH, sin reinstalar:
+
+  ```sh
+  sudo bash /opt/survival-os/current/scripts/pi-branding.sh             # aplicar
+  sudo bash /opt/survival-os/current/scripts/pi-branding.sh --revert    # volver a la de Raspberry Pi
+  bash /opt/survival-os/current/scripts/pi-branding.sh --status         # qué está aplicado
+  ```
+
 **En otro Linux** (Debian o Ubuntu con systemd, x64 o arm64): añade `--no-kiosk`; el modo quiosco usa labwc, el
-escritorio de Raspberry Pi OS. La app queda en `http://127.0.0.1:3000` en ese equipo. Para usarla desde otros
-ordenadores, la portable suele ser mejor opción.
+escritorio de Raspberry Pi OS. Con `--no-kiosk` no se toca la imagen de arranque ni el escritorio. La app queda en
+`http://127.0.0.1:3000` en ese equipo. Para usarla desde otros ordenadores, la portable suele ser mejor opción.
 
 **Códigos de salida:**
 

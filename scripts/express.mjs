@@ -13,8 +13,10 @@
  *                                                              versión portable para ESTE sistema, lista para usar
  *   npm run express -- stop [--dest DIR]                       cerrar la portable (p. ej. antes de actualizar su carpeta)
  *   npm run express -- ssh-setup --host IP --user USUARIO      preparar el acceso SSH sin contraseña a la Pi
- *   npm run express -- pi (--host IP --user USUARIO [--key F] [--port 22] | --local) [--release] [--no-kiosk] [--reboot] [--yes]
+ *   npm run express -- pi (--host IP --user USUARIO [--key F] [--port 22] | --local) [--release] [--no-kiosk] [--no-branding] [--reboot] [--yes]
  *                                                              instalar o actualizar en una Raspberry Pi o Linux con systemd
+ *                                                              (con quiosco: arranque y escritorio con la imagen de Survivelia OS;
+ *                                                              --no-branding la deja como está, --branding la fuerza sin quiosco)
  *                                                              (--local: en ESTE Linux, p. ej. el agente corre en la propia Pi)
  *   npm run express -- android [--release | --apk FICHERO] [--abi arm64|x86_64] [--serial S] [--yes]
  *                                                              APK para Android: descargar/compilar y, con adb, instalar
@@ -334,6 +336,8 @@ async function pi() {
     console.log(`\nSe instalará (o actualizará) Survivelia OS en ${t.dest}:`)
     console.log(`  Origen: ${flag('release') ? 'última versión publicada en GitHub (verificada)' : 'compilado desde este código (añade --release para descargar la publicada)'}.`)
     console.log('  /opt/survival-os, usuario de servicio «survival», servicios survival-*, modo quiosco (salvo --no-kiosk).')
+    if (!flag('no-branding') && (!flag('no-kiosk') || flag('branding')))
+      console.log('  Imagen de Survivelia OS al arrancar, en el escritorio y en la pantalla de acceso, en lugar de la de Raspberry Pi (salvo --no-branding).')
     console.log('  Los datos y la configuración existentes se conservan. Vuelve a lanzar con --yes para continuar.')
     process.exit(0)
   }
@@ -358,11 +362,13 @@ async function pi() {
   say('Instalando (sudo install-system.sh)…')
   // install-system.sh sale del propio paquete: siempre la misma versión que se instala.
   const top = name.replace(/\.tar\.gz$/, '')
+  // Se recuerdan en la Pi (/etc/survival-os/install.env): las actualizaciones desde la pantalla los reutilizan.
+  const installFlags = ['kiosk', 'no-kiosk', 'branding', 'no-branding'].filter((f) => flag(f)).map((f) => ` --${f}`).join('')
   const installCmd = [
     'cd /tmp',
     `sha256sum -c ${name}.sha256`,
     `tar -xzf ${name} -O ${top}/scripts/install-system.sh > /tmp/survival-install-system.sh`,
-    `sudo -n bash /tmp/survival-install-system.sh /tmp/${name}${flag('no-kiosk') ? ' --no-kiosk' : ''}`,
+    `sudo -n bash /tmp/survival-install-system.sh /tmp/${name}${installFlags}`,
   ].join(' && ')
   if (t.ssh(installCmd, true) !== 0) fail('la instalación ha fallado (ver mensajes)')
   say('Comprobando que responde…')

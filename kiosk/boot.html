@@ -16,6 +16,12 @@
   #help p { color: #ece6d6; font-size: 16px; margin: 6px 0; }
   code { font-family: ui-monospace, monospace; color: #e5b85c; }
   button { margin-top: 8px; min-height: 56px; padding: 0 28px; font-size: 18px; font-weight: 700; border-radius: 10px; border: 1px solid #8cbf96; background: #1e2823; color: #ece6d6; }
+  /* Mismo fondo que el arranque y el escritorio (kiosk/branding): la transición se ve continua. */
+  /* El logo y el nombre ya están en la imagen: el h1 queda solo para lectores y el estado va abajo. */
+  body { background: #0f1412 url('branding/wallpaper.jpg') center / cover no-repeat; }
+  main { justify-content: flex-end; padding-bottom: 12vh; }
+  h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  #help { background: rgba(15, 20, 18, .88); }
 </style>
 </head>
 <body>

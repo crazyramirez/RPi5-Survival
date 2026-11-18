@@ -22,8 +22,12 @@ sudo bash /tmp/install-system.sh /tmp/survival-os-0.7.0.tar.gz
 
 `install-system.sh` (idempotente): usuario `survival`, `/opt/survival-os` (release verificada con SHA-256),
 Node 24 LTS, kiwix-tools 3.8.2 (hash fijado), paquetes `gpsd cryptsetup-bin poppler-utils`, unidades systemd,
-regla polkit (apagar/reiniciar), regla udev (ESP32), kiosco (unidad de usuario `survival-kiosk.path`), y
-desactiva `cups`, `ModemManager`, `NetworkManager-wait-online` y `wayvnc`. Deshacer: `uninstall-system.sh`.
+regla polkit (apagar/reiniciar), regla udev (ESP32), kiosco (unidad de usuario `survival-kiosk.path`), imagen de
+Survivelia OS en arranque, escritorio y pantalla de acceso (`pi-branding.sh`: tema Plymouth `survivelia`,
+`disable_splash=1`, `logo.nologo`; `--no-branding` para no tocarla), y desactiva `cups`, `ModemManager`,
+`NetworkManager-wait-online` y `wayvnc`. `--no-kiosk`/`--no-branding` se recuerdan en
+`/etc/survival-os/install.env`. Deshacer: `uninstall-system.sh` (también la imagen; o solo ella con
+`pi-branding.sh --revert`).
 
 ## 3. Contenidos
 

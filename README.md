@@ -246,9 +246,18 @@ El instalador:
 - deja la aplicación en `/opt/survival-os` y crea el usuario de servicio `survival`;
 - instala los servicios `survival-*`, cada uno aislado y escuchando solo en el propio equipo;
 - activa el modo quiosco para el usuario de escritorio, que detecta solo;
+- pone la **imagen de Survivelia OS** en lugar de la de Raspberry Pi: pantalla de arranque y apagado, fondo del
+  escritorio y de la pantalla de acceso; quita además la pantalla arcoíris y los logos de frambuesa
+  (`disable_splash=1` en `config.txt` y `logo.nologo` en `cmdline.txt`, con copia de seguridad);
 - conserva la versión anterior para poder volver atrás.
 
-Para desinstalar: `sudo bash /opt/survival-os/current/scripts/uninstall-system.sh`. La
+Opciones: `--no-kiosk` (otro Linux, sin pantalla completa) y `--no-branding` (dejar la imagen de Raspberry Pi). Se
+recuerdan para las actualizaciones; `--kiosk` y `--branding` las vuelven a activar. La imagen también se puede
+aplicar o quitar sola: `sudo bash /opt/survival-os/current/scripts/pi-branding.sh` (o `--revert`; `--status` para
+ver qué hay).
+
+Para desinstalar: `sudo bash /opt/survival-os/current/scripts/uninstall-system.sh` (vuelve también a la imagen de
+Raspberry Pi). La
 [puesta en marcha](docs/commissioning.md) explica cada paso con más detalle (pantalla, táctil, GPS, LoRa).
 
 ## La primera vez: configurarlo todo con un clic

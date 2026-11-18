@@ -86,3 +86,5 @@ echo
 echo "Arranque manual:   $PREFIX/current/scripts/run.sh"
 echo "Prueba offline:    $PREFIX/current/scripts/test-offline.sh"
 echo "Abrir en la Pi:    http://127.0.0.1:3000"
+echo "Imagen de arranque y escritorio de Survivelia OS (opcional, con sudo):"
+echo "                   sudo bash $PREFIX/current/scripts/pi-branding.sh   (deshacer: --revert)"

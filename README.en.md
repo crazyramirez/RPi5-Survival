@@ -247,9 +247,17 @@ The installer:
 - puts the application in `/opt/survival-os` and creates the `survival` service user;
 - installs the `survival-*` services, each one sandboxed and listening only on the device itself;
 - enables kiosk mode for the desktop user, which it detects by itself;
+- puts the **Survivelia OS artwork** in place of the Raspberry Pi one: boot and shutdown splash, desktop and login
+  screen wallpaper; it also removes the rainbow screen and the raspberry logos (`disable_splash=1` in `config.txt`
+  and `logo.nologo` in `cmdline.txt`, with a backup);
 - keeps the previous version so you can roll back.
 
-To uninstall: `sudo bash /opt/survival-os/current/scripts/uninstall-system.sh`. The
+Options: `--no-kiosk` (another Linux, no full screen) and `--no-branding` (keep the Raspberry Pi artwork). They are
+remembered for updates; `--kiosk` and `--branding` turn them back on. The artwork can also be applied or removed on
+its own: `sudo bash /opt/survival-os/current/scripts/pi-branding.sh` (or `--revert`; `--status` shows what is set).
+
+To uninstall: `sudo bash /opt/survival-os/current/scripts/uninstall-system.sh` (it also restores the Raspberry Pi
+artwork). The
 [commissioning guide](docs/commissioning.md) (in Spanish) explains each step in more detail (screen, touch, GPS,
 LoRa).
 

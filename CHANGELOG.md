@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.13.5 — 2026-11-19 · Raspberry Pi: la imagen de arranque en todas las instalaciones
+
+### Cambiado
+- **Imagen de Survivelia OS en cualquier instalación de la Pi:** con `express pi` (agentes), con
+  `sudo install-system.sh` a mano y en las actualizaciones desde la pantalla, la Pi queda con la pantalla de arranque,
+  el fondo del escritorio y la pantalla de acceso de Survivelia OS. Nuevo `scripts/pi-branding.sh` para aplicarla
+  sola, quitarla (`--revert`) o ver qué hay (`--status`), también tras la instalación sin sudo de `install.sh`.
+- **La pantalla «Arrancando…» del quiosco** usa la misma imagen: del arranque al escritorio y a la app sin saltos.
+- **Opciones de instalación recordadas:** `--no-kiosk` y el nuevo `--no-branding` (conservar la imagen de Raspberry
+  Pi) se guardan en `/etc/survival-os/install.env`, así que una actualización desde la pantalla ya no activa el
+  quiosco ni la imagen en un equipo instalado sin ellos. `--kiosk` y `--branding` los vuelven a activar.
+
 ## 0.13.4 — 2026-11-18 · Raspberry Pi: imagen propia al arrancar
 
 ### Cambiado

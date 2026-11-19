@@ -350,6 +350,15 @@ button {
   display: none !important;
 }
 
+/* Controles que solo se ven en el modo lectura (p. ej. la letra flotante del lector). */
+.reading-only {
+  display: none !important;
+}
+
+:root[data-reading='on'] .reading-only {
+  display: inline-flex !important;
+}
+
 :root[data-reading='on'] .reading-host {
   grid-template-rows: minmax(0, 1fr) !important;
 }

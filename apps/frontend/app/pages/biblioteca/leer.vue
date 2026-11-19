@@ -130,9 +130,20 @@ function readerDocs(): Document[] {
 
 watch(night, () => readerDocs().forEach(applyNight))
 
+// Tamaño de letra: zoom del artículo (como el del navegador; vale aunque el libro fije la letra en px y el texto se
+// recoloca sin desbordar). El visor de Kiwix que lo envuelve no se escala: solo el artículo.
+const { pct: fontPct } = useReaderFont()
+function applyFont(doc: Document): void {
+  const root = doc.documentElement
+  if (!root || root.hasAttribute('data-survival-viewer')) return
+  root.style.setProperty('zoom', fontPct.value === 100 ? '' : String(fontPct.value / 100))
+}
+watch(fontPct, () => readerDocs().forEach(applyFont))
+
 function injectTouch(doc: Document | null | undefined): void {
   if (!doc?.head) return
   applyNight(doc)
+  applyFont(doc)
   if (doc.getElementById('survival-touch')) return
   const st = doc.createElement('style')
   st.id = 'survival-touch'
@@ -268,8 +279,10 @@ onMounted(() => {
         <component :is="night ? Sun : Moon" :size="20" aria-hidden="true" />
         {{ night ? t('lib.reader.day') : t('lib.reader.night') }}
       </button>
+      <ReaderFontControl v-if="src" />
       <ReadingModeButton v-if="src" />
     </header>
+    <ReaderFontControl v-if="src" floating />
     <!-- Red de seguridad: sin allow-top-navigation ni allow-popups, nada del ZIM puede sacar al usuario de la app. -->
     <iframe
       v-if="src" ref="frame" :src="src" :class="{ night }" :title="t('lib.reader')"

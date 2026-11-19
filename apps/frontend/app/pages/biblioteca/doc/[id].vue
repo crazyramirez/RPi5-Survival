@@ -24,6 +24,18 @@ onMounted(async () => {
   }
 })
 
+/** Tamaño de letra (variable --fs del documento): se cambia sin recargar, conservando por dónde se lee. */
+const { pct: fontPct } = useReaderFont()
+const textFrame = ref<HTMLIFrameElement | null>(null)
+function applyFont(): void {
+  try {
+    textFrame.value?.contentDocument?.documentElement.style.setProperty('--fs', String(fontPct.value / 100))
+  } catch {
+    // documento aún no cargado
+  }
+}
+watch(fontPct, applyFont)
+
 const srcdoc = computed(() => {
   if (!doc.value || doc.value.kind === 'pdf') return ''
   // Paleta del documento (día / noche) con el acento de la app.
@@ -34,7 +46,7 @@ const srcdoc = computed(() => {
   return `<!doctype html><html lang="${locale.value}"><head><meta charset="utf-8"><style>
     html{background:${c.bg}}
     body{margin:0;padding:clamp(14px,2.2vw,40px) clamp(16px,3.5vw,72px) 48px;background:${c.bg};color:${c.fg};
-      font:clamp(17px,0.45vw + 13px,22px)/1.6 system-ui,'Segoe UI',sans-serif;overflow-wrap:break-word}
+      font:calc(clamp(17px,0.45vw + 13px,22px) * var(--fs,1))/1.6 system-ui,'Segoe UI',sans-serif;overflow-wrap:break-word}
     h2,h3,h4{line-height:1.25;margin:1.4em 0 .5em;letter-spacing:-.01em}
     h2{font-size:1.45em;padding-bottom:.3em;border-bottom:2px solid ${c.accent}}
     h2:first-child{margin-top:0}
@@ -74,11 +86,14 @@ const srcdoc = computed(() => {
         <component :is="night ? Sun : Moon" :size="20" aria-hidden="true" />
         {{ night ? t('lib.reader.day') : t('lib.reader.night') }}
       </button>
+      <ReaderFontControl v-if="doc && doc.kind !== 'pdf'" />
       <ReadingModeButton v-if="doc" />
     </header>
     <div v-if="error" class="notice tone-danger">{{ error }}</div>
     <PdfViewer v-else-if="doc?.kind === 'pdf'" :src="`/api/library/docs/${doc.id}/raw`" />
-    <iframe v-else-if="doc" :srcdoc="srcdoc" sandbox="" :title="doc.title" />
+    <!-- Sin scripts (sandbox): aunque sea hostil no ejecuta nada. allow-same-origin solo deja a la app ajustar la letra. -->
+    <iframe v-else-if="doc" ref="textFrame" :srcdoc="srcdoc" sandbox="allow-same-origin" :title="doc.title" @load="applyFont" />
+    <ReaderFontControl v-if="doc && doc.kind !== 'pdf'" floating />
   </div>
 </template>
 

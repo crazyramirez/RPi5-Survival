@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.12 — 2026-11-19 · Tamaño de letra en el lector
+
+### Añadido
+- **Tamaño de letra en el lector de libros** (Wikipedia, Wikilibros y demás libros de la biblioteca) y en los
+  documentos de texto: control **A− · % · A+** en la barra (del 80 al 200 %; tocar el % vuelve al 100 %). En el
+  lector de libros escala el artículo como el zoom del navegador, así que vale para cualquier libro y el texto se
+  recoloca sin salirse de la pantalla. Se aplica al momento, sin recargar ni perder por dónde se lee, y se recuerda.
+  En pantalla completa aparece como una píldora flotante abajo a la derecha.
+
 ## 0.13.11 — 2026-11-19 · Modo lectura a pantalla completa
 
 ### Añadido

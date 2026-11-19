@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.13.7 — 2026-11-19 · Mantenimiento: la actualización, lo primero y compacta
+
+### Cambiado
+- **Actualización del sistema arriba del todo en Mantenimiento**, a todo el ancho y antes del resumen: lo primero
+  que se ve al entrar, en la Pi, la portable y Android. El aviso de la barra de estado sigue llevando a ella.
+- **Tarjeta de actualizaciones compacta** (de unos 420 a 150 px en el panel de la Pi): estado, versión y
+  comprobación en una fila con «Buscar ahora» / «Instalar» a la derecha; el modo es un selector segmentado
+  (Automática · Solo avisar · Desactivada) con su explicación al lado.
+- **Red, hora y USB en una sola sección** (tres pestañas): Red Wi-Fi junto a Memorias USB, y Fecha y hora junto a
+  Copia de seguridad a USB.
+
 ## 0.13.6 — 2026-11-19 · Teclados Bluetooth en un toque y pantalla que despierta sin pulsar
 
 ### Corregido

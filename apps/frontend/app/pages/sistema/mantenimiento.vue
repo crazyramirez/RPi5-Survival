@@ -104,7 +104,7 @@ const key = (f: UsbFile): string => `${f.media}::${f.path}`
 
 // ---- Presentación: secciones con pestañas fijas (solo navegación visual, sin efectos en el equipo).
 // Contenidos primero: es a lo que más se viene (descargas y «Descargarlo todo»).
-const SECTIONS = ['content', 'net', 'usb', 'hw'] as const
+const SECTIONS = ['content', 'net', 'hw'] as const
 type SectionId = (typeof SECTIONS)[number]
 const pageEl = ref<HTMLElement | null>(null)
 const activeSection = ref<SectionId>('content')
@@ -171,6 +171,9 @@ const PIN_LEGEND = [
 <template>
   <div ref="pageEl" class="page">
     <PageHeader :title="t('mnt.title')" :icon="Wrench" :back="{ to: '/sistema', label: t('module.system') }" />
+
+    <!-- Actualización del sistema (ADR 0021): lo primero que se ve al entrar (Pi, portable y Android). -->
+    <UpdateCard id="mnt-update" class="update-first" />
 
     <!-- Misma estructura en la Pi y en la portable (ADR 0014): resumen, pestañas y secciones. -->
     <!-- Resumen: cada baldosa lleva a su sección. -->
@@ -335,7 +338,7 @@ const PIN_LEGEND = [
       </div>
     </section>
 
-    <!-- ============================================================ Red y hora -->
+    <!-- ============================================================ Red, hora y USB -->
     <section id="mnt-net" data-sec="net" class="mnt-sec">
       <h2 class="ui-sec">{{ t('ui.mnt.sec.net') }}</h2>
       <!-- Portable: carpetas, instalar en este equipo, cerrar y compartir en la red local. -->
@@ -345,10 +348,9 @@ const PIN_LEGEND = [
         <PortableCard v-else />
         <UsbCard v-if="!android" />
       </div>
-      <!-- Dos columnas con filas del mismo alto: Actualizaciones | Red Wi-Fi · Compartir | Fecha y hora. -->
+      <!-- Dos columnas con filas del mismo alto: Red Wi-Fi | Memorias USB · Fecha y hora | Copia de seguridad
+           (portable: «Compartir en la red local» a todo el ancho). -->
       <div class="pairs">
-        <!-- Actualizaciones desde GitHub (ADR 0021): Pi, portable y Android. -->
-        <UpdateCard id="mnt-update" />
         <AppCard
           :title="t('mnt.net')" :icon="radio === 'disabled' ? WifiOff : Wifi" :tone="radio === 'enabled' ? 'info' : 'muted'"
           :pill="portable ? undefined : radio === 'enabled' ? t('mnt.net.on') : radio === 'disabled' ? t('mnt.net.off') : t('state.unknown')"
@@ -374,36 +376,7 @@ const PIN_LEGEND = [
           <JobLog v-if="!portable" :status="wifiJob.status.value" :error="wifiJob.error.value" :lines="2" />
         </AppCard>
 
-        <ShareCard v-if="portable" />
-
-        <AppCard :title="t('mnt.time')" :icon="Clock" :tone="timeSource === 'unverified' ? 'warn' : 'ok'">
-          <div class="ui-figure">
-            <span class="num mono">{{ formatClock(now) }}</span>
-            <span v-if="timeSource" class="ui-chip" :class="`tone-${timeSource === 'unverified' ? 'warn' : 'ok'}`">{{ t(`sys.time.source.${timeSource}` as never) }}</span>
-            <span class="cap">{{ formatDate(now) }}</span>
-          </div>
-          <p v-if="portable" class="notice tone-info">{{ t(android ? 'mnt.time.android' : 'mnt.time.portable') }}</p>
-          <p v-else>{{ t('mnt.time.note') }}</p>
-          <div v-if="!portable" class="row2">
-            <input v-model="dateInput" type="date" class="ui-field grow" />
-            <input v-model="timeInput" type="time" class="ui-field" />
-          </div>
-          <button
-            v-if="!portable" type="button" class="btn" :disabled="!dateInput || !timeInput || timeJob.running.value"
-            @click="pending = { title: t('mnt.time.confirm'), body: `${dateInput} ${timeInput}`, label: t('mnt.time.set'), run: () => timeJob.start({ iso: `${dateInput} ${timeInput}` }) }"
-          >
-            <Clock :size="18" /> {{ t('mnt.time.set') }}
-          </button>
-          <JobLog v-if="!portable" :status="timeJob.status.value" :error="timeJob.error.value" :lines="2" />
-        </AppCard>
-      </div>
-    </section>
-
-    <!-- ============================================================ USB y copias -->
-    <section id="mnt-usb" data-sec="usb" class="mnt-sec">
-      <h2 class="ui-sec">{{ t('ui.mnt.sec.usb') }}</h2>
-      <div class="bento">
-        <AppCard :title="t('mnt.usb')" :icon="Usb" :tone="scan?.media.length ? 'info' : 'muted'">
+        <AppCard id="mnt-usb" :title="t('mnt.usb')" :icon="Usb" :tone="scan?.media.length ? 'info' : 'muted'">
           <button type="button" class="btn btn-primary" :disabled="scanJob.running.value" @click="scanJob.start()">
             <Usb :size="18" /> {{ scanJob.running.value ? t('state.loading') : t('mnt.usb.scan') }}
           </button>
@@ -447,6 +420,27 @@ const PIN_LEGEND = [
           <JobLog :status="scanJob.status.value?.state === 'failed' ? scanJob.status.value : null" :error="scanJob.error.value" :lines="3" />
         </AppCard>
 
+        <AppCard :title="t('mnt.time')" :icon="Clock" :tone="timeSource === 'unverified' ? 'warn' : 'ok'">
+          <div class="ui-figure">
+            <span class="num mono">{{ formatClock(now) }}</span>
+            <span v-if="timeSource" class="ui-chip" :class="`tone-${timeSource === 'unverified' ? 'warn' : 'ok'}`">{{ t(`sys.time.source.${timeSource}` as never) }}</span>
+            <span class="cap">{{ formatDate(now) }}</span>
+          </div>
+          <p v-if="portable" class="notice tone-info">{{ t(android ? 'mnt.time.android' : 'mnt.time.portable') }}</p>
+          <p v-else>{{ t('mnt.time.note') }}</p>
+          <div v-if="!portable" class="row2">
+            <input v-model="dateInput" type="date" class="ui-field grow" />
+            <input v-model="timeInput" type="time" class="ui-field" />
+          </div>
+          <button
+            v-if="!portable" type="button" class="btn" :disabled="!dateInput || !timeInput || timeJob.running.value"
+            @click="pending = { title: t('mnt.time.confirm'), body: `${dateInput} ${timeInput}`, label: t('mnt.time.set'), run: () => timeJob.start({ iso: `${dateInput} ${timeInput}` }) }"
+          >
+            <Clock :size="18" /> {{ t('mnt.time.set') }}
+          </button>
+          <JobLog v-if="!portable" :status="timeJob.status.value" :error="timeJob.error.value" :lines="2" />
+        </AppCard>
+
         <AppCard :title="t('mnt.backup')" :icon="HardDriveDownload" tone="info">
           <p>{{ t('mnt.backup.note') }}</p>
           <select v-model="backupMedia" class="ui-field">
@@ -463,6 +457,8 @@ const PIN_LEGEND = [
           </button>
           <JobLog :status="backupJob.status.value" :error="backupJob.error.value" :lines="4" />
         </AppCard>
+
+        <ShareCard v-if="portable" />
       </div>
     </section>
 
@@ -617,7 +613,7 @@ const PIN_LEGEND = [
   top: -0.75rem;
   z-index: 5;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.3rem;
   /* Sin margen negativo arriba: el fondo opaco taparía el borde inferior de las baldosas del resumen. */
   margin: 0 -0.875rem;
@@ -644,9 +640,14 @@ const PIN_LEGEND = [
 }
 
 .mnt-sec,
-#mnt-update {
+#mnt-update,
+#mnt-usb {
   /* Bajo las pestañas fijas (≈ 4,3 rem de alto menos los 0,75 rem del relleno de .page). */
   scroll-margin-top: 4rem;
+}
+
+.update-first {
+  margin-bottom: var(--gap);
 }
 
 /* ------------------------------------------------------------ Rejillas */

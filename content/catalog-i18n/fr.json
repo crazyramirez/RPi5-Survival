@@ -574,6 +574,118 @@
     "juegos": {
       "title": "Jeux hors ligne",
       "description": "Une collection de jeux Viseni Games pour jouer sans Internet. Un bouton « Jeux » apparaît dans la barre une fois téléchargés."
+    },
+    "wikipedia-medicina-de": {
+      "title": "Wikipédia médicale en allemand",
+      "description": "Articles de médecine et de santé de Wikipédia en allemand (WikiMed), avec images."
+    },
+    "wikipedia-medicina-zh": {
+      "title": "Wikipédia médicale en chinois",
+      "description": "Articles de médecine et de santé de Wikipédia en chinois (WikiMed), avec images."
+    },
+    "wikipedia-medicina-ja": {
+      "title": "Wikipédia médicale en japonais",
+      "description": "Articles de médecine et de santé de Wikipédia en japonais (WikiMed), avec images."
+    },
+    "wikipedia-de": {
+      "title": "Wikipédia en allemand",
+      "description": "L'encyclopédie complète."
+    },
+    "wikipedia-zh": {
+      "title": "Wikipédia en chinois",
+      "description": "L'encyclopédie complète."
+    },
+    "wikipedia-ja": {
+      "title": "Wikipédia en japonais",
+      "description": "L'encyclopédie complète."
+    },
+    "wiktionary-de": {
+      "title": "Wikizionario (allemand)",
+      "description": "Dictionnaire : définitions, étymologie et traductions."
+    },
+    "wiktionary-zh": {
+      "title": "Wikizionario (chinois)",
+      "description": "Dictionnaire : définitions, étymologie et traductions."
+    },
+    "wiktionary-ja": {
+      "title": "Wikizionario (japonais)",
+      "description": "Dictionnaire : définitions, étymologie et traductions."
+    },
+    "wikivoyage-de": {
+      "title": "Wikivoyage (allemand)",
+      "description": "Guide de voyage : destinations, transports, hébergement."
+    },
+    "wikivoyage-zh": {
+      "title": "Wikivoyage (chinois)",
+      "description": "Guide de voyage : destinations, transports, hébergement."
+    },
+    "wikivoyage-ja": {
+      "title": "Wikivoyage (japonais)",
+      "description": "Guide de voyage : destinations, transports, hébergement."
+    },
+    "wikisource-de": {
+      "title": "Wikisource (allemand)",
+      "description": "Textes du domaine public : lois, documents historiques, littérature."
+    },
+    "wikisource-zh": {
+      "title": "Wikisource (chinois)",
+      "description": "Textes du domaine public : lois, documents historiques, littérature."
+    },
+    "wikisource-ja": {
+      "title": "Wikisource (japonais)",
+      "description": "Textes du domaine public : lois, documents historiques, littérature."
+    },
+    "ifixit-de": {
+      "title": "iFixit en allemand",
+      "description": "Guides de réparation pas à pas en allemand : électronique, véhicules, électroménager."
+    },
+    "ifixit-zh": {
+      "title": "iFixit en chinois",
+      "description": "Guides de réparation pas à pas en chinois : électronique, véhicules, électroménager."
+    },
+    "ifixit-ja": {
+      "title": "iFixit en japonais",
+      "description": "Guides de réparation pas à pas en japonais : électronique, véhicules, électroménager."
+    },
+    "wikibooks-de": {
+      "title": "Wikibooks (allemand)",
+      "description": "Manuels et livres scolaires libres."
+    },
+    "wikibooks-zh": {
+      "title": "Wikibooks (chinois)",
+      "description": "Manuels et livres scolaires libres."
+    },
+    "wikibooks-ja": {
+      "title": "Wikibooks (japonais)",
+      "description": "Manuels et livres scolaires libres."
+    },
+    "gutenberg-de": {
+      "title": "Projet Gutenberg en allemand",
+      "description": "Livres classiques en allemand du domaine public."
+    },
+    "gutenberg-zh": {
+      "title": "Projet Gutenberg en chinois",
+      "description": "Livres classiques en chinois du domaine public."
+    },
+    "gutenberg-ja": {
+      "title": "Projet Gutenberg en japonais",
+      "description": "Livres classiques en japonais du domaine public."
+    },
+    "wikiversity-de": {
+      "title": "Wikiversità (allemand)",
+      "description": "Cours et supports d'apprentissage."
+    },
+    "wikiversity-zh": {
+      "title": "Wikiversità (chinois)",
+      "description": "Cours et supports d'apprentissage."
+    },
+    "phet-de": {
+      "title": "Simulations PhET en allemand",
+      "description": "Simulations interactives de physique, chimie et mathématiques, en allemand."
+    },
+    "phet-ja": {
+      "title": "Simulations PhET en japonais",
+      "description": "Simulations interactives de physique, chimie et mathématiques, en japonais."
     }
   },
   "models": {},

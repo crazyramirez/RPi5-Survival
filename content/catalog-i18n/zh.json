@@ -1,0 +1,697 @@
+{
+  "groups": {
+    "salud": "健康与急救",
+    "preparacion": "应急准备与生存",
+    "saber": "百科全书与参考资料",
+    "oficios": "维修、手艺与自给自足",
+    "libros": "图书与学习",
+    "manuales": "PDF 手册",
+    "mapas": "地图与路线",
+    "asistente": "离线助手",
+    "juegos": "游戏"
+  },
+  "items": {
+    "wikipedia-medicina": {
+      "title": "医学维基百科",
+      "description": "维基百科中的医学与健康条目，含图片。"
+    },
+    "medlineplus": {
+      "title": "MedlinePlus",
+      "description": "医学百科：疾病与药物（美国国家医学图书馆）。"
+    },
+    "zimgit-medicine": {
+      "title": "Medical Library",
+      "description": "野外医学与急救医学书籍。"
+    },
+    "military-medicine": {
+      "title": "Military Medicine",
+      "description": "军队的战地医学与野外医学手册。"
+    },
+    "cdc-travel": {
+      "title": "CDC Travelers' Health",
+      "description": "各地区的疾病、疫苗与旅行健康。"
+    },
+    "mdwiki": {
+      "title": "MDWiki",
+      "description": "英文医学百科。西班牙语内容已由医学维基百科和 MedlinePlus 覆盖。"
+    },
+    "ready-gov": {
+      "title": "Ready.gov",
+      "description": "灾害准备：家庭计划、应急包、极端天气、火灾、停电。"
+    },
+    "zimgit-post-disaster": {
+      "title": "Post-Disaster Library",
+      "description": "灾后资源：避难所、环境卫生、能源、通信。"
+    },
+    "zimgit-water": {
+      "title": "Water Treatment Library",
+      "description": "取水与饮用水净化。"
+    },
+    "zimgit-food": {
+      "title": "Food for Preppers",
+      "description": "食物的保存与制作。"
+    },
+    "zimgit-knots": {
+      "title": "A Library of Knots",
+      "description": "绳结、捆扎与缝合，附插图。"
+    },
+    "scoutwiki": {
+      "title": "WikiRoca（童军）",
+      "description": "童军技能：定向、露营、绳结。"
+    },
+    "outdoors-qa": {
+      "title": "The Great Outdoors Q&A",
+      "description": "关于登山、露营与野外生存的问答。"
+    },
+    "armypubs": {
+      "title": "美国陆军手册",
+      "description": "Army Publishing Directorate：包括生存、急救与定向手册。"
+    },
+    "wikipedia": {
+      "title": "西班牙语维基百科",
+      "description": "完整的百科全书。"
+    },
+    "wiktionary": {
+      "title": "维基词典（西班牙语）",
+      "description": "词典：释义、词源与翻译。"
+    },
+    "wikivoyage": {
+      "title": "维基导游（西班牙语）",
+      "description": "旅行指南：目的地、交通、住宿。"
+    },
+    "wikisource": {
+      "title": "维基文库（西班牙语）",
+      "description": "公有领域文本：法律、历史文献、文学作品。"
+    },
+    "ifixit": {
+      "title": "iFixit（西班牙语）",
+      "description": "分步维修指南：电子产品、车辆、家用电器。"
+    },
+    "lowtech": {
+      "title": "Low-Tech Magazine",
+      "description": "无需高科技的能源与简易技术（也有西班牙语文章）。"
+    },
+    "appropedia": {
+      "title": "Appropedia",
+      "description": "适用技术：水、能源、建造、农业。"
+    },
+    "energypedia": {
+      "title": "energypedia",
+      "description": "偏远地区的太阳能、生物质能与电气化。"
+    },
+    "diy-qa": {
+      "title": "Home Improvement Q&A",
+      "description": "水管、电工、木工与家居维修。"
+    },
+    "gardening-qa": {
+      "title": "Gardening Q&A",
+      "description": "菜园、植物与病虫害。"
+    },
+    "mechanics-qa": {
+      "title": "Motor Vehicle Mechanics Q&A",
+      "description": "汽车与摩托车机械维修。"
+    },
+    "ham-qa": {
+      "title": "Amateur Radio Q&A",
+      "description": "业余无线电、天线与通信。"
+    },
+    "cooking-qa": {
+      "title": "Seasoned Advice",
+      "description": "烹饪与食物保存。"
+    },
+    "sustainability-qa": {
+      "title": "Sustainable Living Q&A",
+      "description": "可持续生活与自给自足。"
+    },
+    "wikibooks": {
+      "title": "维基教科书（西班牙语）",
+      "description": "自由的手册与教科书。"
+    },
+    "gutenberg": {
+      "title": "古腾堡计划（西班牙语）",
+      "description": "公有领域的西班牙语经典图书。"
+    },
+    "wikiversity": {
+      "title": "维基学院（西班牙语）",
+      "description": "课程与学习资料。"
+    },
+    "phet": {
+      "title": "PhET 模拟实验（西班牙语）",
+      "description": "物理、化学与数学的互动模拟实验。"
+    },
+    "mapa-espana": {
+      "title": "西班牙本土与巴利阿里群岛地图",
+      "description": "街道、小路与地形，可放大到街道级别（缩放级别 15）。"
+    },
+    "mapa-canarias": {
+      "title": "加那利群岛地图",
+      "description": "街道与小路，可放大到街道级别（缩放级别 15）。"
+    },
+    "mapa-mundo": {
+      "title": "世界地图（概览）",
+      "description": "国家、城市与主要道路（缩放级别 6）。"
+    },
+    "rutas-espana": {
+      "title": "离线路线：西班牙",
+      "description": "步行、骑行和驾车路线规划（BRouter）。"
+    },
+    "rutas-canarias": {
+      "title": "离线路线：加那利群岛",
+      "description": "步行、骑行和驾车路线规划（BRouter）。"
+    },
+    "asistente": {
+      "title": "离线助手（Qwen3 4B）",
+      "description": "回答问题时引用急救流程和图书馆内容。无需联网即可使用。"
+    },
+    "hesperian-donde-no-hay-doctor": {
+      "title": "《在没有医生的地方》（2017 年版）",
+      "description": "农村卫生参考手册：诊断、急救（第 10 章）、药物、感染、分娩，以及没有医生时的预防。"
+    },
+    "oms-atencion-basica-emergencia": {
+      "title": "《基本急救护理：伤员与急症患者的处置》（学员手册）",
+      "description": "创伤与急症的 ABCDE 处理法（气道、休克、烧伤、呼吸困难、意识丧失），适用于资源有限的第一响应者。"
+    },
+    "msf-medicamentos-esenciales": {
+      "title": "《基本药物：实用指南》（2026）",
+      "description": "每种药物一页：适应证、成人/儿童剂量、禁忌证与保存方法；使用急救药箱的关键。"
+    },
+    "msf-clinical-guidelines-en": {
+      "title": "Clinical guidelines: diagnosis and treatment manual (MSF, 2026)",
+      "description": "偏远环境下按症状和疾病分类的诊断与治疗临床指南（官方西班牙语版文件已损坏）。"
+    },
+    "oms-primera-ayuda-psicologica": {
+      "title": "《心理急救：现场工作者指南》",
+      "description": "如何在灾害或暴力事件后帮助处于危机中的人：观察、倾听、联系援助。"
+    },
+    "cicr-primeros-auxilios-conflictos": {
+      "title": "《武装冲突和其他暴力局势中的急救》（2013）",
+      "description": "危险环境下的急救员手册：安全、检伤分类、出血、伤口、骨折、烧伤与转运。"
+    },
+    "ifrc-tratamiento-agua-hogar-emergencias": {
+      "title": "《紧急情况下的家庭水处理与储存系统》",
+      "description": "在家净化饮用水：煮沸、加氯、SODIS 日光消毒、过滤、絮凝与安全储存，附图解传单。"
+    },
+    "hesperian-salud-ambiental": {
+      "title": "《社区环境卫生指南》",
+      "description": "饮用水与水源保护、厕所建造、蚊虫、垃圾、有毒物质，以及安全与紧急情况附录。"
+    },
+    "ops-gestion-cadaveres-desastres": {
+      "title": "《灾害中的遗体处理：第一响应者实用手册》（第 2 版）",
+      "description": "灾后遗体的收集、存放、身份辨认与移交，及其真实的卫生风险。"
+    },
+    "hesperian-libro-parteras": {
+      "title": "《助产士手册》",
+      "description": "面向助产士和未受过医学训练者：怀孕、分娩、并发症、产后与新生儿。"
+    },
+    "ops-complicaciones-embarazo-parto": {
+      "title": "《妊娠和分娩并发症的处理：助产士和医生指南》（第 2 版）",
+      "description": "按症状分类的产科急症处理流程（出血、子痫、梗阻性难产、脓毒症）及操作方法。"
+    },
+    "hesperian-donde-no-hay-dentista": {
+      "title": "《在没有牙医的地方》",
+      "description": "口腔卫生、牙痛、脓肿、拔牙和简单补牙，只需基本工具。"
+    },
+    "hesperian-donde-no-hay-doctor-mujeres": {
+      "title": "《在没有医生的地方：妇女卫生》（2024 年版）",
+      "description": "妇女健康：怀孕、性传播感染、暴力、心理健康、流产并发症与常见疾病。"
+    },
+    "cawst-tratamiento-agua-domiciliar": {
+      "title": "《家庭水处理与安全储存入门》（培训师手册，2011）",
+      "description": "多重屏障法：水源保护、沉淀、过滤（生物砂滤、陶瓷）、消毒与储存。"
+    },
+    "cawst-saneamiento-ambiental": {
+      "title": "《环境卫生入门》（培训师手册，2015）",
+      "description": "厕所、粪便管理、生活灰水、固体垃圾，以及预防粪口传播疾病的卫生措施。"
+    },
+    "ops-tratamiento-diarrea": {
+      "title": "《腹泻的治疗：卫生服务临床手册》",
+      "description": "脱水评估与口服及静脉补液 A/B/C 方案；痢疾与霍乱。"
+    },
+    "oms-brote-diarrea-aguda": {
+      "title": "《控制急性腹泻暴发的最初步骤》",
+      "description": "8 页小册子，用于霍乱或腹泻暴发的最初几天：确认、治疗、给水加氯与卫生措施。"
+    },
+    "oms-guia-humanitaria-mhgap": {
+      "title": "《mhGAP 人道主义干预指南》（mhGAP-HIG）",
+      "description": "由非专科人员在紧急情况下对急性应激、哀伤、抑郁、精神病性障碍、癫痫、饮酒问题与自杀风险进行临床处理。"
+    },
+    "ops-victimas-en-masa": {
+      "title": "《建立成批伤员救治系统》",
+      "description": "大量伤员同时出现时，如何组织检伤分类、前方医疗站、转运与协调。"
+    },
+    "oms-aps-ninos-adolescentes": {
+      "title": "《儿童和青少年初级卫生保健袖珍手册》（2025）",
+      "description": "诊断和治疗常见儿科问题并识别危险信号的袖珍指南。"
+    },
+    "cicr-cirugia-guerra-vol1": {
+      "title": "《战伤外科：在武装冲突和其他暴力局势中利用有限资源开展工作》第 1 卷",
+      "description": "创伤弹道学、检伤分类、清创、伤口与感染处理、麻醉，以及最低资源条件下的护理。"
+    },
+    "cicr-cirugia-guerra-vol2": {
+      "title": "《战伤外科：在武装冲突和其他暴力局势中利用有限资源开展工作》第 2 卷",
+      "description": "资源有限条件下按部位分类的外科（头部、胸部、腹部、四肢、烧伤）；面向医务人员。"
+    },
+    "oms-guias-calidad-agua": {
+      "title": "《饮用水水质准则》（第 4 版，含第 1 次增补）",
+      "description": "技术参考资料（636 页）：病原体、化学物质、消毒与水安全计划。"
+    },
+    "cawst-analisis-calidad-agua": {
+      "title": "《饮用水水质检测入门》（培训师手册，2013）",
+      "description": "现场水质检测：浊度、余氯、pH 值与简单的微生物检测。"
+    },
+    "ops-wash-coordinacion-emergencias": {
+      "title": "《饮用水、环境卫生和个人卫生领域：公共卫生紧急事件与灾害协调实用指南》",
+      "description": "灾害中的供水、环境卫生和个人卫生评估与应对，包括水质监测。"
+    },
+    "oms-enfermedades-agua-hogares": {
+      "title": "《在家庭中防治水传播疾病》",
+      "description": "为什么以及如何在家处理和储存饮用水（加氯、过滤器、SODIS 日光消毒、煮沸），附效果数据。"
+    },
+    "ops-salud-mental-desastres": {
+      "title": "《灾害中的心理健康实用指南》",
+      "description": "灾后心理反应、危机干预、弱势群体与救援队伍的自我照护。"
+    },
+    "ops-salud-mental-promotor": {
+      "title": "《心理健康：社区卫生工作者指南》",
+      "description": "在社区中识别并陪伴抑郁、焦虑、暴力、饮酒问题与自杀风险的简明指南。"
+    },
+    "oms-mhgap-2": {
+      "title": "《精神、神经和物质使用障碍 mhGAP 干预指南 2.0》",
+      "description": "非专科医疗场所中抑郁、精神病性障碍、癫痫、痴呆与成瘾的评估和治疗流程图。"
+    },
+    "oms-paludismo-grave": {
+      "title": "《重症疟疾的治疗：实用手册》（第 3 版）",
+      "description": "儿童与成人重症疟疾及其并发症的诊断与治疗。"
+    },
+    "oms-tetanos-emergencias": {
+      "title": "《人道主义紧急情况下破伤风治疗的现行建议》",
+      "description": "简短技术说明：灾后伤口预防处理、免疫球蛋白、疫苗与破伤风的临床处理。"
+    },
+    "oms-malnutricion-grave": {
+      "title": "《重度营养不良的治疗：医生及其他高级卫生专业人员手册》",
+      "description": "重度营养不良治疗的 10 个步骤：低血糖、低体温、脱水与恢复喂养。"
+    },
+    "oms-uso-clinico-sangre-bolsillo": {
+      "title": "《血液的临床使用：袖珍手册》",
+      "description": "出血、创伤、产科和儿科中的容量补充、输血指征及替代方案。"
+    },
+    "oms-higiene-entorno-sanitario": {
+      "title": "《医疗卫生环境卫生基本标准》",
+      "description": "临时医疗点所需的最低用水量、环境卫生、废物处理与清洁标准。"
+    },
+    "ops-primera-ayuda-psicologica-comunidad": {
+      "title": "《心理急救。携手更坚强：帮助您自己和您所在社区的指南》（第 2 版）",
+      "description": "面向邻里和志愿者的社区图解版心理急救（大文件：63 MB）。"
+    },
+    "hesperian-aprendiendo-promover-salud": {
+      "title": "《学习促进健康》",
+      "description": "培训社区卫生工作者的方法；可用于教导他人（114 MB，分为 31 个 PDF）。"
+    },
+    "msf-cholera-epidemic-en": {
+      "title": "Management of a cholera epidemic (MSF)",
+      "description": "霍乱治疗中心的搭建、加氯消毒、隔离与后勤；无西班牙语 MSF 版本。"
+    },
+    "msf-public-health-engineering-en": {
+      "title": "Public health engineering in precarious situations (MSF, 2010)",
+      "description": "野外卫生工程：营地中的取水与水处理、厕所、垃圾处理与病媒控制。"
+    },
+    "oms-surgical-care-district-hospital-en": {
+      "title": "Surgical care at the district hospital (OMS, 2003)",
+      "description": "基本外科、麻醉与创伤技术，附插图；无西班牙语版本。"
+    },
+    "pc-guia-autoproteccion": {
+      "title": "《公民自我保护信息指南》",
+      "description": "西班牙官方自我保护指南：在家中和户外遇到紧急情况前、中、后应该怎么做。"
+    },
+    "guia-familias-autoproteccion-2025": {
+      "title": "《家庭指南：风险预防与自我保护》",
+      "description": "家庭应急计划、基本应急包，以及应对洪水、地震、火山、风暴、火灾和技术性风险的方法。"
+    },
+    "pc-guia-inundaciones": {
+      "title": "《公民洪水风险应对指南》",
+      "description": "按照西班牙官方标准，洪水或 DANA（切断低压）发生前、中、后应该怎么做。"
+    },
+    "pc-guia-fenomenos-meteorologicos": {
+      "title": "《公民恶劣天气应对指南》",
+      "description": "热浪与寒潮、雷暴、降雪、大风与沿海风暴。"
+    },
+    "pc-guia-riesgo-quimico-nuclear": {
+      "title": "《公民工业、化学和核紧急事件应对指南》",
+      "description": "工业、化学和核事故中的就地避险、疏散与应对。"
+    },
+    "ign-terremoto-tsunami": {
+      "title": "《地震前、中、后以及海啸时应该怎么做》",
+      "description": "趴下、掩护、抓牢；切断水电燃气，遇海啸时撤离。"
+    },
+    "sanidad-calor-folleto": {
+      "title": "《预防高温影响》（小册子）",
+      "description": "关于热浪、中暑和弱势人群的建议。"
+    },
+    "ifrc-kit-alojamiento": {
+      "title": "红十字会与红新月会国际联合会（IFRC）住所工具包",
+      "description": "用防水布、绳子和基本工具搭建应急住所（附插图）。"
+    },
+    "ops-wash-tratamiento-agua": {
+      "title": "《在使用点对饮用水进行应急处理》（技术说明 10）",
+      "description": "煮沸、加氯、过滤和日光消毒（SODIS），附剂量。"
+    },
+    "ops-wash-almacenamiento-agua": {
+      "title": "《紧急情况下的家庭储水》（技术说明 8）",
+      "description": "容器、卫生，以及在家安全管理储存的水。"
+    },
+    "ops-wash-saneamiento": {
+      "title": "《应急环境卫生：规划与技术方案》（技术说明 13）",
+      "description": "最初几天的应急厕所与粪便安全处理。"
+    },
+    "scouts-manual-orientacion": {
+      "title": "《定向基础手册》",
+      "description": "地图与指南针、地形判读与自然定向，附练习。"
+    },
+    "scouts-manual-cabuyeria": {
+      "title": "《绳结技术手册》（绳结与捆扎）",
+      "description": "用于搭建避难所、晾衣绳和营地构筑物的绳结与捆扎法。"
+    },
+    "iaru-guia-telecom-emergencia": {
+      "title": "《应急通信指南》（IARU，2016）",
+      "description": "应急网络、消息传递、电源与无线电设备；包括 PMR446 和 CB。"
+    },
+    "ure-manual-control-red": {
+      "title": "《业余无线电网络控制：培训手册》",
+      "description": "如何在西班牙主持和参与应急无线电网络。"
+    },
+    "ign-actividades-mtn": {
+      "title": "《国家地形图、正射影像和 LiDAR：地理活动》",
+      "description": "读懂地形图：比例尺、等高线、剖面与地形（65 MB）。"
+    },
+    "atp-3-50-21-survival": {
+      "title": "ATP 3-50.21 Survival（美国陆军，2018）",
+      "description": "现行生存手册：水、火、避难所、食物、信号与基础医疗。"
+    },
+    "fm-3-25-26-land-navigation": {
+      "title": "FM 3-25.26 Map Reading and Land Navigation",
+      "description": "地图判读、坐标、方位角、指南针与不用 GPS 的导航。"
+    },
+    "fm-21-76-survival": {
+      "title": "FM 21-76 / MCRP 3-02F Survival",
+      "description": "经典生存手册，附可食用和有毒植物的图解附录。"
+    },
+    "fao-una-huerta-para-todos": {
+      "title": "《人人都有菜园》（第 3 版）",
+      "description": "建立和维护家庭菜园：土壤、育苗、堆肥、病虫害与种植日历。"
+    },
+    "fao-huertos-familiares-urbanos": {
+      "title": "《城市家庭菜园生产实践》",
+      "description": "在容器和小空间中种植：基质、腐殖质、浇水与作物种植卡片。"
+    },
+    "fao-huerto-escolar": {
+      "title": "《创建和管理学校菜园》",
+      "description": "规划、播种和维护社区菜园。"
+    },
+    "fao-conservacion-frutas-hortalizas": {
+      "title": "《利用组合技术保存水果和蔬菜》",
+      "description": "不用冷藏保存水果和蔬菜：糖、酸度、防腐剂与温和加热，分步讲解。"
+    },
+    "fao-silos-metalicos-familiares": {
+      "title": "《家庭用谷物和豆类金属粮仓的建造与使用》",
+      "description": "用 0.12 至 4.2 m³ 的粮仓储存粮食数月而不生虫。"
+    },
+    "fao-captacion-agua-lluvia": {
+      "title": "《雨水收集与储存》",
+      "description": "利用屋顶、蓄水池、水窖和小型水塘收集并储存雨水。"
+    },
+    "fao-avicultura-familiar": {
+      "title": "《家庭家禽生产》（多样化经营小册子 3）",
+      "description": "家庭养鸡：品种、管理、饲喂与基本卫生防疫。"
+    },
+    "fao-conejo-cria": {
+      "title": "《兔：饲养与疾病》",
+      "description": "完整的养兔知识：兔舍、饲喂、繁殖与疾病。"
+    },
+    "wikipedia-medicina-fr": {
+      "title": "法语医学维基百科",
+      "description": "法语维基百科中的医学与健康条目（WikiMed），含图片。"
+    },
+    "wikipedia-medicina-it": {
+      "title": "意大利语医学维基百科",
+      "description": "意大利语维基百科中的医学与健康条目（WikiMed），含图片。"
+    },
+    "medlineplus-en": {
+      "title": "MedlinePlus（英语）",
+      "description": "英文医学百科：疾病与药物（美国国家医学图书馆）。"
+    },
+    "ready-gov-en": {
+      "title": "Ready.gov（英语）",
+      "description": "英文灾害准备资料：家庭计划、应急包、极端天气、火灾、停电。"
+    },
+    "scoutwiki-it": {
+      "title": "ScoutWiki（意大利语）",
+      "description": "意大利语童军技能：定向、露营、绳结。"
+    },
+    "scoutwiki-en": {
+      "title": "ScoutWiki（英语）",
+      "description": "英语童军技能：定向、露营、绳结。"
+    },
+    "wikipedia-fr": {
+      "title": "法语维基百科",
+      "description": "完整的百科全书。"
+    },
+    "wikipedia-it": {
+      "title": "意大利语维基百科",
+      "description": "完整的百科全书。"
+    },
+    "wikipedia-en": {
+      "title": "英语维基百科",
+      "description": "完整的百科全书。"
+    },
+    "wiktionary-fr": {
+      "title": "Wiktionnaire（法语）",
+      "description": "词典：释义、词源与翻译。"
+    },
+    "wiktionary-it": {
+      "title": "Wikizionario（意大利语）",
+      "description": "词典：释义、词源与翻译。"
+    },
+    "wiktionary-en": {
+      "title": "Wiktionary（英语）",
+      "description": "词典：释义、词源与翻译。"
+    },
+    "wikivoyage-fr": {
+      "title": "Wikivoyage（法语）",
+      "description": "旅行指南：目的地、交通、住宿。"
+    },
+    "wikivoyage-it": {
+      "title": "Wikivoyage（意大利语）",
+      "description": "旅行指南：目的地、交通、住宿。"
+    },
+    "wikivoyage-en": {
+      "title": "Wikivoyage（英语）",
+      "description": "旅行指南：目的地、交通、住宿。"
+    },
+    "wikisource-fr": {
+      "title": "Wikisource（法语）",
+      "description": "公有领域文本：法律、历史文献、文学作品。"
+    },
+    "wikisource-it": {
+      "title": "Wikisource（意大利语）",
+      "description": "公有领域文本：法律、历史文献、文学作品。"
+    },
+    "wikisource-en": {
+      "title": "Wikisource（英语）",
+      "description": "公有领域文本：法律、历史文献、文学作品。"
+    },
+    "ifixit-fr": {
+      "title": "iFixit（法语）",
+      "description": "法语分步维修指南：电子产品、车辆、家用电器。"
+    },
+    "ifixit-it": {
+      "title": "iFixit（意大利语）",
+      "description": "意大利语分步维修指南：电子产品、车辆、家用电器。"
+    },
+    "ifixit-en": {
+      "title": "iFixit（英语）",
+      "description": "英语分步维修指南：电子产品、车辆、家用电器。"
+    },
+    "wikibooks-fr": {
+      "title": "Wikilivres（法语）",
+      "description": "自由的手册与教科书。"
+    },
+    "wikibooks-it": {
+      "title": "Wikibooks（意大利语）",
+      "description": "自由的手册与教科书。"
+    },
+    "wikibooks-en": {
+      "title": "Wikibooks（英语）",
+      "description": "自由的手册与教科书。"
+    },
+    "gutenberg-fr": {
+      "title": "古腾堡计划（法语）",
+      "description": "公有领域的法语经典图书。"
+    },
+    "gutenberg-it": {
+      "title": "古腾堡计划（意大利语）",
+      "description": "公有领域的意大利语经典图书。"
+    },
+    "gutenberg-en": {
+      "title": "古腾堡计划（英语）",
+      "description": "公有领域的英语经典图书。"
+    },
+    "wikiversity-fr": {
+      "title": "Wikiversité（法语）",
+      "description": "课程与学习资料。"
+    },
+    "wikiversity-it": {
+      "title": "Wikiversità（意大利语）",
+      "description": "课程与学习资料。"
+    },
+    "wikiversity-en": {
+      "title": "Wikiversity（英语）",
+      "description": "课程与学习资料。"
+    },
+    "phet-fr": {
+      "title": "PhET 模拟实验（法语）",
+      "description": "物理、化学与数学的互动模拟实验，法语版。"
+    },
+    "phet-it": {
+      "title": "PhET 模拟实验（意大利语）",
+      "description": "物理、化学与数学的互动模拟实验，意大利语版。"
+    },
+    "phet-en": {
+      "title": "PhET 模拟实验（英语）",
+      "description": "物理、化学与数学的互动模拟实验，英语版。"
+    },
+    "asistente-gemma3": {
+      "title": "备选模型：Gemma 3 4B",
+      "description": "助手的另一个模型（Google Gemma 3，4B）。可在“维护”中选择。"
+    },
+    "asistente-llama32": {
+      "title": "备选模型：Llama 3.2 3B",
+      "description": "助手的轻量模型（Meta Llama 3.2，3B）。回答更快。"
+    },
+    "asistente-ligero": {
+      "title": "轻量助手（Qwen2.5 1.5B）",
+      "description": "适合内存较小设备的小模型（3–4 GB 的平板和手机）。在这些设备上选择“全部下载”时会自动选用。"
+    },
+    "juegos": {
+      "title": "离线游戏",
+      "description": "Viseni Games 的游戏合集，无需联网即可游玩。下载后，工具栏上会出现“游戏”按钮。"
+    },
+    "wikipedia-medicina-de": {
+      "title": "德语医学维基百科",
+      "description": "德语维基百科中的医学与健康条目（WikiMed），含图片。"
+    },
+    "wikipedia-medicina-zh": {
+      "title": "中文医学维基百科",
+      "description": "中文维基百科中的医学与健康条目（WikiMed），含图片。"
+    },
+    "wikipedia-medicina-ja": {
+      "title": "日语医学维基百科",
+      "description": "日语维基百科中的医学与健康条目（WikiMed），含图片。"
+    },
+    "wikipedia-de": {
+      "title": "德语维基百科",
+      "description": "完整的百科全书。"
+    },
+    "wikipedia-zh": {
+      "title": "中文维基百科",
+      "description": "完整的百科全书。"
+    },
+    "wikipedia-ja": {
+      "title": "日语维基百科",
+      "description": "完整的百科全书。"
+    },
+    "wiktionary-de": {
+      "title": "Wiktionary（德语）",
+      "description": "词典：释义、词源与翻译。"
+    },
+    "wiktionary-zh": {
+      "title": "维基词典（中文）",
+      "description": "词典：释义、词源与翻译。"
+    },
+    "wiktionary-ja": {
+      "title": "Wiktionary（日语）",
+      "description": "词典：释义、词源与翻译。"
+    },
+    "wikivoyage-de": {
+      "title": "Wikivoyage（德语）",
+      "description": "旅行指南：目的地、交通、住宿。"
+    },
+    "wikivoyage-zh": {
+      "title": "维基导游（中文）",
+      "description": "旅行指南：目的地、交通、住宿。"
+    },
+    "wikivoyage-ja": {
+      "title": "Wikivoyage（日语）",
+      "description": "旅行指南：目的地、交通、住宿。"
+    },
+    "wikisource-de": {
+      "title": "Wikisource（德语）",
+      "description": "公有领域文本：法律、历史文献、文学作品。"
+    },
+    "wikisource-zh": {
+      "title": "维基文库（中文）",
+      "description": "公有领域文本：法律、历史文献、文学作品。"
+    },
+    "wikisource-ja": {
+      "title": "Wikisource（日语）",
+      "description": "公有领域文本：法律、历史文献、文学作品。"
+    },
+    "ifixit-de": {
+      "title": "iFixit（德语）",
+      "description": "德语分步维修指南：电子产品、车辆、家用电器。"
+    },
+    "ifixit-zh": {
+      "title": "iFixit（中文）",
+      "description": "中文分步维修指南：电子产品、车辆、家用电器。"
+    },
+    "ifixit-ja": {
+      "title": "iFixit（日语）",
+      "description": "日语分步维修指南：电子产品、车辆、家用电器。"
+    },
+    "wikibooks-de": {
+      "title": "Wikibooks（德语）",
+      "description": "自由的手册与教科书。"
+    },
+    "wikibooks-zh": {
+      "title": "维基教科书（中文）",
+      "description": "自由的手册与教科书。"
+    },
+    "wikibooks-ja": {
+      "title": "Wikibooks（日语）",
+      "description": "自由的手册与教科书。"
+    },
+    "gutenberg-de": {
+      "title": "古腾堡计划（德语）",
+      "description": "公有领域的德语经典图书。"
+    },
+    "gutenberg-zh": {
+      "title": "古腾堡计划（中文）",
+      "description": "公有领域的中文经典图书。"
+    },
+    "gutenberg-ja": {
+      "title": "古腾堡计划（日语）",
+      "description": "公有领域的日语经典图书。"
+    },
+    "wikiversity-de": {
+      "title": "Wikiversity（德语）",
+      "description": "课程与学习资料。"
+    },
+    "wikiversity-zh": {
+      "title": "维基学院（中文）",
+      "description": "课程与学习资料。"
+    },
+    "phet-de": {
+      "title": "PhET 模拟实验（德语）",
+      "description": "物理、化学与数学的互动模拟实验，德语版。"
+    },
+    "phet-ja": {
+      "title": "PhET 模拟实验（日语）",
+      "description": "物理、化学与数学的互动模拟实验，日语版。"
+    }
+  },
+  "models": {},
+  "variants": {
+    "Sin imágenes": "无图片",
+    "Con imágenes": "含图片",
+    "Solo introducciones": "仅条目导言"
+  }
+}

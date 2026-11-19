@@ -17,7 +17,9 @@ import { toFtsQuery } from './db.ts'
 import { PmFile, tilePoints } from './pmtiles.ts'
 
 export const INDEX_ZOOM = 12
-const LANGS = ['es', 'en', 'fr', 'it'] as const
+const LANGS = ['es', 'en', 'fr', 'it', 'de', 'zh', 'ja'] as const
+/** Versión del esquema del índice: al cambiarla, los índices existentes se reconstruyen solos (va en la firma). */
+const SCHEMA_VERSION = 'v2-7lang'
 type Lang = (typeof LANGS)[number]
 const MAP_RE = /^[\w-]{1,80}\.pmtiles$/
 /** Importancia por tipo de lugar (Protomaps kind_detail). */
@@ -51,6 +53,9 @@ interface PlaceRow {
   name_en: string | null
   name_fr: string | null
   name_it: string | null
+  name_de: string | null
+  name_zh: string | null
+  name_ja: string | null
   kind: string
   detail: string
   pop: number | null
@@ -63,7 +68,7 @@ const SCHEMA = `
   CREATE TABLE IF NOT EXISTS places (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
-    name_es TEXT, name_en TEXT, name_fr TEXT, name_it TEXT,
+    name_es TEXT, name_en TEXT, name_fr TEXT, name_it TEXT, name_de TEXT, name_zh TEXT, name_ja TEXT,
     kind TEXT NOT NULL,
     detail TEXT NOT NULL,
     pop INTEGER,
@@ -156,7 +161,7 @@ export class PlaceIndex {
     this.lastCheck = Date.now()
     this.checking = (async () => {
       const maps = await this.maps()
-      const sig = maps.map((m) => m.sig).join('\n')
+      const sig = [SCHEMA_VERSION, ...maps.map((m) => m.sig)].join('\n')
       if (sig === (this.meta('signature') ?? '') && this.db) return
       if (!maps.length) {
         // Sin mapas: se vacía el índice (no se ofrecen lugares de un mapa ya borrado).
@@ -205,7 +210,9 @@ export class PlaceIndex {
     try {
       db.exec('PRAGMA journal_mode = OFF; PRAGMA synchronous = OFF;')
       db.exec(SCHEMA)
-      const insert = db.prepare('INSERT INTO places (name, name_es, name_en, name_fr, name_it, kind, detail, pop, lat, lon, map) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      const insert = db.prepare(
+        'INSERT INTO places (name, name_es, name_en, name_fr, name_it, name_de, name_zh, name_ja, kind, detail, pop, lat, lon, map) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      )
       const insertFts = db.prepare('INSERT INTO places_fts (rowid, names) VALUES (?, ?)')
       this.progress = 0
       for (const [mi, file] of files.entries()) {
@@ -229,12 +236,13 @@ export class PlaceIndex {
               if (seen.has(key)) continue
               seen.add(key)
               const local = (l: Lang): string | null => {
-                const v = p.props[`name:${l}`]
+                // Chino: Protomaps lo da como name:zh y, a veces, solo como name:zh-Hans.
+                const v = p.props[`name:${l}`] ?? (l === 'zh' ? p.props['name:zh-Hans'] : undefined)
                 return typeof v === 'string' && v.trim() && v.trim() !== name ? v.trim() : null
               }
               const pop = typeof p.props.population === 'number' && p.props.population > 0 ? Math.round(p.props.population) : null
               const names = [name, ...LANGS.map(local)].filter((n): n is string => !!n)
-              const r = insert.run(name, local('es'), local('en'), local('fr'), local('it'), kind, detail, pop, p.lat, p.lon, file)
+              const r = insert.run(name, ...LANGS.map(local), kind, detail, pop, p.lat, p.lon, file)
               insertFts.run(Number(r.lastInsertRowid), [...new Set(names)].join(' · '))
               count++
             }
@@ -278,7 +286,7 @@ export class PlaceIndex {
       .map((r) => {
         const dist = near ? distanceM(near.lat, near.lon, r.lat, r.lon) : null
         const shown = r[`name_${l}`] ?? r.name
-        const names = [r.name, r.name_es, r.name_en, r.name_fr, r.name_it].filter((n): n is string => !!n)
+        const names = [r.name, ...LANGS.map((x) => r[`name_${x}`])].filter((n): n is string => !!n)
         const hit: PlaceHit = {
           name: shown,
           localName: shown !== r.name ? r.name : null,

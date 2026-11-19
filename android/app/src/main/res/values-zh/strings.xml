@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notif_channel">Survivelia OS 正在运行</string>
+    <string name="notif_running">地图、图书馆、助手和无线电均可离线使用</string>
+    <string name="notif_quit">关闭</string>
+    <string name="state_preparing">正在准备 Survivelia OS…</string>
+    <string name="state_starting">正在启动服务…</string>
+    <string name="err_no_storage">请选择数据的保存位置。</string>
+    <string name="err_storage">无法写入 %1$s</string>
+    <string name="err_timeout">服务没有响应。请重试；如果问题仍然存在，请查看数据文件夹中的日志（logs）。</string>
+    <string name="err_crash">Survivelia OS 已多次停止运行。日志位于 %1$s</string>
+    <string name="gnss_label">平板内置 GNSS</string>
+    <string name="storage_title">地图、图书和数据要保存在哪里？</string>
+    <string name="storage_internal">内部存储（SurvivalOS 文件夹）</string>
+    <string name="storage_removable">microSD 卡或 U 盘“%1$s”（SurvivalOS 文件夹）</string>
+    <string name="storage_private_internal">内部存储中的应用文件夹</string>
+    <string name="storage_private_sd">microSD 卡上的应用文件夹</string>
+    <string name="storage_free">可用 %1$s</string>
+    <string name="storage_keeps">卸载应用后仍会保留</string>
+    <string name="storage_deleted">卸载应用时 Android 会将其删除</string>
+    <string name="perm_files_title">文件访问权限</string>
+    <string name="perm_files_body">要把数据保存到 SurvivalOS 文件夹（卸载应用后也不会丢失），请在下一个界面为 Survivelia OS 开启“允许访问所有文件”，然后返回。</string>
+    <string name="perm_files_denied">没有这项权限，就无法使用这个文件夹。请选择其他文件夹（应用文件夹不需要任何权限，但卸载时 Android 会将其删除）。</string>
+    <string name="perm_location_title">无需网络的定位</string>
+    <string name="perm_location_body">Survivelia OS 使用平板的 GNSS 接收器在地图上显示你的位置并记录轨迹，无需网络。你的位置信息永远不会离开本设备。</string>
+    <string name="perm_battery_title">屏幕关闭后继续运行</string>
+    <string name="perm_battery_body">为了让下载、无线电和 GPS 在屏幕关闭后不中断，请允许 Survivelia OS 不受电池限制地运行。在部分品牌（Realme、Xiaomi、Huawei 等）上，还要在应用设置中检查“自启动”和“后台活动”。</string>
+    <string name="install_permission">要安装新版本，Android 需要允许 Survivelia OS 安装应用。请在下一个界面开启，然后返回：安装程序会自动打开。</string>
+    <string name="download_saved">已保存到“下载”：%1$s</string>
+    <string name="download_failed">无法保存：%1$s</string>
+    <string name="btn_continue">继续</string>
+    <string name="btn_later">稍后</string>
+    <string name="btn_retry">重试</string>
+    <string name="btn_other_storage">选择其他文件夹</string>
+    <string name="splash_tagline">无需网络的知识、地图和通信</string>
+    <string name="install_permission_title">更新权限</string>
+    <string name="state_waiting_volume">正在等待存有你数据的存储卡“%1$s”…</string>
+    <string name="err_volume_missing">找不到存有你数据（%2$s）的存储卡“%1$s”。请检查它是否已插好：一旦检测到，Survivelia OS 会自动启动。你也可以选择其他文件夹。</string>
+    <string name="err_files_permission">要使用 %1$s 中的数据，需要“访问所有文件”权限。请重新授予该权限（你的数据仍然在那里），或选择其他文件夹。</string>
+    <string name="btn_grant">授予权限</string>
+    <string name="storage_current">当前</string>
+    <string name="storage_has_data">包含 Survivelia OS 的数据</string>
+    <string name="storage_switch_title">使用空文件夹？</string>
+    <string name="storage_switch_body">你的地图、图书和下载内容仍保留在 %1$s：既不会移动也不会删除，你可以随时切换回那个文件夹。新文件夹从空白开始。</string>
+</resources>

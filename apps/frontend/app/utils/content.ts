@@ -37,7 +37,9 @@ export function orderForInstall(items: ContentCatalogItem[]): ContentCatalogItem
 
 // ------------------------------------------------------------------ Idioma y región (ADR 0018)
 
-export type ContentLang = 'es' | 'en' | 'fr' | 'it'
+export type ContentLang = 'es' | 'en' | 'fr' | 'it' | 'de' | 'zh' | 'ja'
+/** Idiomas de la interfaz y de los contenidos propios del catálogo (ADR 0017). */
+export const CONTENT_LANGS: readonly ContentLang[] = ['es', 'en', 'fr', 'it', 'de', 'zh', 'ja']
 
 /** Idiomas de contenido aceptables, por preferencia: el de la interfaz y, si no hay, inglés. */
 export function contentLangs(ui: ContentLang): string[] {

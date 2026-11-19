@@ -111,3 +111,22 @@ describe('asistente (RAG)', () => {
     expect(priorAnswer('x '.repeat(1000)).length).toBeLessThanOrEqual(701)
   })
 })
+
+describe('chino y japonés (sin espacios entre palabras)', () => {
+  it('parte la pregunta en pares de caracteres y quita los de pregunta', () => {
+    const kw = keywords('如何净化饮用水？')
+    expect(kw).toContain('净化')
+    expect(kw).toContain('饮用')
+    expect(kw).not.toContain('如何')
+    expect(searchTerms('如何净化饮用水？').split(' ')).toContain('用水')
+    expect(keywords('低体温症の応急処置は？')).toEqual(expect.arrayContaining(['体温', '応急', '処置']))
+  })
+  it('puntúa y recorta textos chinos por esos pares', () => {
+    const kw = keywords('如何净化饮用水？')
+    expect(relevance(kw, '饮用水处理', '把水煮沸可以净化饮用水')).toBeGreaterThan(0)
+    expect(excerpt(`${'无关内容。'.repeat(80)}煮沸一分钟可以净化饮用水。`, '如何净化饮用水？', 60)).toContain('净化饮用水')
+  })
+  it('alemán: palabras vacías fuera', () => {
+    expect(keywords('Wie kann ich Wasser ohne Strom abkochen?')).toEqual(['wasser', 'ohne', 'strom', 'abkochen'])
+  })
+})

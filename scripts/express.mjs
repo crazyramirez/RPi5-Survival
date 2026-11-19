@@ -544,7 +544,7 @@ async function download() {
 function defaults() {
   const lang = opt('lang')
   const country = opt('country')
-  if (lang && !['es', 'en', 'fr', 'it'].includes(lang)) fail('--lang debe ser es, en, fr o it', 2)
+  if (lang && !['es', 'en', 'fr', 'it', 'de', 'zh', 'ja'].includes(lang)) fail('--lang debe ser es, en, fr, it, de, zh o ja', 2)
   if (country && !/^[a-z]{3}$/.test(country)) fail('--country es el código de 3 letras (esp, fra, ita, usa…; ver content/countries.json)', 2)
   if (!lang && !country) fail('indica --lang y/o --country', 2)
   const json = JSON.stringify({ locale: lang ?? null, country: country ?? null })

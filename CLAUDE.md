@@ -48,7 +48,7 @@ Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, 
 
 - Nunca inventar datos: todo valor pasa por `Probe<T>` (ADR 0003). Sin medida → `unavailable` con motivo.
 - Nada externo: sin CDN/fuentes/APIs remotas; la CSP lo bloquea. Comprobar con `test-offline.sh`.
-- Textos de UI en `apps/frontend/app/locales/es.ts` (y la misma clave traducida en `en.ts`, `fr.ts`, `it.ts`; ADR 0017), nunca literales en plantillas. Protocolos nuevos: también en `content/protocols/<idioma>/`.
+- Textos de UI en `apps/frontend/app/locales/es.ts` (y la misma clave traducida en `en.ts`, `fr.ts`, `it.ts`, `de.ts`, `zh.ts`, `ja.ts`; ADR 0017), nunca literales en plantillas. Protocolos nuevos: también en `content/protocols/<idioma>/`.
 - En `<style scoped>` no usar `:global(X) .y` (Vue descarta `.y`; hay test).
 - Cambios de sistema en la Pi (systemd, kanshi, labwc, paquetes, EEPROM, red) solo con autorización explícita del usuario y plan de vuelta atrás.
 - En comandos remotos `pkill -f` usar patrón `[s]cripts/start.mjs` para no matar la propia sesión.

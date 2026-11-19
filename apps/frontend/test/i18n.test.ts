@@ -1,17 +1,25 @@
 import { describe, expect, it } from 'vitest'
+import { de } from '../app/locales/de'
 import { en } from '../app/locales/en'
 import { es } from '../app/locales/es'
 import { fr } from '../app/locales/fr'
 import { it as itCat } from '../app/locales/it'
+import { ja } from '../app/locales/ja'
+import { zh } from '../app/locales/zh'
+import { serverDe } from '../app/locales/server/de'
 import { serverEn } from '../app/locales/server/en'
 import { serverFr } from '../app/locales/server/fr'
 import { serverIt } from '../app/locales/server/it'
+import { serverJa } from '../app/locales/server/ja'
+import { serverZh } from '../app/locales/server/zh'
 import { locale, translate, translateServer } from '../app/utils/i18n'
 
 const placeholders = (s: string): string[] => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]!).sort()
+/** Grupos de plural {n:uno|varios}: el nombre del número de cada grupo. */
+const plurals = (s: string): string[] => [...new Set([...s.matchAll(/\{(\w+):[^|{}]*\|[^{}]*\}/g)].map((m) => m[1]!))].sort()
 
 describe('catálogos de idioma', () => {
-  for (const [name, cat] of [['en', en], ['fr', fr], ['it', itCat]] as const) {
+  for (const [name, cat] of [['en', en], ['fr', fr], ['it', itCat], ['de', de], ['zh', zh], ['ja', ja]] as const) {
     it(`${name}: mismas claves que es y sin textos vacíos`, () => {
       expect(Object.keys(cat).sort()).toEqual(Object.keys(es).sort())
       for (const [k, v] of Object.entries(cat)) expect(v.trim(), k).not.toBe('')
@@ -19,9 +27,13 @@ describe('catálogos de idioma', () => {
     it(`${name}: mismos marcadores {x} que el español`, () => {
       for (const k of Object.keys(es) as (keyof typeof es)[]) expect(placeholders(cat[k]), k).toEqual(placeholders(es[k]))
     })
+    // Donde el español distingue singular y plural, la traducción también (puede añadir más: verbos que concuerdan).
+    it(`${name}: los plurales {n:…|…} del español`, () => {
+      for (const k of Object.keys(es) as (keyof typeof es)[]) expect(plurals(cat[k]), k).toEqual(expect.arrayContaining(plurals(es[k])))
+    })
   }
 
-  for (const [name, cat] of [['en', serverEn], ['fr', serverFr], ['it', serverIt]] as const) {
+  for (const [name, cat] of [['en', serverEn], ['fr', serverFr], ['it', serverIt], ['de', serverDe], ['zh', serverZh], ['ja', serverJa]] as const) {
     it(`servidor ${name}: conserva los marcadores {0}, {1}…`, () => {
       expect(Object.keys(cat).length).toBeGreaterThan(50)
       for (const [k, v] of Object.entries(cat)) expect(placeholders(v), k).toEqual(placeholders(k))
@@ -65,7 +77,7 @@ describe('plurales {n:uno|varios}', () => {
     }
   })
   it('sin «(s)» ni «/i» de robot en los textos con número', () => {
-    for (const [name, cat] of [['es', es], ['en', en], ['fr', fr], ['it', itCat]] as const) {
+    for (const [name, cat] of [['es', es], ['en', en], ['fr', fr], ['it', itCat], ['de', de]] as const) {
       for (const [k, v] of Object.entries(cat)) {
         if (/\{n\}/.test(v)) expect(/\w\((s|es)\)|\w\/[aeio]\b/.test(v), `${name} ${k}: ${v}`).toBe(false)
       }

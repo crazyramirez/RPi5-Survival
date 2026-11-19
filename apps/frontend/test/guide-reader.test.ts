@@ -11,7 +11,7 @@ const files = readdirSync(root).filter((name) => name.endsWith('.md')).sort()
 const plain = (html: string): string => guideHeadingText(html).replace(/\s+/g, ' ').trim()
 
 describe('lector: integridad del contenido real', () => {
-  for (const lang of ['', 'en', 'fr', 'it']) {
+  for (const lang of ['', 'en', 'fr', 'it', 'de', 'zh', 'ja']) {
     it(`conserva el texto, el orden y las listas de las 41 fichas (${lang || 'es'})`, () => {
       for (const file of files) {
         const { meta, body } = parseFrontMatter(readFileSync(join(root, lang, file), 'utf8'))

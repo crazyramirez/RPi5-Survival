@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notif_channel">Survivelia OS läuft</string>
+    <string name="notif_running">Karten, Bibliothek, Assistent und Funk offline verfügbar</string>
+    <string name="notif_quit">Schließen</string>
+    <string name="state_preparing">Survivelia OS wird vorbereitet…</string>
+    <string name="state_starting">Dienste werden gestartet…</string>
+    <string name="err_no_storage">Wähle aus, wo die Daten gespeichert werden sollen.</string>
+    <string name="err_storage">In %1$s kann nicht geschrieben werden</string>
+    <string name="err_timeout">Die Dienste antworten nicht. Versuche es erneut; wenn es so bleibt, sieh dir die Protokolle im Datenordner an (logs).</string>
+    <string name="err_crash">Survivelia OS wurde mehrmals beendet. Protokolle in %1$s</string>
+    <string name="gnss_label">Internes GNSS des Tablets</string>
+    <string name="storage_title">Wo sollen Karten, Bücher und Daten gespeichert werden?</string>
+    <string name="storage_internal">Interner Speicher (Ordner SurvivalOS)</string>
+    <string name="storage_removable">microSD-Karte oder USB-Stick „%1$s“ (Ordner SurvivalOS)</string>
+    <string name="storage_private_internal">App-Ordner im internen Speicher</string>
+    <string name="storage_private_sd">App-Ordner auf der microSD-Karte</string>
+    <string name="storage_free">%1$s frei</string>
+    <string name="storage_keeps">bleibt erhalten, wenn du die App deinstallierst</string>
+    <string name="storage_deleted">Android löscht ihn, wenn du die App deinstallierst</string>
+    <string name="perm_files_title">Zugriff auf Dateien</string>
+    <string name="perm_files_body">Damit die Daten im Ordner SurvivalOS gespeichert werden (und beim Deinstallieren der App nicht verloren gehen), aktiviere auf dem nächsten Bildschirm „Zugriff auf alle Dateien erlauben“ für Survivelia OS und kehre dann zurück.</string>
+    <string name="perm_files_denied">Ohne diese Berechtigung kann dieser Ordner nicht verwendet werden. Wähle einen anderen (der App-Ordner braucht keine Berechtigungen, aber Android löscht ihn beim Deinstallieren).</string>
+    <string name="perm_location_title">Position ohne Internet</string>
+    <string name="perm_location_body">Survivelia OS nutzt den GNSS-Empfänger des Tablets, um deine Position auf der Karte anzuzeigen und Routen aufzuzeichnen, ohne Internet. Dein Standort verlässt nie das Gerät.</string>
+    <string name="perm_battery_title">Bei ausgeschaltetem Bildschirm weiterlaufen</string>
+    <string name="perm_battery_body">Damit Downloads, Funk und GPS bei ausgeschaltetem Bildschirm nicht anhalten, erlaube Survivelia OS, ohne Akku-Einschränkungen zu laufen. Bei manchen Marken (Realme, Xiaomi, Huawei…) prüfe außerdem „Autostart“ und „Hintergrundaktivität“ in den App-Einstellungen.</string>
+    <string name="install_permission">Um die neue Version zu installieren, muss Survivelia OS in Android Apps installieren dürfen. Aktiviere es auf dem nächsten Bildschirm und kehre zurück: Das Installationsprogramm öffnet sich von selbst.</string>
+    <string name="download_saved">In Downloads gespeichert: %1$s</string>
+    <string name="download_failed">Konnte nicht gespeichert werden: %1$s</string>
+    <string name="btn_continue">Weiter</string>
+    <string name="btn_later">Später</string>
+    <string name="btn_retry">Erneut versuchen</string>
+    <string name="btn_other_storage">Anderen Ordner wählen</string>
+    <string name="splash_tagline">Wissen, Karten und Kommunikation ohne Internet</string>
+    <string name="install_permission_title">Berechtigung zum Aktualisieren</string>
+    <string name="state_waiting_volume">Warte auf die Karte „%1$s“ mit deinen Daten…</string>
+    <string name="err_volume_missing">Die Karte „%1$s“, auf der deine Daten liegen (%2$s), wurde nicht gefunden. Prüfe, ob sie richtig eingesetzt ist: Survivelia OS startet von selbst, sobald sie erkannt wird. Du kannst auch einen anderen Ordner wählen.</string>
+    <string name="err_files_permission">Die Berechtigung „Zugriff auf alle Dateien“ fehlt, um deine Daten in %1$s zu nutzen. Erteile sie erneut (deine Daten sind noch da) oder wähle einen anderen Ordner.</string>
+    <string name="btn_grant">Erlauben</string>
+    <string name="storage_current">aktuell</string>
+    <string name="storage_has_data">enthält Daten von Survivelia OS</string>
+    <string name="storage_switch_title">Einen leeren Ordner verwenden?</string>
+    <string name="storage_switch_body">Deine Karten, Bücher und Downloads bleiben in %1$s: Sie werden weder verschoben noch gelöscht, und du kannst jederzeit zu diesem Ordner zurückkehren. Im neuen Ordner beginnst du ohne Daten.</string>
+</resources>

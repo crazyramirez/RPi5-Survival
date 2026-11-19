@@ -85,7 +85,7 @@ for (const f of geo.features) {
   countries.push({
     id,
     iso2,
-    names: { es: name('NAME_ES'), en: name('NAME_EN'), fr: name('NAME_FR'), it: name('NAME_IT') },
+    names: { es: name('NAME_ES'), en: name('NAME_EN'), fr: name('NAME_FR'), it: name('NAME_IT'), de: name('NAME_DE'), zh: name('NAME_ZH'), ja: name('NAME_JA') },
     zones: zones(polys),
   })
 }

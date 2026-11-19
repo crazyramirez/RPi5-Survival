@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
+import { isLang, type Lang } from './lang'
 import { isPortable, portablePaths } from './portable'
 
 /**
@@ -9,7 +10,7 @@ import { isPortable, portablePaths } from './portable'
  *   Portable:  <datos>/defaults.json
  */
 export interface DeviceDefaults {
-  locale: 'es' | 'en' | 'fr' | 'it' | null
+  locale: Lang | null
   country: string | null
 }
 
@@ -20,7 +21,7 @@ export function defaultsFile(): string {
 export async function readDefaults(): Promise<DeviceDefaults> {
   try {
     const raw = JSON.parse(await fs.readFile(defaultsFile(), 'utf8')) as { locale?: unknown; country?: unknown }
-    const locale = raw.locale === 'es' || raw.locale === 'en' || raw.locale === 'fr' || raw.locale === 'it' ? raw.locale : null
+    const locale = isLang(raw.locale) ? raw.locale : null
     const country = typeof raw.country === 'string' && /^[a-z]{3}$/.test(raw.country) ? raw.country : null
     return { locale, country }
   } catch {

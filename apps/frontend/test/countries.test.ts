@@ -10,7 +10,7 @@ describe('países para mapas offline (ADR 0018)', () => {
   it('más de 200 países con nombre en los cuatro idiomas y zonas válidas', () => {
     expect(data.countries.length).toBeGreaterThan(200)
     for (const c of data.countries) {
-      for (const l of ['es', 'en', 'fr', 'it']) expect(c.names[l], `${c.id} ${l}`).toBeTruthy()
+      for (const l of ['es', 'en', 'fr', 'it', 'de', 'zh', 'ja']) expect(c.names[l], `${c.id} ${l}`).toBeTruthy()
       expect(c.zones.length, c.id).toBeGreaterThan(0)
       for (const z of c.zones) {
         const [w, s, e, n] = z.bbox

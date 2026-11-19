@@ -2,7 +2,7 @@ import type { ContentCatalogItem } from '@survival-os/shared-types'
 import { autoFit, downloadPlan, orderPlan, type ContentLang } from '../../../app/utils/content'
 import { readDefaults } from '../../utils/defaults'
 import { contentOverview, countryOptions } from '../../utils/content'
-import { requestLang } from '../../utils/lang'
+import { isLang, requestLang } from '../../utils/lang'
 
 /**
  * Plan de descarga calculado en el servidor (ADR 0018), el mismo que «Descargarlo todo» en pantalla. Para
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   const q = getQuery(event)
   const defaults = await readDefaults()
   const langQ = String(q.lang ?? '')
-  const lang = (['es', 'en', 'fr', 'it'].includes(langQ) ? langQ : (defaults.locale ?? requestLang(event))) as ContentLang
+  const lang = (isLang(langQ) ? langQ : (defaults.locale ?? requestLang(event))) as ContentLang
   const mode = q.mode === 'recommended' ? 'recommended' : 'all'
   const ov = await contentOverview(lang)
   const { countries } = await countryOptions(lang)

@@ -50,7 +50,7 @@ describe('catálogo de descargas (content/catalog.json)', () => {
   it('idiomas (ADR 0018): equivalentes que apuntan a un tema existente, uno por idioma', () => {
     const seen = new Set<string>()
     for (const i of catalog.items) {
-      expect(['es', 'en', 'fr', 'it', 'mul'].includes(i.lang), i.id).toBe(true)
+      expect(['es', 'en', 'fr', 'it', 'de', 'zh', 'ja', 'mul'].includes(i.lang), i.id).toBe(true)
       if (i.equivalentOf) {
         expect(ids).toContain(i.equivalentOf)
         const key = `${i.equivalentOf}/${i.lang}`
@@ -179,7 +179,7 @@ describe('«Descargarlo todo» cabe en una sola tarea', () => {
     expect(apiMax).toBeGreaterThan(0)
     expect(jobMax).toBe(apiMax)
   })
-  it.each(['es', 'en', 'fr', 'it'] as ContentLang[])('plan completo en %s ≤ tope', (lang) => {
+  it.each(['es', 'en', 'fr', 'it', 'de', 'zh', 'ja'] as ContentLang[])('plan completo en %s ≤ tope', (lang) => {
     const ids = orderPlan(downloadPlan(catalog.items, new Set(), lang, country as never, 'all')).map((i) => i.id)
     expect(ids.length).toBeLessThanOrEqual(apiMax)
   })
@@ -216,7 +216,7 @@ describe('recomendaciones por interés', async () => {
 describe('fichas «Más información» (content/catalog-details, catalog-kiwix)', () => {
   const read = (f: string) => JSON.parse(readFileSync(new URL(`../../../content/${f}`, import.meta.url), 'utf8'))
   const keys = catalog.items.map((i: { id: string }) => (i.id === 'mapa-pais' ? '@country-map' : i.id === 'rutas-pais' ? '@country-routing' : i.id))
-  for (const lang of ['es', 'en', 'fr', 'it']) {
+  for (const lang of ['es', 'en', 'fr', 'it', 'de', 'zh', 'ja']) {
     it(`todos los contenidos tienen explicación en ${lang} y no sobra ninguna`, () => {
       const items = read(`catalog-details/${lang}.json`).items as Record<string, string>
       for (const k of keys) expect(items[k]?.trim(), `${lang}: ${k}`).toBeTruthy()

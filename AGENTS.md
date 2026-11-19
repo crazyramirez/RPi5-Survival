@@ -19,7 +19,7 @@ Un centro de conocimiento, mapas y comunicación **sin Internet**:
 - 41 protocolos de emergencia;
 - asistente de IA local;
 - radio LoRa y bóveda cifrada;
-- en español, inglés, francés e italiano.
+- en español, inglés, francés, italiano, alemán, chino y japonés.
 
 Funciona de tres formas:
 
@@ -40,7 +40,7 @@ Pregunta solo lo que no sepas. Con estas respuestas eliges el camino:
 | ¿Dónde lo quieres? **(a)** en este ordenador · **(b)** en una Raspberry Pi o en otro Linux de tu red · **(c)** en una tablet o un móvil Android | Elegir la sección 4, la 5 o la 6 |
 | (b) ¿La Pi ya tiene **Raspberry Pi OS de 64 bits con escritorio** instalado y conectado a la red? | Si no, sigue la sección 5.1 |
 | (b) ¿Cuál es su **IP** (o nombre, p. ej. `raspberrypi.local`) y su **usuario**? | Acceso SSH |
-| ¿En qué **idioma** la quieres? (es, en, fr, it) | Ajustes por defecto |
+| ¿En qué **idioma** la quieres? (es, en, fr, it, de, zh, ja) | Ajustes por defecto |
 | ¿En qué **país** estás o vas a usarla? | Mapas y contenidos por defecto |
 | ¿Quieres **descargarlo todo** ahora? (suele ocupar 40–80 GB según idioma y país, y tardar horas; `download` da la cifra exacta) | Descargas |
 

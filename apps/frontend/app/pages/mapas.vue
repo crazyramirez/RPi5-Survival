@@ -102,7 +102,9 @@ function style(file: string) {
         attribution: '© OpenStreetMap · Protomaps',
       },
     },
-    layers: layers('protomaps', namedFlavor(flavor.value), { lang: locale.value }),
+    // Protomaps llama al chino simplificado zh-Hans. Los ideogramas los dibuja MapLibre con las fuentes del sistema
+    // (localIdeographFontFamily por defecto): no hacen falta glifos CJK descargados.
+    layers: layers('protomaps', namedFlavor(flavor.value), { lang: locale.value === 'zh' ? 'zh-Hans' : locale.value }),
   }
 }
 

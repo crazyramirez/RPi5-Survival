@@ -190,6 +190,57 @@
       "description": "Artículos de medicina y salud de Wikipedia en italiano (WikiMed), con imágenes."
     },
     {
+      "id": "wikipedia-medicina-de",
+      "equivalentOf": "wikipedia-medicina",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "de",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_de_medicine",
+        "flavour": "maxi"
+      },
+      "approxBytes": 421071872,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia médica en alemán",
+      "description": "Artículos de medicina y salud de Wikipedia en alemán (WikiMed), con imágenes."
+    },
+    {
+      "id": "wikipedia-medicina-zh",
+      "equivalentOf": "wikipedia-medicina",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "zh",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_zh_medicine",
+        "flavour": "maxi"
+      },
+      "approxBytes": 398633984,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia médica en chino",
+      "description": "Artículos de medicina y salud de Wikipedia en chino (WikiMed), con imágenes."
+    },
+    {
+      "id": "wikipedia-medicina-ja",
+      "equivalentOf": "wikipedia-medicina",
+      "kind": "zim",
+      "group": "salud",
+      "lang": "ja",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_ja_medicine",
+        "flavour": "maxi"
+      },
+      "approxBytes": 353709056,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia médica en japonés",
+      "description": "Artículos de medicina y salud de Wikipedia en japonés (WikiMed), con imágenes."
+    },
+    {
       "id": "ready-gov",
       "kind": "zim",
       "group": "preparacion",
@@ -489,6 +540,93 @@
       "description": "La enciclopedia completa."
     },
     {
+      "id": "wikipedia-de",
+      "equivalentOf": "wikipedia",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "de",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_de_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 18585337856,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 18585337856,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 48626922496,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia en alemán",
+      "description": "La enciclopedia completa."
+    },
+    {
+      "id": "wikipedia-zh",
+      "equivalentOf": "wikipedia",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "zh",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_zh_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 14749857792,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 14749857792,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 26601056256,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia en chino",
+      "description": "La enciclopedia completa."
+    },
+    {
+      "id": "wikipedia-ja",
+      "equivalentOf": "wikipedia",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "ja",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "wikipedia_ja_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 15848758272,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 15848758272,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 30762575872,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikipedia en japonés",
+      "description": "La enciclopedia completa."
+    },
+    {
       "id": "wiktionary",
       "kind": "zim",
       "group": "saber",
@@ -553,6 +691,57 @@
       "approxBytes": 14847562752,
       "license": "CC-BY-SA-4.0",
       "title": "Wiktionary (inglés)",
+      "description": "Diccionario: definiciones, etimología y traducciones."
+    },
+    {
+      "id": "wiktionary-de",
+      "equivalentOf": "wiktionary",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "de",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wiktionary_de_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 1603897344,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikcionario (alemán)",
+      "description": "Diccionario: definiciones, etimología y traducciones."
+    },
+    {
+      "id": "wiktionary-zh",
+      "equivalentOf": "wiktionary",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "zh",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wiktionary_zh_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 1735743488,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikcionario (chino)",
+      "description": "Diccionario: definiciones, etimología y traducciones."
+    },
+    {
+      "id": "wiktionary-ja",
+      "equivalentOf": "wiktionary",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "ja",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wiktionary_ja_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 612992000,
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikcionario (japonés)",
       "description": "Diccionario: definiciones, etimología y traducciones."
     },
     {
@@ -659,6 +848,93 @@
       "description": "Guía de viaje: destinos, transporte, alojamiento."
     },
     {
+      "id": "wikivoyage-de",
+      "equivalentOf": "wikivoyage",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "de",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikivoyage_de_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 1124287488,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 217193472,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 1124287488,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikivoyage (alemán)",
+      "description": "Guía de viaje: destinos, transporte, alojamiento."
+    },
+    {
+      "id": "wikivoyage-zh",
+      "equivalentOf": "wikivoyage",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "zh",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikivoyage_zh_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 107985920,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 45130752,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 107985920,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikivoyage (chino)",
+      "description": "Guía de viaje: destinos, transporte, alojamiento."
+    },
+    {
+      "id": "wikivoyage-ja",
+      "equivalentOf": "wikivoyage",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "ja",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikivoyage_ja_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 47163392,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 19683328,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 47163392,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikivoyage (japonés)",
+      "description": "Guía de viaje: destinos, transporte, alojamiento."
+    },
+    {
       "id": "wikisource",
       "kind": "zim",
       "group": "saber",
@@ -762,6 +1038,93 @@
       "description": "Textos de dominio público: leyes, documentos históricos, literatura."
     },
     {
+      "id": "wikisource-de",
+      "equivalentOf": "wikisource",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "de",
+      "priority": 3,
+      "default": false,
+      "zim": {
+        "name": "wikisource_de_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 1205337088,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 1205337088,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 2577434624,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikisource (alemán)",
+      "description": "Textos de dominio público: leyes, documentos históricos, literatura."
+    },
+    {
+      "id": "wikisource-zh",
+      "equivalentOf": "wikisource",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "zh",
+      "priority": 3,
+      "default": false,
+      "zim": {
+        "name": "wikisource_zh_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 12977035264,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 24283917312,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 12977035264,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikisource (chino)",
+      "description": "Textos de dominio público: leyes, documentos históricos, literatura."
+    },
+    {
+      "id": "wikisource-ja",
+      "equivalentOf": "wikisource",
+      "kind": "zim",
+      "group": "saber",
+      "lang": "ja",
+      "priority": 3,
+      "default": false,
+      "zim": {
+        "name": "wikisource_ja_all",
+        "flavour": "nopic"
+      },
+      "approxBytes": 247734272,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 247734272,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 286032896,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikisource (japonés)",
+      "description": "Textos de dominio público: leyes, documentos históricos, literatura."
+    },
+    {
       "id": "ifixit",
       "kind": "zim",
       "group": "oficios",
@@ -827,6 +1190,57 @@
       "license": "CC-BY-NC-SA-3.0",
       "title": "iFixit en inglés",
       "description": "Guías de reparación paso a paso en inglés: electrónica, vehículos, electrodomésticos."
+    },
+    {
+      "id": "ifixit-de",
+      "equivalentOf": "ifixit",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "de",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ifixit_de_all",
+        "flavour": ""
+      },
+      "approxBytes": 3592670208,
+      "license": "CC-BY-NC-SA-3.0",
+      "title": "iFixit en alemán",
+      "description": "Guías de reparación paso a paso en alemán: electrónica, vehículos, electrodomésticos."
+    },
+    {
+      "id": "ifixit-zh",
+      "equivalentOf": "ifixit",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "zh",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ifixit_zh_all",
+        "flavour": ""
+      },
+      "approxBytes": 3104607232,
+      "license": "CC-BY-NC-SA-3.0",
+      "title": "iFixit en chino",
+      "description": "Guías de reparación paso a paso en chino: electrónica, vehículos, electrodomésticos."
+    },
+    {
+      "id": "ifixit-ja",
+      "equivalentOf": "ifixit",
+      "kind": "zim",
+      "group": "oficios",
+      "lang": "ja",
+      "priority": 1,
+      "default": true,
+      "zim": {
+        "name": "ifixit_ja_all",
+        "flavour": ""
+      },
+      "approxBytes": 3437526016,
+      "license": "CC-BY-NC-SA-3.0",
+      "title": "iFixit en japonés",
+      "description": "Guías de reparación paso a paso en japonés: electrónica, vehículos, electrodomésticos."
     },
     {
       "id": "lowtech",
@@ -1076,6 +1490,93 @@
       "description": "Manuales y libros de texto libres."
     },
     {
+      "id": "wikibooks-de",
+      "equivalentOf": "wikibooks",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "de",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikibooks_de_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 3367022592,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 2824007680,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 3367022592,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikilibros (alemán)",
+      "description": "Manuales y libros de texto libres."
+    },
+    {
+      "id": "wikibooks-zh",
+      "equivalentOf": "wikibooks",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "zh",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikibooks_zh_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 136554496,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 93336576,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 136554496,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikilibros (chino)",
+      "description": "Manuales y libros de texto libres."
+    },
+    {
+      "id": "wikibooks-ja",
+      "equivalentOf": "wikibooks",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "ja",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "wikibooks_ja_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 189999104,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 102546432,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 189999104,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikilibros (japonés)",
+      "description": "Manuales y libros de texto libres."
+    },
+    {
       "id": "gutenberg",
       "kind": "zim",
       "group": "libros",
@@ -1141,6 +1642,57 @@
       "license": "Public-Domain",
       "title": "Proyecto Gutenberg en inglés",
       "description": "Libros clásicos en inglés de dominio público."
+    },
+    {
+      "id": "gutenberg-de",
+      "equivalentOf": "gutenberg",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "de",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "gutenberg_de_all",
+        "flavour": ""
+      },
+      "approxBytes": 7340707840,
+      "license": "Public-Domain",
+      "title": "Proyecto Gutenberg en alemán",
+      "description": "Libros clásicos en alemán de dominio público."
+    },
+    {
+      "id": "gutenberg-zh",
+      "equivalentOf": "gutenberg",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "zh",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "gutenberg_zh_all",
+        "flavour": ""
+      },
+      "approxBytes": 278715392,
+      "license": "Public-Domain",
+      "title": "Proyecto Gutenberg en chino",
+      "description": "Libros clásicos en chino de dominio público."
+    },
+    {
+      "id": "gutenberg-ja",
+      "equivalentOf": "gutenberg",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "ja",
+      "priority": 2,
+      "default": true,
+      "zim": {
+        "name": "gutenberg_ja_all",
+        "flavour": ""
+      },
+      "approxBytes": 20808704,
+      "license": "Public-Domain",
+      "title": "Proyecto Gutenberg en japonés",
+      "description": "Libros clásicos en japonés de dominio público."
     },
     {
       "id": "wikiversity",
@@ -1246,6 +1798,64 @@
       "description": "Cursos y materiales de aprendizaje."
     },
     {
+      "id": "wikiversity-de",
+      "equivalentOf": "wikiversity",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "de",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikiversity_de_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 1146855424,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 920324096,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 1146855424,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikiversidad (alemán)",
+      "description": "Cursos y materiales de aprendizaje."
+    },
+    {
+      "id": "wikiversity-zh",
+      "equivalentOf": "wikiversity",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "zh",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "wikiversity_zh_all",
+        "flavour": "maxi"
+      },
+      "approxBytes": 125028352,
+      "variants": [
+        {
+          "flavour": "nopic",
+          "approxBytes": 67592192,
+          "label": "Sin imágenes"
+        },
+        {
+          "flavour": "maxi",
+          "approxBytes": 125028352,
+          "label": "Con imágenes"
+        }
+      ],
+      "license": "CC-BY-SA-4.0",
+      "title": "Wikiversidad (chino)",
+      "description": "Cursos y materiales de aprendizaje."
+    },
+    {
       "id": "phet",
       "kind": "zim",
       "group": "libros",
@@ -1311,6 +1921,40 @@
       "license": "CC-BY-4.0",
       "title": "Simulaciones PhET en inglés",
       "description": "Simulaciones interactivas de física, química y matemáticas, en inglés."
+    },
+    {
+      "id": "phet-de",
+      "equivalentOf": "phet",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "de",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "phet_de_all",
+        "flavour": ""
+      },
+      "approxBytes": 109074432,
+      "license": "CC-BY-4.0",
+      "title": "Simulaciones PhET en alemán",
+      "description": "Simulaciones interactivas de física, química y matemáticas, en alemán."
+    },
+    {
+      "id": "phet-ja",
+      "equivalentOf": "phet",
+      "kind": "zim",
+      "group": "libros",
+      "lang": "ja",
+      "priority": 3,
+      "default": true,
+      "zim": {
+        "name": "phet_ja_all",
+        "flavour": ""
+      },
+      "approxBytes": 90768384,
+      "license": "CC-BY-4.0",
+      "title": "Simulaciones PhET en japonés",
+      "description": "Simulaciones interactivas de física, química y matemáticas, en japonés."
     },
     {
       "id": "mapa-espana",

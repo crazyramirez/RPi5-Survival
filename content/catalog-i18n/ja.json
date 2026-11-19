@@ -1,0 +1,697 @@
+{
+  "groups": {
+    "salud": "健康と応急手当",
+    "preparacion": "備えとサバイバル",
+    "saber": "百科事典と参考資料",
+    "oficios": "修理・技術・自給自足",
+    "libros": "本と学習",
+    "manuales": "PDFマニュアル",
+    "mapas": "地図とルート",
+    "asistente": "オフラインアシスタント",
+    "juegos": "ゲーム"
+  },
+  "items": {
+    "wikipedia-medicina": {
+      "title": "医学版ウィキペディア",
+      "description": "ウィキペディアの医学・健康に関する記事（画像付き）。"
+    },
+    "medlineplus": {
+      "title": "MedlinePlus",
+      "description": "医学百科事典：病気と薬（米国国立医学図書館）。"
+    },
+    "zimgit-medicine": {
+      "title": "Medical Library",
+      "description": "野外医療と救急医療の本。"
+    },
+    "military-medicine": {
+      "title": "Military Medicine",
+      "description": "戦闘医療と野外医療の軍用マニュアル。"
+    },
+    "cdc-travel": {
+      "title": "CDC Travelers' Health",
+      "description": "地域別の病気、ワクチン、旅行中の健康。"
+    },
+    "mdwiki": {
+      "title": "MDWiki",
+      "description": "英語の医学百科事典。スペイン語では医学版ウィキペディアと MedlinePlus ですでにカバーされています。"
+    },
+    "ready-gov": {
+      "title": "Ready.gov",
+      "description": "災害への備え：家族の計画、非常用キット、異常気象、火災、停電。"
+    },
+    "zimgit-post-disaster": {
+      "title": "Post-Disaster Library",
+      "description": "災害後のための資料：避難所、衛生、エネルギー、通信。"
+    },
+    "zimgit-water": {
+      "title": "Water Treatment Library",
+      "description": "水の確保と浄化。"
+    },
+    "zimgit-food": {
+      "title": "Food for Preppers",
+      "description": "食料の保存と調理。"
+    },
+    "zimgit-knots": {
+      "title": "A Library of Knots",
+      "description": "ロープの結び方、縛り方、縫合の図解。"
+    },
+    "scoutwiki": {
+      "title": "WikiRoca（スカウト）",
+      "description": "スカウト技術：方角の見つけ方、キャンプ、ロープワーク。"
+    },
+    "outdoors-qa": {
+      "title": "The Great Outdoors Q&A",
+      "description": "登山、キャンプ、サバイバルに関する質問と回答。"
+    },
+    "armypubs": {
+      "title": "米国陸軍マニュアル",
+      "description": "Army Publishing Directorate：サバイバル、応急手当、方角の見つけ方のマニュアルを含みます。"
+    },
+    "wikipedia": {
+      "title": "スペイン語版ウィキペディア",
+      "description": "百科事典の全体。"
+    },
+    "wiktionary": {
+      "title": "ウィクショナリー",
+      "description": "辞書：意味、語源、翻訳。"
+    },
+    "wikivoyage": {
+      "title": "ウィキボヤージュ",
+      "description": "旅行ガイド：目的地、交通、宿泊。"
+    },
+    "wikisource": {
+      "title": "ウィキソース",
+      "description": "パブリックドメインの文書：法律、歴史文書、文学。"
+    },
+    "ifixit": {
+      "title": "iFixit",
+      "description": "手順を追った修理ガイド：電子機器、車両、家電。"
+    },
+    "lowtech": {
+      "title": "Low-Tech Magazine",
+      "description": "ハイテクに頼らないエネルギーと簡単な技術（スペイン語の記事もあります）。"
+    },
+    "appropedia": {
+      "title": "Appropedia",
+      "description": "適正技術：水、エネルギー、建築、農業。"
+    },
+    "energypedia": {
+      "title": "energypedia",
+      "description": "人里離れた場所での太陽エネルギー、バイオマス、電化。"
+    },
+    "diy-qa": {
+      "title": "Home Improvement Q&A",
+      "description": "配管、電気、木工、家の修理。"
+    },
+    "gardening-qa": {
+      "title": "Gardening Q&A",
+      "description": "家庭菜園、植物、害虫。"
+    },
+    "mechanics-qa": {
+      "title": "Motor Vehicle Mechanics Q&A",
+      "description": "自動車とオートバイの整備。"
+    },
+    "ham-qa": {
+      "title": "Amateur Radio Q&A",
+      "description": "アマチュア無線、アンテナ、通信。"
+    },
+    "cooking-qa": {
+      "title": "Seasoned Advice",
+      "description": "料理と食品の保存。"
+    },
+    "sustainability-qa": {
+      "title": "Sustainable Living Q&A",
+      "description": "持続可能な暮らしと自給自足。"
+    },
+    "wikibooks": {
+      "title": "ウィキブックス",
+      "description": "自由に使える教科書と教材。"
+    },
+    "gutenberg": {
+      "title": "プロジェクト・グーテンベルク",
+      "description": "パブリックドメインのスペイン語の古典。"
+    },
+    "wikiversity": {
+      "title": "ウィキバーシティ",
+      "description": "講座と学習教材。"
+    },
+    "phet": {
+      "title": "PhET シミュレーション",
+      "description": "物理、化学、数学のインタラクティブなシミュレーション。"
+    },
+    "mapa-espana": {
+      "title": "スペイン本土とバレアレス諸島の地図",
+      "description": "通り、道、地形を通りのレベルまで表示（ズーム 15）。"
+    },
+    "mapa-canarias": {
+      "title": "カナリア諸島の地図",
+      "description": "通りと道を通りのレベルまで表示（ズーム 15）。"
+    },
+    "mapa-mundo": {
+      "title": "世界地図（概要）",
+      "description": "国、都市、主要道路（ズーム 6）。"
+    },
+    "rutas-espana": {
+      "title": "オフラインルート：スペイン",
+      "description": "徒歩、自転車、車のルート計算（BRouter）。"
+    },
+    "rutas-canarias": {
+      "title": "オフラインルート：カナリア諸島",
+      "description": "徒歩、自転車、車のルート計算（BRouter）。"
+    },
+    "asistente": {
+      "title": "オフラインアシスタント（Qwen3 4B）",
+      "description": "プロトコルとライブラリーを引用して質問に答えます。インターネットなしで動作します。"
+    },
+    "hesperian-donde-no-hay-doctor": {
+      "title": "医者のいないところで（2017年版）",
+      "description": "農村部の健康の定番マニュアル：医師がいなくてもできる診断、応急手当（第10章）、薬、感染症、出産、予防。"
+    },
+    "oms-atencion-basica-emergencia": {
+      "title": "基本的な救急ケア：負傷者と急病人への対応（受講者用テキスト）",
+      "description": "外傷と救急へのABCDEアプローチ（気道、ショック、やけど、呼吸困難、意識障害）。限られた手段での初期対応のために。"
+    },
+    "msf-medicamentos-esenciales": {
+      "title": "必須医薬品：実践的使用ガイド（2026）",
+      "description": "薬ごとの解説：適応、成人・小児の用量、禁忌、保管。救急箱を使うために欠かせません。"
+    },
+    "msf-clinical-guidelines-en": {
+      "title": "Clinical guidelines: diagnosis and treatment manual (MSF, 2026)",
+      "description": "人里離れた環境で、症状と病気ごとに診断と治療を行うための臨床ガイド（公式スペイン語版には不具合があります）。"
+    },
+    "oms-primera-ayuda-psicologica": {
+      "title": "心理的応急処置（PFA）フィールド・ガイド",
+      "description": "災害や暴力の後に危機にある人を支える方法：見る、聞く、つなぐ。"
+    },
+    "cicr-primeros-auxilios-conflictos": {
+      "title": "武力紛争とその他の暴力の状況における応急手当（2013）",
+      "description": "危険な環境での救護者向けマニュアル：安全、トリアージ、出血、傷、骨折、やけど、搬送。"
+    },
+    "ifrc-tratamiento-agua-hogar-emergencias": {
+      "title": "緊急時の家庭用水処理・貯水システム",
+      "description": "家庭で水を飲めるようにする：煮沸、塩素、SODIS、ろ過、凝集、安全な貯水。図解シート付き。"
+    },
+    "hesperian-salud-ambiental": {
+      "title": "地域のための環境保健ガイド",
+      "description": "安全な飲み水と水源の保護、トイレ（便所）の建設、蚊、ごみ、有害物質、安全と緊急時に関する付録。"
+    },
+    "ops-gestion-cadaveres-desastres": {
+      "title": "災害時の遺体の取り扱い：初期対応者のための実践マニュアル（第2版）",
+      "description": "災害後の遺体の収容、保管、身元確認、引き渡し、そして実際の健康リスク。"
+    },
+    "hesperian-libro-parteras": {
+      "title": "助産師のための本",
+      "description": "妊娠、出産、合併症、産後、新生児。助産師と医療の訓練を受けていない人のために。"
+    },
+    "ops-complicaciones-embarazo-parto": {
+      "title": "妊娠・出産の合併症への対応：助産師と医師のためのガイド（第2版）",
+      "description": "産科救急（出血、子癇、難産、敗血症）の症状別プロトコルと手技。"
+    },
+    "hesperian-donde-no-hay-dentista": {
+      "title": "歯医者のいないところで",
+      "description": "基本的な道具でできる歯の衛生、痛み、膿瘍、抜歯、簡単な詰め物。"
+    },
+    "hesperian-donde-no-hay-doctor-mujeres": {
+      "title": "女性のための医者のいないところで（2024年版）",
+      "description": "女性の健康：妊娠、性感染症、暴力、心の健康、中絶の合併症、よくある医学的問題。"
+    },
+    "cawst-tratamiento-agua-domiciliar": {
+      "title": "家庭での水処理と安全な貯水入門（指導者用マニュアル、2011）",
+      "description": "多重バリア方式：水源の保護、沈殿、ろ過（バイオサンド、セラミック）、消毒、貯水。"
+    },
+    "cawst-saneamiento-ambiental": {
+      "title": "環境衛生入門（指導者用マニュアル、2015）",
+      "description": "トイレ（便所）、し尿の管理、生活排水、固形廃棄物、糞口感染症を防ぐ衛生。"
+    },
+    "ops-tratamiento-diarrea": {
+      "title": "下痢の治療：保健サービスのための臨床マニュアル",
+      "description": "脱水の評価と、経口・静脈内補水の A/B/C プラン。赤痢とコレラ。"
+    },
+    "oms-brote-diarrea-aguda": {
+      "title": "急性下痢症の集団発生に対する最初の対応",
+      "description": "コレラや下痢の集団発生の最初の数日のための8ページの小冊子：確認、治療、水の塩素消毒、衛生対策。"
+    },
+    "oms-guia-humanitaria-mhgap": {
+      "title": "mhGAP 人道介入ガイド（mhGAP-HIG）",
+      "description": "緊急時に、専門家でないスタッフが急性ストレス、悲嘆、うつ、精神病、てんかん、アルコール、自殺の危険に臨床的に対応するために。"
+    },
+    "ops-victimas-en-masa": {
+      "title": "多数傷病者対応システムの構築",
+      "description": "同時に多くの負傷者が出たときのトリアージ、救護所、搬送、連携の体制づくり。"
+    },
+    "oms-aps-ninos-adolescentes": {
+      "title": "子どもと青少年のためのプライマリ・ヘルスケア ポケットブック（2025）",
+      "description": "小児によくある問題を診断・治療し、危険な徴候を見分けるためのポケットガイド。"
+    },
+    "cicr-cirugia-guerra-vol1": {
+      "title": "戦傷外科：武力紛争とその他の暴力の状況における限られた資源での手術 第1巻",
+      "description": "創傷弾道学、トリアージ、デブリードマン、傷と感染の管理、麻酔、最小限の資源での治療。"
+    },
+    "cicr-cirugia-guerra-vol2": {
+      "title": "戦傷外科：武力紛争とその他の暴力の状況における限られた資源での手術 第2巻",
+      "description": "限られた資源での部位別の外科（頭部、胸部、腹部、四肢、やけど）。医療従事者向け。"
+    },
+    "oms-guias-calidad-agua": {
+      "title": "飲料水水質ガイドライン（第4版、第1追補を含む）",
+      "description": "病原体、化学物質、消毒、水安全計画に関する技術的な参考書（636ページ）。"
+    },
+    "cawst-analisis-calidad-agua": {
+      "title": "飲料水の水質検査入門（指導者用マニュアル、2013）",
+      "description": "現場での水の検査：濁度、残留塩素、pH、簡単な微生物検査。"
+    },
+    "ops-wash-coordinacion-emergencias": {
+      "title": "飲料水・衛生・衛生習慣（WASH）分野：公衆衛生上の緊急事態と災害の調整のための実践ガイド",
+      "description": "災害時の水、衛生、衛生習慣に関する評価と対応、水質の監視。"
+    },
+    "oms-enfermedades-agua-hogares": {
+      "title": "家庭での水系感染症対策",
+      "description": "家庭で水を処理・保存する理由と方法（塩素、フィルター、SODIS、煮沸）と、その効果のデータ。"
+    },
+    "ops-salud-mental-desastres": {
+      "title": "災害時の心の健康 実践ガイド",
+      "description": "災害後の心理的反応、危機介入、弱い立場にある人々、支援チームへの支え。"
+    },
+    "ops-salud-mental-promotor": {
+      "title": "心の健康：地域保健推進員のためのガイド",
+      "description": "地域でうつ、不安、暴力、アルコール、自殺の危険に気づき、寄り添うための簡単なガイド。"
+    },
+    "oms-mhgap-2": {
+      "title": "mhGAP 介入ガイド 2.0：精神・神経・物質使用障害",
+      "description": "専門外の医療で、うつ、精神病、てんかん、認知症、依存症を評価し治療するためのアルゴリズム。"
+    },
+    "oms-paludismo-grave": {
+      "title": "重症マラリアの管理：実践ガイド（第3版）",
+      "description": "子どもと大人の重症マラリアとその合併症の診断と治療。"
+    },
+    "oms-tetanos-emergencias": {
+      "title": "人道的緊急事態における破傷風治療の現行の推奨事項",
+      "description": "短い技術ノート：災害後の傷の予防処置、免疫グロブリン、ワクチン、破傷風の臨床管理。"
+    },
+    "oms-malnutricion-grave": {
+      "title": "重度栄養不良の管理：医師とその他の指導的立場にある医療従事者のためのマニュアル",
+      "description": "重度栄養不良の治療の10のステップ：低血糖、低体温、脱水、再栄養。"
+    },
+    "oms-uso-clinico-sangre-bolsillo": {
+      "title": "血液の臨床使用：ポケットマニュアル",
+      "description": "出血、外傷、産科、小児科での輸液、輸血の適応、輸血の代替手段。"
+    },
+    "oms-higiene-entorno-sanitario": {
+      "title": "医療施設における環境保健の基本基準",
+      "description": "臨時の救護所のための水の最低量、衛生、廃棄物、清掃。"
+    },
+    "ops-primera-ayuda-psicologica-comunidad": {
+      "title": "心理的応急処置。ともに強く：あなたと地域を支えるためのガイド（第2版）",
+      "description": "近所の人やボランティアのための、地域向けのイラスト入り心理的応急処置（大きなファイル：63 MB）。"
+    },
+    "hesperian-aprendiendo-promover-salud": {
+      "title": "健康づくりを学ぶ",
+      "description": "地域の保健推進員を育てる方法。ほかの人に教えるのに役立ちます（114 MB、31 個の PDF に分割）。"
+    },
+    "msf-cholera-epidemic-en": {
+      "title": "Management of a cholera epidemic (MSF)",
+      "description": "コレラ治療センターの設置、塩素消毒、隔離、物資の管理。MSF のスペイン語版はありません。"
+    },
+    "msf-public-health-engineering-en": {
+      "title": "Public health engineering in precarious situations (MSF, 2010)",
+      "description": "現場の衛生工学：キャンプでの水の確保と処理、トイレ（便所）、廃棄物、媒介生物の対策。"
+    },
+    "oms-surgical-care-district-hospital-en": {
+      "title": "Surgical care at the district hospital (WHO, 2003)",
+      "description": "基本的な外科、麻酔、外傷の技術を図解で。スペイン語版はありません。"
+    },
+    "pc-guia-autoproteccion": {
+      "title": "市民のための自己防衛情報ガイド",
+      "description": "スペイン公式の自己防衛ガイド：家庭や屋外で、緊急時の前・最中・後にすべきこと。"
+    },
+    "guia-familias-autoproteccion-2025": {
+      "title": "家族のためのガイド：危険への予防と自己防衛",
+      "description": "家族の緊急時計画、基本の非常用キット、洪水、地震、火山、嵐、火災、技術的災害への対応。"
+    },
+    "pc-guia-inundaciones": {
+      "title": "洪水の危険に備える市民ガイド",
+      "description": "スペイン公式の基準による、洪水や DANA（上空の寒冷低気圧による集中豪雨）の前・最中・後にすべきこと。"
+    },
+    "pc-guia-fenomenos-meteorologicos": {
+      "title": "危険な気象現象に備える市民ガイド",
+      "description": "熱波と寒波、雷雨、大雪、強風、沿岸の暴風。"
+    },
+    "pc-guia-riesgo-quimico-nuclear": {
+      "title": "産業・化学・原子力の緊急事態に備える市民ガイド",
+      "description": "産業事故、化学事故、原子力事故での屋内退避、避難、とるべき行動。"
+    },
+    "ign-terremoto-tsunami": {
+      "title": "地震の前・最中・後、そして津波のときにすべきこと",
+      "description": "姿勢を低くし、頭を守り、動かない。水道・ガス・電気を止め、津波のときは避難する。"
+    },
+    "sanidad-calor-folleto": {
+      "title": "高温による影響の予防（パンフレット）",
+      "description": "熱波、熱射病、弱い立場にある人への推奨事項。"
+    },
+    "ifrc-kit-alojamiento": {
+      "title": "IFRC シェルターキット",
+      "description": "防水シート、ロープ、基本的な道具で緊急用シェルターを作る（図解）。"
+    },
+    "ops-wash-tratamiento-agua": {
+      "title": "使用する場所での飲み水の緊急処理（技術ノート 10）",
+      "description": "煮沸、塩素消毒、ろ過、日光による消毒（SODIS）と、その用量。"
+    },
+    "ops-wash-almacenamiento-agua": {
+      "title": "緊急時の家庭での貯水（技術ノート 8）",
+      "description": "家庭でためた水の容器、衛生、安全な扱い方。"
+    },
+    "ops-wash-saneamiento": {
+      "title": "緊急時の衛生設備：計画と技術的な選択肢（技術ノート 13）",
+      "description": "最初の数日間の緊急用トイレと、し尿の安全な処理。"
+    },
+    "scouts-manual-orientacion": {
+      "title": "方角の見つけ方 基本マニュアル",
+      "description": "地図とコンパス、地形の読み方、自然を使った方角の見つけ方。練習問題付き。"
+    },
+    "scouts-manual-cabuyeria": {
+      "title": "ロープワーク・マニュアル（結び方と縛り方）",
+      "description": "シェルター、物干し、キャンプの工作に使う結び方と縛り方。"
+    },
+    "iaru-guia-telecom-emergencia": {
+      "title": "非常通信ガイド（IARU、2016）",
+      "description": "非常通信網、メッセージの扱い、電源、無線機器。PMR446 と CB を含みます。"
+    },
+    "ure-manual-control-red": {
+      "title": "アマチュア無線ネットワークの統制：指導マニュアル",
+      "description": "スペインで非常無線ネットワークを運営し、参加する方法。"
+    },
+    "ign-actividades-mtn": {
+      "title": "国土地形図、オルソ写真、LiDAR：地理の学習活動",
+      "description": "地形図の読み方：縮尺、等高線、断面図、起伏（65 MB）。"
+    },
+    "atp-3-50-21-survival": {
+      "title": "ATP 3-50.21 Survival（米国陸軍、2018）",
+      "description": "現行のサバイバル・マニュアル：水、火、シェルター、食料、合図、基本的な医療。"
+    },
+    "fm-3-25-26-land-navigation": {
+      "title": "FM 3-25.26 Map Reading and Land Navigation",
+      "description": "地図の読み方、座標、方位角、コンパス、GPS なしでのナビゲーション。"
+    },
+    "fm-21-76-survival": {
+      "title": "FM 21-76 / MCRP 3-02F Survival",
+      "description": "食べられる植物と有毒な植物の図解付録がある、定番のサバイバル・マニュアル。"
+    },
+    "fao-una-huerta-para-todos": {
+      "title": "みんなの家庭菜園（第3版）",
+      "description": "家庭菜園の作り方と手入れ：土、種まき、堆肥、害虫、栽培カレンダー。"
+    },
+    "fao-huertos-familiares-urbanos": {
+      "title": "都市の家庭菜園づくりの実践",
+      "description": "容器や狭い場所での栽培：培養土、腐植土、水やり、作物ごとのシート。"
+    },
+    "fao-huerto-escolar": {
+      "title": "学校菜園の作り方と運営",
+      "description": "地域の菜園を計画し、種をまき、手入れする。"
+    },
+    "fao-conservacion-frutas-hortalizas": {
+      "title": "複合技術による果物と野菜の保存",
+      "description": "冷蔵せずに果物と野菜を保存する方法：砂糖、酸、保存料、穏やかな加熱を一歩ずつ。"
+    },
+    "fao-silos-metalicos-familiares": {
+      "title": "穀物と豆類のための家庭用金属サイロの製作と使い方",
+      "description": "0.12〜4.2 m³ のサイロで、穀物を害虫から守りながら何か月も保存する。"
+    },
+    "fao-captacion-agua-lluvia": {
+      "title": "雨水の集水と貯水",
+      "description": "屋根、水槽、地下タンク、小さなため池で雨水を集めてためる。"
+    },
+    "fao-avicultura-familiar": {
+      "title": "家庭での養鶏（多角化パンフレット 3）",
+      "description": "家庭でのニワトリの飼育：品種、飼い方、えさ、基本的な獣医ケア。"
+    },
+    "fao-conejo-cria": {
+      "title": "ウサギ：飼育と病気",
+      "description": "ウサギ飼育のすべて：飼育場所、えさ、繁殖、病気。"
+    },
+    "wikipedia-medicina-fr": {
+      "title": "フランス語版 医学ウィキペディア",
+      "description": "ウィキペディアの医学・健康に関する記事（WikiMed、画像付き）。"
+    },
+    "wikipedia-medicina-it": {
+      "title": "イタリア語版 医学ウィキペディア",
+      "description": "イタリア語版ウィキペディアの医学・健康に関する記事（WikiMed、画像付き）。"
+    },
+    "medlineplus-en": {
+      "title": "MedlinePlus（英語）",
+      "description": "医学百科事典：病気と薬、英語版（米国国立医学図書館）。"
+    },
+    "ready-gov-en": {
+      "title": "Ready.gov（英語）",
+      "description": "災害への備え、英語版：家族の計画、非常用キット、異常気象、火災、停電。"
+    },
+    "scoutwiki-it": {
+      "title": "ScoutWiki（イタリア語）",
+      "description": "イタリア語のスカウト技術：方角の見つけ方、キャンプ、ロープワーク。"
+    },
+    "scoutwiki-en": {
+      "title": "ScoutWiki（英語）",
+      "description": "英語のスカウト技術：方角の見つけ方、キャンプ、ロープワーク。"
+    },
+    "wikipedia-fr": {
+      "title": "フランス語版ウィキペディア",
+      "description": "百科事典の全体。"
+    },
+    "wikipedia-it": {
+      "title": "イタリア語版ウィキペディア",
+      "description": "百科事典の全体。"
+    },
+    "wikipedia-en": {
+      "title": "英語版ウィキペディア",
+      "description": "百科事典の全体。"
+    },
+    "wiktionary-fr": {
+      "title": "ウィクショナリー（フランス語）",
+      "description": "辞書：意味、語源、翻訳。"
+    },
+    "wiktionary-it": {
+      "title": "ウィクショナリー（イタリア語）",
+      "description": "辞書：意味、語源、翻訳。"
+    },
+    "wiktionary-en": {
+      "title": "ウィクショナリー（英語）",
+      "description": "辞書：意味、語源、翻訳。"
+    },
+    "wikivoyage-fr": {
+      "title": "ウィキボヤージュ（フランス語）",
+      "description": "旅行ガイド：目的地、交通、宿泊。"
+    },
+    "wikivoyage-it": {
+      "title": "ウィキボヤージュ（イタリア語）",
+      "description": "旅行ガイド：目的地、交通、宿泊。"
+    },
+    "wikivoyage-en": {
+      "title": "ウィキボヤージュ（英語）",
+      "description": "旅行ガイド：目的地、交通、宿泊。"
+    },
+    "wikisource-fr": {
+      "title": "ウィキソース（フランス語）",
+      "description": "パブリックドメインの文書：法律、歴史文書、文学。"
+    },
+    "wikisource-it": {
+      "title": "ウィキソース（イタリア語）",
+      "description": "パブリックドメインの文書：法律、歴史文書、文学。"
+    },
+    "wikisource-en": {
+      "title": "ウィキソース（英語）",
+      "description": "パブリックドメインの文書：法律、歴史文書、文学。"
+    },
+    "ifixit-fr": {
+      "title": "iFixit（フランス語）",
+      "description": "フランス語の手順を追った修理ガイド：電子機器、車両、家電。"
+    },
+    "ifixit-it": {
+      "title": "iFixit（イタリア語）",
+      "description": "イタリア語の手順を追った修理ガイド：電子機器、車両、家電。"
+    },
+    "ifixit-en": {
+      "title": "iFixit（英語）",
+      "description": "英語の手順を追った修理ガイド：電子機器、車両、家電。"
+    },
+    "wikibooks-fr": {
+      "title": "ウィキブックス（フランス語）",
+      "description": "自由に使える教科書と教材。"
+    },
+    "wikibooks-it": {
+      "title": "ウィキブックス（イタリア語）",
+      "description": "自由に使える教科書と教材。"
+    },
+    "wikibooks-en": {
+      "title": "ウィキブックス（英語）",
+      "description": "自由に使える教科書と教材。"
+    },
+    "gutenberg-fr": {
+      "title": "プロジェクト・グーテンベルク（フランス語）",
+      "description": "パブリックドメインのフランス語の古典。"
+    },
+    "gutenberg-it": {
+      "title": "プロジェクト・グーテンベルク（イタリア語）",
+      "description": "パブリックドメインのイタリア語の古典。"
+    },
+    "gutenberg-en": {
+      "title": "プロジェクト・グーテンベルク（英語）",
+      "description": "パブリックドメインの英語の古典。"
+    },
+    "wikiversity-fr": {
+      "title": "ウィキバーシティ（フランス語）",
+      "description": "講座と学習教材。"
+    },
+    "wikiversity-it": {
+      "title": "ウィキバーシティ（イタリア語）",
+      "description": "講座と学習教材。"
+    },
+    "wikiversity-en": {
+      "title": "ウィキバーシティ（英語）",
+      "description": "講座と学習教材。"
+    },
+    "phet-fr": {
+      "title": "PhET シミュレーション（フランス語）",
+      "description": "物理、化学、数学のインタラクティブなシミュレーション、フランス語版。"
+    },
+    "phet-it": {
+      "title": "PhET シミュレーション（イタリア語）",
+      "description": "物理、化学、数学のインタラクティブなシミュレーション、イタリア語版。"
+    },
+    "phet-en": {
+      "title": "PhET シミュレーション（英語）",
+      "description": "物理、化学、数学のインタラクティブなシミュレーション、英語版。"
+    },
+    "wikipedia-medicina-de": {
+      "title": "ドイツ語版 医学ウィキペディア",
+      "description": "ドイツ語版ウィキペディアの医学・健康に関する記事（WikiMed、画像付き）。"
+    },
+    "wikipedia-medicina-zh": {
+      "title": "中国語版 医学ウィキペディア",
+      "description": "中国語版ウィキペディアの医学・健康に関する記事（WikiMed、画像付き）。"
+    },
+    "wikipedia-medicina-ja": {
+      "title": "日本語版 医学ウィキペディア",
+      "description": "日本語版ウィキペディアの医学・健康に関する記事（WikiMed、画像付き）。"
+    },
+    "wikipedia-de": {
+      "title": "ドイツ語版ウィキペディア",
+      "description": "百科事典の全体。"
+    },
+    "wikipedia-zh": {
+      "title": "中国語版ウィキペディア",
+      "description": "百科事典の全体。"
+    },
+    "wikipedia-ja": {
+      "title": "日本語版ウィキペディア",
+      "description": "百科事典の全体。"
+    },
+    "wiktionary-de": {
+      "title": "ウィクショナリー（ドイツ語）",
+      "description": "辞書：意味、語源、翻訳。"
+    },
+    "wiktionary-zh": {
+      "title": "ウィクショナリー（中国語）",
+      "description": "辞書：意味、語源、翻訳。"
+    },
+    "wiktionary-ja": {
+      "title": "ウィクショナリー（日本語）",
+      "description": "辞書：意味、語源、翻訳。"
+    },
+    "wikivoyage-de": {
+      "title": "ウィキボヤージュ（ドイツ語）",
+      "description": "旅行ガイド：目的地、交通、宿泊。"
+    },
+    "wikivoyage-zh": {
+      "title": "ウィキボヤージュ（中国語）",
+      "description": "旅行ガイド：目的地、交通、宿泊。"
+    },
+    "wikivoyage-ja": {
+      "title": "ウィキボヤージュ（日本語）",
+      "description": "旅行ガイド：目的地、交通、宿泊。"
+    },
+    "wikisource-de": {
+      "title": "ウィキソース（ドイツ語）",
+      "description": "パブリックドメインの文書：法律、歴史文書、文学。"
+    },
+    "wikisource-zh": {
+      "title": "ウィキソース（中国語）",
+      "description": "パブリックドメインの文書：法律、歴史文書、文学。"
+    },
+    "wikisource-ja": {
+      "title": "ウィキソース（日本語）",
+      "description": "パブリックドメインの文書：法律、歴史文書、文学。"
+    },
+    "ifixit-de": {
+      "title": "iFixit（ドイツ語）",
+      "description": "ドイツ語の手順を追った修理ガイド：電子機器、車両、家電。"
+    },
+    "ifixit-zh": {
+      "title": "iFixit（中国語）",
+      "description": "中国語の手順を追った修理ガイド：電子機器、車両、家電。"
+    },
+    "ifixit-ja": {
+      "title": "iFixit（日本語）",
+      "description": "日本語の手順を追った修理ガイド：電子機器、車両、家電。"
+    },
+    "wikibooks-de": {
+      "title": "ウィキブックス（ドイツ語）",
+      "description": "自由に使える教科書と教材。"
+    },
+    "wikibooks-zh": {
+      "title": "ウィキブックス（中国語）",
+      "description": "自由に使える教科書と教材。"
+    },
+    "wikibooks-ja": {
+      "title": "ウィキブックス（日本語）",
+      "description": "自由に使える教科書と教材。"
+    },
+    "gutenberg-de": {
+      "title": "プロジェクト・グーテンベルク（ドイツ語）",
+      "description": "パブリックドメインのドイツ語の古典。"
+    },
+    "gutenberg-zh": {
+      "title": "プロジェクト・グーテンベルク（中国語）",
+      "description": "パブリックドメインの中国語の古典。"
+    },
+    "gutenberg-ja": {
+      "title": "プロジェクト・グーテンベルク（日本語）",
+      "description": "パブリックドメインの日本語の古典。"
+    },
+    "wikiversity-de": {
+      "title": "ウィキバーシティ（ドイツ語）",
+      "description": "講座と学習教材。"
+    },
+    "wikiversity-zh": {
+      "title": "ウィキバーシティ（中国語）",
+      "description": "講座と学習教材。"
+    },
+    "phet-de": {
+      "title": "PhET シミュレーション（ドイツ語）",
+      "description": "物理、化学、数学のインタラクティブなシミュレーション、ドイツ語版。"
+    },
+    "phet-ja": {
+      "title": "PhET シミュレーション（日本語）",
+      "description": "物理、化学、数学のインタラクティブなシミュレーション、日本語版。"
+    },
+    "asistente-gemma3": {
+      "title": "別のモデル：Gemma 3 4B",
+      "description": "アシスタント用の別のモデル（Google Gemma 3、4B）。メンテナンスで選べます。"
+    },
+    "asistente-llama32": {
+      "title": "別のモデル：Llama 3.2 3B",
+      "description": "アシスタント用の軽いモデル（Meta Llama 3.2、3B）。より速く答えます。"
+    },
+    "asistente-ligero": {
+      "title": "軽量アシスタント（Qwen2.5 1.5B）",
+      "description": "メモリの少ない機器（3〜4 GB のタブレットやスマートフォン）向けの小さなモデル。それらの機器で「すべてダウンロード」すると自動で選ばれます。"
+    },
+    "juegos": {
+      "title": "オフラインゲーム",
+      "description": "インターネットなしで遊べる Viseni Games のゲーム集。ダウンロードすると、バーに「ゲーム」ボタンが表示されます。"
+    }
+  },
+  "models": {},
+  "variants": {
+    "Sin imágenes": "画像なし",
+    "Con imágenes": "画像あり",
+    "Solo introducciones": "導入部のみ"
+  }
+}

@@ -27,6 +27,9 @@ export const TRUSTED_KEYS = Object.freeze({
 })
 
 export const MODES = ['auto', 'notify', 'off']
+// Idiomas de las notas del manifiesto. NO ampliar: las instalaciones ya desplegadas validan contra esta lista y
+// rechazarían un manifiesto con notas en otro idioma (no podrían actualizarse). Alemán, chino y japonés usan las
+// de inglés en la interfaz.
 export const LANGS = ['es', 'en', 'fr', 'it']
 /** Plataformas de los ficheros. system = tarball de la Pi/Linux con systemd; portable = carpeta; android = APK. */
 export const KINDS = ['system', 'portable', 'android']

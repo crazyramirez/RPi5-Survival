@@ -2,6 +2,7 @@
 import { BookOpen, Bot, Check, FileText, Gamepad2, Map as MapIcon, Route, Star, X } from '@lucide/vue'
 import type { Component } from 'vue'
 import type { ContentCatalogItem, ContentDetails } from '@survival-os/shared-types'
+import { CONTENT_LANGS } from '~/utils/content'
 import { formatBytes } from '~/utils/format'
 
 /**
@@ -40,7 +41,7 @@ const date = (iso: string): string => new Intl.DateTimeFormat(locale.value, { ye
 const langLabel = computed(() => {
   if (k.value?.language?.includes(',') || props.item.lang === 'mul') return t('content.info.langMany')
   const l = props.item.lang
-  return ['es', 'en', 'fr', 'it'].includes(l) ? t(`content.lang.${l}` as 'content.lang.en') : l
+  return (CONTENT_LANGS as readonly string[]).includes(l) ? t(`content.lang.${l}` as 'content.lang.en') : l
 })
 
 const facts = computed(() => {

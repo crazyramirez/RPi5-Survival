@@ -3,7 +3,7 @@ import { BookOpen, Bot, Check, CheckCheck, CircleAlert, Download, Info, FileText
 import type { Component } from 'vue'
 import type { ContentCatalogItem, ContentDetailsResponse, ContentItemStatus, ContentOverview } from '@survival-os/shared-types'
 import { formatBytes } from '~/utils/format'
-import { autoFit, contentLangs, countryItems, downloadPlan, inLanguage, orderPlan, topicOf, type CountryChoice } from '~/utils/content'
+import { autoFit, CONTENT_LANGS, contentLangs, countryItems, downloadPlan, inLanguage, orderPlan, topicOf, type CountryChoice } from '~/utils/content'
 import { INTEREST_IDS, recommend, type Interest } from '~/utils/interests'
 
 /**
@@ -262,7 +262,7 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
           <span class="meta">
             <strong>
               {{ i.title }}
-              <span v-if="i.lang !== locale && ['es', 'en', 'fr', 'it'].includes(i.lang)" class="ui-chip lang" :title="t('content.lang.enHint')">{{ t(`content.lang.${i.lang}` as 'content.lang.en') }}</span>
+              <span v-if="i.lang !== locale && (CONTENT_LANGS as readonly string[]).includes(i.lang)" class="ui-chip lang" :title="t('content.lang.enHint')">{{ t(`content.lang.${i.lang}` as 'content.lang.en') }}</span>
               <span v-if="coveredBetter(i)" class="ui-chip faint">{{ t('content.equivalent') }}</span>
               <span v-if="highlightIds.has(i.id)" class="ui-chip star"><Star :size="11" aria-hidden="true" />{{ t('content.recos.badge') }}</span>
             </strong>

@@ -280,7 +280,7 @@ public final class SurvivalService extends Service {
             Locale l = Locale.getDefault();
             JSONObject o = new JSONObject();
             String lang = l.getLanguage();
-            o.put("locale", lang.equals("es") || lang.equals("en") || lang.equals("fr") || lang.equals("it") ? lang : JSONObject.NULL);
+            o.put("locale", java.util.Arrays.asList("es", "en", "fr", "it", "de", "zh", "ja").contains(lang) ? lang : JSONObject.NULL);
             String c3 = "";
             try {
                 c3 = l.getISO3Country().toLowerCase(Locale.ROOT);

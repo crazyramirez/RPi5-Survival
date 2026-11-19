@@ -10,6 +10,8 @@ import { isPortable, portablePaths } from './portable'
  * Pi survival-web tiene IPAddressDeny=any; las comprobaciones las hacen las tareas update-online/update-auto.
  */
 const MODES: readonly UpdateMode[] = ['auto', 'notify', 'off']
+// Notas de versión: solo estos idiomas (las instalaciones antiguas rechazan otros en el manifiesto, ver
+// scripts/update-lib.mjs). En alemán, chino y japonés se muestran las de inglés.
 const LANGS = ['es', 'en', 'fr', 'it'] as const
 
 export function updateKind(): UpdateKind {
@@ -109,7 +111,7 @@ export async function updateStatus(installed: string, lang: string): Promise<Upd
   const files = updateFiles(kind)
   if (!files) return base
   const [st, lastApply, ready] = await Promise.all([readJson(files.state), readJson(files.lastApply), readJson(files.ready)])
-  const l = (LANGS as readonly string[]).includes(lang) ? lang : 'es'
+  const l = (LANGS as readonly string[]).includes(lang) ? lang : 'en'
   const latestRaw = st?.latest as Record<string, unknown> | undefined
   const latest = latestRaw && ver(latestRaw.version)
     ? { version: ver(latestRaw.version)!, date: str(latestRaw.date) ?? '', minFrom: ver(latestRaw.minFrom) ?? '0.0.0', notes: pickNotes(latestRaw.notes, l) }

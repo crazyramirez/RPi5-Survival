@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/versi%C3%B3n-0.11.0-8cbf96?style=flat-square&labelColor=0f1412" alt="Versión 0.11.0">
   <img src="https://img.shields.io/badge/Raspberry%20Pi%205-quiosco%20t%C3%A1ctil-8cbf96?style=flat-square&labelColor=0f1412" alt="Raspberry Pi 5">
   <img src="https://img.shields.io/badge/portable-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-8cbf96?style=flat-square&labelColor=0f1412" alt="Portable: Windows, macOS y Linux">
-  <img src="https://img.shields.io/badge/idiomas-ES%20%C2%B7%20EN%20%C2%B7%20FR%20%C2%B7%20IT-8cbf96?style=flat-square&labelColor=0f1412" alt="Idiomas: español, inglés, francés e italiano">
+  <img src="https://img.shields.io/badge/idiomas-ES%20%C2%B7%20EN%20%C2%B7%20FR%20%C2%B7%20IT%20%C2%B7%20DE%20%C2%B7%20ZH%20%C2%B7%20JA-8cbf96?style=flat-square&labelColor=0f1412" alt="Idiomas: español, inglés, francés, italiano, alemán, chino y japonés">
   <img src="https://img.shields.io/badge/100%25-sin%20Internet-e5b85c?style=flat-square&labelColor=0f1412" alt="100 % sin Internet">
   <img src="https://img.shields.io/badge/instalaci%C3%B3n%20con%20IA-Claude%20%C2%B7%20Codex%20%C2%B7%20Gemini-93b8cc?style=flat-square&labelColor=0f1412" alt="Instalación con asistentes de IA: Claude, Codex y Gemini">
 </p>
@@ -22,7 +22,7 @@
 **Un centro de conocimiento, mapas y comunicación que funciona sin Internet.** Mapas de cualquier país con rutas,
 buscador de lugares, la Wikipedia, 41 protocolos de emergencia, cientos de manuales, un asistente de IA local,
 herramientas de campo (Sol y Luna, señales SOS, frecuencias de emergencia, raciones), notas y listas, mensajería por
-radio LoRa y una bóveda cifrada, en español, inglés, francés o italiano. Se actualiza solo con versiones firmadas.
+radio LoRa y una bóveda cifrada, en español, inglés, francés, italiano, alemán, chino o japonés. Se actualiza solo con versiones firmadas.
 
 Funciona de tres maneras:
 
@@ -267,7 +267,7 @@ Raspberry Pi). La
 La bienvenida aparece una sola vez y cabe en una pantalla:
 
 1. **Idioma.** Se propone el del equipo (navegador y zona horaria); se cambia tocando *Español*, *English*,
-   *Français* o *Italiano*.
+   *Français*, *Italiano*, *Deutsch*, *中文* o *日本語*.
 2. **País.** Se detecta sin Internet, por la posición GNSS o la del nodo LoRa, si la hay, y si no por la zona horaria.
    La pantalla dice cómo lo ha detectado. «Cambiar» permite elegir cualquier otro.
 3. **«Descargarlo todo».** Un clic descarga todo lo recomendado para tu idioma y tu país:
@@ -298,7 +298,7 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
   inundaciones…
 - Cada protocolo indica sus **fuentes y su fecha de revisión** (por ejemplo, las guías ERC 2021), con pasos
   numerados y avisos claros.
-- Disponibles en **español, inglés, francés e italiano**. Las traducciones conservan las mismas cifras y dosis
+- Disponibles en **español, inglés, francés, italiano, alemán, chino y japonés**. Las traducciones conservan las mismas cifras y dosis
   (comprobado automáticamente) y avisan de que, ante la duda, prevalece el original en español.
 - Búsqueda instantánea, favoritos y acceso directo al **112**.
 - **Guía en papel:** desde Emergencias se imprime (o se guarda como PDF en un USB) una guía con todos los
@@ -309,7 +309,7 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
 ![Mapa vectorial offline del centro de Madrid](docs/screenshots/mapa.png)
 
 - **Cualquier país del mundo:** **«Añadir país»** (en Mapas o en Mantenimiento) busca entre 242 países por su nombre en
-  cualquiera de los cuatro idiomas, muestra el tamaño aproximado y lo descarga con un toque.
+  cualquiera de los siete idiomas, muestra el tamaño aproximado y lo descarga con un toque.
   - **Detalle:** nivel de calle en países como España; algo menos en los muy grandes, para que quepan.
   - **Islas y territorios:** los cercanos van incluidos (Canarias con España, Alaska con EE. UU.); los de ultramar
     lejanos no se descargan.
@@ -357,6 +357,10 @@ marcado. **«Ahora no»** deja la configuración para más tarde (Sistema → Ma
   plantillas de **kit de emergencia** (Ready.gov) y de **diario de incidencias**, y las notas aparecen en la búsqueda
   y como fuente del asistente. Se guardan sin cifrar; para datos sensibles, la bóveda.
 - **Visores a todo el ancho:** documentos con tablas, código y citas, en modo día y noche.
+- **Pantalla completa para leer:** en los PDF, los documentos, el lector de libros y las guías de emergencia, un botón
+  deja solo el documento (sin barras); para salir, un botón flotante discreto, Escape o cambiar de pantalla.
+- **Tamaño de letra** en el lector de libros y en los documentos de texto (del 80 al 200 %), al momento y sin perder
+  por dónde se lee; se recuerda.
 - **Visor de PDF propio:** con zoom (también pellizcando), modo noche y páginas que se cargan a medida que avanzas.
 - **Nada saca al usuario de la app:** los enlaces a PDF o a ventanas nuevas se abren dentro, siempre con un botón
   para volver.
@@ -432,6 +436,12 @@ Todo se calcula en el propio equipo y cada herramienta cita su fuente.
 - **Conversor de unidades:** longitud, peso, volumen, temperatura, velocidad y presión.
 - **Coordenadas:** de decimal a grados, minutos y segundos.
 - **Equipo:** puertos serie USB y dispositivos de entrada conectados.
+- **Teclado Bluetooth en un toque** (Pi, Linux y portable en Linux): «Conectar teclado Bluetooth» busca sola, enseña
+  primero teclados, ratones y mandos con su señal, y al elegir uno muestra en grande el código que hay que teclear
+  (las cifras se iluminan al escribirlas). Queda de confianza y se reconecta solo; desde la misma tarjeta se reconecta
+  o se desvincula. En Windows, macOS y Android abre los ajustes de Bluetooth del sistema.
+- **Dirección del trackpad** (Pi): con un trackpad conectado se elige desplazamiento *natural* (como en el móvil) o
+  *tradicional*; se aplica al momento.
 - **Juegos sin conexión:** una colección de juegos que se descarga con «Descargarlo todo» o desde Mantenimiento.
   El botón «Juegos» aparece en la barra (entre Inicio y Pantalla) solo cuando ya están descargados.
 
@@ -451,28 +461,40 @@ Todo se calcula en el propio equipo y cada herramienta cita su fuente.
   del nodo LoRa; por LoRa exige dos muestras coincidentes. Probado: con el reloj atrasado 1 h a propósito, quedó a
   0,2 s de la hora real.
 - **Mantenimiento**, con las mismas secciones en la Pi y en la portable:
-  - **Red y hora:** en la Pi se apaga y enciende la Wi-Fi y se ajusta la hora; en la portable las gestiona el sistema
-    operativo y solo se muestran.
+  - **Actualizaciones,** lo primero: estado, «Buscar ahora» / «Instalar» y el modo (automática, solo avisar,
+    desactivada) en una tarjeta compacta.
   - **Contenidos:** «Descargarlo todo», el catálogo completo y el estado de cada descarga.
-  - **USB y copias:** importar mapas y documentos, copias de seguridad y actualizar.
+  - **Red, hora y USB:** en la Pi se apaga y enciende la Wi-Fi y se ajusta la hora (en la portable las gestiona el
+    sistema operativo y solo se muestran); importar mapas y documentos desde un USB y hacer copias de seguridad.
   - **GPS:** por GPIO en la Pi, por USB en la portable.
 - **Pantalla:**
   - idioma;
   - alto contraste y texto grande;
   - teclado en pantalla y atenuación;
-  - bloqueo, reinicio y apagado seguros.
+  - bloqueo, reinicio y apagado seguros;
+  - con la pantalla en ahorro, el toque que la enciende solo la enciende (no pulsa lo que haya debajo);
+  - con ratón o trackpad, un puntero discreto con los colores de la app.
 
 ## Idiomas y país
 
-Survivelia OS está completo en **español, inglés, francés e italiano**:
+Survivelia OS está completo en **español, inglés, francés, italiano, alemán, chino (simplificado) y japonés**:
 
-- **Interfaz** (más de 900 textos), fechas, números, nombres del mapa y teclado en pantalla:
+- **Interfaz** (más de 1.500 textos), fechas, números, nombres del mapa y teclado en pantalla:
   - español: QWERTY con ñ;
   - francés: AZERTY con ç;
+  - alemán: QWERTZ con ä, ö, ü y ß;
   - inglés e italiano: QWERTY;
   - en cada idioma, sus teclas de acento.
+  - chino y japonés: el teclado en pantalla escribe letras latinas (pinyin, rōmaji, nombres); para escribir en
+    caracteres chinos o japoneses hace falta un teclado físico con el método de entrada del sistema.
 - **Protocolos de emergencia**, la guía imprimible, el catálogo de descargas y los mensajes del sistema.
-- **El asistente** responde en el idioma de quien pregunta.
+- **El asistente** responde en el idioma de quien pregunta (en chino y japonés, la búsqueda en la biblioteca parte el
+  texto en pares de caracteres, como el buscador de Kiwix).
+- **Descargas propias de cada idioma:** Wikipedia (completa y médica), Wikcionario, Wikiviajes, Wikisource, iFixit,
+  Wikilibros, Proyecto Gutenberg, Wikiversidad y PhET, en cada idioma donde Kiwix las publica.
+- **Traducciones con IA:** la interfaz y los protocolos en alemán, chino y japonés (como en inglés, francés e
+  italiano) se tradujeron con IA y no han pasado revisión nativa ni sanitaria; ante la duda, prevalece el original
+  en español.
 
 **Cambiar de idioma:** en la bienvenida o en **Pantalla** (icono de idiomas, arriba del todo).
 
@@ -524,7 +546,7 @@ Las fuentes y sus licencias están en [docs/content-sources.md](docs/content-sou
 ### Actualizaciones automáticas
 
 Survivelia OS se actualiza solo desde las [versiones publicadas](https://github.com/crazyramirez/Survivelia-OS/releases)
-en GitHub, en la Pi, la portable y Android: **Sistema → Mantenimiento → Red → «Actualizaciones»**.
+en GitHub, en la Pi, la portable y Android: **Sistema → Mantenimiento**, la primera tarjeta («Actualizaciones»).
 
 - Muestra la versión instalada y la última, con las **novedades en tu idioma**, y avisa en la barra de estado cuando
   hay una nueva. «Buscar ahora» e «Instalar» a mano cuando quieras.
@@ -604,7 +626,7 @@ services/vault/          Bóveda: LUKS2 en la Pi; Argon2id + AES-GCM en la porta
 services/serial-hub/     Portable: Meshtastic, GPS (servidor compatible con gpsd) y ESP32 por USB, en Node
 services/mesh/           Pi: pasarela Meshtastic (Python)
 services/esp32-gateway/  Pi: ESP32 por USB serie (JSON Lines v1)
-content/                 Catálogo de descargas, traducciones, países y 41 protocolos (es/en/fr/it)
+content/                 Catálogo de descargas, traducciones, países y 41 protocolos (es/en/fr/it/de/zh/ja)
 portable/                Lanzador, instalación en el equipo y actualización de la versión portable
 scripts/                 Instalación, tareas de mantenimiento, motor de descargas, rutas, hora de respaldo…
 systemd/                 Servicios survival-* aislados (IPAddressDeny, ProtectSystem…)
@@ -673,7 +695,8 @@ Más detalles en el [ADR 0020](docs/adr/0020-app-android.md).
 
 ### Añadir textos o protocolos
 
-- **Textos de la interfaz:** en `apps/frontend/app/locales/es.ts` y la misma clave en `en.ts`, `fr.ts` e `it.ts`.
+- **Textos de la interfaz:** en `apps/frontend/app/locales/es.ts` y la misma clave en `en.ts`, `fr.ts`, `it.ts`,
+  `de.ts`, `zh.ts` y `ja.ts`.
   Una prueba impide que falte alguna o que cambie un marcador `{x}`.
 - **Protocolos:** en `content/protocols/` (español, el original revisado) y su traducción en
   `content/protocols/<idioma>/`.

@@ -1,14 +1,20 @@
 import { ref } from 'vue'
+import { de } from '../locales/de'
 import { en } from '../locales/en'
 import { es, type MessageKey } from '../locales/es'
 import { fr } from '../locales/fr'
 import { it } from '../locales/it'
+import { ja } from '../locales/ja'
+import { zh } from '../locales/zh'
+import { serverDe } from '../locales/server/de'
 import { serverEn } from '../locales/server/en'
 import { serverFr } from '../locales/server/fr'
 import { serverIt } from '../locales/server/it'
+import { serverJa } from '../locales/server/ja'
+import { serverZh } from '../locales/server/zh'
 
 export type MessageParams = Record<string, string | number>
-export type Locale = 'es' | 'en' | 'fr' | 'it'
+export type Locale = 'es' | 'en' | 'fr' | 'it' | 'de' | 'zh' | 'ja'
 
 /** Idiomas de la interfaz. El nombre va en su propio idioma (quien no lee español debe reconocer el suyo). */
 export const LOCALES: readonly { code: Locale; name: string; bcp47: string }[] = [
@@ -16,14 +22,17 @@ export const LOCALES: readonly { code: Locale; name: string; bcp47: string }[] =
   { code: 'en', name: 'English', bcp47: 'en-GB' },
   { code: 'fr', name: 'Français', bcp47: 'fr-FR' },
   { code: 'it', name: 'Italiano', bcp47: 'it-IT' },
+  { code: 'de', name: 'Deutsch', bcp47: 'de-DE' },
+  { code: 'zh', name: '中文', bcp47: 'zh-CN' },
+  { code: 'ja', name: '日本語', bcp47: 'ja-JP' },
 ]
 
 const STORAGE_KEY = 'survival-os:locale'
-const catalogs: Record<Locale, Record<MessageKey, string>> = { es, en, fr, it }
-const serverCatalogs: Partial<Record<Locale, Record<string, string>>> = { en: serverEn, fr: serverFr, it: serverIt }
+const catalogs: Record<Locale, Record<MessageKey, string>> = { es, en, fr, it, de, zh, ja }
+const serverCatalogs: Partial<Record<Locale, Record<string, string>>> = { en: serverEn, fr: serverFr, it: serverIt, de: serverDe, zh: serverZh, ja: serverJa }
 
 export function isLocale(v: unknown): v is Locale {
-  return v === 'es' || v === 'en' || v === 'fr' || v === 'it'
+  return typeof v === 'string' && LOCALES.some((l) => l.code === v)
 }
 
 function initialLocale(): Locale {

@@ -1,4 +1,18 @@
-# ADR 0017 — Interfaz y protocolos en español, inglés, francés e italiano
+# ADR 0017 — Interfaz y protocolos en español, inglés, francés, italiano, alemán, chino y japonés
+
+> **Ampliación (2026-11-19, v0.14.0):** alemán (`de`), chino simplificado (`zh`, `zh-Hans` en mapas y HTML) y japonés
+> (`ja`), a petición del usuario, con el mismo alcance que francés e italiano: interfaz, mensajes de los servicios,
+> herramientas de campo, 41 protocolos (traducidos con IA, sin revisión nativa ni sanitaria), catálogo de descargas
+> con contenidos propios de cada idioma (Wikipedia completa y médica, Wikcionario, Wikiviajes, Wikisource, iFixit,
+> Wikilibros, Gutenberg, Wikiversidad y PhET donde Kiwix los publica), asistente, nombres de países y lugares.
+> - **Teclado en pantalla:** QWERTZ con ä, ö, ü y ß en alemán; en chino y japonés escribe letras latinas (no hay
+>   método de entrada propio: para caracteres hace falta teclado físico con el del sistema).
+> - **Búsqueda en chino y japonés:** sin espacios entre palabras, la pregunta se parte en pares de caracteres
+>   (bigramas), como hace Kiwix con estos idiomas.
+> - **Fuentes:** la interfaz usa la fuente del sistema para los caracteres CJK (en la Pi, Droid Sans Fallback, ya
+>   instalada); los mapas los dibujan con `localIdeographFontFamily` sin glifos descargados.
+> - **Notas de versión:** siguen en es/en/fr/it (`scripts/update-lib.mjs`): las instalaciones ya desplegadas
+>   rechazarían un manifiesto con notas en otro idioma. En de/zh/ja se muestran las de inglés.
 
 - **Estado:** aceptada (2026-11-16) a petición del usuario («Todo en inglés, francés e italiano también»).
 - **Contexto:**

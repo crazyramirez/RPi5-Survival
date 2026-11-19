@@ -29,6 +29,12 @@ const LAYOUTS: Record<Locale, { letters: string[]; dead: Dead[] }> = {
   en: { letters: ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], dead: [] },
   fr: { letters: ['azertyuiop', 'qsdfghjklm', 'wxcvbnç'], dead: ['´', '`', '^', '¨'] },
   it: { letters: ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], dead: ['`', '´'] },
+  // QWERTZ con diéresis y ß en su sitio.
+  de: { letters: ['qwertzuiopü', 'asdfghjklöä', 'yxcvbnmß'], dead: [] },
+  // Chino y japonés: letras latinas (pinyin, rōmaji, nombres). El teclado en pantalla no convierte a caracteres
+  // (sin método de entrada); con teclado físico, el del sistema.
+  zh: { letters: ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], dead: [] },
+  ja: { letters: ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], dead: [] },
 }
 const layout = LAYOUTS[locale.value]
 const SYMBOLS = ['1234567890', '@#€&*()-_+', '!?/:;"\',=']

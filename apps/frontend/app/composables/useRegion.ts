@@ -1,9 +1,9 @@
 import type { CountryChoice } from '~/utils/content'
-import { locale, type Locale } from '~/utils/i18n'
+import { isLocale, locale, type Locale } from '~/utils/i18n'
 
 export interface CountryOption extends CountryChoice {
   iso2: string | null
-  /** Nombres en los cuatro idiomas: se busca por cualquiera. */
+  /** Nombres en los idiomas de la interfaz: se busca por cualquiera. */
   names: string[]
   maxzoom: number
   zones: number
@@ -20,6 +20,9 @@ const COUNTRY_LANG: Record<string, Locale> = {
   FR: 'fr', BE: 'fr', LU: 'fr', MC: 'fr', SN: 'fr', CI: 'fr', ML: 'fr', NE: 'fr', BF: 'fr', TG: 'fr', BJ: 'fr', GA: 'fr', CG: 'fr',
   CD: 'fr', MG: 'fr', CM: 'fr', HT: 'fr',
   IT: 'it', SM: 'it', VA: 'it',
+  DE: 'de', AT: 'de', LI: 'de', CH: 'de',
+  CN: 'zh', TW: 'zh', HK: 'zh', MO: 'zh',
+  JP: 'ja',
   GB: 'en', IE: 'en', US: 'en', CA: 'en', AU: 'en', NZ: 'en', ZA: 'en', IN: 'en', NG: 'en', KE: 'en', GH: 'en', JM: 'en', SG: 'en',
   PH: 'en', MT: 'en',
 }
@@ -125,7 +128,7 @@ export function useRegion() {
 
   /** Idioma propuesto la primera vez: el del navegador, salvo inglés genérico en un país de otro idioma. */
   function suggestedLanguage(): Locale {
-    const fromNav = (navigator.languages ?? [navigator.language]).map((l) => l.slice(0, 2).toLowerCase()).find((l): l is Locale => ['es', 'en', 'fr', 'it'].includes(l))
+    const fromNav = (navigator.languages ?? [navigator.language]).map((l) => l.slice(0, 2).toLowerCase()).find((l): l is Locale => isLocale(l))
     const tzLang = COUNTRY_LANG[fromTimezone()?.iso2 ?? '']
     if (tzLang && (!fromNav || fromNav === 'en')) return tzLang
     return fromNav ?? 'es'

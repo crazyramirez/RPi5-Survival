@@ -14,8 +14,8 @@ export interface Source {
 }
 
 /** Idiomas de la interfaz; el asistente responde en el de quien pregunta. */
-export type Lang = 'es' | 'en' | 'fr' | 'it'
-export const LANGS: readonly Lang[] = ['es', 'en', 'fr', 'it']
+export type Lang = 'es' | 'en' | 'fr' | 'it' | 'de' | 'zh' | 'ja'
+export const LANGS: readonly Lang[] = ['es', 'en', 'fr', 'it', 'de', 'zh', 'ja']
 
 export function isLang(v: unknown): v is Lang {
   return typeof v === 'string' && (LANGS as readonly string[]).includes(v)
@@ -27,6 +27,9 @@ export const NOT_FOUND: Record<Lang, string> = {
   en: "I can't find it in the library. Try other words or check Emergency.",
   fr: "Je ne le trouve pas dans la bibliothèque. Essayez avec d'autres mots ou consultez Urgences.",
   it: 'Non lo trovo nella biblioteca. Prova con altre parole o consulta Emergenze.',
+  de: 'Ich finde es nicht in der Bibliothek. Versuchen Sie es mit anderen Wörtern oder schauen Sie unter Notfall nach.',
+  zh: '在资料库中没有找到。请换个说法，或查看“紧急情况”。',
+  ja: 'ライブラリに見つかりません。別の言葉で試すか、「緊急」を確認してください。',
 }
 
 /**
@@ -64,6 +67,27 @@ Regole obbligatorie:
 - Se le fonti non contengono la risposta o non bastano, rispondi con le tue conoscenze generali e inizia quella parte con "Fuori dalla biblioteca:" (senza citazioni). Se non sei sicuro, dillo: non inventare cifre, date o nomi.
 - In un'emergenza medica, inizia ricordando di chiamare il 112 e rimanda al protocollo corrispondente.
 - Rispondi in italiano, in breve (massimo 150 parole), con passaggi numerati quando serve. Le fonti possono essere in un'altra lingua: traduci ciò che usi.`,
+  de: `Sie sind der Auskunftsassistent von Survivelia OS, einem Überlebensgerät ohne Internet. Sie beantworten die FRAGE in vollständigen Sätzen.
+Verbindliche Regeln:
+- Die QUELLEN sind Auszüge aus der Bibliothek, die über Stichwörter gefunden wurden; manche haben vielleicht nichts mit der Frage zu tun: Ignorieren Sie diese.
+- Wenn eine Quelle die Antwort enthält, verwenden Sie ihre Angaben und setzen Sie ihre Nummer in eckigen Klammern an das Ende des Satzes, der sie nutzt, zum Beispiel: „Das Wasser eine Minute lang abkochen [1].“ Schreiben Sie nie einzelne Quellennummern und kopieren Sie die Quellen nicht.
+- Wenn die Quellen die Antwort nicht enthalten oder nicht ausreichen, antworten Sie mit Ihrem Allgemeinwissen und beginnen Sie diesen Teil mit "Außerhalb der Bibliothek:" (ohne Quellenangaben). Wenn Sie sich nicht sicher sind, sagen Sie es: Erfinden Sie keine Zahlen, Daten oder Namen.
+- Bei einem medizinischen Notfall erinnern Sie zuerst daran, die 112 anzurufen, und verweisen auf das passende Protokoll.
+- Antworten Sie auf Deutsch, kurz (höchstens 150 Wörter), bei Bedarf mit nummerierten Schritten. Die Quellen können in einer anderen Sprache sein: Übersetzen Sie, was Sie verwenden.`,
+  zh: `你是 Survivelia OS 的查询助手，这是一台没有互联网的求生设备。请用完整的句子回答“问题”。
+必须遵守的规则：
+- “资料”是按关键词在资料库中找到的片段，其中一些可能与问题无关：请忽略它们。
+- 如果某条资料能回答问题，使用其中的信息，并在使用它的句子末尾用方括号标出编号，例如：“把水煮沸一分钟[1]。”不要单独写编号，也不要照抄资料。
+- 如果资料中没有答案或不够，请用你的常识回答，并以“资料库以外：”开头（不加引用）。如果不确定，请直说：不要编造数字、日期或名称。
+- 遇到医疗急症时，先提醒拨打 112，并指向相应的急救流程。
+- 用中文简短回答（最多 200 字），需要时使用编号步骤。资料可能是其他语言：请翻译你用到的内容。`,
+  ja: `あなたは Survivelia OS の参照アシスタントです。Survivelia OS はインターネットなしで使えるサバイバル端末です。「質問」に完全な文で答えてください。
+必ず守るルール：
+- 「資料」はライブラリからキーワードで見つけた抜粋です。質問と関係のないものもあります。その場合は無視してください。
+- 資料に答えがあれば、その情報を使い、使った文の末尾に番号を角かっこで付けてください。例：「水を1分間沸騰させます[1]。」番号だけを書いたり、資料をそのまま写したりしないでください。
+- 資料に答えがない、または不十分な場合は、一般的な知識で答え、その部分を「ライブラリ外：」で始めてください（引用なし）。確かでなければそう伝え、数字・日付・名前を作らないでください。
+- 医療の緊急時は、まず 112 に電話するよう伝え、該当する手順を案内してください。
+- 日本語で簡潔に（最大 300 文字）、必要なら番号付きの手順で答えてください。資料は他の言語の場合があります。使う部分は翻訳してください。`,
 }
 
 /** Sin fuentes: conocimiento general del modelo (la pantalla lo avisa: no hay nada que comprobar). */
@@ -88,6 +112,21 @@ Regole obbligatorie:
 - Se non sei sicuro, dillo: non inventare cifre, date o nomi.
 - In un'emergenza medica, inizia ricordando di chiamare il 112 e di consultare i protocolli di Emergenze.
 - Rispondi in italiano, in breve (massimo 150 parole), con passaggi numerati quando serve.`,
+  de: `Sie sind der Assistent von Survivelia OS, einem Überlebensgerät ohne Internet. Die Bibliothek des Geräts enthält nichts zu dieser Frage: Antworten Sie mit Ihrem Allgemeinwissen.
+Verbindliche Regeln:
+- Wenn Sie sich nicht sicher sind, sagen Sie es: Erfinden Sie keine Zahlen, Daten oder Namen.
+- Bei einem medizinischen Notfall erinnern Sie zuerst daran, die 112 anzurufen und die Notfallprotokolle zu lesen.
+- Antworten Sie auf Deutsch, kurz (höchstens 150 Wörter), bei Bedarf mit nummerierten Schritten.`,
+  zh: `你是 Survivelia OS 的助手，这是一台没有互联网的求生设备。设备的资料库中没有关于这个问题的内容：请用你的常识回答。
+必须遵守的规则：
+- 如果不确定，请直说：不要编造数字、日期或名称。
+- 遇到医疗急症时，先提醒拨打 112，并查看“紧急情况”中的急救流程。
+- 用中文简短回答（最多 200 字），需要时使用编号步骤。`,
+  ja: `あなたは Survivelia OS のアシスタントです。Survivelia OS はインターネットなしで使えるサバイバル端末です。端末のライブラリにはこの質問に関する情報がありません。一般的な知識で答えてください。
+必ず守るルール：
+- 確かでなければそう伝え、数字・日付・名前を作らないでください。
+- 医療の緊急時は、まず 112 に電話し、「緊急」の手順を確認するよう伝えてください。
+- 日本語で簡潔に（最大 300 文字）、必要なら番号付きの手順で答えてください。`,
 }
 
 /** Compatibilidad: el prompt en español. */
@@ -98,32 +137,60 @@ const LABELS: Record<Lang, { sources: string; question: string }> = {
   en: { sources: 'SOURCES', question: 'QUESTION' },
   fr: { sources: 'SOURCES', question: 'QUESTION' },
   it: { sources: 'FONTI', question: 'DOMANDA' },
+  de: { sources: 'QUELLEN', question: 'FRAGE' },
+  zh: { sources: '资料', question: '问题' },
+  ja: { sources: '資料', question: '質問' },
 }
 
 const norm = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 
-/** Palabras vacías y de pregunta (español, más inglés, francés e italiano): no ayudan a recuperar fuentes. */
+/** Palabras vacías y de pregunta (español, más inglés, francés, italiano y alemán): no ayudan a recuperar fuentes. */
 const STOPWORDS = new Set(
   (
     'a al algo alguien algun alguna algunas alguno algunos ante antes aqui asi aun cada como con contra cual cuales cuando cuanto de del desde donde dos el ella ellas ellos en entre era es esa ese eso esta estan este esto estos fue hace hacer hacerlo hago hay he la las le les lo los mas me mi mis mucho muy nada ni no nos o otra otro para pero poco por porque puede pueden puedo pues que quien se sea segun ser si sin sobre solo son su sus tambien tengo tiene tienen todo todos tu un una uno unos usted vez y ya yo debo deberia necesito quiero saber sirve funciona mejor' +
     ' the and are for was what when where which who why how can could should would does did has have had not you your with from this that these those into about there their them they will just need want know best' +
     ' les des une est dans pour par pas plus sur avec mais que qui quoi comment quand faut faire peut peux dois sont etre avoir cette ces mon mes votre vous nous' +
-    ' gli che chi non per con sono come quando dove cosa devo posso fare essere avere questo questa della delle degli dello nel nella sul sulla una uno'
+    ' gli che chi non per con sono come quando dove cosa devo posso fare essere avere questo questa della delle degli dello nel nella sul sulla una uno' +
+    ' der die das und ist ein eine einen einem einer nicht mit wie was wann wer warum kann muss soll ich sie wir ihr den dem des von zum zur auf fur bei aus uber wenn oder auch noch sind wird werden habe haben man mein meine'
   ).split(' '),
 )
 
+/** Escritura china o japonesa (sin espacios entre palabras). */
+const CJK_RE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u
+/** Pares de caracteres frecuentes en preguntas en chino y japonés que no ayudan a recuperar fuentes. */
+const CJK_STOP = new Set(
+  '什么 怎么 如何 为什 么办 的是 是什 可以 应该 需要 我们 你们 他们 一个 这个 那个 怎样 哪里 是否 ですか ますか どうす うすれ すれば ればい ばいい とは には では ので から まで する して した ない ある いる です ます この その あの どう なに 何を 何が'.split(' '),
+)
+/**
+ * Palabras de un texto. El chino y el japonés no separan palabras: cada tramo en esa escritura se parte en
+ * pares de caracteres (bigramas), como hace el buscador de Kiwix con estos idiomas.
+ */
+function tokens(text: string): string[] {
+  const out: string[] = []
+  for (const w of text.split(/[^\p{L}\p{N}]+/u)) {
+    if (!w) continue
+    if (!CJK_RE.test(w)) {
+      out.push(w)
+      continue
+    }
+    const run = [...w]
+    if (run.length <= 2) out.push(w)
+    for (let i = 0; i + 1 < run.length; i++) out.push(run[i]! + run[i + 1]!)
+  }
+  return out
+}
+
 /** Palabras clave de una pregunta (sin palabras vacías, sin acentos para comparar). */
 export function keywords(question: string): string[] {
-  return [...new Set(norm(question).split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 2 && !STOPWORDS.has(w)))].slice(0, 8)
+  const useful = (w: string): boolean => (CJK_RE.test(w) ? w.length >= 2 && !CJK_STOP.has(w) : w.length > 2 && !STOPWORDS.has(w))
+  return [...new Set(tokens(norm(question)).filter(useful))].slice(0, 8)
 }
 
 /** Términos para el buscador de Kiwix: mismas palabras clave pero con sus tildes originales. */
 export function searchTerms(question: string): string {
   const keep = new Set(keywords(question))
   const seen = new Set<string>()
-  return question
-    .toLowerCase()
-    .split(/[^\p{L}\p{N}]+/u)
+  return tokens(question.toLowerCase())
     .filter((w) => keep.has(norm(w)) && !seen.has(norm(w)) && seen.add(norm(w)))
     .join(' ')
 }
@@ -164,7 +231,9 @@ export function excerpt(text: string, query: string, max: number): string {
   const stems = [...new Set(keywords(query).map(stem))]
   const hits: { pos: number; k: number }[] = []
   stems.forEach((s, k) => {
-    const re = new RegExp(`(?<![\\p{L}\\p{N}])${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gu')
+    const lit = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    // En chino y japonés no hay límites de palabra: el bigrama se busca en cualquier posición.
+    const re = new RegExp(CJK_RE.test(s) ? lit : `(?<![\\p{L}\\p{N}])${lit}`, 'gu')
     for (const m of hay.matchAll(re)) hits.push({ pos: m.index, k })
   })
   hits.sort((a, b) => a.pos - b.pos)
@@ -207,6 +276,9 @@ const CONTEXT_NOTES: Record<Lang, string> = {
   en: '- Before the QUESTION you will see earlier questions and answers of this conversation: use them to understand what the new QUESTION refers to, but answer only it and do not repeat what was already said.',
   fr: "- Avant la QUESTION, vous verrez des questions et réponses précédentes de cette conversation : servez-vous-en pour comprendre à quoi se réfère la nouvelle QUESTION, mais ne répondez qu'à elle et ne répétez pas ce qui a déjà été dit.",
   it: '- Prima della DOMANDA vedrai domande e risposte precedenti di questa conversazione: usale per capire a cosa si riferisce la nuova DOMANDA, ma rispondi solo a quella e non ripetere quanto già detto.',
+  de: '- Vor der FRAGE sehen Sie frühere Fragen und Antworten dieses Gesprächs: Nutzen Sie sie, um zu verstehen, worauf sich die neue FRAGE bezieht, aber beantworten Sie nur diese und wiederholen Sie nicht, was schon gesagt wurde.',
+  zh: '- 在“问题”之前，你会看到本次对话中之前的问题和回答：用它们来理解新“问题”指的是什么，但只回答新问题，不要重复已经说过的内容。',
+  ja: '- 「質問」の前に、この会話のこれまでの質問と回答が表示されます。新しい「質問」が何を指しているかを理解するために使い、答えるのは新しい質問だけにして、すでに述べたことは繰り返さないでください。',
 }
 
 /**

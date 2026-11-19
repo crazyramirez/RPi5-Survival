@@ -574,6 +574,118 @@
     "juegos": {
       "title": "Giochi offline",
       "description": "Una raccolta di giochi Viseni Games da giocare senza Internet. Il pulsante «Giochi» compare nella barra una volta scaricati."
+    },
+    "wikipedia-medicina-de": {
+      "title": "Wikipedia medica in tedesco",
+      "description": "Voci di medicina e salute di Wikipedia in tedesco (WikiMed), con immagini."
+    },
+    "wikipedia-medicina-zh": {
+      "title": "Wikipedia medica in cinese",
+      "description": "Voci di medicina e salute di Wikipedia in cinese (WikiMed), con immagini."
+    },
+    "wikipedia-medicina-ja": {
+      "title": "Wikipedia medica in giapponese",
+      "description": "Voci di medicina e salute di Wikipedia in giapponese (WikiMed), con immagini."
+    },
+    "wikipedia-de": {
+      "title": "Wikipedia in tedesco",
+      "description": "L'enciclopedia completa."
+    },
+    "wikipedia-zh": {
+      "title": "Wikipedia in cinese",
+      "description": "L'enciclopedia completa."
+    },
+    "wikipedia-ja": {
+      "title": "Wikipedia in giapponese",
+      "description": "L'enciclopedia completa."
+    },
+    "wiktionary-de": {
+      "title": "Wikizionario (tedesco)",
+      "description": "Dizionario: definizioni, etimologia e traduzioni."
+    },
+    "wiktionary-zh": {
+      "title": "Wikizionario (cinese)",
+      "description": "Dizionario: definizioni, etimologia e traduzioni."
+    },
+    "wiktionary-ja": {
+      "title": "Wikizionario (giapponese)",
+      "description": "Dizionario: definizioni, etimologia e traduzioni."
+    },
+    "wikivoyage-de": {
+      "title": "Wikivoyage (tedesco)",
+      "description": "Guida di viaggio: destinazioni, trasporti, alloggi."
+    },
+    "wikivoyage-zh": {
+      "title": "Wikivoyage (cinese)",
+      "description": "Guida di viaggio: destinazioni, trasporti, alloggi."
+    },
+    "wikivoyage-ja": {
+      "title": "Wikivoyage (giapponese)",
+      "description": "Guida di viaggio: destinazioni, trasporti, alloggi."
+    },
+    "wikisource-de": {
+      "title": "Wikisource (tedesco)",
+      "description": "Testi di pubblico dominio: leggi, documenti storici, letteratura."
+    },
+    "wikisource-zh": {
+      "title": "Wikisource (cinese)",
+      "description": "Testi di pubblico dominio: leggi, documenti storici, letteratura."
+    },
+    "wikisource-ja": {
+      "title": "Wikisource (giapponese)",
+      "description": "Testi di pubblico dominio: leggi, documenti storici, letteratura."
+    },
+    "ifixit-de": {
+      "title": "iFixit in tedesco",
+      "description": "Guide di riparazione passo passo in tedesco: elettronica, veicoli, elettrodomestici."
+    },
+    "ifixit-zh": {
+      "title": "iFixit in cinese",
+      "description": "Guide di riparazione passo passo in cinese: elettronica, veicoli, elettrodomestici."
+    },
+    "ifixit-ja": {
+      "title": "iFixit in giapponese",
+      "description": "Guide di riparazione passo passo in giapponese: elettronica, veicoli, elettrodomestici."
+    },
+    "wikibooks-de": {
+      "title": "Wikibooks (tedesco)",
+      "description": "Manuali e libri di testo liberi."
+    },
+    "wikibooks-zh": {
+      "title": "Wikibooks (cinese)",
+      "description": "Manuali e libri di testo liberi."
+    },
+    "wikibooks-ja": {
+      "title": "Wikibooks (giapponese)",
+      "description": "Manuali e libri di testo liberi."
+    },
+    "gutenberg-de": {
+      "title": "Progetto Gutenberg in tedesco",
+      "description": "Libri classici in tedesco di pubblico dominio."
+    },
+    "gutenberg-zh": {
+      "title": "Progetto Gutenberg in cinese",
+      "description": "Libri classici in cinese di pubblico dominio."
+    },
+    "gutenberg-ja": {
+      "title": "Progetto Gutenberg in giapponese",
+      "description": "Libri classici in giapponese di pubblico dominio."
+    },
+    "wikiversity-de": {
+      "title": "Wikiversità (tedesco)",
+      "description": "Corsi e materiali didattici."
+    },
+    "wikiversity-zh": {
+      "title": "Wikiversità (cinese)",
+      "description": "Corsi e materiali didattici."
+    },
+    "phet-de": {
+      "title": "Simulazioni PhET in tedesco",
+      "description": "Simulazioni interattive di fisica, chimica e matematica, in tedesco."
+    },
+    "phet-ja": {
+      "title": "Simulazioni PhET in giapponese",
+      "description": "Simulazioni interattive di fisica, chimica e matematica, in giapponese."
     }
   },
   "models": {},

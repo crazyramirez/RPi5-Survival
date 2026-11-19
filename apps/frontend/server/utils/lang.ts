@@ -1,6 +1,8 @@
 import type { H3Event } from 'h3'
 
-export type Lang = 'es' | 'en' | 'fr' | 'it'
+export type Lang = 'es' | 'en' | 'fr' | 'it' | 'de' | 'zh' | 'ja'
+export const LANGS: readonly Lang[] = ['es', 'en', 'fr', 'it', 'de', 'zh', 'ja']
+export const isLang = (v: unknown): v is Lang => typeof v === 'string' && (LANGS as readonly string[]).includes(v)
 
 /**
  * Idioma de la interfaz que hace la petición. La app lo guarda en la cookie `survival-lang` (la envía el
@@ -9,5 +11,5 @@ export type Lang = 'es' | 'en' | 'fr' | 'it'
  */
 export function requestLang(event: H3Event): Lang {
   const v = getHeader(event, 'x-survival-lang') ?? getCookie(event, 'survival-lang')
-  return v === 'en' || v === 'fr' || v === 'it' ? v : 'es'
+  return isLang(v) ? v : 'es'
 }

@@ -7,7 +7,7 @@ export interface CountryZone {
 export interface Country {
   id: string
   iso2: string | null
-  names: { es: string; en: string; fr: string; it: string }
+  names: { es: string; en: string; fr: string; it: string; de?: string; zh?: string; ja?: string }
   zones: CountryZone[]
 }
 export function countryMaxZoom(landKm2: number): number

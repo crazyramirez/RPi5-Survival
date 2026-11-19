@@ -10,7 +10,7 @@ export default defineNuxtPlugin({
   enforce: 'pre',
   setup() {
     syncLocaleCookie()
-    useHead({ htmlAttrs: { lang: locale.value } })
+    useHead({ htmlAttrs: { lang: locale.value === 'zh' ? 'zh-Hans' : locale.value } })
     // Idioma por defecto del EQUIPO (npm run express -- defaults, o un agente LLM): solo si nadie ha elegido
     // uno en este navegador. Se guarda y se recarga una vez, sin bucles.
     let saved: string | null = null

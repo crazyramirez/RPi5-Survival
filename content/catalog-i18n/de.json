@@ -1,0 +1,697 @@
+{
+  "groups": {
+    "salud": "Gesundheit und Erste Hilfe",
+    "preparacion": "Vorsorge und Überleben",
+    "saber": "Enzyklopädien und Nachschlagewerke",
+    "oficios": "Reparatur, Handwerk und Selbstversorgung",
+    "libros": "Bücher und Lernen",
+    "manuales": "Handbücher als PDF",
+    "mapas": "Karten und Routen",
+    "asistente": "Offline-Assistent",
+    "juegos": "Spiele"
+  },
+  "items": {
+    "wikipedia-medicina": {
+      "title": "Medizinische Wikipedia",
+      "description": "Artikel über Medizin und Gesundheit aus der Wikipedia, mit Bildern."
+    },
+    "medlineplus": {
+      "title": "MedlinePlus",
+      "description": "Medizinische Enzyklopädie, Krankheiten und Medikamente (Nationalbibliothek für Medizin der USA)."
+    },
+    "zimgit-medicine": {
+      "title": "Medical Library",
+      "description": "Bücher über Feld- und Notfallmedizin."
+    },
+    "military-medicine": {
+      "title": "Military Medicine",
+      "description": "Militärische Handbücher für Gefechts- und Feldmedizin."
+    },
+    "cdc-travel": {
+      "title": "CDC Travelers' Health",
+      "description": "Krankheiten nach Region, Impfungen und Gesundheit auf Reisen."
+    },
+    "mdwiki": {
+      "title": "MDWiki",
+      "description": "Medizinische Enzyklopädie auf Englisch. Auf Spanisch bereits durch die medizinische Wikipedia und MedlinePlus abgedeckt."
+    },
+    "ready-gov": {
+      "title": "Ready.gov",
+      "description": "Katastrophenvorsorge: Familienpläne, Notfallsets, Extremwetter, Brände, Stromausfälle."
+    },
+    "zimgit-post-disaster": {
+      "title": "Post-Disaster Library",
+      "description": "Hilfen für die Zeit nach einer Katastrophe: Unterkunft, Hygiene, Energie, Kommunikation."
+    },
+    "zimgit-water": {
+      "title": "Water Treatment Library",
+      "description": "Wasser gewinnen und trinkbar machen."
+    },
+    "zimgit-food": {
+      "title": "Food for Preppers",
+      "description": "Lebensmittel haltbar machen und zubereiten."
+    },
+    "zimgit-knots": {
+      "title": "A Library of Knots",
+      "description": "Knoten, Bünde und Nähte, illustriert."
+    },
+    "scoutwiki": {
+      "title": "WikiRoca (Pfadfinder)",
+      "description": "Pfadfindertechniken: Orientierung, Lagerbau, Knoten."
+    },
+    "outdoors-qa": {
+      "title": "The Great Outdoors Q&A",
+      "description": "Fragen und Antworten zu Bergen, Camping und Überleben."
+    },
+    "armypubs": {
+      "title": "Handbücher der US-Armee",
+      "description": "Army Publishing Directorate: enthält Handbücher zu Überleben, Erster Hilfe und Orientierung."
+    },
+    "wikipedia": {
+      "title": "Wikipedia auf Spanisch",
+      "description": "Die vollständige Enzyklopädie."
+    },
+    "wiktionary": {
+      "title": "Wiktionary (Spanisch)",
+      "description": "Wörterbuch: Bedeutungen, Herkunft und Übersetzungen."
+    },
+    "wikivoyage": {
+      "title": "Wikivoyage (Spanisch)",
+      "description": "Reiseführer: Reiseziele, Verkehr, Unterkunft."
+    },
+    "wikisource": {
+      "title": "Wikisource (Spanisch)",
+      "description": "Gemeinfreie Texte: Gesetze, historische Dokumente, Literatur."
+    },
+    "ifixit": {
+      "title": "iFixit",
+      "description": "Schritt-für-Schritt-Reparaturanleitungen: Elektronik, Fahrzeuge, Haushaltsgeräte."
+    },
+    "lowtech": {
+      "title": "Low-Tech Magazine",
+      "description": "Energie und einfache Techniken ohne Hochtechnologie (Artikel auch auf Spanisch)."
+    },
+    "appropedia": {
+      "title": "Appropedia",
+      "description": "Angepasste Technologie: Wasser, Energie, Bauen, Landwirtschaft."
+    },
+    "energypedia": {
+      "title": "energypedia",
+      "description": "Solarenergie, Biomasse und Stromversorgung an abgelegenen Orten."
+    },
+    "diy-qa": {
+      "title": "Home Improvement Q&A",
+      "description": "Sanitär, Elektrik, Tischlerei und Reparaturen im Haus."
+    },
+    "gardening-qa": {
+      "title": "Gardening Q&A",
+      "description": "Gemüsegarten, Pflanzen und Schädlinge."
+    },
+    "mechanics-qa": {
+      "title": "Motor Vehicle Mechanics Q&A",
+      "description": "Auto- und Motorradmechanik."
+    },
+    "ham-qa": {
+      "title": "Amateur Radio Q&A",
+      "description": "Amateurfunk, Antennen und Kommunikation."
+    },
+    "cooking-qa": {
+      "title": "Seasoned Advice",
+      "description": "Kochen und Haltbarmachen von Lebensmitteln."
+    },
+    "sustainability-qa": {
+      "title": "Sustainable Living Q&A",
+      "description": "Nachhaltig leben und Selbstversorgung."
+    },
+    "wikibooks": {
+      "title": "Wikibooks (Spanisch)",
+      "description": "Freie Lehr- und Schulbücher."
+    },
+    "gutenberg": {
+      "title": "Projekt Gutenberg",
+      "description": "Gemeinfreie klassische Bücher auf Spanisch."
+    },
+    "wikiversity": {
+      "title": "Wikiversity (Spanisch)",
+      "description": "Kurse und Lernmaterialien."
+    },
+    "phet": {
+      "title": "PhET-Simulationen",
+      "description": "Interaktive Simulationen zu Physik, Chemie und Mathematik."
+    },
+    "mapa-espana": {
+      "title": "Karte von Festland-Spanien und den Balearen",
+      "description": "Straßen, Wege und Gelände bis auf Straßenebene (Zoom 15)."
+    },
+    "mapa-canarias": {
+      "title": "Karte der Kanarischen Inseln",
+      "description": "Straßen und Wege bis auf Straßenebene (Zoom 15)."
+    },
+    "mapa-mundo": {
+      "title": "Weltkarte (Übersicht)",
+      "description": "Länder, Städte und Hauptstraßen (Zoom 6)."
+    },
+    "rutas-espana": {
+      "title": "Offline-Routen: Spanien",
+      "description": "Routenberechnung zu Fuß, mit dem Fahrrad und mit dem Auto (BRouter)."
+    },
+    "rutas-canarias": {
+      "title": "Offline-Routen: Kanarische Inseln",
+      "description": "Routenberechnung zu Fuß, mit dem Fahrrad und mit dem Auto (BRouter)."
+    },
+    "asistente": {
+      "title": "Offline-Assistent (Qwen3 4B)",
+      "description": "Beantwortet Fragen und nennt dabei die Protokolle und die Bibliothek als Quelle. Funktioniert ohne Internet."
+    },
+    "hesperian-donde-no-hay-doctor": {
+      "title": "Wo es keinen Arzt gibt (Ausg. 2017)",
+      "description": "Standardhandbuch für Gesundheit auf dem Land: Diagnose, Erste Hilfe (Kap. 10), Medikamente, Infektionen, Geburten und Vorbeugung ohne Arzt."
+    },
+    "oms-atencion-basica-emergencia": {
+      "title": "Grundlegende Notfallversorgung: Behandlung von Verletzten und akut Erkrankten (Teilnehmerbuch)",
+      "description": "ABCDE-Vorgehen bei Verletzungen und Notfällen (Atemwege, Schock, Verbrennungen, Atemnot, Bewusstlosigkeit) für eine erste Versorgung mit wenigen Mitteln."
+    },
+    "msf-medicamentos-esenciales": {
+      "title": "Unentbehrliche Arzneimittel: praktischer Anwendungsleitfaden (2026)",
+      "description": "Ein Blatt pro Medikament: Anwendungsgebiete, Dosen für Erwachsene und Kinder, Gegenanzeigen und Lagerung; unverzichtbar, um eine Notfallapotheke zu nutzen."
+    },
+    "msf-clinical-guidelines-en": {
+      "title": "Clinical guidelines: diagnosis and treatment manual (MSF, 2026)",
+      "description": "Klinischer Leitfaden für Diagnose und Behandlung nach Symptomen und Krankheiten in abgelegenen Gebieten (die offizielle spanische Fassung ist fehlerhaft)."
+    },
+    "oms-primera-ayuda-psicologica": {
+      "title": "Psychologische Erste Hilfe: Leitfaden für Helfende vor Ort",
+      "description": "Wie man Menschen in einer Krise nach einer Katastrophe oder Gewalt hilft: beobachten, zuhören und mit Hilfe in Verbindung bringen."
+    },
+    "cicr-primeros-auxilios-conflictos": {
+      "title": "Erste Hilfe in bewaffneten Konflikten und anderen Gewaltsituationen (2013)",
+      "description": "Handbuch für Ersthelfende in gefährlichen Umgebungen: Sicherheit, Sichtung (Triage), Blutungen, Wunden, Knochenbrüche, Verbrennungen und Abtransport."
+    },
+    "ifrc-tratamiento-agua-hogar-emergencias": {
+      "title": "Wasseraufbereitung und -lagerung im Haushalt in Notsituationen",
+      "description": "Wasser zu Hause trinkbar machen: Abkochen, Chlor, SODIS, Filtern, Ausflocken und sichere Lagerung, mit illustrierten Merkblättern."
+    },
+    "hesperian-salud-ambiental": {
+      "title": "Gemeinschaftsleitfaden für Umweltgesundheit",
+      "description": "Trinkwasser und Quellschutz, Bau von Latrinen, Mücken, Abfall, Giftstoffe und ein Anhang zu Sicherheit und Notfällen."
+    },
+    "ops-gestion-cadaveres-desastres": {
+      "title": "Umgang mit Verstorbenen nach Katastrophen: Praxishandbuch für Ersthelfende (2. Aufl.)",
+      "description": "Bergung, Aufbewahrung, Identifizierung und Übergabe von Leichen nach einer Katastrophe sowie ihre tatsächlichen Gesundheitsrisiken."
+    },
+    "hesperian-libro-parteras": {
+      "title": "Ein Buch für Hebammen",
+      "description": "Schwangerschaft, Geburt, Komplikationen, Wochenbett und Neugeborene, für Hebammen und Menschen ohne medizinische Ausbildung."
+    },
+    "ops-complicaciones-embarazo-parto": {
+      "title": "Behandlung von Komplikationen in Schwangerschaft und Geburt: Leitfaden für Hebammen und Ärzte (2. Aufl.)",
+      "description": "Protokolle nach Symptom für geburtshilfliche Notfälle (Blutung, Eklampsie, Geburtsstillstand, Sepsis) und praktische Handgriffe."
+    },
+    "hesperian-donde-no-hay-dentista": {
+      "title": "Wo es keinen Zahnarzt gibt",
+      "description": "Zahnhygiene, Schmerzen, Abszesse, Zahnziehen und einfache Füllungen mit einfachen Mitteln."
+    },
+    "hesperian-donde-no-hay-doctor-mujeres": {
+      "title": "Wo Frauen keinen Arzt haben (Ausg. 2024)",
+      "description": "Frauengesundheit: Schwangerschaft, sexuell übertragbare Infektionen, Gewalt, psychische Gesundheit, Komplikationen nach Schwangerschaftsabbruch und häufige medizinische Probleme."
+    },
+    "cawst-tratamiento-agua-domiciliar": {
+      "title": "Einführung in die Wasseraufbereitung und sichere Wasserlagerung im Haushalt (Handbuch für Ausbilder, 2011)",
+      "description": "Mehrfachbarrieren-Ansatz: Quellschutz, Absetzen, Filtern (Biosand, Keramik), Desinfektion und Lagerung."
+    },
+    "cawst-saneamiento-ambiental": {
+      "title": "Einführung in die Umwelthygiene (Handbuch für Ausbilder, 2015)",
+      "description": "Latrinen, Umgang mit Fäkalien, Grauwasser, fester Abfall und Hygiene gegen fäkal-oral übertragene Krankheiten."
+    },
+    "ops-tratamiento-diarrea": {
+      "title": "Behandlung von Durchfall: klinisches Handbuch für Gesundheitsdienste",
+      "description": "Einschätzung der Austrocknung und Behandlungspläne A/B/C zur Flüssigkeitsgabe über den Mund und die Vene; Ruhr und Cholera."
+    },
+    "oms-brote-diarrea-aguda": {
+      "title": "Erste Schritte zur Bekämpfung eines Ausbruchs von akutem Durchfall",
+      "description": "Faltblatt mit 8 Seiten für die ersten Tage eines Cholera- oder Durchfallausbruchs: bestätigen, behandeln, Wasser chloren und Hygienemaßnahmen."
+    },
+    "oms-guia-humanitaria-mhgap": {
+      "title": "mhGAP-Leitfaden für humanitäre Einsätze (mhGAP-HIG)",
+      "description": "Klinische Behandlung von akutem Stress, Trauer, Depression, Psychose, Epilepsie, Alkohol und Suizidgefahr in Notsituationen durch nicht spezialisiertes Personal."
+    },
+    "ops-victimas-en-masa": {
+      "title": "Aufbau eines Systems zur Versorgung eines Massenanfalls von Verletzten",
+      "description": "Organisation von Sichtung (Triage), vorgeschobenem Behandlungsplatz, Abtransport und Koordination, wenn viele Verletzte gleichzeitig zu versorgen sind."
+    },
+    "oms-aps-ninos-adolescentes": {
+      "title": "Taschenbuch zur Primärversorgung von Kindern und Jugendlichen (2025)",
+      "description": "Taschenleitfaden, um häufige Probleme bei Kindern zu erkennen und zu behandeln und Warnzeichen zu bemerken."
+    },
+    "cicr-cirugia-guerra-vol1": {
+      "title": "Kriegschirurgie: Arbeiten mit begrenzten Mitteln in bewaffneten Konflikten und anderen Gewaltsituationen, Bd. 1",
+      "description": "Wundballistik, Sichtung (Triage), Wundausschneidung, Behandlung von Wunden und Infektionen, Narkose und Versorgung mit minimalen Mitteln."
+    },
+    "cicr-cirugia-guerra-vol2": {
+      "title": "Kriegschirurgie: Arbeiten mit begrenzten Mitteln in bewaffneten Konflikten und anderen Gewaltsituationen, Bd. 2",
+      "description": "Chirurgie nach Körperregion (Kopf, Brustkorb, Bauch, Gliedmaßen, Verbrennungen) mit begrenzten Mitteln; für Gesundheitspersonal."
+    },
+    "oms-guias-calidad-agua": {
+      "title": "Leitlinien für die Trinkwasserqualität (4. Aufl. mit 1. Ergänzung)",
+      "description": "Technisches Nachschlagewerk (636 Seiten) zu Krankheitserregern, Chemikalien, Desinfektion und Wassersicherheitsplänen."
+    },
+    "cawst-analisis-calidad-agua": {
+      "title": "Einführung in die Analyse der Trinkwasserqualität (Handbuch für Ausbilder, 2013)",
+      "description": "Wasseranalyse vor Ort: Trübung, Restchlor, pH-Wert und einfache mikrobiologische Tests."
+    },
+    "ops-wash-coordinacion-emergencias": {
+      "title": "Bereich Trinkwasser, Sanitärversorgung und Hygiene: Praxisleitfaden zur Koordination bei Gesundheitsnotlagen und Katastrophen",
+      "description": "Bewertung und Reaktion bei Wasser, Sanitärversorgung und Hygiene in Katastrophen, mit Überwachung der Wasserqualität."
+    },
+    "oms-enfermedades-agua-hogares": {
+      "title": "Bekämpfung von durch Wasser übertragenen Krankheiten im Haushalt",
+      "description": "Warum und wie man Wasser zu Hause aufbereitet und lagert (Chlor, Filter, SODIS, Abkochen), mit Daten zur Wirksamkeit."
+    },
+    "ops-salud-mental-desastres": {
+      "title": "Praxisleitfaden zur psychischen Gesundheit in Katastrophensituationen",
+      "description": "Psychische Reaktionen nach einer Katastrophe, Krisenintervention, gefährdete Gruppen und Unterstützung der Hilfsteams."
+    },
+    "ops-salud-mental-promotor": {
+      "title": "Psychische Gesundheit: Leitfaden für Gesundheitshelfer in der Gemeinde",
+      "description": "Einfacher Leitfaden, um Depression, Angst, Gewalt, Alkohol und Suizidgefahr in der Gemeinschaft zu erkennen und zu begleiten."
+    },
+    "oms-mhgap-2": {
+      "title": "mhGAP-Interventionsleitfaden 2.0 für psychische, neurologische und substanzbedingte Störungen",
+      "description": "Algorithmen zur Einschätzung und Behandlung von Depression, Psychose, Epilepsie, Demenz und Sucht in der nicht spezialisierten Versorgung."
+    },
+    "oms-paludismo-grave": {
+      "title": "Behandlung der schweren Malaria: Praxisleitfaden (3. Aufl.)",
+      "description": "Diagnose und Behandlung der schweren Malaria und ihrer Komplikationen bei Kindern und Erwachsenen."
+    },
+    "oms-tetanos-emergencias": {
+      "title": "Aktuelle Empfehlungen zur Behandlung von Tetanus in humanitären Notlagen",
+      "description": "Kurze technische Notiz: Wundprophylaxe, Immunglobulin, Impfung und klinische Behandlung von Tetanus nach einer Katastrophe."
+    },
+    "oms-malnutricion-grave": {
+      "title": "Behandlung schwerer Mangelernährung: Handbuch für Ärzte und anderes leitendes Gesundheitspersonal",
+      "description": "Die 10 Schritte der Behandlung schwerer Mangelernährung: Unterzuckerung, Unterkühlung, Austrocknung und Wiederaufnahme der Ernährung."
+    },
+    "oms-uso-clinico-sangre-bolsillo": {
+      "title": "Klinische Anwendung von Blut: Taschenhandbuch",
+      "description": "Flüssigkeitsersatz, Anzeichen für eine Transfusion und Alternativen bei Blutungen, Verletzungen, in der Geburtshilfe und in der Kinderheilkunde."
+    },
+    "oms-higiene-entorno-sanitario": {
+      "title": "Grundlegende Standards für Umwelthygiene in Gesundheitseinrichtungen",
+      "description": "Mindestmengen an Wasser, Sanitärversorgung, Abfall und Reinigung für eine behelfsmäßige Versorgungsstelle."
+    },
+    "ops-primera-ayuda-psicologica-comunidad": {
+      "title": "Psychologische Erste Hilfe. Gemeinsam stärker: Leitfaden, um dir und deiner Gemeinschaft zu helfen (2. Aufl.)",
+      "description": "Illustrierte Fassung der psychologischen Ersten Hilfe für Nachbarn und Freiwillige (große Datei: 63 MB)."
+    },
+    "hesperian-aprendiendo-promover-salud": {
+      "title": "Lernen, Gesundheit zu fördern",
+      "description": "Methoden zur Ausbildung von Gesundheitshelfern in der Gemeinde; nützlich, um andere anzuleiten (114 MB in 31 PDF-Dateien)."
+    },
+    "msf-cholera-epidemic-en": {
+      "title": "Management of a cholera epidemic (MSF)",
+      "description": "Aufbau von Cholera-Behandlungszentren, Chlorung, Isolierung und Logistik; es gibt keine spanische MSF-Fassung."
+    },
+    "msf-public-health-engineering-en": {
+      "title": "Public health engineering in precarious situations (MSF, 2010)",
+      "description": "Sanitärtechnik vor Ort: Wassergewinnung und -aufbereitung, Latrinen, Abfall und Bekämpfung von Krankheitsüberträgern in Lagern."
+    },
+    "oms-surgical-care-district-hospital-en": {
+      "title": "Surgical care at the district hospital (WHO, 2003)",
+      "description": "Grundlegende Techniken in Chirurgie, Narkose und Unfallchirurgie, illustriert; es gibt keine spanische Ausgabe."
+    },
+    "pc-guia-autoproteccion": {
+      "title": "Bürgerinformation zum Selbstschutz",
+      "description": "Offizieller spanischer Leitfaden zum Selbstschutz: was vor, während und nach einem Notfall zu tun ist, zu Hause und draußen."
+    },
+    "guia-familias-autoproteccion-2025": {
+      "title": "Leitfaden für Familien: Vorbeugung und Selbstschutz bei Gefahren",
+      "description": "Familien-Notfallplan, Grundausstattung und Verhalten bei Überschwemmungen, Erdbeben, Vulkanen, Stürmen, Bränden und technischen Gefahren."
+    },
+    "pc-guia-inundaciones": {
+      "title": "Bürgerleitfaden zur Hochwassergefahr",
+      "description": "Was vor, während und nach einer Überschwemmung oder einer DANA (Höhentief mit Starkregen) zu tun ist, nach offiziellen spanischen Vorgaben."
+    },
+    "pc-guia-fenomenos-meteorologicos": {
+      "title": "Bürgerleitfaden zu gefährlichen Wetterereignissen",
+      "description": "Hitze- und Kältewellen, Gewitter, Schneefälle, starker Wind und Sturmfluten an der Küste."
+    },
+    "pc-guia-riesgo-quimico-nuclear": {
+      "title": "Bürgerleitfaden für Industrie-, Chemie- und Atomnotfälle",
+      "description": "Schutz in Gebäuden, Evakuierung und Verhalten bei Industrie-, Chemie- und Atomunfällen."
+    },
+    "ign-terremoto-tsunami": {
+      "title": "Was vor, während und nach einem Erdbeben und bei einem Tsunami zu tun ist",
+      "description": "Hinknien, schützen und festhalten; Versorgungsleitungen (Wasser, Gas, Strom) abstellen und bei einem Tsunami evakuieren."
+    },
+    "sanidad-calor-folleto": {
+      "title": "Vorbeugung gegen die Folgen hoher Temperaturen (Faltblatt)",
+      "description": "Empfehlungen bei Hitzewellen, Hitzschlag und für gefährdete Menschen."
+    },
+    "ifrc-kit-alojamiento": {
+      "title": "IFRC-Unterkunftsset",
+      "description": "Eine Notunterkunft mit Planen, Seil und einfachem Werkzeug errichten (illustriert)."
+    },
+    "ops-wash-tratamiento-agua": {
+      "title": "Notfallaufbereitung von Trinkwasser am Ort des Verbrauchs (Technisches Merkblatt 10)",
+      "description": "Abkochen, Chloren, Filtern und mit Sonnenlicht desinfizieren (SODIS), mit Dosierungen."
+    },
+    "ops-wash-almacenamiento-agua": {
+      "title": "Wasserlagerung im Haushalt in Notsituationen (Technisches Merkblatt 8)",
+      "description": "Behälter, Hygiene und sicherer Umgang mit zu Hause gelagertem Wasser."
+    },
+    "ops-wash-saneamiento": {
+      "title": "Notfall-Sanitärversorgung: Planung und technische Möglichkeiten (Technisches Merkblatt 13)",
+      "description": "Notlatrinen und sichere Entsorgung von Fäkalien in den ersten Tagen."
+    },
+    "scouts-manual-orientacion": {
+      "title": "Grundhandbuch Orientierung",
+      "description": "Karte und Kompass, Gelände lesen und natürliche Orientierung, mit Übungen."
+    },
+    "scouts-manual-cabuyeria": {
+      "title": "Handbuch Knotenkunde (Knoten und Bünde)",
+      "description": "Knoten und Bünde für Unterstände, Wäscheleinen und Lagerbauten."
+    },
+    "iaru-guia-telecom-emergencia": {
+      "title": "Leitfaden für Notfunk (IARU, 2016)",
+      "description": "Notfunknetze, Nachrichtenübermittlung, Stromversorgung und Funkgeräte; mit PMR446 und CB-Funk."
+    },
+    "ure-manual-control-red": {
+      "title": "Leitung von Amateurfunknetzen: Ausbildungshandbuch",
+      "description": "Wie man in Spanien ein Notfunknetz leitet und daran teilnimmt."
+    },
+    "ign-actividades-mtn": {
+      "title": "Nationale topografische Karte, Orthofotos und LiDAR: Geografie-Übungen",
+      "description": "Die topografische Karte lesen: Maßstab, Höhenlinien, Profile und Gelände (65 MB)."
+    },
+    "atp-3-50-21-survival": {
+      "title": "ATP 3-50.21 Survival (US-Armee, 2018)",
+      "description": "Aktuelles Überlebenshandbuch: Wasser, Feuer, Unterschlupf, Nahrung, Signale und einfache Medizin."
+    },
+    "fm-3-25-26-land-navigation": {
+      "title": "FM 3-25.26 Map Reading and Land Navigation",
+      "description": "Karten lesen, Koordinaten, Marschrichtungszahl (Azimut), Kompass und Navigation ohne GPS."
+    },
+    "fm-21-76-survival": {
+      "title": "FM 21-76 / MCRP 3-02F Survival",
+      "description": "Klassisches Überlebenshandbuch mit illustriertem Anhang über essbare und giftige Pflanzen."
+    },
+    "fao-una-huerta-para-todos": {
+      "title": "Ein Gemüsegarten für alle (3. Aufl.)",
+      "description": "Einen Familiengemüsegarten anlegen und pflegen: Boden, Aussaat, Kompost, Schädlinge und Anbaukalender."
+    },
+    "fao-huertos-familiares-urbanos": {
+      "title": "Praktiken für städtische Familiengemüsegärten",
+      "description": "Anbau in Gefäßen und auf kleinem Raum: Substrat, Humus, Bewässerung und Anbaublätter."
+    },
+    "fao-huerto-escolar": {
+      "title": "Einen Schulgarten anlegen und betreuen",
+      "description": "Einen Gemeinschaftsgemüsegarten planen, bepflanzen und pflegen."
+    },
+    "fao-conservacion-frutas-hortalizas": {
+      "title": "Haltbarmachen von Obst und Gemüse durch kombinierte Verfahren",
+      "description": "Obst und Gemüse ohne Kühlung haltbar machen: Zucker, Säure, Konservierungsstoffe und sanfte Wärme, Schritt für Schritt."
+    },
+    "fao-silos-metalicos-familiares": {
+      "title": "Bau und Nutzung von Metallsilos für Getreide und Hülsenfrüchte im Haushalt",
+      "description": "Getreide monatelang ohne Schädlinge in Silos von 0,12 bis 4,2 m³ lagern."
+    },
+    "fao-captacion-agua-lluvia": {
+      "title": "Regenwasser sammeln und speichern",
+      "description": "Dächer, Zisternen, unterirdische Tanks und kleine Staubecken, um Regenwasser zu sammeln und zu speichern."
+    },
+    "fao-avicultura-familiar": {
+      "title": "Geflügelhaltung im Haushalt (Diversifizierungsbroschüre 3)",
+      "description": "Haltung von Hühnern zu Hause: Rassen, Haltung, Fütterung und einfache tierärztliche Versorgung."
+    },
+    "fao-conejo-cria": {
+      "title": "Das Kaninchen: Zucht und Krankheiten",
+      "description": "Kaninchenhaltung von A bis Z: Unterbringung, Fütterung, Fortpflanzung und Krankheiten."
+    },
+    "wikipedia-medicina-fr": {
+      "title": "Medizinische Wikipedia auf Französisch",
+      "description": "Artikel über Medizin und Gesundheit aus der französischen Wikipedia (WikiMed), mit Bildern."
+    },
+    "wikipedia-medicina-it": {
+      "title": "Medizinische Wikipedia auf Italienisch",
+      "description": "Artikel über Medizin und Gesundheit aus der italienischen Wikipedia (WikiMed), mit Bildern."
+    },
+    "medlineplus-en": {
+      "title": "MedlinePlus (Englisch)",
+      "description": "Medizinische Enzyklopädie, Krankheiten und Medikamente, auf Englisch (Nationalbibliothek für Medizin der USA)."
+    },
+    "ready-gov-en": {
+      "title": "Ready.gov (Englisch)",
+      "description": "Katastrophenvorsorge, auf Englisch: Familienpläne, Notfallsets, Extremwetter, Brände, Stromausfälle."
+    },
+    "scoutwiki-it": {
+      "title": "ScoutWiki auf Italienisch",
+      "description": "Pfadfindertechniken auf Italienisch: Orientierung, Camping, Knoten."
+    },
+    "scoutwiki-en": {
+      "title": "ScoutWiki auf Englisch",
+      "description": "Pfadfindertechniken auf Englisch: Orientierung, Camping, Knoten."
+    },
+    "wikipedia-fr": {
+      "title": "Wikipedia auf Französisch",
+      "description": "Die vollständige Enzyklopädie."
+    },
+    "wikipedia-it": {
+      "title": "Wikipedia auf Italienisch",
+      "description": "Die vollständige Enzyklopädie."
+    },
+    "wikipedia-en": {
+      "title": "Wikipedia auf Englisch",
+      "description": "Die vollständige Enzyklopädie."
+    },
+    "wiktionary-fr": {
+      "title": "Wiktionnaire (Französisch)",
+      "description": "Wörterbuch: Bedeutungen, Herkunft und Übersetzungen."
+    },
+    "wiktionary-it": {
+      "title": "Wikizionario (Italienisch)",
+      "description": "Wörterbuch: Bedeutungen, Herkunft und Übersetzungen."
+    },
+    "wiktionary-en": {
+      "title": "Wiktionary (Englisch)",
+      "description": "Wörterbuch: Bedeutungen, Herkunft und Übersetzungen."
+    },
+    "wikivoyage-fr": {
+      "title": "Wikivoyage (Französisch)",
+      "description": "Reiseführer: Reiseziele, Verkehr, Unterkunft."
+    },
+    "wikivoyage-it": {
+      "title": "Wikivoyage (Italienisch)",
+      "description": "Reiseführer: Reiseziele, Verkehr, Unterkunft."
+    },
+    "wikivoyage-en": {
+      "title": "Wikivoyage (Englisch)",
+      "description": "Reiseführer: Reiseziele, Verkehr, Unterkunft."
+    },
+    "wikisource-fr": {
+      "title": "Wikisource (Französisch)",
+      "description": "Gemeinfreie Texte: Gesetze, historische Dokumente, Literatur."
+    },
+    "wikisource-it": {
+      "title": "Wikisource (Italienisch)",
+      "description": "Gemeinfreie Texte: Gesetze, historische Dokumente, Literatur."
+    },
+    "wikisource-en": {
+      "title": "Wikisource (Englisch)",
+      "description": "Gemeinfreie Texte: Gesetze, historische Dokumente, Literatur."
+    },
+    "ifixit-fr": {
+      "title": "iFixit auf Französisch",
+      "description": "Schritt-für-Schritt-Reparaturanleitungen auf Französisch: Elektronik, Fahrzeuge, Haushaltsgeräte."
+    },
+    "ifixit-it": {
+      "title": "iFixit auf Italienisch",
+      "description": "Schritt-für-Schritt-Reparaturanleitungen auf Italienisch: Elektronik, Fahrzeuge, Haushaltsgeräte."
+    },
+    "ifixit-en": {
+      "title": "iFixit auf Englisch",
+      "description": "Schritt-für-Schritt-Reparaturanleitungen auf Englisch: Elektronik, Fahrzeuge, Haushaltsgeräte."
+    },
+    "wikibooks-fr": {
+      "title": "Wikilivres (Französisch)",
+      "description": "Freie Lehr- und Schulbücher."
+    },
+    "wikibooks-it": {
+      "title": "Wikibooks (Italienisch)",
+      "description": "Freie Lehr- und Schulbücher."
+    },
+    "wikibooks-en": {
+      "title": "Wikibooks (Englisch)",
+      "description": "Freie Lehr- und Schulbücher."
+    },
+    "gutenberg-fr": {
+      "title": "Projekt Gutenberg auf Französisch",
+      "description": "Gemeinfreie klassische Bücher auf Französisch."
+    },
+    "gutenberg-it": {
+      "title": "Projekt Gutenberg auf Italienisch",
+      "description": "Gemeinfreie klassische Bücher auf Italienisch."
+    },
+    "gutenberg-en": {
+      "title": "Projekt Gutenberg auf Englisch",
+      "description": "Gemeinfreie klassische Bücher auf Englisch."
+    },
+    "wikiversity-fr": {
+      "title": "Wikiversité (Französisch)",
+      "description": "Kurse und Lernmaterialien."
+    },
+    "wikiversity-it": {
+      "title": "Wikiversità (Italienisch)",
+      "description": "Kurse und Lernmaterialien."
+    },
+    "wikiversity-en": {
+      "title": "Wikiversity (Englisch)",
+      "description": "Kurse und Lernmaterialien."
+    },
+    "phet-fr": {
+      "title": "PhET-Simulationen auf Französisch",
+      "description": "Interaktive Simulationen zu Physik, Chemie und Mathematik, auf Französisch."
+    },
+    "phet-it": {
+      "title": "PhET-Simulationen auf Italienisch",
+      "description": "Interaktive Simulationen zu Physik, Chemie und Mathematik, auf Italienisch."
+    },
+    "phet-en": {
+      "title": "PhET-Simulationen auf Englisch",
+      "description": "Interaktive Simulationen zu Physik, Chemie und Mathematik, auf Englisch."
+    },
+    "asistente-gemma3": {
+      "title": "Alternatives Modell: Gemma 3 4B",
+      "description": "Ein anderes Modell für den Assistenten (Google Gemma 3, 4B). Es kann unter Wartung ausgewählt werden."
+    },
+    "asistente-llama32": {
+      "title": "Alternatives Modell: Llama 3.2 3B",
+      "description": "Ein leichteres Modell für den Assistenten (Meta Llama 3.2, 3B). Antwortet schneller."
+    },
+    "asistente-ligero": {
+      "title": "Leichter Assistent (Qwen2.5 1.5B)",
+      "description": "Kleines Modell für Geräte mit wenig Speicher (Tablets und Handys mit 3–4 GB). Wird auf diesen Geräten beim Herunterladen von allem automatisch gewählt."
+    },
+    "juegos": {
+      "title": "Offline-Spiele",
+      "description": "Eine Sammlung von Spielen von Viseni Games, die ohne Internet funktionieren. Nach dem Herunterladen erscheint in der Leiste eine Schaltfläche „Spiele“."
+    },
+    "wikipedia-medicina-de": {
+      "title": "Medizinische Wikipedia auf Deutsch",
+      "description": "Artikel über Medizin und Gesundheit aus der deutschen Wikipedia (WikiMed), mit Bildern."
+    },
+    "wikipedia-medicina-zh": {
+      "title": "Medizinische Wikipedia auf Chinesisch",
+      "description": "Artikel über Medizin und Gesundheit aus der chinesischen Wikipedia (WikiMed), mit Bildern."
+    },
+    "wikipedia-medicina-ja": {
+      "title": "Medizinische Wikipedia auf Japanisch",
+      "description": "Artikel über Medizin und Gesundheit aus der japanischen Wikipedia (WikiMed), mit Bildern."
+    },
+    "wikipedia-de": {
+      "title": "Wikipedia auf Deutsch",
+      "description": "Die vollständige Enzyklopädie."
+    },
+    "wikipedia-zh": {
+      "title": "Wikipedia auf Chinesisch",
+      "description": "Die vollständige Enzyklopädie."
+    },
+    "wikipedia-ja": {
+      "title": "Wikipedia auf Japanisch",
+      "description": "Die vollständige Enzyklopädie."
+    },
+    "wiktionary-de": {
+      "title": "Wiktionary (Deutsch)",
+      "description": "Wörterbuch: Bedeutungen, Herkunft und Übersetzungen."
+    },
+    "wiktionary-zh": {
+      "title": "Wiktionary (Chinesisch)",
+      "description": "Wörterbuch: Bedeutungen, Herkunft und Übersetzungen."
+    },
+    "wiktionary-ja": {
+      "title": "Wiktionary (Japanisch)",
+      "description": "Wörterbuch: Bedeutungen, Herkunft und Übersetzungen."
+    },
+    "wikivoyage-de": {
+      "title": "Wikivoyage (Deutsch)",
+      "description": "Reiseführer: Reiseziele, Verkehr, Unterkunft."
+    },
+    "wikivoyage-zh": {
+      "title": "Wikivoyage (Chinesisch)",
+      "description": "Reiseführer: Reiseziele, Verkehr, Unterkunft."
+    },
+    "wikivoyage-ja": {
+      "title": "Wikivoyage (Japanisch)",
+      "description": "Reiseführer: Reiseziele, Verkehr, Unterkunft."
+    },
+    "wikisource-de": {
+      "title": "Wikisource (Deutsch)",
+      "description": "Gemeinfreie Texte: Gesetze, historische Dokumente, Literatur."
+    },
+    "wikisource-zh": {
+      "title": "Wikisource (Chinesisch)",
+      "description": "Gemeinfreie Texte: Gesetze, historische Dokumente, Literatur."
+    },
+    "wikisource-ja": {
+      "title": "Wikisource (Japanisch)",
+      "description": "Gemeinfreie Texte: Gesetze, historische Dokumente, Literatur."
+    },
+    "ifixit-de": {
+      "title": "iFixit auf Deutsch",
+      "description": "Schritt-für-Schritt-Reparaturanleitungen auf Deutsch: Elektronik, Fahrzeuge, Haushaltsgeräte."
+    },
+    "ifixit-zh": {
+      "title": "iFixit auf Chinesisch",
+      "description": "Schritt-für-Schritt-Reparaturanleitungen auf Chinesisch: Elektronik, Fahrzeuge, Haushaltsgeräte."
+    },
+    "ifixit-ja": {
+      "title": "iFixit auf Japanisch",
+      "description": "Schritt-für-Schritt-Reparaturanleitungen auf Japanisch: Elektronik, Fahrzeuge, Haushaltsgeräte."
+    },
+    "wikibooks-de": {
+      "title": "Wikibooks (Deutsch)",
+      "description": "Freie Lehr- und Schulbücher."
+    },
+    "wikibooks-zh": {
+      "title": "Wikibooks (Chinesisch)",
+      "description": "Freie Lehr- und Schulbücher."
+    },
+    "wikibooks-ja": {
+      "title": "Wikibooks (Japanisch)",
+      "description": "Freie Lehr- und Schulbücher."
+    },
+    "gutenberg-de": {
+      "title": "Projekt Gutenberg auf Deutsch",
+      "description": "Gemeinfreie klassische Bücher auf Deutsch."
+    },
+    "gutenberg-zh": {
+      "title": "Projekt Gutenberg auf Chinesisch",
+      "description": "Gemeinfreie klassische Bücher auf Chinesisch."
+    },
+    "gutenberg-ja": {
+      "title": "Projekt Gutenberg auf Japanisch",
+      "description": "Gemeinfreie klassische Bücher auf Japanisch."
+    },
+    "wikiversity-de": {
+      "title": "Wikiversity (Deutsch)",
+      "description": "Kurse und Lernmaterialien."
+    },
+    "wikiversity-zh": {
+      "title": "Wikiversity (Chinesisch)",
+      "description": "Kurse und Lernmaterialien."
+    },
+    "phet-de": {
+      "title": "PhET-Simulationen auf Deutsch",
+      "description": "Interaktive Simulationen zu Physik, Chemie und Mathematik, auf Deutsch."
+    },
+    "phet-ja": {
+      "title": "PhET-Simulationen auf Japanisch",
+      "description": "Interaktive Simulationen zu Physik, Chemie und Mathematik, auf Japanisch."
+    }
+  },
+  "models": {},
+  "variants": {
+    "Sin imágenes": "Ohne Bilder",
+    "Con imágenes": "Mit Bildern",
+    "Solo introducciones": "Nur Einleitungen"
+  }
+}

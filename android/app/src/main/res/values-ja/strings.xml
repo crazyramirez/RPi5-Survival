@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notif_channel">Survivelia OS 実行中</string>
+    <string name="notif_running">地図、ライブラリ、アシスタント、無線をオフラインで利用できます</string>
+    <string name="notif_quit">終了</string>
+    <string name="state_preparing">Survivelia OS を準備しています…</string>
+    <string name="state_starting">サービスを起動しています…</string>
+    <string name="err_no_storage">データの保存先を選んでください。</string>
+    <string name="err_storage">%1$s に書き込めません</string>
+    <string name="err_timeout">サービスが応答しません。もう一度お試しください。それでも変わらない場合は、データフォルダー内のログ（logs）を確認してください。</string>
+    <string name="err_crash">Survivelia OS が何度か停止しました。ログは %1$s にあります</string>
+    <string name="gnss_label">タブレット内蔵の GNSS</string>
+    <string name="storage_title">地図、本、データをどこに保存しますか？</string>
+    <string name="storage_internal">内部ストレージ（SurvivalOS フォルダー）</string>
+    <string name="storage_removable">microSD カードまたは USB メモリ「%1$s」（SurvivalOS フォルダー）</string>
+    <string name="storage_private_internal">内部ストレージ内のアプリ専用フォルダー</string>
+    <string name="storage_private_sd">microSD カード内のアプリ専用フォルダー</string>
+    <string name="storage_free">空き %1$s</string>
+    <string name="storage_keeps">アプリをアンインストールしても残ります</string>
+    <string name="storage_deleted">アプリをアンインストールすると Android が削除します</string>
+    <string name="perm_files_title">ファイルへのアクセス</string>
+    <string name="perm_files_body">データを SurvivalOS フォルダーに保存する（アプリをアンインストールしても失われないようにする）には、次の画面で Survivelia OS の「すべてのファイルへのアクセスを許可」をオンにして、戻ってください。</string>
+    <string name="perm_files_denied">この権限がないと、そのフォルダーは使えません。別のフォルダーを選んでください（アプリ専用フォルダーには権限は不要ですが、アンインストールすると Android が削除します）。</string>
+    <string name="perm_location_title">インターネットなしで現在地を表示</string>
+    <string name="perm_location_body">Survivelia OS はタブレットの GNSS 受信機を使い、インターネットなしで地図上に現在地を表示し、ルートを記録します。位置情報が端末の外に送られることはありません。</string>
+    <string name="perm_battery_title">画面オフでも動作を続ける</string>
+    <string name="perm_battery_body">画面がオフのときにダウンロード、無線、GPS が止まらないよう、Survivelia OS がバッテリーの制限なしで動作できるように許可してください。一部のメーカー（Realme、Xiaomi、Huawei など）では、アプリの設定で「自動起動」と「バックグラウンドでのアクティビティ」も確認してください。</string>
+    <string name="install_permission">新しいバージョンをインストールするには、Survivelia OS にアプリのインストールを許可する必要があります。次の画面でオンにして戻ってください。インストーラーが自動的に開きます。</string>
+    <string name="download_saved">ダウンロードに保存しました：%1$s</string>
+    <string name="download_failed">保存できませんでした：%1$s</string>
+    <string name="btn_continue">続ける</string>
+    <string name="btn_later">後で</string>
+    <string name="btn_retry">再試行</string>
+    <string name="btn_other_storage">別のフォルダーを選ぶ</string>
+    <string name="splash_tagline">インターネットなしで使える知識、地図、通信</string>
+    <string name="install_permission_title">アップデートの許可</string>
+    <string name="state_waiting_volume">データが入ったカード「%1$s」を待っています…</string>
+    <string name="err_volume_missing">データ（%2$s）が入ったカード「%1$s」が見つかりません。正しく差し込まれているか確認してください。カードが認識されると Survivelia OS は自動的に起動します。別のフォルダーを選ぶこともできます。</string>
+    <string name="err_files_permission">%1$s のデータを使うには「すべてのファイルへのアクセス」の権限が必要です。もう一度許可するか（データはそのまま残っています）、別のフォルダーを選んでください。</string>
+    <string name="btn_grant">許可する</string>
+    <string name="storage_current">現在のフォルダー</string>
+    <string name="storage_has_data">Survivelia OS のデータがあります</string>
+    <string name="storage_switch_title">空のフォルダーを使いますか？</string>
+    <string name="storage_switch_body">地図、本、ダウンロードしたものは %1$s に残ります。移動も削除もされず、いつでもそのフォルダーに戻れます。新しいフォルダーではデータなしで始まります。</string>
+</resources>

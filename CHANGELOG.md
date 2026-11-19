@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.14.0 — 2026-11-19 · Alemán, chino y japonés
+
+### Añadido
+- **Tres idiomas nuevos: alemán, chino (simplificado) y japonés**, con el mismo alcance que el francés y el
+  italiano. Se eligen en la bienvenida o en Pantalla (*Deutsch*, *中文*, *日本語*), y el idioma propuesto la primera
+  vez tiene en cuenta el del navegador y la zona horaria (Alemania, Austria, Suiza; China, Taiwán, Hong Kong; Japón).
+  - **Interfaz completa** (más de 1.500 textos), mensajes del sistema y herramientas de campo; fechas y números en
+    cada idioma.
+  - **Los 41 protocolos de emergencia** y la guía imprimible, con las mismas cifras y la misma estructura que el
+    original (comprobado automáticamente). Traducidos con IA, sin revisión nativa ni sanitaria: ante la duda,
+    prevalece el original en español.
+  - **Descargas propias de cada idioma:** Wikipedia completa y médica, Wikcionario, Wikiviajes, Wikisource, iFixit,
+    Wikilibros, Proyecto Gutenberg, Wikiversidad y PhET, donde Kiwix los publica (28 contenidos nuevos).
+  - **Asistente** que responde en el idioma de la pregunta; en chino y japonés la búsqueda en la biblioteca parte el
+    texto en pares de caracteres, como el buscador de Kiwix.
+  - **Mapas, países y lugares** con sus nombres en cada idioma; teclado en pantalla QWERTZ con ä, ö, ü y ß en
+    alemán.
+  - App Android con sus textos en los tres idiomas.
+
+### Notas
+- En chino y japonés, el teclado en pantalla escribe letras latinas; para escribir caracteres hace falta un
+  teclado físico con el método de entrada del sistema.
+- El índice de lugares de los mapas se reconstruye solo una vez (en segundo plano) para incluir los nombres nuevos.
+
 ## 0.13.12 — 2026-11-19 · Tamaño de letra en el lector
 
 ### Añadido

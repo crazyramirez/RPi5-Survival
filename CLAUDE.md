@@ -27,6 +27,8 @@ Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, 
     `main`, `npm run release:publish -- --yes` **desde Bash, no PowerShell**: PowerShell se come el `--` y solo hace
     un ensayo). Siempre con los APK de Android.
   - **Después, borrar las releases antiguas** (`gh release delete vX.Y.Z --yes`): en GitHub queda solo la última.
+    **Esperar al menos 11 minutos tras publicar** (o borrarla al publicar la siguiente): la landing cachea 10 min
+    el enlace al APK y, si se borra antes, `/descargar/android` lleva a un APK que ya no existe.
   - **Y vincular la release en Survivelia Landing** (`../Survivelia Landing`): poner `version = 'X.Y.Z'` en
     `app/data/site.ts` (portada, pie, estado y JSON-LD), commit y push de `main` (Plesk despliega por webhook; luego
     en Plesk: NPM install → build → Restart App). El botón del APK (`/descargar/android`) ya redirige solo al

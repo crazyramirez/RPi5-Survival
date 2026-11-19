@@ -27,6 +27,10 @@ Estado: v0.7.0, fases 0–7 validadas en la Pi salvo pruebas físicas (táctil, 
     `main`, `npm run release:publish -- --yes` **desde Bash, no PowerShell**: PowerShell se come el `--` y solo hace
     un ensayo). Siempre con los APK de Android.
   - **Después, borrar las releases antiguas** (`gh release delete vX.Y.Z --yes`): en GitHub queda solo la última.
+  - **Y vincular la release en Survivelia Landing** (`../Survivelia Landing`): poner `version = 'X.Y.Z'` en
+    `app/data/site.ts` (portada, pie, estado y JSON-LD), commit y push de `main` (Plesk despliega por webhook; luego
+    en Plesk: NPM install → build → Restart App). El botón del APK (`/descargar/android`) ya redirige solo al
+    `-android-arm64.apk` de la última release (caché de 10 min): comprobar que apunta a la nueva.
 - En la Pi: `bash install.sh <tarball>`, `~/survival-os/current/scripts/test-offline.sh`, `run.sh`.
 
 ## Dispositivo

@@ -46,31 +46,14 @@ if [ "$SCREEN_OFF_SECONDS" -gt 0 ] 2>/dev/null && command -v swayidle >/dev/null
 fi
 
 # --- Agente de órdenes de la UI ---
+# Solo lee la FIFO y pasa cada orden a kiosk-cmd.sh por la ruta `current` (no la versión resuelta al arrancar):
+# las órdenes nuevas de cada actualización funcionan sin reiniciar el quiosco.
+LIVE_DIR="$(dirname "$0")/.."
 agent() {
   while true; do
     if [ -p "$FIFO" ] && [ -r "$FIFO" ]; then
       if read -r cmd < "$FIFO"; then
-        case "$cmd" in
-          display-off)
-            # swayidle de un solo uso: apaga en 2 s y, al primer toque, enciende y se termina.
-            swayidle timeout 2 "wlopm --off '*'" resume "wlopm --on '*'; kill \$PPID" &
-            log "pantalla apagada a petición de la UI"
-            ;;
-          touchpad-scroll\ natural|touchpad-scroll\ traditional)
-            # Dirección del desplazamiento del trackpad (rc.xml de labwc + recarga); publica el estado para la web.
-            if python3 -I "$APP_DIR/scripts/kiosk-input.py" set "${cmd#touchpad-scroll }"; then
-              log "trackpad: desplazamiento ${cmd#touchpad-scroll }"
-            else
-              log "trackpad: no se pudo cambiar el desplazamiento"
-            fi
-            ;;
-          exit-desktop)
-            mkdir -p "$(dirname "$DISABLE_FLAG")" && touch "$DISABLE_FLAG"
-            log "salida al escritorio a petición de la UI"
-            pkill -u "$(id -u)" -f 'class=survival-kiosk' || true
-            ;;
-          *) log "orden desconocida ignorada" ;;
-        esac
+        bash "$LIVE_DIR/scripts/kiosk-cmd.sh" "$cmd"
       fi
     else
       sleep 30
@@ -78,7 +61,7 @@ agent() {
   done
 }
 # Estado del trackpad para la web (no puede leer $HOME).
-python3 -I "$APP_DIR/scripts/kiosk-input.py" status 2>/dev/null || log "trackpad: estado no publicado"
+bash "$LIVE_DIR/scripts/kiosk-cmd.sh" touchpad-status
 
 agent &
 children+=($!)

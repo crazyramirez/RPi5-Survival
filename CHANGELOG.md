@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.10 — 2026-11-19 · El quiosco aprende las órdenes nuevas sin reiniciar
+
+### Corregido
+- **«No se pudo aplicar» al cambiar el desplazamiento del trackpad:** el quiosco en marcha seguía siendo el de antes
+  de actualizar y no conocía la orden nueva. Ahora su agente pasa cada orden a `scripts/kiosk-cmd.sh` por la ruta
+  de la versión instalada, así que las órdenes que traiga cada actualización funcionan sin reiniciar la Pi (hace
+  falta reiniciar el quiosco una sola vez, con esta versión).
+
 ## 0.13.9 — 2026-11-19 · Dirección del trackpad
 
 ### Añadido

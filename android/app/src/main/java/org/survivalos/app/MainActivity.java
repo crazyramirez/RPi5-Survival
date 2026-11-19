@@ -582,6 +582,10 @@ public final class MainActivity extends Activity implements SurvivalService.List
                 case "app-settings":
                     startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName())));
                     break;
+                case "bluetooth-settings":
+                    // Emparejar teclados, ratones y mandos: lo hace Android (Herramientas → Dispositivos de entrada).
+                    startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+                    break;
                 case "storage":
                     chooseStorage();
                     break;

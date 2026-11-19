@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.13.6 — 2026-11-19 · Teclados Bluetooth en un toque y pantalla que despierta sin pulsar
+
+### Corregido
+- **Pantalla en ahorro (Raspberry Pi):** el toque que enciende la pantalla apagada ya no pulsa lo que haya debajo
+  (antes podía abrir un menú o cambiar de pantalla sin verlo). Tras el tiempo de apagado del quiosco
+  (`SCREEN_OFF_SECONDS`) o tras «Apagar pantalla» en Sistema, el primer gesto (toque, deslizamiento o tecla) solo
+  enciende; el siguiente ya funciona. Un juego con el foco o un vídeo en marcha cuentan como actividad.
+
+### Añadido
+- **Conectar un teclado Bluetooth desde Herramientas → Dispositivos de entrada** (Raspberry Pi, Linux y portable en
+  Linux): «Conectar teclado Bluetooth» abre una hoja guiada que busca sola, enseña primero teclados, ratones y
+  mandos (con la señal de cada uno) y, al tocar uno, muestra en grande el código que hay que escribir en el teclado;
+  las cifras se iluminan al teclearlas. Queda de confianza: se reconecta solo cada vez que se enciende.
+- **Desvincular y reconectar:** los emparejados aparecen en la misma tarjeta con su estado (conectado o en espera) y
+  botones para reconectarlos o desvincularlos (con confirmación).
+- **Windows, macOS y Android:** tarjeta «Teclado y ratón Bluetooth» que abre los ajustes de Bluetooth del sistema.
+- Motor nuevo `scripts/bt-input.py` (BlueZ por D-Bus, agente propio solo mientras se empareja) y tarea root
+  `bluetooth` con lista cerrada de acciones y MAC validada.
+
 ## 0.13.5 — 2026-11-19 · Raspberry Pi: la imagen de arranque en todas las instalaciones
 
 ### Cambiado

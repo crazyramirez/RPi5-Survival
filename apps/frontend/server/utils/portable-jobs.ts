@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { createWriteStream, existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { createWriteStream, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { AdminJob, AdminJobStatus } from '@survival-os/shared-types'
 import { androidBridge, isAndroid, keepAwake } from './android'
@@ -19,7 +19,7 @@ interface Running {
 const jobs = new Map<AdminJob, Running>()
 
 /** Tareas que la portable sabe ejecutar y cómo (argumentos del motor). */
-function commandFor(job: AdminJob, params: Record<string, unknown>): { script: string; args: string[]; env?: Record<string, string> } | null {
+function commandFor(job: AdminJob, params: Record<string, unknown>): { script: string; args: string[]; env?: Record<string, string>; exe?: string } | null {
   const { root } = portablePaths()
   const scripts = join(root, 'app', 'scripts')
   const engine = (args: string[]) => ({ script: join(scripts, 'content-engine.mjs'), args: [...args, '--profile', 'portable', '--root', root] })
@@ -39,6 +39,14 @@ function commandFor(job: AdminJob, params: Record<string, unknown>): { script: s
     case 'games':
       // Copia offline de los juegos (ADR 0012) con el mismo sincronizador en Node que la Pi.
       return { script: join(scripts, 'games-sync.mjs'), args: [params.action === 'remove' ? 'remove' : 'sync'], env: { GAMES_ROOT: join(portablePaths().data, 'games') } }
+    case 'bluetooth':
+      // Linux: el mismo motor que la Pi, sin root (BlueZ deja hablar con org.bluez a cualquier usuario).
+      // En Windows, macOS y Android se empareja desde los ajustes del sistema.
+      return {
+        exe: 'python3',
+        script: join(scripts, 'bt-input.py'),
+        args: [String(params.action), ...(params.mac ? [String(params.mac)] : []), '--result', join(portablePaths().data, 'admin', 'bluetooth.result.json')],
+      }
     // Memorias USB, importar, copias y actualizar: lo que en la Pi hace admin-job.py (portable-admin.mjs).
     case 'usb-scan':
     case 'maps-import':
@@ -58,7 +66,7 @@ function commandFor(job: AdminJob, params: Record<string, unknown>): { script: s
 const PORTABLE_JOBS = new Set<AdminJob>([
   'content', 'llm', 'routing', 'content-delete', 'maps-delete', 'mesh', 'games',
   'usb-scan', 'maps-import', 'docs-import', 'backup', 'update', 'restart-app', 'gps-uart', 'usb-prepare',
-  'update-online', 'update-auto',
+  'update-online', 'update-auto', 'bluetooth',
 ])
 
 /** Tareas que preparan una actualización: nunca dos a la vez (las tres escriben en <raíz>/.update). */
@@ -95,6 +103,7 @@ async function inlineJob(job: AdminJob, params: Record<string, unknown>): Promis
 const NOT_ON_ANDROID = new Set<AdminJob>(['usb-prepare'])
 
 export function portableSupports(job: AdminJob): boolean {
+  if (job === 'bluetooth') return process.platform === 'linux' && !isAndroid()
   return PORTABLE_JOBS.has(job) && !(isAndroid() && NOT_ON_ANDROID.has(job))
 }
 
@@ -122,9 +131,11 @@ export async function startPortableJob(job: AdminJob, params: Record<string, unk
   }
   const cmd = commandFor(job, params)
   if (!cmd || !existsSync(cmd.script)) throw createError({ statusCode: 409, statusMessage: 'No disponible en la versión portable' })
+  // La interfaz lee el resultado mientras la tarea corre: nunca el de la anterior.
+  if (job === 'bluetooth') rmSync(join(adminDir, `${job}.result.json`), { force: true })
   const log = createWriteStream(join(adminDir, `${job}.log`), { flags: 'w' })
   log.write(`${new Date().toTimeString().slice(0, 8)} Inicio de «${job}»\n`)
-  const child = spawn(process.execPath, [cmd.script, ...cmd.args], {
+  const child = spawn(cmd.exe ?? process.execPath, cmd.exe ? ['-I', cmd.script, ...cmd.args] : [cmd.script, ...cmd.args], {
     env: { ...process.env, ...cmd.env },
     stdio: ['ignore', 'pipe', 'pipe'],
     windowsHide: true,

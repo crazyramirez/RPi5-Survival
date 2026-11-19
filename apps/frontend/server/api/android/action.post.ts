@@ -3,7 +3,7 @@ import { androidBridge, isAndroid } from '../../utils/android'
 import { assertTrustedAction } from '../../utils/system'
 
 const ACTIONS = new Set<AndroidAction>([
-  'permission-location', 'permission-notifications', 'permission-files', 'permission-battery', 'permission-install', 'app-settings', 'storage', 'kiosk', 'install-update',
+  'permission-location', 'permission-notifications', 'permission-files', 'permission-battery', 'permission-install', 'app-settings', 'storage', 'kiosk', 'install-update', 'bluetooth-settings',
 ])
 
 /** Acciones que solo la app Android puede hacer (pedir un permiso, fijar la pantalla, cambiar la carpeta de datos). */

@@ -72,6 +72,8 @@ export const serverFr: Record<string, string> = {
   'Respuesta de BRouter no válida': 'Réponse de BRouter non valide',
   'Agente del kiosco no disponible': 'Agent du kiosque indisponible',
   'Acción no válida': 'Action non valide',
+  'Dirección no válida': 'Adresse non valide',
+  'No se encontraron los ajustes de Bluetooth del sistema': 'Réglages Bluetooth du système introuvables',
   '[system] {0} falló: {1}': '[system] {0} a échoué : {1}',
   'Servicio de bóveda no disponible': 'Service du coffre indisponible',
   'Solo accesible desde la pantalla local': "Accessible uniquement depuis l'écran local",

@@ -554,6 +554,7 @@ public final class SurvivalService extends Service {
             case "permission-battery":
             case "permission-install":
             case "app-settings":
+            case "bluetooth-settings":
             case "storage":
                 main.post(() -> a.runAction(action));
                 return new JSONObject().put("ok", true);

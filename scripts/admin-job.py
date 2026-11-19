@@ -40,10 +40,13 @@ LOCK_GROUPS = {
     "routing": "routing",
     "mesh": "mesh",
     "games": "games",
+    "bluetooth": "bluetooth",
     # Actualizaciones desde GitHub (ADR 0021): comprobar y descargar no bloquean otras tareas; instalar toma
     # además el candado «system» (y en automático también «content»).
     "update-online": "update", "update-auto": "update",
 }
+BT_MAC_RE = re.compile(r"^[0-9A-F]{2}(:[0-9A-F]{2}){5}$")
+BT_ACTIONS = ("status", "scan", "pair", "connect", "remove")
 SERIAL_BYID_RE = re.compile(r"^/dev/serial/by-id/[A-Za-z0-9_.:+-]{1,200}$")
 LLM_MODELS = {"qwen3-4b", "gemma3-4b", "llama3.2-3b", "qwen2.5-1.5b"}
 PRESETS = {"basico", "recomendado", "completo"}
@@ -784,6 +787,24 @@ def job_games(p):
     run(["/usr/bin/python3", "-I", f"{SCRIPTS}/games-sync.py", action])
 
 
+def job_bluetooth(p):
+    """Teclados, ratones y mandos Bluetooth (scripts/bt-input.py, BlueZ por D-Bus). El estado en vivo (búsqueda,
+    clave que hay que escribir en el teclado) lo escribe bt-input.py en <tarea>.result.json mientras corre."""
+    action = p.get("action")
+    if action not in BT_ACTIONS:
+        raise JobError("acción no válida")
+    args = ["/usr/bin/python3", "-I", f"{SCRIPTS}/bt-input.py", action]
+    if action in ("pair", "connect", "remove"):
+        mac = p.get("mac")
+        if not isinstance(mac, str) or not BT_MAC_RE.match(mac):
+            raise JobError("dirección no válida")
+        args.append(mac)
+    result = f"{ADMIN}/{JOB}.result.json"
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(result)  # que la interfaz no lea el estado de la tarea anterior
+    run(args + ["--result", result])
+
+
 JOBS = {
     "usb-scan": job_usb_scan,
     "maps-import": job_maps_import,
@@ -804,6 +825,7 @@ JOBS = {
     "routing": job_routing,
     "mesh": job_mesh,
     "games": job_games,
+    "bluetooth": job_bluetooth,
     "update-online": job_update_online,
     "update-auto": job_update_auto,
 }

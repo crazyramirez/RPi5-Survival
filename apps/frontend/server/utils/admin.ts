@@ -131,6 +131,13 @@ export const ADMIN_JOBS: Record<AdminJob, (b: Record<string, unknown>) => Record
     if (b.action !== 'check' && b.action !== 'install') bad('Acción no válida')
     return { action: b.action }
   },
+  /** Teclados, ratones y mandos Bluetooth (bt-input.py). La MAC sale de una búsqueda o de la lista de emparejados. */
+  bluetooth: (b) => {
+    if (b.action === 'status' || b.action === 'scan') return { action: b.action }
+    if (b.action !== 'pair' && b.action !== 'connect' && b.action !== 'remove') bad('Acción no válida')
+    if (typeof b.mac !== 'string' || !/^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/.test(b.mac)) bad('Dirección no válida')
+    return { action: b.action, mac: b.mac }
+  },
   /** wake: la app se abre o vuelve a primer plano (comprueba si la última fue hace más de 10 min). */
   'update-auto': (b) => ({ wake: b.wake === true }),
 }
@@ -156,6 +163,8 @@ export async function startJob(job: AdminJob, params: Record<string, unknown>): 
   if (st.state === 'active' || st.state === 'activating') throw createError({ statusCode: 409, statusMessage: 'La tarea ya está en curso' })
   // Temporal + rename: sustituye el fichero aunque el anterior sea de otro usuario (p. ej. root tras una
   // prueba manual), porque el directorio es del grupo survival. Un writeFile directo daría EACCES → 500.
+  // Bluetooth: la interfaz lee el resultado mientras corre; que la respuesta no traiga el de la tarea anterior.
+  if (job === 'bluetooth') await fs.rm(`${ADMIN_DIR}/${job}.result.json`, { force: true }).catch(() => undefined)
   const target = `${ADMIN_DIR}/${job}.json`
   const tmp = `${target}.${process.pid}.tmp`
   await fs.writeFile(tmp, JSON.stringify(params), { mode: 0o640 })
@@ -205,8 +214,8 @@ export async function jobStatus(job: AdminJob): Promise<AdminJobStatus> {
     .slice(-40)
   let data: unknown = null
   // Tareas que devuelven datos (`ap` incluye la contraseña del AP: /api/admin es solo loopback).
-  // gps-uart: solo en la portable (puertos USB para el GPS).
-  if (job === 'usb-scan' || job === 'ap' || job === 'mesh' || job === 'time-sync' || job === 'gps-uart' || job === 'usb-prepare') {
+  // gps-uart: solo en la portable (puertos USB para el GPS). bluetooth: se lee también mientras corre (búsqueda, clave).
+  if (job === 'usb-scan' || job === 'ap' || job === 'mesh' || job === 'time-sync' || job === 'gps-uart' || job === 'usb-prepare' || job === 'bluetooth') {
     try {
       data = JSON.parse(await fs.readFile(`${ADMIN_DIR}/${job}.result.json`, 'utf8')) as unknown
     } catch {

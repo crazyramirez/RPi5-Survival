@@ -42,6 +42,11 @@ export interface PlatformCaps {
   deviceCompass: boolean
   /** El nombre de equipo significa algo (en Android siempre es «localhost»). */
   hostname: boolean
+  /**
+   * Emparejar teclados, ratones y mandos Bluetooth: `app` desde la propia interfaz (Linux: BlueZ con bt-input.py),
+   * `system` abriendo los ajustes de Bluetooth del sistema (Windows, macOS, Android); null mientras no se sabe.
+   */
+  bluetoothPairing: 'app' | 'system' | null
 }
 
 export function platformCaps({ android, portable: portableFlag, os }: PlatformInput): PlatformCaps {
@@ -66,5 +71,6 @@ export function platformCaps({ android, portable: portableFlag, os }: PlatformIn
     onScreenKeyboard: !android,
     deviceCompass: android,
     hostname: !android,
+    bluetoothPairing: linuxHost ? 'app' : android || os !== null ? 'system' : null,
   }
 }

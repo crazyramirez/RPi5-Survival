@@ -9,7 +9,7 @@ import { crc32, deflateRawSync } from 'node:zlib'
 import { makeIcns, makeIco, makeIconPng } from '../portable/icon.mjs'
 
 /** Ficheros de scripts/ que necesita la carpeta app/ (motor de descargas, tareas, pasarela, juegos). */
-export const APP_SCRIPTS = ['games-server.mjs', 'content-engine.mjs', 'country-maps.mjs', 'public-gateway.mjs', 'games-sync.mjs', 'portable-admin.mjs', 'zip.mjs', 'update-engine.mjs', 'update-lib.mjs']
+export const APP_SCRIPTS = ['games-server.mjs', 'content-engine.mjs', 'country-maps.mjs', 'public-gateway.mjs', 'games-sync.mjs', 'portable-admin.mjs', 'zip.mjs', 'update-engine.mjs', 'update-lib.mjs', 'bt-input.py']
 /** Ficheros de portable/ (lanzador y utilidades; android-guard.mjs solo actúa en Android). */
 export const APP_PORTABLE = ['launcher.mjs', 'lib.mjs', 'install.mjs', 'apply-update.mjs', 'usb.mjs', 'autoopen.mjs', 'icon.mjs', 'usb-watch.sh', 'data-LEEME.txt', 'win/survival-os.vbs', 'android-guard.mjs']
 export const APP_SERVICES = ['device-api', 'library', 'navigation', 'serial-hub', 'vault']

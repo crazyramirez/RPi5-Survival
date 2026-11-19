@@ -498,12 +498,48 @@ export type AdminJob =
   | 'routing'
   | 'mesh'
   | 'games'
+  /** Teclados, ratones y mandos Bluetooth (scripts/bt-input.py): status | scan | pair | connect | remove. */
+  | 'bluetooth'
   /** Solo portable (ADR 0019): copiar Survivelia OS a otra memoria USB e integrarla en el sistema. */
   | 'usb-prepare'
   /** Actualizaciones desde GitHub (ADR 0021): «Buscar ahora» / «Instalar» (action: check | install). */
   | 'update-online'
   /** Lo que lanza el temporizador (Pi) o el planificador de la web (portable) según el modo. */
   | 'update-auto'
+
+/** Dispositivo Bluetooth visto por BlueZ (tarea `bluetooth`). */
+export interface BluetoothDevice {
+  mac: string
+  /** null: no anuncia nombre. */
+  name: string | null
+  kind: 'keyboard' | 'pointer' | 'gamepad' | 'other-input' | 'other'
+  /** dBm de la última vez que se vio (solo durante una búsqueda). */
+  rssi: number | null
+  paired: boolean
+  connected: boolean
+  trusted: boolean
+}
+
+/** Estado en vivo de la tarea `bluetooth` (<tarea>.result.json, lo reescribe bt-input.py mientras corre). */
+export interface BluetoothState {
+  action: 'status' | 'scan' | 'pair' | 'connect' | 'remove'
+  phase: 'starting' | 'scanning' | 'searching' | 'pairing' | 'passkey' | 'pin' | 'connecting' | 'done' | 'canceled' | 'error'
+  /** MAC del dispositivo de pair/connect/remove. */
+  target: string | null
+  /** Clave (6 cifras) que hay que escribir en el teclado y pulsar Intro. */
+  passkey: string | null
+  /** Cifras ya escritas (si el teclado lo notifica). */
+  entered: number | null
+  /** Código fijo que traduce la interfaz (no-adapter, blocked, auth-failed, timeout, not-found…). */
+  error: string | null
+  adapter: { present: boolean; powered: boolean; name: string | null }
+  /** Encontrados sin emparejar (búsqueda), entrada primero. */
+  devices: BluetoothDevice[]
+  paired: BluetoothDevice[]
+  /** Fin previsto de la búsqueda (ms desde epoch). */
+  scanEndsAt: number | null
+  updatedAt: string | null
+}
 
 /** Juegos offline: copia local de Viseni Games (ADR 0012, scripts/games-sync.py). */
 export interface GamesStatus {
@@ -847,6 +883,8 @@ export type AndroidAction =
   | 'kiosk'
   /** Reabrir el instalador con la actualización ya descargada y verificada (ADR 0021). */
   | 'install-update'
+  /** Ajustes de Bluetooth del sistema (emparejar teclados y ratones). */
+  | 'bluetooth-settings'
 
 /** Memoria USB de Survivelia OS (versión portable, ADR 0019). */
 export interface PortableUsbStatus {

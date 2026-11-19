@@ -1,10 +1,10 @@
 import type { AdminJob, AdminJobStatus } from '@survival-os/shared-types'
 
 /**
- * Tarea de mantenimiento (unidad systemd survival-admin@<tarea>). Sondea cada 2 s solo
+ * Tarea de mantenimiento (unidad systemd survival-admin@<tarea>). Sondea cada `intervalMs` (2 s) solo
  * mientras está en curso; emite `onDone` al terminar para recargar los datos afectados.
  */
-export function useAdminJob(job: AdminJob, onDone?: (st: AdminJobStatus) => void) {
+export function useAdminJob(job: AdminJob, onDone?: (st: AdminJobStatus) => void, intervalMs = 2000) {
   const status = ref<AdminJobStatus | null>(null)
   const error = ref<string | null>(null)
   let timer: ReturnType<typeof setInterval> | undefined
@@ -27,7 +27,7 @@ export function useAdminJob(job: AdminJob, onDone?: (st: AdminJobStatus) => void
   }
 
   function poll(): void {
-    if (!timer) timer = setInterval(() => void refresh(), 2000)
+    if (!timer) timer = setInterval(() => void refresh(), intervalMs)
   }
 
   async function start(params: Record<string, unknown> = {}): Promise<void> {

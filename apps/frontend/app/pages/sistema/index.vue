@@ -29,6 +29,7 @@ import type { MessageKey } from '~/locales/es'
 import type { Tone } from '~/utils/alerts'
 import { DISK_CRITICAL_RATIO, DISK_WARN_RATIO, TEMP_CRITICAL_C, TEMP_WARN_C } from '~/utils/alerts'
 import { formatAge, formatBytes, formatDuration, formatNumber } from '~/utils/format'
+import { wakeGuard } from '~/utils/wake-guard'
 
 /** Escala del medidor térmico (°C). Solo para dibujar: los umbrales reales son TEMP_WARN_C / TEMP_CRITICAL_C. */
 const TEMP_SCALE_MAX_C = 90
@@ -347,6 +348,8 @@ async function confirmAppRestart(): Promise<void> {
 async function displayOff(): Promise<void> {
   try {
     await postAction('/api/system/display')
+    // El toque que la vuelva a encender solo la enciende (no pulsa lo que haya debajo).
+    wakeGuard.arm()
   } catch (err) {
     actionMessage.value = { tone: 'danger', text: actionErrorMessage(err) }
   }

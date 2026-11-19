@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ArrowRightLeft, Calculator, Compass, Hand, Keyboard, MousePointer2, Usb, Wrench } from '@lucide/vue'
+import { ArrowRightLeft, Bluetooth, Calculator, Compass, Hand, Keyboard, MousePointer2, Settings, Usb, Wrench } from '@lucide/vue'
 import type { InputDeviceInfo } from '@survival-os/shared-types'
 import { parseDecimalDegrees, toDms } from '~/utils/coords'
 
 const t = useT()
 const { status } = useDeviceStatus()
 const caps = usePlatformCaps()
+/** En Windows, macOS y Android los teclados Bluetooth se emparejan en los ajustes del sistema (tarjeta propia). */
+const btSystemCard = computed(() => !caps.value.inputProbe && caps.value.bluetoothPairing === 'system')
 /** Tarjetas de «Hardware conectado» en esta plataforma (puertos y ESP32 siempre; entrada y brújula según el sistema). */
-const hwCount = computed(() => 2 + Number(caps.value.inputProbe) + Number(!caps.value.deviceCompass))
+const hwCount = computed(() => 2 + Number(caps.value.inputProbe || btSystemCard.value) + Number(!caps.value.deviceCompass))
 const serial = computed(() => status.value?.serial)
 const input = computed(() => status.value?.input)
 
@@ -26,6 +28,16 @@ const kindLabel = (kind: InputDeviceInfo['kind']): string => t(`tools.input.kind
 const KIND_ICON = { touchscreen: Hand, keyboard: Keyboard, pointer: MousePointer2, other: Usb } as const
 const ports = computed(() => (serial.value?.state === 'ok' ? serial.value.value.usbPorts : []))
 const devices = computed(() => (input.value?.state === 'ok' ? input.value.value : []))
+
+const btSettingsError = ref<string | null>(null)
+async function openBluetoothSettings(): Promise<void> {
+  btSettingsError.value = null
+  try {
+    await postAction('/api/portable/bluetooth-settings')
+  } catch (err) {
+    btSettingsError.value = actionErrorMessage(err)
+  }
+}
 </script>
 
 <template>
@@ -123,6 +135,17 @@ const devices = computed(() => (input.value?.state === 'ok' ? input.value.value 
             <span class="ui-chip">{{ kindLabel(dev.kind) }}</span>
           </li>
         </ul>
+        <!-- Teclados, ratones y mandos Bluetooth: emparejar y desvincular desde aquí (BlueZ). -->
+        <BluetoothInput v-if="caps.bluetoothPairing === 'app'" />
+      </AppCard>
+
+      <!-- Windows, macOS y Android: el sistema empareja; un toque abre sus ajustes de Bluetooth. -->
+      <AppCard v-else-if="btSystemCard" :title="t('ui.bt.systemTitle')" :icon="Bluetooth" tone="info">
+        <p>{{ t('ui.bt.systemNote') }}</p>
+        <button type="button" class="btn btn-primary" @click="openBluetoothSettings">
+          <Settings :size="18" /> {{ t('ui.bt.openSystem') }}
+        </button>
+        <p v-if="btSettingsError" class="invalid" role="alert">{{ btSettingsError }}</p>
       </AppCard>
 
       <Esp32Card />

@@ -47,5 +47,14 @@ describe('platformCaps', () => {
     const c = platformCaps({ android: false, portable: true, os: null })
     expect(c.linuxHost).toBe(false)
     expect(c.cpuProbe).toBe('no')
+    expect(c.bluetoothPairing).toBeNull()
+  })
+
+  it('Bluetooth: la interfaz empareja en Linux; en el resto, los ajustes del sistema', () => {
+    expect(platformCaps({ android: false, portable: false, os: 'linux' }).bluetoothPairing).toBe('app')
+    expect(platformCaps({ android: false, portable: true, os: 'linux' }).bluetoothPairing).toBe('app')
+    expect(platformCaps({ android: true, portable: true, os: 'android' }).bluetoothPairing).toBe('system')
+    expect(platformCaps({ android: true, portable: true, os: null }).bluetoothPairing).toBe('system')
+    for (const os of ['win32', 'darwin']) expect(platformCaps({ android: false, portable: true, os }).bluetoothPairing).toBe('system')
   })
 })

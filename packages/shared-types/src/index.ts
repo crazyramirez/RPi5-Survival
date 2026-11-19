@@ -147,7 +147,7 @@ export interface InputDeviceInfo {
   name: string
   vendorId: string
   productId: string
-  kind: 'touchscreen' | 'keyboard' | 'pointer' | 'other'
+  kind: 'touchscreen' | 'touchpad' | 'keyboard' | 'pointer' | 'other'
 }
 
 export interface SerialInfo {
@@ -538,6 +538,12 @@ export interface BluetoothState {
   paired: BluetoothDevice[]
   /** Fin previsto de la búsqueda (ms desde epoch). */
   scanEndsAt: number | null
+  updatedAt: string | null
+}
+
+/** Dirección del desplazamiento del trackpad en el quiosco (scripts/kiosk-input.py); null: no se sabe. */
+export interface TouchpadSettings {
+  touchpadScroll: 'natural' | 'traditional' | null
   updatedAt: string | null
 }
 

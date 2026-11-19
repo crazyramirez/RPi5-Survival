@@ -112,12 +112,14 @@ function hexMask(words: string | undefined): bigint {
 }
 
 const EV_ABS = 3n
+const INPUT_PROP_POINTER = 0n
 const INPUT_PROP_DIRECT = 1n
 
 /**
  * /proc/bus/input/devices → dispositivos de usuario (USB=0003, Bluetooth=0005).
  * Clasificación:
  *  - touchscreen: INPUT_PROP_DIRECT + eventos ABS
+ *  - touchpad: INPUT_PROP_POINTER + eventos ABS (trackpad: el puntero se mueve, no se toca la pantalla)
  *  - pointer: handler mouseN
  *  - keyboard: handler kbd + leds (teclado real, no botones multimedia)
  */
@@ -134,7 +136,9 @@ export function parseInputDevices(text: string): InputDeviceInfo[] {
     const prop = hexMask(/^B: PROP=(.*)$/m.exec(block)?.[1])
     const ev = hexMask(/^B: EV=(.*)$/m.exec(block)?.[1])
     let kind: InputDeviceInfo['kind'] = 'other'
-    if ((prop & (1n << INPUT_PROP_DIRECT)) !== 0n && (ev & (1n << EV_ABS)) !== 0n) kind = 'touchscreen'
+    const abs = (ev & (1n << EV_ABS)) !== 0n
+    if ((prop & (1n << INPUT_PROP_DIRECT)) !== 0n && abs) kind = 'touchscreen'
+    else if ((prop & (1n << INPUT_PROP_POINTER)) !== 0n && abs) kind = 'touchpad'
     else if (handlers.some((h) => /^mouse\d+$/.test(h))) kind = 'pointer'
     else if (handlers.includes('kbd') && handlers.includes('leds')) kind = 'keyboard'
     const key = `${vendorId}:${productId}:${kind}:${name}`

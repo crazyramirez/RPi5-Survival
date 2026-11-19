@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRightLeft, Bluetooth, Calculator, Compass, Hand, Keyboard, MousePointer2, Settings, Usb, Wrench } from '@lucide/vue'
+import { ArrowRightLeft, Bluetooth, Calculator, Compass, Hand, Keyboard, MousePointer2, Settings, Touchpad, Usb, Wrench } from '@lucide/vue'
 import type { InputDeviceInfo } from '@survival-os/shared-types'
 import { parseDecimalDegrees, toDms } from '~/utils/coords'
 
@@ -25,9 +25,11 @@ const typed = computed(() => (lat.value !== null && lon.value !== null ? { lat: 
 const kindLabel = (kind: InputDeviceInfo['kind']): string => t(`tools.input.kind.${kind}`)
 
 // ------------------------------------------------------------------ Presentación
-const KIND_ICON = { touchscreen: Hand, keyboard: Keyboard, pointer: MousePointer2, other: Usb } as const
+const KIND_ICON = { touchscreen: Hand, touchpad: Touchpad, keyboard: Keyboard, pointer: MousePointer2, other: Usb } as const
 const ports = computed(() => (serial.value?.state === 'ok' ? serial.value.value.usbPorts : []))
 const devices = computed(() => (input.value?.state === 'ok' ? input.value.value : []))
+/** Quiosco de la Pi con un trackpad conectado: se puede elegir la dirección del desplazamiento. */
+const touchpad = computed(() => caps.value.kiosk && devices.value.some((d) => d.kind === 'touchpad'))
 
 const btSettingsError = ref<string | null>(null)
 async function openBluetoothSettings(): Promise<void> {
@@ -135,6 +137,8 @@ async function openBluetoothSettings(): Promise<void> {
             <span class="ui-chip">{{ kindLabel(dev.kind) }}</span>
           </li>
         </ul>
+        <!-- Trackpad conectado: dirección del desplazamiento (labwc, agente del quiosco). -->
+        <TouchpadScroll v-if="touchpad" />
         <!-- Teclados, ratones y mandos Bluetooth: emparejar y desvincular desde aquí (BlueZ). -->
         <BluetoothInput v-if="caps.bluetoothPairing === 'app'" />
       </AppCard>

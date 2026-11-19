@@ -633,6 +633,7 @@ export const es = {
   'tools.serial.port': 'Puerto',
   'tools.input': 'Dispositivos de entrada',
   'tools.input.kind.touchscreen': 'Táctil',
+  'tools.input.kind.touchpad': 'Trackpad',
   'tools.input.kind.keyboard': 'Teclado',
   'tools.input.kind.pointer': 'Puntero',
   'tools.input.kind.other': 'Otro',
@@ -1341,6 +1342,14 @@ export const es = {
   'ui.bt.err.busy': 'Ya hay otro emparejamiento en curso.',
   'ui.bt.err.not-connected': 'No se pudo conectar. Enciéndelo y pulsa una tecla.',
   'ui.bt.err.failed': 'No se pudo completar. Vuelve a intentarlo.',
+  'ui.touchpad.title': 'Desplazamiento del trackpad',
+  'ui.touchpad.natural': 'Natural',
+  'ui.touchpad.traditional': 'Tradicional',
+  'ui.touchpad.natural.hint': 'El contenido sigue a los dedos, como en un móvil.',
+  'ui.touchpad.traditional.hint': 'Como la rueda del ratón: los dedos mueven la barra.',
+  'ui.touchpad.unknown': 'Aún no se sabe cómo está configurado: elige una opción.',
+  'ui.touchpad.failed': 'No se pudo aplicar. Vuelve a intentarlo.',
+  'ui.touchpad.applying': 'Aplicando…',
 
   // ---- Rutas sin conexión (ADR 0010)
   'ui.routing.title': 'Rutas sin conexión',

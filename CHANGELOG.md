@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.13.9 — 2026-11-19 · Dirección del trackpad
+
+### Añadido
+- **Desplazamiento del trackpad (Raspberry Pi):** con un trackpad conectado (USB o Bluetooth), Herramientas →
+  Dispositivos de entrada muestra «Desplazamiento del trackpad» con dos opciones, **Natural** (el contenido sigue a
+  los dedos, como en un móvil) y **Tradicional** (como la rueda del ratón), cada una con una pequeña demostración.
+  Se aplica al momento sin reiniciar: el agente del quiosco ajusta labwc (`naturalScroll` en su `rc.xml`, con copia
+  previa en `rc.xml.bak-survival-input`) y la pantalla muestra el estado leído de ese fichero, no el pedido.
+- Los trackpads salen en la lista de dispositivos de entrada como «Trackpad» (antes, «Puntero»).
+
 ## 0.13.8 — 2026-11-19 · Puntero discreto con ratón y trackpad
 
 ### Cambiado

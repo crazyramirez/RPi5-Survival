@@ -31,7 +31,7 @@ export function systemctlPower(action: 'poweroff' | 'reboot'): Promise<void> {
  * Envía una orden al agente del kiosco (FIFO leída en la sesión gráfica).
  * O_NONBLOCK: si no hay lector, falla con ENXIO en vez de bloquear el servidor.
  */
-export async function sendKioskCommand(cmd: 'display-off' | 'exit-desktop'): Promise<boolean> {
+export async function sendKioskCommand(cmd: 'display-off' | 'exit-desktop' | 'touchpad-scroll natural' | 'touchpad-scroll traditional'): Promise<boolean> {
   let handle: fs.FileHandle | undefined
   try {
     handle = await fs.open(KIOSK_FIFO, constants.O_WRONLY | constants.O_NONBLOCK)

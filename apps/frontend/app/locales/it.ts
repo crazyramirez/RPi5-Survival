@@ -630,6 +630,7 @@ export const it: Record<MessageKey, string> = {
   'tools.serial.port': 'Porta',
   'tools.input': 'Dispositivi di input',
   'tools.input.kind.touchscreen': 'Touch',
+  'tools.input.kind.touchpad': 'Trackpad',
   'tools.input.kind.keyboard': 'Tastiera',
   'tools.input.kind.pointer': 'Puntatore',
   'tools.input.kind.other': 'Altro',
@@ -1338,6 +1339,14 @@ export const it: Record<MessageKey, string> = {
   'ui.bt.err.busy': 'È già in corso un’altra associazione.',
   'ui.bt.err.not-connected': 'Impossibile collegarsi. Accendilo e premi un tasto.',
   'ui.bt.err.failed': 'Impossibile completare. Riprova.',
+  'ui.touchpad.title': 'Scorrimento del trackpad',
+  'ui.touchpad.natural': 'Naturale',
+  'ui.touchpad.traditional': 'Tradizionale',
+  'ui.touchpad.natural.hint': 'Il contenuto segue le dita, come su un telefono.',
+  'ui.touchpad.traditional.hint': 'Come la rotella del mouse: le dita muovono la barra.',
+  'ui.touchpad.unknown': 'L’impostazione attuale non è ancora nota: scegline una.',
+  'ui.touchpad.failed': 'Impossibile applicarla. Riprova.',
+  'ui.touchpad.applying': 'Applicazione…',
 
   // ---- Rutas sin conexión (ADR 0010)
   'ui.routing.title': 'Percorsi offline',

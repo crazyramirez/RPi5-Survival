@@ -630,6 +630,7 @@ export const fr: Record<MessageKey, string> = {
   'tools.serial.port': 'Port',
   'tools.input': "Périphériques d'entrée",
   'tools.input.kind.touchscreen': 'Tactile',
+  'tools.input.kind.touchpad': 'Pavé tactile',
   'tools.input.kind.keyboard': 'Clavier',
   'tools.input.kind.pointer': 'Pointeur',
   'tools.input.kind.other': 'Autre',
@@ -1338,6 +1339,14 @@ export const fr: Record<MessageKey, string> = {
   'ui.bt.err.busy': 'Une autre association est déjà en cours.',
   'ui.bt.err.not-connected': 'Connexion impossible. Allumez-le et appuyez sur une touche.',
   'ui.bt.err.failed': 'Impossible de terminer. Réessayez.',
+  'ui.touchpad.title': 'Défilement du pavé tactile',
+  'ui.touchpad.natural': 'Naturel',
+  'ui.touchpad.traditional': 'Classique',
+  'ui.touchpad.natural.hint': 'Le contenu suit les doigts, comme sur un téléphone.',
+  'ui.touchpad.traditional.hint': 'Comme la molette de la souris : les doigts déplacent la barre.',
+  'ui.touchpad.unknown': 'Son réglage actuel n’est pas encore connu : choisissez-en un.',
+  'ui.touchpad.failed': 'Impossible de l’appliquer. Réessayez.',
+  'ui.touchpad.applying': 'Application…',
 
   // ---- Rutas sin conexión (ADR 0010)
   'ui.routing.title': 'Itinéraires hors ligne',

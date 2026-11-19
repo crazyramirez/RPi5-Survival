@@ -93,6 +93,18 @@ describe('parseInputDevices', () => {
     const cc = devices.find((d) => d.name.includes('Consumer Control'))
     expect(cc?.kind).toBe('other')
   })
+
+  it('trackpad (POINTER + ABS) como touchpad, no como táctil ni ratón', () => {
+    const trackpad = [
+      'I: Bus=0005 Vendor=004c Product=0265 Version=0001',
+      'N: Name="Magic Trackpad"',
+      'H: Handlers=mouse1 event6',
+      'B: PROP=5',
+      'B: EV=1b',
+      'B: ABS=2e0800000000003',
+    ].join('\n')
+    expect(parseInputDevices(trackpad)).toEqual([{ name: 'Magic Trackpad', vendorId: '004c', productId: '0265', kind: 'touchpad' }])
+  })
 })
 
 describe('parseNmcliTerse', () => {

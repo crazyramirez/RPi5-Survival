@@ -4,7 +4,8 @@
 #  - Abre una página local de arranque (file://) que espera a /api/health y redirige a la app.
 #  - Reinicia Chromium si se cierra (con espera creciente, sin bucles agresivos).
 #  - Apaga la pantalla tras inactividad (swayidle + wlopm); un toque la enciende.
-#  - Agente: lee órdenes de la UI por la FIFO /run/survival-os/kiosk.fifo.
+#  - Agente: lee órdenes de la UI por la FIFO /run/survival-os/kiosk.fifo (apagar pantalla, salir al escritorio,
+#    dirección del trackpad con scripts/kiosk-input.py).
 #
 # Mantenimiento (desde SSH, como el usuario de escritorio):
 #   touch ~/.config/survival-os/kiosk.disabled; systemctl --user stop survival-kiosk
@@ -55,6 +56,14 @@ agent() {
             swayidle timeout 2 "wlopm --off '*'" resume "wlopm --on '*'; kill \$PPID" &
             log "pantalla apagada a petición de la UI"
             ;;
+          touchpad-scroll\ natural|touchpad-scroll\ traditional)
+            # Dirección del desplazamiento del trackpad (rc.xml de labwc + recarga); publica el estado para la web.
+            if python3 -I "$APP_DIR/scripts/kiosk-input.py" set "${cmd#touchpad-scroll }"; then
+              log "trackpad: desplazamiento ${cmd#touchpad-scroll }"
+            else
+              log "trackpad: no se pudo cambiar el desplazamiento"
+            fi
+            ;;
           exit-desktop)
             mkdir -p "$(dirname "$DISABLE_FLAG")" && touch "$DISABLE_FLAG"
             log "salida al escritorio a petición de la UI"
@@ -68,6 +77,9 @@ agent() {
     fi
   done
 }
+# Estado del trackpad para la web (no puede leer $HOME).
+python3 -I "$APP_DIR/scripts/kiosk-input.py" status 2>/dev/null || log "trackpad: estado no publicado"
+
 agent &
 children+=($!)
 

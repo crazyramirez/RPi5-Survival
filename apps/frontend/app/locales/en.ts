@@ -475,6 +475,8 @@ export const en: Record<MessageKey, string> = {
   'setup.offline': 'This device has no Internet connection right now. Connect it and come back here, or do it later from Maintenance.',
   'viewer.title': 'Document',
   'viewer.back': 'Back',
+  'reading.enter': 'Full screen',
+  'reading.exit': 'Exit full screen',
   'viewer.close': 'Close the document',
   'viewer.invalid': 'This document cannot be displayed.',
   'viewer.pdf.loading': 'Opening the document…',

@@ -256,8 +256,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="reader">
-    <header class="bar">
+  <div class="reader reading-host">
+    <header class="bar reading-hide">
       <button type="button" class="btn" @click="toLibrary">
         <ArrowLeft :size="20" aria-hidden="true" />
         {{ t('module.library') }}
@@ -268,6 +268,7 @@ onMounted(() => {
         <component :is="night ? Sun : Moon" :size="20" aria-hidden="true" />
         {{ night ? t('lib.reader.day') : t('lib.reader.night') }}
       </button>
+      <ReadingModeButton v-if="src" />
     </header>
     <!-- Red de seguridad: sin allow-top-navigation ni allow-popups, nada del ZIM puede sacar al usuario de la app. -->
     <iframe

@@ -69,15 +69,15 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
 
 <template>
   <div class="guide-reader" :class="`reader-tone-${tone ?? 'neutral'}`">
-    <header class="reader-toolbar">
+    <header class="reader-toolbar reading-hide">
       <slot name="back" />
       <span class="reader-caption">{{ t('reader.caption') }}</span>
       <span class="reader-current-title" :title="title">{{ heading.title }}</span>
-      <div class="reader-actions"><slot name="actions" /></div>
+      <div class="reader-actions"><slot name="actions" /><ReadingModeButton /></div>
     </header>
 
     <div class="reader-workspace">
-      <aside class="reader-sidebar">
+      <aside class="reader-sidebar reading-hide">
         <h2 class="reader-cap">{{ t('reader.contents') }}</h2>
         <nav :aria-label="t('reader.contents')" class="reader-index">
           <button

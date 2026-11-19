@@ -62,8 +62,8 @@ const srcdoc = computed(() => {
 </script>
 
 <template>
-  <div class="reader">
-    <header class="bar">
+  <div class="reader reading-host">
+    <header class="bar reading-hide">
       <button type="button" class="btn" @click="backTo('/biblioteca')">
         <ArrowLeft :size="20" aria-hidden="true" />
         {{ t('module.library') }}
@@ -74,6 +74,7 @@ const srcdoc = computed(() => {
         <component :is="night ? Sun : Moon" :size="20" aria-hidden="true" />
         {{ night ? t('lib.reader.day') : t('lib.reader.night') }}
       </button>
+      <ReadingModeButton v-if="doc" />
     </header>
     <div v-if="error" class="notice tone-danger">{{ error }}</div>
     <PdfViewer v-else-if="doc?.kind === 'pdf'" :src="`/api/library/docs/${doc.id}/raw`" />

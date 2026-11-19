@@ -63,14 +63,15 @@ function back(): void {
 </script>
 
 <template>
-  <div class="viewer">
-    <header class="bar">
+  <div class="viewer reading-host">
+    <header class="bar reading-hide">
       <button type="button" class="btn" @click="back">
         <ArrowLeft :size="20" aria-hidden="true" />
         {{ t('viewer.back') }}
       </button>
       <FileText :size="18" class="icon" aria-hidden="true" />
       <span class="title">{{ title }}</span>
+      <ReadingModeButton v-if="src" />
       <NuxtLink to="/biblioteca" class="btn icon-only" :aria-label="t('viewer.close')"><X :size="20" aria-hidden="true" /></NuxtLink>
     </header>
     <PdfViewer v-if="src && kind === 'pdf'" :src="src" />

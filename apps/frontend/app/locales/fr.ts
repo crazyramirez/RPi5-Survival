@@ -483,6 +483,8 @@ export const fr: Record<MessageKey, string> = {
   'setup.offline': "Cet appareil n'a pas de connexion Internet pour le moment. Connectez-le et revenez ici, ou faites-le plus tard depuis Maintenance.",
   'viewer.title': 'Document',
   'viewer.back': 'Retour',
+  'reading.enter': 'Plein écran',
+  'reading.exit': 'Quitter le plein écran',
   'viewer.close': 'Fermer le document',
   'viewer.invalid': 'Ce document ne peut pas être affiché.',
   'viewer.pdf.loading': 'Ouverture du document…',

@@ -486,6 +486,8 @@ export const es = {
   'setup.offline': 'Este equipo no tiene conexión a Internet ahora. Conéctalo y vuelve aquí, o hazlo más tarde desde Mantenimiento.',
   'viewer.title': 'Documento',
   'viewer.back': 'Volver',
+  'reading.enter': 'Pantalla completa',
+  'reading.exit': 'Salir de pantalla completa',
   'viewer.close': 'Cerrar el documento',
   'viewer.invalid': 'Este documento no se puede mostrar.',
   'viewer.pdf.loading': 'Abriendo el documento…',

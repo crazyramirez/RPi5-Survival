@@ -344,6 +344,20 @@ button {
   border-bottom: none;
 }
 
+/* Modo lectura a pantalla completa (useReadingMode): fuera las cabeceras de los visores y el índice de las guías.
+   Global a propósito: en <style scoped>, :global(X) .y descarta .y. */
+:root[data-reading='on'] .reading-hide {
+  display: none !important;
+}
+
+:root[data-reading='on'] .reading-host {
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+:root[data-reading='on'] .reader-workspace {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* Entrada de diálogos: una sola vez, corta. */
 @keyframes pop-in {
   from {

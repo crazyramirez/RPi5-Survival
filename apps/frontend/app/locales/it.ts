@@ -483,6 +483,8 @@ export const it: Record<MessageKey, string> = {
   'setup.offline': 'Questo dispositivo ora non è connesso a Internet. Collegalo e torna qui, oppure fallo più tardi da Manutenzione.',
   'viewer.title': 'Documento',
   'viewer.back': 'Indietro',
+  'reading.enter': 'Schermo intero',
+  'reading.exit': 'Esci da schermo intero',
   'viewer.close': 'Chiudi il documento',
   'viewer.invalid': 'Questo documento non può essere visualizzato.',
   'viewer.pdf.loading': 'Apertura del documento…',

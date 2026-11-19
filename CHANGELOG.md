@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.13.11 — 2026-11-19 · Modo lectura a pantalla completa
+
+### Añadido
+- **Pantalla completa en los visores** (PDF, documentos de la biblioteca, lector de la Wikipedia y demás libros,
+  guías de emergencia): el botón «Pantalla completa» de su barra deja solo el documento, sin barra de estado, sin
+  barra de acciones, sin la cabecera del visor ni el índice de la guía. El PDF conserva sus controles (página, zoom,
+  noche). Para salir, un botón flotante arriba a la derecha que se atenúa a los 3 s sin tocar y vuelve al tocar o
+  mover el ratón; también Escape o cambiar de pantalla. En la portable y en el navegador activa además la pantalla
+  completa del sistema.
+
 ## 0.13.10 — 2026-11-19 · El quiosco aprende las órdenes nuevas sin reiniciar
 
 ### Corregido

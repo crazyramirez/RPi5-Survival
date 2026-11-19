@@ -216,7 +216,7 @@ watch(() => props.src, reset)
   border: 1px solid rgb(255 255 255 / 15%);
   background: rgb(255 255 255 / 6%);
   color: #eee;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .vbtn:disabled {

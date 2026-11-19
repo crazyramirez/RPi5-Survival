@@ -215,7 +215,7 @@ onBeforeUnmount(() => {
   color: var(--text);
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .ps-hit:active {

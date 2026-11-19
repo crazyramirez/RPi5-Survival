@@ -165,7 +165,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
 .reader-sidebar { overflow-y: auto; min-height: 0; padding: 1rem; border-right: 1px solid var(--border); }
 .reader-cap { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.09em; color: var(--text-muted); text-transform: uppercase; }
 .reader-index { display: grid; gap: 0.3rem; margin: 0.5rem 0 1.2rem; }
-.reader-index button { display: flex; align-items: center; gap: 0.6rem; min-height: var(--touch); padding: 0.35rem 0.6rem; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--text); font: inherit; font-size: 0.98rem; font-weight: 700; line-height: 1.15; text-align: left; cursor: pointer; }
+.reader-index button { display: flex; align-items: center; gap: 0.6rem; min-height: var(--touch); padding: 0.35rem 0.6rem; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--text); font: inherit; font-size: 0.98rem; font-weight: 700; line-height: 1.15; text-align: left; cursor: var(--cursor-point); }
 .reader-index button:active { background: var(--surface-3); }
 .reader-index button svg { flex: none; color: var(--text-muted); }
 .reader-index button span { overflow-wrap: anywhere; }
@@ -232,7 +232,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
   .reader-sidebar { display: none; }
   .reader-mobile-index { display: block; flex: none; padding: 0.45rem 0.75rem; border-bottom: 1px solid var(--border); background: var(--surface); }
   .reader-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 0.5rem; }
-  .reader-tabs button { min-width: 0; min-height: var(--touch); padding: 0.4rem; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--text); font-weight: 700; cursor: pointer; overflow-wrap: anywhere; }
+  .reader-tabs button { min-width: 0; min-height: var(--touch); padding: 0.4rem; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--text); font-weight: 700; cursor: var(--cursor-point); overflow-wrap: anywhere; }
   .reader-section-select { display: flex; align-items: center; gap: 0.8rem; }
   .reader-section-select > span { color: var(--text-muted); font-weight: 700; }
   .reader-section-select select { flex: 1; min-width: 0; min-height: var(--touch); padding: 0.4rem 0.6rem; border: 1px solid var(--guide-border, var(--border)); border-radius: var(--radius); background: var(--surface-2); color: var(--text); font: inherit; }

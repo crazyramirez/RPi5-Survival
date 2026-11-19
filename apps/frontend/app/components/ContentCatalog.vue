@@ -433,7 +433,7 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
   color: var(--text);
   font: inherit;
   font-size: 0.9rem;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .chip-btn[aria-pressed='true'] {
@@ -474,7 +474,7 @@ defineExpose({ start, selectedCount: computed(() => selected.value.size), select
   align-items: flex-start;
   gap: 0.7rem;
   padding: 0.45rem 0;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .pick input {

@@ -743,7 +743,7 @@ onBeforeUnmount(() => {
   background: none;
   color: var(--text-muted);
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out, background-color 0.12s;
 }
 
@@ -872,7 +872,7 @@ onBeforeUnmount(() => {
   background: var(--surface-grad);
   color: var(--text);
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out, background-color 0.12s;
 }
 
@@ -981,7 +981,7 @@ onBeforeUnmount(() => {
   color: var(--text);
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 

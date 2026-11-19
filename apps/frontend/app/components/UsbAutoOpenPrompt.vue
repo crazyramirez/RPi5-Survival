@@ -141,7 +141,7 @@ p {
   border: 0;
   background: none;
   color: var(--text-faint);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .ok {

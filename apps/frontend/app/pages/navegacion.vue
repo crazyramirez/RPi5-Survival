@@ -667,7 +667,7 @@ const targetRot = useUnwrapped(() => toTarget.value?.b ?? null)
   color: var(--text);
   text-align: left;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 
@@ -792,7 +792,7 @@ const targetRot = useUnwrapped(() => toTarget.value?.b ?? null)
   background: none;
   color: var(--text);
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 

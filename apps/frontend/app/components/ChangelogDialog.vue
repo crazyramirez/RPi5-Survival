@@ -140,7 +140,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   border-radius: 50%;
   background: transparent;
   color: var(--text-muted);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .scroll {

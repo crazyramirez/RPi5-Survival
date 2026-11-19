@@ -1,6 +1,6 @@
 {
   "name": "@survival-os/esp32-gateway",
-  "version": "0.13.7",
+  "version": "0.13.8",
   "private": true,
   "type": "module",
   "description": "Pasarela USB serie con ESP32 (JSON Lines v1). Solo loopback.",
@@ -13,6 +13,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@survival-os/shared-types": "0.13.7"
+    "@survival-os/shared-types": "0.13.8"
   }
 }

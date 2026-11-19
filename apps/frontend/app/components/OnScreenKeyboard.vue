@@ -214,7 +214,7 @@ watch(target, (t) => document.documentElement.classList.toggle('osk-open', !!t))
   font: inherit;
   font-size: 1.3rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .k:active,

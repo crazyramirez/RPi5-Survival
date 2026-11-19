@@ -854,7 +854,7 @@ h1 {
   font: inherit;
   font-size: 0.9rem;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 /* Dos líneas completas: con su propio interlineado, el recorte no se come la parte baja de las letras. */
@@ -882,7 +882,7 @@ h1 {
   border-left: 1px solid var(--hairline);
   background: none;
   color: var(--text-faint);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .del:active:not(:disabled) {

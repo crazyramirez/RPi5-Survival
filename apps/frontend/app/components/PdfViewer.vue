@@ -430,7 +430,7 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   background: transparent;
   color: var(--text);
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition:
     background-color 0.15s,
     transform 0.1s;
@@ -443,7 +443,7 @@ onBeforeUnmount(() => {
 
 .tool:disabled {
   opacity: 0.35;
-  cursor: default;
+  cursor: var(--cursor);
 }
 
 .tool[aria-pressed='true'] {

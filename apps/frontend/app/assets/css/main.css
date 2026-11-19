@@ -46,6 +46,10 @@
 
   --dim: 0;
 
+  /* Puntero de ratón y trackpad: flecha pequeña en crema; verde de acento sobre lo que se puede pulsar. */
+  --cursor: url('/cursors/arrow.svg') 3 2, default;
+  --cursor-point: url('/cursors/point.svg') 3 2, pointer;
+
   color-scheme: dark;
   /*
    * Tipografía fluida (ADR 0016, portable): 16 px en el panel 1024×600 y en móviles; crece con el
@@ -93,6 +97,27 @@ body,
 #__nuxt {
   height: 100%;
   margin: 0;
+}
+
+/* Puntero propio (el toque no lo muestra). Los campos de texto conservan la barra de escritura. */
+html {
+  cursor: var(--cursor);
+}
+
+a[href],
+summary,
+select,
+label:has(> input[type='checkbox'], > input[type='radio']),
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'] {
+  cursor: var(--cursor-point);
+}
+
+input:not([type='checkbox'], [type='radio'], [type='range'], [type='button'], [type='submit']),
+textarea,
+[contenteditable='true'] {
+  cursor: text;
 }
 
 body {
@@ -184,7 +209,7 @@ button {
   color: var(--text);
   font-weight: 700;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out, background-color 0.12s;
 }
 

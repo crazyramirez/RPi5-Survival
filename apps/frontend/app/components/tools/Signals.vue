@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
   padding-bottom: 1.2rem;
   border: none;
   background: #000;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .light.on {

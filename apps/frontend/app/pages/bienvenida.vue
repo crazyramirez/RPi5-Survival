@@ -284,7 +284,7 @@ async function openGuides(): Promise<void> {
   font: inherit;
   font-size: 0.82rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: background-color 0.15s, color 0.15s;
 }
 
@@ -502,7 +502,7 @@ h1 {
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .region-pick {

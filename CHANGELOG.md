@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.8 — 2026-11-19 · Puntero discreto con ratón y trackpad
+
+### Cambiado
+- **Puntero propio al usar ratón o trackpad:** una flecha pequeña en el crema de la app con contorno oscuro y sombra
+  suave; sobre botones, enlaces y opciones, la misma flecha en el verde de acento (en lugar de la mano del sistema).
+  Los campos de texto conservan la barra de escritura y los mapas sus cursores de arrastre. En la Pi, la portable y
+  Android con ratón.
+
 ## 0.13.7 — 2026-11-19 · Mantenimiento: la actualización, lo primero y compacta
 
 ### Cambiado

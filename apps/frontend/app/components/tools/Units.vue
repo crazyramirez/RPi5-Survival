@@ -74,7 +74,7 @@ const shown = computed(() =>
   font: inherit;
   font-size: 0.82rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .cat[aria-pressed='true'] {

@@ -333,7 +333,7 @@ const confirmBody = computed(() => {
   font: inherit;
   font-size: 0.86rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: background-color 0.12s, color 0.12s;
 }
 
@@ -377,7 +377,7 @@ const confirmBody = computed(() => {
 }
 
 .notes summary {
-  cursor: pointer;
+  cursor: var(--cursor-point);
   font-size: 0.86rem;
   font-weight: 700;
   color: var(--tone);

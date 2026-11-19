@@ -200,7 +200,7 @@ function prepare(): void {
   align-items: center;
   gap: 0.6rem;
   min-height: var(--touch);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .check input {

@@ -960,7 +960,7 @@ onBeforeUnmount(() => {
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 
@@ -1073,7 +1073,7 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--hairline);
   background: linear-gradient(180deg, var(--surface-2), var(--surface));
   color: var(--text);
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out, background-color 0.12s;
 }
 
@@ -1227,7 +1227,7 @@ onBeforeUnmount(() => {
   font: inherit;
   font-size: 0.95rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .search-pill svg {
@@ -1321,7 +1321,7 @@ onBeforeUnmount(() => {
   font: inherit;
   font-weight: 700;
   font-size: 0.9rem;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .seg-btn[aria-pressed='true'] {
@@ -1482,7 +1482,7 @@ onBeforeUnmount(() => {
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 

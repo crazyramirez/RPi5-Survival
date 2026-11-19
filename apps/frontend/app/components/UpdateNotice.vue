@@ -154,6 +154,6 @@ p {
   border-radius: var(--radius-sm, 6px);
   background: transparent;
   color: var(--text-muted);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 </style>

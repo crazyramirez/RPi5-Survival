@@ -1255,7 +1255,7 @@ async function displayOff(): Promise<void> {
   border: 1px solid var(--border);
   background: var(--surface-2);
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .ctl svg {

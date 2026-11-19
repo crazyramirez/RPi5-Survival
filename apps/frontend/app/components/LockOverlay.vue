@@ -208,7 +208,7 @@ onMounted(() => {
   color: inherit;
   font-size: 1.05rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   overflow: hidden;
   transition: border-color 0.2s;
 }

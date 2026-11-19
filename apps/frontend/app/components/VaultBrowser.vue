@@ -631,7 +631,7 @@ onBeforeUnmount(() => {
   border-radius: var(--radius-sm);
   background: none;
   color: var(--text-muted);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .vb-sort {
@@ -696,7 +696,7 @@ onBeforeUnmount(() => {
   font: inherit;
   font-weight: 600;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .vb-menu-item[aria-checked='true'] {
@@ -730,7 +730,7 @@ onBeforeUnmount(() => {
   color: var(--text-muted);
   font: inherit;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: background-color 0.12s, color 0.12s;
 }
 
@@ -781,7 +781,7 @@ onBeforeUnmount(() => {
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: background-color 0.12s, color 0.12s, border-color 0.12s;
 }
 
@@ -976,7 +976,7 @@ onBeforeUnmount(() => {
   color: var(--text);
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 
@@ -1062,11 +1062,11 @@ onBeforeUnmount(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .vb-tag.more {
-  cursor: default;
+  cursor: var(--cursor);
   color: var(--text-faint);
   border-color: var(--border);
   background: none;
@@ -1137,7 +1137,7 @@ onBeforeUnmount(() => {
   color: var(--text);
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 
@@ -1351,7 +1351,7 @@ onBeforeUnmount(() => {
   gap: 0.1rem;
   min-height: 2.75rem;
   padding: 0 0.2rem 0 0.7rem;
-  cursor: default;
+  cursor: var(--cursor);
   font-size: 0.88rem;
 }
 
@@ -1365,7 +1365,7 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   background: none;
   color: inherit;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .vb-tag-x:active {

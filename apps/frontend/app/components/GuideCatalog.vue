@@ -161,7 +161,7 @@ watch(groups, (value) => {
   font-weight: 700;
   line-height: 1.15;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .cat > svg {
@@ -250,7 +250,7 @@ watch(groups, (value) => {
   border-radius: 999px;
   background: transparent;
   color: var(--text-muted);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .heading {
@@ -398,7 +398,7 @@ watch(groups, (value) => {
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .more:active {

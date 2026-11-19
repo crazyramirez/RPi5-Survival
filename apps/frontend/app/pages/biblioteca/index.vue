@@ -836,7 +836,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   border-radius: 999px;
   background: transparent;
   color: var(--text-muted);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .icon-btn:active {
@@ -938,7 +938,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   background: transparent;
   color: var(--text);
   font: inherit;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .recent-go {
@@ -1009,7 +1009,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   font-weight: 700;
   font-size: 1.05rem;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 
@@ -1121,7 +1121,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   font-weight: 700;
   line-height: 1.15;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .cat > svg {
@@ -1218,7 +1218,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   font: inherit;
   font-size: 0.85rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .seg button[aria-pressed='true'] {
@@ -1320,7 +1320,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   font: inherit;
   text-align: left;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: background 0.12s, border-color 0.12s, transform 0.08s ease-out;
 }
 
@@ -1658,7 +1658,7 @@ const KIND_TONE: Record<DocKind, string> = { pdf: 'tone-danger', md: 'tone-info'
   background: var(--surface);
   color: var(--text-muted);
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .chip .mono {

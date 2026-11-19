@@ -73,7 +73,7 @@ function back(): void {
   font-size: var(--actions-font-size, 1.05rem);
   font-weight: 700;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 
@@ -90,7 +90,7 @@ function back(): void {
 
 .action:disabled {
   opacity: 0.4;
-  cursor: default;
+  cursor: var(--cursor);
 }
 
 .action.current {

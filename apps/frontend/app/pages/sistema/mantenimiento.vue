@@ -557,7 +557,7 @@ const PIN_LEGEND = [
   color: var(--text);
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out;
 }
 
@@ -630,7 +630,7 @@ const PIN_LEGEND = [
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .tab[aria-current='true'] {
@@ -730,7 +730,7 @@ const PIN_LEGEND = [
   align-items: center;
   gap: 0.6rem;
   min-height: var(--touch);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .check input[type='checkbox'] {

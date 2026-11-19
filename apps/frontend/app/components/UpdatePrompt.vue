@@ -211,7 +211,7 @@ const progressLine = computed(() => {
   border-radius: 50%;
   background: rgb(0 0 0 / 0.25);
   color: var(--text-muted);
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 /* Cabecera: el fondo topográfico de la app con el icono en un halo. */

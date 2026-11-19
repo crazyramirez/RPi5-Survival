@@ -435,7 +435,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--text);
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-point);
   transition: transform 0.08s ease-out, border-color 0.12s;
 }
 
@@ -539,7 +539,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--text-muted);
   font: inherit;
   font-size: 0.88rem;
-  cursor: pointer;
+  cursor: var(--cursor-point);
 }
 
 .more svg {
